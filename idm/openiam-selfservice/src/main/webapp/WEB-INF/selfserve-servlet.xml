@@ -9,6 +9,27 @@
     					http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 
+	<bean id="subscribeReportController" class="org.openiam.selfsrvc.reports.SubscribeReportsController">
+		<property name="commandName" value="subscribeReportsCommand" />
+		<property name="commandClass" value="org.openiam.selfsrvc.reports.SubscribeReportsCommand" />
+		<property name="formView" value="/report/subscribereport" />
+		<property name="successView" value="report/reportlist" />
+        <property name="reportService" ref="reportServiceClient" />
+     </bean>
+     <bean id="reportController" class="org.openiam.selfsrvc.reports.ReportController">
+		<property name="commandName" value="reportCommand" />
+		<property name="commandClass" value="org.openiam.selfsrvc.reports.ReportCommand" />
+		<property name="formView" value="/report/reportlist" />
+		<property name="successView" value="report/subscribereport" />
+        <property name="reportService" ref="reportServiceClient" />
+     </bean>
+<bean id="viewReportController" class="org.openiam.selfsrvc.reports.ReportController">
+		<property name="commandName" value="reportCommand" />
+		<property name="commandClass" value="org.openiam.selfsrvc.reports.ReportCommand" />
+		<property name="formView" value="/report/reportlist" />
+		<property name="successView" value="report/subscribereport" />
+        <property name="reportService" ref="reportServiceClient" />
+     </bean>
      <!--  Native Spring MVC Controller  -->
      <!--  All new web functionality should be declared in this file  -->
        <bean id="welcomePage" class="org.openiam.selfsrvc.WelcomePageController">
@@ -461,7 +482,7 @@
 		<property name="orgManager" ref="orgServiceClient" />
         <property name="workflowUrl">
             <map>
-                <entry key="260" value="{SELFSERVICE_EXT_CONTEXT}/priv/newhire/edit.jsp?tk={token}" />
+                <entry key="260" value="http://{SELFSERVICE_EXT_BASE_URL}/{SELFSERVICE_EXT_CONTEXT}/newHire.selfserve" />
                 <entry key="261" value="changeUserStatus.selfserve" />
                 <entry key="262" value="changeRoleAccess.selfserve" />
                 <entry key="263" value="reOrgUserAccess.selfserve" />
@@ -469,9 +490,8 @@
                 <entry key="265" value="changeGroupAccess.selfserve" />
             </map>
         </property>
+
      </bean>
-
-
      <bean id="changeAccessValidator" class="org.openiam.selfsrvc.prov.ChangeAccessValidator">
      	<property name="userMgr" ref="userServiceClient" />
      	<property name="loginManager" ref="loginServiceClient" />
@@ -842,6 +862,9 @@
                 <prop key="/changeRoleAccess.selfserve">startChangeRoleAccess</prop>
                 <prop key="/changeGroupAccess.selfserve">startChangeGroupAccess</prop>
                 <prop key="/changeResourceAccess.selfserve">startChangeResourceAccess</prop>
+				<prop key="/subscribeReport.selfserve">subscribeReportController</prop>
+				<prop key="/reportList.selfserve">reportController</prop>
+				<prop key="/viewReport.selfserve">viewReportController</prop>
                 <prop key="/myexample.selfserve">myexample</prop>
                 
             </props>
