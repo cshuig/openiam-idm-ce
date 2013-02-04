@@ -2,11 +2,15 @@ package org.openiam.webadmin.reports;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ResourceBundle;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.cxf.common.util.StringUtils;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openiam.idm.srvc.report.dto.ReportCriteriaParamDto;
 import org.openiam.idm.srvc.report.ws.WebReportService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -18,8 +22,15 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ReportController extends SimpleFormController {
     private static ResourceBundle res = ResourceBundle.getBundle("securityconf");
-
+    private static final Log log = LogFactory.getLog(ReportController.class);
     private WebReportService reportService;
+
+    @Override
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+     //   String selectedReportId = (String)request.getParameter("report.reportId");
+     //   request.getParameterMap().put("reportParameters", reportService.getReportParametersByReportId(selectedReportId));
+        return super.formBackingObject(request);
+    }
 
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request,
@@ -54,16 +65,17 @@ public class ReportController extends SimpleFormController {
                     e.printStackTrace();
                 }
             }
-            if(!StringUtils.isEmpty(reportCommand.getReport().getReportName())) {
-                reportService.createOrUpdateReportInfo(reportCommand.getReport().getReportName(), dataSourceFile.getSize() > 0 ? dataSourceFileName : reportCommand.getReport().getReportDataSource(), designFile.getSize() > 0 ? designFileName : reportCommand.getReport().getReportUrl());
+            if(StringUtils.isNotEmpty(reportCommand.getReport().getReportName())) {
+                List<ReportCriteriaParamDto> params = new LinkedList<ReportCriteriaParamDto>();
+                for(int i =0; i < reportCommand.getParamName().length; i++) {
+                    params.add(new ReportCriteriaParamDto(reportCommand.getReport().getReportId(), reportCommand.getParamName()[i],reportCommand.getParamValue()[i]));
+                }
+                reportService.createOrUpdateReportInfo(reportCommand.getReport().getReportName(), dataSourceFile.getSize() > 0 ? dataSourceFileName : reportCommand.getReport().getReportDataSource(), designFile.getSize() > 0 ? designFileName : reportCommand.getReport().getReportUrl(), params);
             }
         }
         return new ModelAndView(new RedirectView("birtReportList.cnt", true));
     }
-    @Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return super.formBackingObject(request);
-    }
+
     @Override
     protected void initBinder (HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
         // Convert multipart object to byte[]

@@ -2,10 +2,12 @@ package org.openiam.idm.srvc.report.service;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.openiam.core.dao.ReportDataDao;
-import org.openiam.core.domain.ReportInfo;
+
+import org.openiam.idm.srvc.report.domain.ReportCriteriaParamEntity;
+import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 import org.openiam.exception.ScriptEngineException;
 import org.openiam.idm.srvc.report.dto.ReportDataDto;
 import org.openiam.script.ScriptFactory;
@@ -20,37 +22,55 @@ public class ReportDataServiceImpl implements ReportDataService {
     private static final String scriptEngine = "org.openiam.script.GroovyScriptEngineIntegration";
 
     @Autowired
-    private ReportDataDao reportDao;
+    private ReportInfoDao reportDao;
+    @Autowired
+    private ReportCriteriaParamDao criteriaParamDao;
 
     @Override
     @Transactional(readOnly = true)
     public ReportDataDto getReportData(final String reportName, final Map<String, String> reportParams) throws ClassNotFoundException, ScriptEngineException, IOException {
-        ReportInfo reportInfo = reportDao.findByName(reportName);
+        ReportInfoEntity reportInfo = reportDao.findByName(reportName);
         if (reportInfo == null) {
-            throw new IllegalArgumentException("Invalid parameter list: report with name="+reportName + " was not found in Database");
+            throw new IllegalArgumentException("Invalid parameter list: report with name=" + reportName + " was not found in Database");
         }
 
         ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-        ReportDataSetBuilder dataSourceBuilder = (ReportDataSetBuilder) se.instantiateClass(Collections.EMPTY_MAP, "/reports/"+reportInfo.getDatasourceFilePath());
+        ReportDataSetBuilder dataSourceBuilder = (ReportDataSetBuilder) se.instantiateClass(Collections.EMPTY_MAP, "/reports/" + reportInfo.getDatasourceFilePath());
 
         return dataSourceBuilder.getReportData(reportParams);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReportInfo> getAllReports() {
+    public List<ReportInfoEntity> getAllReports() {
         return reportDao.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReportInfo getReportByName(String name) {
+    public ReportInfoEntity getReportByName(String name) {
         return reportDao.findByName(name);
     }
 
     @Override
     @Transactional
-    public void createOrUpdateReportInfo(String reportName, String reportDataSource, String reportUrl) {
-       reportDao.createOrUpdateReportInfo(reportName, reportDataSource, reportUrl);
+    public void createOrUpdateReportInfo(final String reportName, final String reportDataSource, final String reportUrl) {
+        reportDao.createOrUpdateReportInfo(reportName, reportDataSource, reportUrl);
+        List<ReportCriteriaParamEntity> paramEntitiesSrc = criteriaParamDao.findByReportInfoName(reportName);
+        for(ReportCriteriaParamEntity paramEntity : paramEntitiesSrc) {
+            criteriaParamDao.delete(paramEntity);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateReportParametersByReportName(final String reportName, final List<ReportCriteriaParamEntity> parameters) {
+        criteriaParamDao.save(parameters);
+    }
+
+    @Override
+    @Transactional
+    public List<ReportCriteriaParamEntity> getReportParametersByReportId(String reportId) {
+        return criteriaParamDao.findByReportInfoId(reportId);
     }
 }
