@@ -27,4 +27,11 @@ public interface WebReportService {
 
     @WebMethod
     GetReportParameterTypesResponse getReportParameterTypes();
+
+    @WebMethod
+    GetAllSubscribedReportsResponse getSubscribedReports();
+
+    @WebMethod
+    Response createOrUpdateSubscribedReportInfo(@WebParam(name = "reportName", targetNamespace = "") String reportName, @WebParam(name = "reportDataSource", targetNamespace = "") String reportDataSource, @WebParam(name = "reportUrl", targetNamespace = "") String reportUrl, @WebParam(name = "parameters", targetNamespace = "") List<ReportCriteriaParamDto> parameters);
+
 }

@@ -3,6 +3,8 @@ package org.openiam.idm.srvc.report.ws;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import org.apache.commons.lang.StringUtils;
@@ -11,12 +13,15 @@ import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.dozer.converter.ReportCriteriaParamDozerConverter;
 import org.openiam.dozer.converter.ReportInfoDozerConverter;
+import org.openiam.dozer.converter.ReportSubscriptionDozerConverter;
 import org.openiam.dozer.converter.ReportParamTypeDozerConverter;
 import org.openiam.idm.srvc.report.domain.ReportCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
+import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.idm.srvc.report.domain.ReportParamTypeEntity;
 import org.openiam.idm.srvc.report.dto.ReportCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportDataDto;
+import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
 import org.openiam.idm.srvc.report.dto.ReportParamTypeDto;
 import org.openiam.idm.srvc.report.service.ReportDataService;
@@ -36,6 +41,8 @@ import org.springframework.stereotype.Service;
 public class WebReportServiceImpl implements WebReportService {
     @Autowired
     private ReportInfoDozerConverter reportInfoDozerConverter;
+    @Autowired
+    private ReportSubscriptionDozerConverter reportSubscriptionDozerConverter;
     @Autowired
     private ReportCriteriaParamDozerConverter criteriaParamDozerConverter;
     @Autowired
@@ -130,4 +137,40 @@ public class WebReportServiceImpl implements WebReportService {
         response.setStatus(ResponseStatus.SUCCESS);
         return response;
     }
+    
+    @Override
+    public GetAllSubscribedReportsResponse getSubscribedReports() {
+        List<ReportSubscriptionEntity> reports = reportDataService.getAllSubscribedReports();
+        GetAllSubscribedReportsResponse reportsResponse = new GetAllSubscribedReportsResponse();
+        List<ReportSubscriptionDto> reportDtos = new LinkedList<ReportSubscriptionDto>();
+        if(reports != null) {
+            reportDtos = reportSubscriptionDozerConverter.convertToDTOList(reports, false);
+        }
+        reportsResponse.setReports(reportDtos);
+        return reportsResponse;
+    }
+
+    @Override
+    public Response createOrUpdateSubscribedReportInfo(@WebParam(name = "reportName", targetNamespace = "") String reportName, @WebParam(name = "reportDataSource", targetNamespace = "") String reportDataSource, @WebParam(name = "reportUrl", targetNamespace = "") String reportUrl, @WebParam(name = "parameters", targetNamespace = "") List<ReportCriteriaParamDto> parameters) {
+        Response response = new Response();
+        if (!StringUtils.isEmpty(reportName)) {
+            try {
+                reportDataService.createOrUpdateSubscribedReportInfo(reportName, reportDataSource, reportUrl);
+                //reportDataService.updateReportParametersByReportName(reportName, criteriaParamDozerConverter.convertToEntityList(parameters, false));
+            } catch (Throwable t) {
+                response.setStatus(ResponseStatus.FAILURE);
+                response.setErrorCode(ResponseCode.SQL_EXCEPTION);
+                response.setErrorText(t.getMessage());
+                return response;
+        }
+            response.setStatus(ResponseStatus.SUCCESS);
+        } else {
+            response.setErrorCode(ResponseCode.INVALID_ARGUMENTS);
+            response.setErrorText("Invalid parameter list: reportName=" + reportName);
+            response.setStatus(ResponseStatus.FAILURE);
+        }
+        return response;
+    }
+
+    
 }

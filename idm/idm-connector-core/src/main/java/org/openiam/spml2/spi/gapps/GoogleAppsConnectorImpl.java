@@ -66,7 +66,7 @@ import org.openiam.spml2.util.connect.ConnectionManagerConstant;
 import org.openiam.spml2.util.connect.ConnectionMgr;
 
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainQuery;
-import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
+//import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.EmailListRecipientService;
 import com.google.gdata.client.appsforyourdomain.EmailListService;
 import com.google.gdata.client.appsforyourdomain.NicknameService;
