@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.openiam.idm.srvc.report.dto.ReportDto;
+import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.openiam.idm.srvc.report.ws.GetAllReportsResponse;
 import org.openiam.idm.srvc.report.ws.WebReportService;
 import org.springframework.validation.BindException;
@@ -23,7 +23,7 @@ public class ReportController extends SimpleFormController {
     	ReportCommand reportCommand = new ReportCommand();
         if(!request.getParameterMap().containsKey("report.reportId")) {
             GetAllReportsResponse allReportsResponse = reportService.getReports();
-            List<ReportDto> reports = (allReportsResponse != null && allReportsResponse.getReports() != null) ? allReportsResponse.getReports() : Collections.EMPTY_LIST;
+            List<ReportSubscriptionDto> reports = (allReportsResponse != null && allReportsResponse.getReports() != null) ? allReportsResponse.getReports() : Collections.EMPTY_LIST;
             reportCommand.setRepors(reports);
         }
         return reportCommand;
@@ -34,7 +34,7 @@ public class ReportController extends SimpleFormController {
                                     HttpServletResponse response, Object command, BindException errors)
             throws Exception {
     	ReportCommand reportCommand1 = (ReportCommand) command;
-        ReportDto selectedReport = reportCommand1.getReport();
+        ReportSubscriptionDto selectedReport = reportCommand1.getReport();
         String reportLocation = selectedReport.getReportUrl();
         if (request.getParameterMap().containsKey("open_btn")) {
             StringBuilder reportViewerLink = new StringBuilder();
@@ -51,7 +51,7 @@ public class ReportController extends SimpleFormController {
             return new ModelAndView(getSuccessView(), "reportCommand", reportCommand);
         } else if (request.getParameterMap().containsKey("add_btn")) {
             ReportCommand reportCommand = new ReportCommand();
-            reportCommand.setReport(new ReportDto());
+            reportCommand.setReport(new ReportSubscriptionDto());
             return new ModelAndView(getSuccessView(), "reportCommand", reportCommand);
         }
         return null;

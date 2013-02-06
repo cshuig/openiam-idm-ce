@@ -1,12 +1,12 @@
 package org.openiam.selfsrvc.reports;
 
-import org.openiam.idm.srvc.report.dto.ReportDto;
+import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.springframework.web.multipart.MultipartFile;
 
 public class SubscribeReportsCommand {
     private MultipartFile dataSourceScriptFile;
     private MultipartFile reportDesignFile;
-    private ReportDto report = new ReportDto();
+    private ReportSubscriptionDto report = new ReportSubscriptionDto();
 
     public MultipartFile getDataSourceScriptFile() {
         return dataSourceScriptFile;
@@ -24,11 +24,11 @@ public class SubscribeReportsCommand {
         this.reportDesignFile = reportDesignFile;
     }
 
-    public ReportDto getReport() {
+    public ReportSubscriptionDto getReport() {
         return report;
     }
 
-    public void setReport(ReportDto report) {
+    public void setReport(ReportSubscriptionDto report) {
         this.report = report;
     }
 }
