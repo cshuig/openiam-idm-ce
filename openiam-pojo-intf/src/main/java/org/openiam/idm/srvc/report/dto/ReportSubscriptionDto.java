@@ -1,7 +1,7 @@
 package org.openiam.idm.srvc.report.dto;
 
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
+import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,38 +16,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ReportSubscriptionDto", propOrder = {
         "reportId",
         "reportName",
-        "deliveryMethod",
-        "deliveryFormat",
-        "deliveryAudience",
-        "status",
-        "userId"
+        "reportDataSource",
+        "reportUrl"
 })
-@DozerDTOCorrespondence(ReportSubscriptionEntity.class)
+@DozerDTOCorrespondence(ReportInfoEntity.class)
 public class ReportSubscriptionDto {
-    public String getDeliveryAudience() {
-		return deliveryAudience;
-	}
-
-	public void setDeliveryAudience(String deliveryAudience) {
-		this.deliveryAudience = deliveryAudience;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	private String reportId;
+    private String reportId;
     private String reportName;
-    private String deliveryMethod;
-    private String deliveryFormat;
-    private String deliveryAudience;
-    private String status;
-    private String userId;
-    
+    private String reportDataSource;
+    private String reportUrl;
 
     public ReportSubscriptionDto() {
     }
@@ -68,20 +45,20 @@ public class ReportSubscriptionDto {
         this.reportId = reportId;
     }
 
-    public String getDeliveryMethod() {
-        return deliveryMethod;
+    public String getReportDataSource() {
+        return reportDataSource;
     }
 
-    public void setDeliveryMethod(String deliveryMethod) {
-        this.deliveryMethod = deliveryMethod;
+    public void setReportDataSource(String reportDataSource) {
+        this.reportDataSource = reportDataSource;
     }
 
-    public String getDeliveryFormat() {
-        return deliveryFormat;
+    public String getReportUrl() {
+        return reportUrl;
     }
 
-    public void setDeliveryFormat(String deliveryFormat) {
-        this.deliveryFormat = deliveryFormat;
+    public void setReportUrl(String reportUrl) {
+        this.reportUrl = reportUrl;
     }
 
     @Override
@@ -91,11 +68,11 @@ public class ReportSubscriptionDto {
 
         ReportSubscriptionDto reportDto = (ReportSubscriptionDto) o;
 
-        if (deliveryMethod != null ? !deliveryMethod.equals(reportDto.deliveryMethod) : reportDto.deliveryMethod != null)
+        if (reportDataSource != null ? !reportDataSource.equals(reportDto.reportDataSource) : reportDto.reportDataSource != null)
             return false;
         if (reportId != null ? !reportId.equals(reportDto.reportId) : reportDto.reportId != null) return false;
         if (reportName != null ? !reportName.equals(reportDto.reportName) : reportDto.reportName != null) return false;
-        if (deliveryFormat != null ? !deliveryFormat.equals(reportDto.deliveryFormat) : reportDto.deliveryFormat != null) return false;
+        if (reportUrl != null ? !reportUrl.equals(reportDto.reportUrl) : reportDto.reportUrl != null) return false;
 
         return true;
     }
@@ -104,25 +81,19 @@ public class ReportSubscriptionDto {
     public int hashCode() {
         int result = reportId != null ? reportId.hashCode() : 0;
         result = 31 * result + (reportName != null ? reportName.hashCode() : 0);
-        result = 31 * result + (deliveryMethod != null ? deliveryMethod.hashCode() : 0);
-        result = 31 * result + (deliveryFormat != null ? deliveryFormat.hashCode() : 0);
+        result = 31 * result + (reportDataSource != null ? reportDataSource.hashCode() : 0);
+        result = 31 * result + (reportUrl != null ? reportUrl.hashCode() : 0);
         return result;
     }
 
     @Override
-	public String toString() {
-		return "ReportSubscriptionDto [reportId=" + reportId + ", reportName="
-				+ reportName + ", deliveryMethod=" + deliveryMethod
-				+ ", deliveryFormat=" + deliveryFormat + ", deliveryAudience="
-				+ deliveryAudience + ", status=" + status + "]";
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String toString() {
+        return "ReportDto{" +
+                "reportId='" + reportId + '\'' +
+                ", reportName='" + reportName + '\'' +
+                ", reportDataSource='" + reportDataSource + '\'' +
+                ", reportUrl='" + reportUrl + '\'' +
+                '}';
+    }
 }
 
