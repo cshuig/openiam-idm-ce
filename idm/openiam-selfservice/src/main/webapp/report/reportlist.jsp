@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%--@elvariable id="reports" type="java.util.List<org.openiam.core.dto.reports.ReportDto>"--%>
-<%--@elvariable id="reportListCommand" type="org.openiam.webadmin.reports.ReportListCommand"--%>
+<%--@elvariable id="reportCommand" type="org.openiam.webadmin.reports.ReportListCommand"--%>
 
 <!-- OpenIAM Legacy style sheets -->
 
@@ -37,7 +37,7 @@
         </td>
     <tr>
         <td>
-            <form:form id="reportListForm" commandName="reportListCommand">
+            <form:form id="reportListForm" commandName="reportCommand">
                 <input id="selectedReportId" type="hidden" name="report.reportId" value="" />
                 <input id="selectedReportName" type="hidden" name="report.reportName" value="" />
                 <input id="selectedReportDataSource" type="hidden" name="report.reportDataSource" value="" />
@@ -56,8 +56,8 @@
                                         <th>Actions</th>
                                     </tr>
                                     <c:choose>
-                                    <c:when test="${reportListCommand.reports!=null}">
-                                        <c:forEach var="item" items="${reportListCommand.reports}">
+                                    <c:when test="${reportCommand.reports!=null}">
+                                        <c:forEach var="item" items="${reportCommand.reports}">
                                         <tr>
                                             <td>${item.reportName}</td>
                                             <td>${item.reportDataSource}</td>

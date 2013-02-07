@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
+<%--@elvariable id="subscribeReportsCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
 <script type="text/javascript">
@@ -30,20 +30,20 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading"><c:choose><c:when test="${reportCommand.report.reportName!=null}">Edit Report ${reportCommand.report.reportName}</c:when><c:otherwise>New Report</c:otherwise></c:choose></h2>
+                        <h2 class="contentheading"><c:choose><c:when test="${subscribeReportsCommand.report.reportName!=null}">Edit Report ${subscribeReportsCommand.report.reportName}</c:when><c:otherwise>New Report</c:otherwise></c:choose></h2>
                     </td>
                 </tr>
             </table>
         </td>
     <tr>
         <td>
-            <form:form method="POST" id="reportCommand" action="subscribeReport.selfserve" commandName="reportCommand" enctype="multipart/form-data">
-                <input type="hidden" name="report.reportId" value="${reportCommand.report.reportId}" />
-                <c:if test="${reportCommand.report.reportName!=null}">
-                    <input type="hidden" name="report.reportName" value="${reportCommand.report.reportName}" />
+            <form:form method="POST" id="subscribeReportsCommand" action="subscribeReport.selfserve" commandName="subscribeReportsCommand" enctype="multipart/form-data">
+                <input type="hidden" name="report.reportId" value="${subscribeReportsCommand.report.reportId}" />
+                <c:if test="${subscribeReportsCommand.report.reportName!=null}">
+                    <input type="hidden" name="report.reportName" value="${subscribeReportsCommand.report.reportName}" />
                 </c:if>
-                <input type="hidden" name="report.reportDataSource" value="${reportCommand.report.reportDataSource}" />
-                <input type="hidden" name="report.reportUrl" value="${reportCommand.report.reportUrl}" />
+                <input type="hidden" name="report.reportDataSource" value="${subscribeReportsCommand.report.reportDataSource}" />
+                <input type="hidden" name="report.reportUrl" value="${subscribeReportsCommand.report.reportUrl}" />
                 <table width="650pt" class="bodyTable" height="100%">
                     <tr>
                         <td>
@@ -51,7 +51,7 @@
                                 <legend>Report settings</legend>
 
                                 <table class="fieldsetTable" width="100%" height="200pt">
-                                    <c:if test="${reportCommand.report.reportName==null}">
+                                    <c:if test="${subscribeReportsCommand.report.reportName==null}">
                                        <tr valign="top">
                                         <td class="tddark" width="200pt">
                                             <label class="control-label" for="reportName">
@@ -61,7 +61,7 @@
                                         <td class="msg">
                                             <input type="text" id="reportName"
                                                    name="report.reportName"
-                                                   value="${reportCommand.report.reportName}"/>
+                                                   value="${subscribeReportsCommand.report.reportName}"/>
                                         </td>
                                     </tr>
                                     </c:if>
@@ -73,10 +73,10 @@
                                         </td>
                                         <td class="msg">
                                             <input type="text" id="fakeReportDataSourceFileInput" readonly="true"
-                                                   value="${reportCommand.report.reportDataSource}"/>
+                                                   value="${subscribeReportsCommand.report.reportDataSource}"/>
                                             <input type="button" value="Select" style="font-size:0.8em" onclick="selectDataSourceFile();"/>
                                             <input id="sourceFileInpId" type="file" style="display:none"
-                                                   name="dataSourceScriptFile" value="${reportCommand.report.reportDataSource}">
+                                                   name="dataSourceScriptFile" value="${subscribeReportsCommand.report.reportDataSource}">
                                         </td>
                                     </tr>
                                     <tr>
@@ -87,11 +87,11 @@
                                         </td>
                                         <td class="msg">
                                             <input type="text" id="fakeReportDesignFileInput" readonly="true"
-                                                   value="${reportCommand.report.reportUrl}"/>
+                                                   value="${subscribeReportsCommand.report.reportUrl}"/>
                                             <input type="button" value="Select" style="font-size:0.8em" onclick="selectDesignFile();"/>
                                             <input id="designFileInpId" type="file" style="display:none"
                                                    name="reportDesignFile"
-                                                   value="${reportCommand.report.reportUrl}">
+                                                   value="${subscribeReportsCommand.report.reportUrl}">
                                         </td>
                                     </tr>
                                     <tr>
