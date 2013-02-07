@@ -8,7 +8,7 @@
     					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
     					http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 	<bean id="subscribeReportController" class="org.openiam.selfsrvc.reports.SubscribeReportsController">
 		<property name="commandName" value="subscribeReportsCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.SubscribeReportsCommand" />
@@ -482,7 +482,7 @@
 		<property name="orgManager" ref="orgServiceClient" />
         <property name="workflowUrl">
             <map>
-                <entry key="260" value="http://{SELFSERVICE_EXT_BASE_URL}/{SELFSERVICE_EXT_CONTEXT}/newHire.selfserve" />
+                <entry key="260" value="{SELFSERVICE_EXT_CONTEXT}/priv/newhire/edit.jsp?tk={token}" />
                 <entry key="261" value="changeUserStatus.selfserve" />
                 <entry key="262" value="changeRoleAccess.selfserve" />
                 <entry key="263" value="reOrgUserAccess.selfserve" />
@@ -490,8 +490,9 @@
                 <entry key="265" value="changeGroupAccess.selfserve" />
             </map>
         </property>
-
      </bean>
+
+
      <bean id="changeAccessValidator" class="org.openiam.selfsrvc.prov.ChangeAccessValidator">
      	<property name="userMgr" ref="userServiceClient" />
      	<property name="loginManager" ref="loginServiceClient" />
