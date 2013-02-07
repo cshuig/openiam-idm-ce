@@ -8,7 +8,7 @@
     					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
     					http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 	<bean id="subscribeReportController" class="org.openiam.selfsrvc.reports.SubscribeReportsController">
 		<property name="commandName" value="subscribeReportsCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.SubscribeReportsCommand" />
