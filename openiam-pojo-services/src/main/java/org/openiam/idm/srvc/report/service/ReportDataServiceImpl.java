@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.openiam.idm.srvc.report.domain.ReportCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
+import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.exception.ScriptEngineException;
 import org.openiam.idm.srvc.report.domain.ReportParamTypeEntity;
 import org.openiam.idm.srvc.report.dto.ReportDataDto;
@@ -24,11 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ReportDataServiceImpl implements ReportDataService {
-
+ 
     private static final String scriptEngine = "org.openiam.script.GroovyScriptEngineIntegration";
 
     @Autowired
     private ReportInfoDao reportDao;
+    @Autowired
+    private ReportSubscriptionDao reportSubscriptionDao;
     @Autowired
     private ReportCriteriaParamDao criteriaParamDao;
     @Autowired
@@ -86,4 +89,20 @@ public class ReportDataServiceImpl implements ReportDataService {
     public List<ReportParamTypeEntity> getReportParameterTypes() {
         return reportParamTypeDao.findAll();
     }
+    
+    @Override
+    @Transactional
+    public void createOrUpdateSubscribedReportInfo(final String reportName, final String reportDataSource, final String reportUrl) {
+    	reportSubscriptionDao.createOrUpdateSubscribedReportInfo(reportName, reportDataSource, reportUrl);
+        /*List<ReportCriteriaParamEntity> paramEntitiesSrc = criteriaParamDao.findByReportInfoName(reportName);
+        for(ReportCriteriaParamEntity paramEntity : paramEntitiesSrc) {
+            criteriaParamDao.delete(paramEntity);
+        }*/
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReportSubscriptionEntity> getAllSubscribedReports() {
+        return reportSubscriptionDao.findAll();
+    }    
 }
