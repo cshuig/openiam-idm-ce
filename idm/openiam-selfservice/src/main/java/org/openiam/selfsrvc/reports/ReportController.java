@@ -1,12 +1,17 @@
 package org.openiam.selfsrvc.reports;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
 import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
+import org.openiam.idm.srvc.report.ws.GetAllReportsResponse;
 import org.openiam.idm.srvc.report.ws.GetAllSubscribedReportsResponse;
 import org.openiam.idm.srvc.report.ws.GetReportInfoResponse;
 import org.openiam.idm.srvc.report.ws.WebReportService;
@@ -69,4 +74,41 @@ public class ReportController extends SimpleFormController {
     public void setReportService(WebReportService reportService) {
         this.reportService = reportService;
     }
+    
+	protected Map referenceData(HttpServletRequest request) throws Exception {
+
+		Map referenceData = new HashMap();
+
+		Map<String, String> deliveryMethod = new LinkedHashMap<String, String>();
+		deliveryMethod.put("EMAIL", "Email");
+		deliveryMethod.put("VIEW", "View in SelfService");
+		referenceData.put("deliveryMethodList", deliveryMethod);
+		Map<String, String> deliveryFormat = new LinkedHashMap<String, String>();
+		deliveryFormat.put("HTML", "Html");
+		deliveryFormat.put("PDF", "Pdf");
+		referenceData.put("deliveryFormatList", deliveryFormat);
+		Map<String, String> deliveryAudience = new LinkedHashMap<String, String>();
+		deliveryAudience.put("ROLE", "Role");
+		deliveryAudience.put("DEPT", "Department");
+		deliveryAudience.put("ORGANIZATION", "Organization");
+		deliveryAudience.put("DIVISION", "Division");
+		deliveryAudience.put("GROUP", "Group");
+		referenceData.put("deliveryAudienceList", deliveryAudience);
+		Map<String, String> status = new LinkedHashMap<String, String>();
+		status.put("ACTIVE", "Active");
+		status.put("DISABLED", "Disabled");
+		referenceData.put("statusList", status);
+		Map<String, String> reports = new LinkedHashMap<String, String>();
+		GetAllReportsResponse allReportsResponse = reportService.getReports();
+		List<ReportInfoDto> reportsList = (allReportsResponse != null && allReportsResponse
+				.getReports() != null) ? allReportsResponse.getReports()
+				: Collections.EMPTY_LIST;
+		for (ReportInfoDto reportSubscriptionDto : reportsList) {
+			reports.put(reportSubscriptionDto.getReportName(),
+					reportSubscriptionDto.getReportName());
+		}
+		referenceData.put("reportsList", reports);
+		return referenceData;
+	}
+    
 }
