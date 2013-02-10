@@ -10,7 +10,7 @@
 
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 	<bean id="subscribeReportController" class="org.openiam.selfsrvc.reports.SubscribeReportsController">
-		<property name="commandName" value="reportCommand" />
+		<property name="commandName" value="subscribeReportsCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.SubscribeReportsCommand" />
 		<property name="formView" value="/report/subscribereport" />
 		<property name="successView" value="report/reportlist" />
@@ -20,14 +20,14 @@
 		<property name="commandName" value="reportCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.ReportCommand" />
 		<property name="formView" value="/report/reportlist" />
-		<property name="successView" value="/report/subscribereport" />
+		<property name="successView" value="report/subscribereport" />
         <property name="reportService" ref="reportServiceClient" />
      </bean>
-<bean id="viewReportController" class="org.openiam.selfsrvc.reports.ViewReportController">
+<bean id="viewReportController" class="org.openiam.selfsrvc.reports.ReportController">
 		<property name="commandName" value="reportCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.ReportCommand" />
 		<property name="formView" value="/report/viewReports" />
-		<property name="successView" value="report/viewReports" />
+		<property name="successView" value="report/subscribereport" />
         <property name="reportService" ref="reportServiceClient" />
      </bean>
      <!--  Native Spring MVC Controller  -->
@@ -863,10 +863,10 @@
                 <prop key="/changeRoleAccess.selfserve">startChangeRoleAccess</prop>
                 <prop key="/changeGroupAccess.selfserve">startChangeGroupAccess</prop>
                 <prop key="/changeResourceAccess.selfserve">startChangeResourceAccess</prop>
-				<prop key="/subscribeReportOld.selfserve">subscribeReportController</prop> 
+				<!-- prop key="/subscribeReport.selfserve">subscribeReportController</prop> -->
 				<prop key="/subscribeReport.selfserve">reportController</prop>
-				<prop key="/reportList.selfserve">viewReportController</prop>
-				<!-- prop key="/viewReport.selfserve">viewReportController</prop> -->
+				<prop key="/reportList.selfserve">reportController</prop>
+				<prop key="/viewReport.selfserve">viewReportController</prop>
                 <prop key="/myexample.selfserve">myexample</prop>
                 
             </props>
