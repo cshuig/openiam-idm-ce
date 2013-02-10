@@ -4,26 +4,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%--@elvariable id="subscribeReportsCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
+<%--@elvariable id="reportParameters" type="java.util.List<org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto>"--%>
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
-<script type="text/javascript">
-    $(function() {
-        $('#sourceFileInpId').change(function(e) {
-            $('#fakeReportDataSourceFileInput').val($(this).val());
-        });
-        $('#designFileInpId').change(function(e) {
-            $('#fakeReportDesignFileInput').val($(this).val());
-        });
-    });
-    var selectDataSourceFile = function() {
-        $('#sourceFileInpId').click();
-        return false;
-    };
-    var selectDesignFile = function() {
-        $('#designFileInpId').click();
-        return false;
-    };
-</script>
 <table width="800pt">
     <tr>
         <td>
@@ -42,8 +25,10 @@
                 <c:if test="${subscribeReportsCommand.report.reportName!=null}">
                     <input type="hidden" name="report.reportName" value="${subscribeReportsCommand.report.reportName}" />
                 </c:if>
-                <input type="hidden" name="report.reportDataSource" value="${subscribeReportsCommand.report.reportDataSource}" />
-                <input type="hidden" name="report.reportUrl" value="${subscribeReportsCommand.report.reportUrl}" />
+                <input type="hidden" name="report.deliveryMethod" value="${subscribeReportsCommand.report.deliveryMethod}" />
+                <input type="hidden" name="report.deliveryFormat" value="${subscribeReportsCommand.report.deliveryFormat}" />
+                <input type="hidden" name="report.deliveryAudience" value="${subscribeReportsCommand.report.deliveryAudience}" />
+                <input type="hidden" name="report.status" value="${subscribeReportsCommand.report.status}" />
                 <table width="650pt" class="bodyTable" height="100%">
                     <tr>
                         <td>
@@ -52,48 +37,80 @@
 
                                 <table class="fieldsetTable" width="100%" height="200pt">
                                     <c:if test="${subscribeReportsCommand.report.reportName==null}">
-                                       <tr valign="top">
+                                       <tr>
                                         <td class="tddark" width="200pt">
-                                            <label class="control-label" for="reportName">
-                                                Please enter report name
+                                            <label class="control-label" for="designFileInpId">
+                                               Report Name
                                             </label>
-                                        </td>
-                                        <td class="msg">
-                                            <input type="text" id="reportName"
-                                                   name="report.reportName"
-                                                   value="${subscribeReportsCommand.report.reportName}"/>
-                                        </td>
-                                    </tr>
+                                        </td><td> 
+									<form:select path="report.reportName" items="${reportsList}" /></td></tr>
+									
                                     </c:if>
-                                    <tr valign="top">
-                                        <td class="tddark" width="200pt">
-                                            <label class="control-label" for="sourceFileInpId">
-                                                Please upload report datasource script:
-                                            </label>
-                                        </td>
-                                        <td class="msg">
-                                            <input type="text" id="fakeReportDataSourceFileInput" readonly="true"
-                                                   value="${subscribeReportsCommand.report.reportDataSource}"/>
-                                            <input type="button" value="Select" style="font-size:0.8em" onclick="selectDataSourceFile();"/>
-                                            <input id="sourceFileInpId" type="file" style="display:none"
-                                                   name="dataSourceScriptFile" value="${subscribeReportsCommand.report.reportDataSource}">
-                                        </td>
-                                    </tr>
                                     <tr>
                                         <td class="tddark" width="200pt">
                                             <label class="control-label" for="designFileInpId">
-                                                Please upload report design file:
+                                               Delivery Method
                                             </label>
-                                        </td>
-                                        <td class="msg">
-                                            <input type="text" id="fakeReportDesignFileInput" readonly="true"
-                                                   value="${subscribeReportsCommand.report.reportUrl}"/>
-                                            <input type="button" value="Select" style="font-size:0.8em" onclick="selectDesignFile();"/>
-                                            <input id="designFileInpId" type="file" style="display:none"
-                                                   name="reportDesignFile"
-                                                   value="${subscribeReportsCommand.report.reportUrl}">
-                                        </td>
+                                        </td><td> 
+									<form:select path="report.deliveryMethod" items="${deliveryMethodList}" /></td></tr>
+									<tr>
+                                        <td class="tddark" width="200pt">
+                                            <label class="control-label" for="designFileInpId">
+                                               Delivery Format
+                                            </label>
+                                        </td><td> 
+									<form:select path="report.deliveryFormat" items="${deliveryFormatList}" /></td></tr>
+									<tr>
+                                        <td class="tddark" width="200pt">
+                                            <label class="control-label" for="designFileInpId">
+                                               Delivery Audience
+                                            </label>
+                                        </td><td> 
+									<form:select path="report.deliveryAudience" items="${deliveryAudienceList}" /></td></tr>
+									<tr>
+                                        <td class="tddark" width="200pt">
+                                            <label class="control-label" for="designFileInpId">
+                                               Status
+                                            </label>
+                                        </td><td> 
+									<form:select path="report.status" items="${statusList}" /></td></tr>
+
+                                            <c:choose>
+                                            <c:when test="${not empty reportParameters}">
+                                                                                <tr><td colspan="2">Parameters</td></tr>
+                                    <tr>
+                                    <td colspan="2">
+                                     <table id="paramTable">
+                                            <c:forEach items="${reportParameters}" var="rep" varStatus="status">
+                                            <tr>
+                                                <td>
+                                                    <span>Name: </span>
+                                                    <input type="text"
+                                                           name="paramName"
+                                                           value="${rep.name}"/>
+                                                </td>
+                                                <td>
+                                                    <span>Type: </span>
+                                                    <input type="text"
+                                                           name="paramName"
+                                                           value="${rep.typeId}"/>
+                                                    
+                                                </td>
+                                                <td>
+                                                    <span>Value: </span>
+                                                    <input type="text"
+                                                           name="paramName"
+                                                           value="${rep.value}"/>
+                                                </td>
+                                            </tr>
+                                            </c:forEach>
+                                            </table>
+                                    </td>
                                     </tr>
+                                            </c:when>
+                                            
+                                            </c:choose>
+                                       
                                     <tr>
                                         <td colspan="2" align="right">
                                             <input type="submit" name="cancel" value="Cancel">

@@ -24,11 +24,14 @@ public class ReportSubscriptionEntity {
     @Column(name = "REPORT_NAME")
     private String reportName;
 
-    @Column(name = "DATASOURCE_FILE_PATH")
-    private String datasourceFilePath;
-
-    @Column(name = "REPORT_FILE_PATH")
-    private String reportFilePath;
+    @Column(name = "DELIVERY_METHOD")
+    private String deliveryMethod;
+    @Column(name = "DELIVERY_FORMAT")
+    private String deliveryFormat;
+    @Column(name = "DELIVERY_AUDIENCE")
+    private String deliveryAudience;
+    @Column(name = "STATUS")
+    private String status;
 
     public ReportSubscriptionEntity() {
     }
@@ -49,29 +52,44 @@ public class ReportSubscriptionEntity {
         this.reportName = reportName;
     }
 
-    public String getDatasourceFilePath() {
-        return datasourceFilePath;
-    }
-
-    public void setDatasourceFilePath(String datasourceFilePath) {
-        this.datasourceFilePath = datasourceFilePath;
-    }
-
-    public String getReportFilePath() {
-        return reportFilePath;
-    }
-
-    public void setReportFilePath(String reportFilePath) {
-        this.reportFilePath = reportFilePath;
-    }
 
     @Override
-    public String toString() {
-        return "ReportInfo{" +
-                "id='" + id + '\'' +
-                ", reportName='" + reportName + '\'' +
-                ", datasourceFilePath='" + datasourceFilePath + '\'' +
-                ", reportFilePath='" + reportFilePath + '\'' +
-                '}';
-    }
+	public String toString() {
+		return "ReportSubscriptionEntity [id=" + id + ", reportName="
+				+ reportName + ", deliveryMethod=" + deliveryMethod
+				+ ", deliveryFormat=" + deliveryFormat + ", deliveryAudience="
+				+ deliveryAudience + ", status=" + status + "]";
+	}
+
+	public String getDeliveryMethod() {
+		return deliveryMethod;
+	}
+
+	public void setDeliveryMethod(String deliveryMethod) {
+		this.deliveryMethod = deliveryMethod;
+	}
+
+	public String getDeliveryFormat() {
+		return deliveryFormat;
+	}
+
+	public void setDeliveryFormat(String deliveryFormat) {
+		this.deliveryFormat = deliveryFormat;
+	}
+
+	public String getDeliveryAudience() {
+		return deliveryAudience;
+	}
+
+	public void setDeliveryAudience(String deliveryAudience) {
+		this.deliveryAudience = deliveryAudience;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }
