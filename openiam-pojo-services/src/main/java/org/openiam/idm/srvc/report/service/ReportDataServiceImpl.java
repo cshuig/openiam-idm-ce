@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openiam.idm.srvc.report.domain.ReportCriteriaParamEntity;
+import org.openiam.idm.srvc.report.domain.ReportSubCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.exception.ScriptEngineException;
@@ -34,6 +35,8 @@ public class ReportDataServiceImpl implements ReportDataService {
     private ReportSubscriptionDao reportSubscriptionDao;
     @Autowired
     private ReportCriteriaParamDao criteriaParamDao;
+    @Autowired
+    private ReportSubCriteriaParamDao subCriteriaParamDao;
     @Autowired
     private ReportParamTypeDao reportParamTypeDao;
     @Override
@@ -92,12 +95,12 @@ public class ReportDataServiceImpl implements ReportDataService {
     
     @Override
     @Transactional
-    public void createOrUpdateSubscribedReportInfo(final String reportName, final String reportDataSource, final String reportUrl) {
-    	reportSubscriptionDao.createOrUpdateSubscribedReportInfo(reportName, reportDataSource, reportUrl);
-        /*List<ReportCriteriaParamEntity> paramEntitiesSrc = criteriaParamDao.findByReportInfoName(reportName);
-        for(ReportCriteriaParamEntity paramEntity : paramEntitiesSrc) {
-            criteriaParamDao.delete(paramEntity);
-        }*/
+    public void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity, List<ReportSubCriteriaParamEntity> prameters){
+    	reportSubscriptionDao.createOrUpdateSubscribedReportInfo(reportSubscriptionEntity);
+        List<ReportSubCriteriaParamEntity> paramEntitiesSrc = subCriteriaParamDao.findByReportInfoName(reportSubscriptionEntity.getReportName());
+        for(ReportSubCriteriaParamEntity paramEntity : paramEntitiesSrc) {
+        	subCriteriaParamDao.delete(paramEntity);
+        }
     }
     
     @Override
