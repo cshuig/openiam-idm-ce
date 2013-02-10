@@ -9,7 +9,7 @@ import org.openiam.idm.srvc.report.dto.ReportInfoDto;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "reports"
+        "report"
 })
 public class GetReportInfoResponse extends Response {
 
