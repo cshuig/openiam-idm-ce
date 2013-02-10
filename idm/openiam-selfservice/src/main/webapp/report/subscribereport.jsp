@@ -13,7 +13,7 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading"><c:choose><c:when test="${subscribeReportsCommand.report.reportName!=null}">Edit BIRT Report ${subscribeReportsCommand.report.reportName} Subscription</c:when><c:otherwise>BIRT Report Subscription</c:otherwise></c:choose></h2>
+                        <h2 class="contentheading"><c:choose><c:when test="${subscribeReportsCommand.report.reportName!=null}">Edit Subscription for BIRT Report ${subscribeReportsCommand.report.reportName}</c:when><c:otherwise>BIRT Report Subscription</c:otherwise></c:choose></h2>
                     </td>
                 </tr>
             </table>
