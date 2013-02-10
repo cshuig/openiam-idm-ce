@@ -11,11 +11,9 @@
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
 <script type="text/javascript">
-    var selectReport = function(reportId, reportName, reportDataSource, reportUrl, actionName) {
+    var selectReport = function(reportId, reportName, actionName) {
         $('#selectedReportId').val(reportId);
         $('#selectedReportName').val(reportName);
-        $('#selectedReportDataSource').val(reportDataSource);
-        $('#selectedReportUrl').val(reportUrl);
         if(actionName == 'open') {
           $('#reportListForm').attr('target','_blank');
         } else {
@@ -40,8 +38,6 @@
             <form:form id="reportListForm" commandName="reportCommand">
                 <input id="selectedReportId" type="hidden" name="report.reportId" value="" />
                 <input id="selectedReportName" type="hidden" name="report.reportName" value="" />
-                <input id="selectedReportDataSource" type="hidden" name="report.reportDataSource" value="" />
-                <input id="selectedReportUrl" type="hidden" name="report.reportUrl" value="" />
 
                 <table width="800pt" class="bodyTable" height="100%">
                     <tr>
@@ -58,9 +54,7 @@
                                         <tr>
                                             <td>${item.reportName}</td>
                                             <td>
-                                                <c:if test="${item.reportUrl != ''}">
-                                                    <input type="submit" name="open_btn" value="Open" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.reportDataSource}','${item.reportUrl}','open');">
-                                                </c:if>
+                                                    <input type="submit" name="open_btn" value="Open" onclick="return selectReport('${item.reportId}','${item.reportName}','open');">
                                             </td>
                                         </tr>
                                     </c:forEach>
