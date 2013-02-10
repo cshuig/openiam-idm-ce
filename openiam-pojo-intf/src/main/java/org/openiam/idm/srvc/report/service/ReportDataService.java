@@ -24,8 +24,10 @@ public interface ReportDataService {
     List<ReportSubscriptionEntity> getAllSubscribedReports();
     ReportInfoEntity getReportByName(String name);
     void createOrUpdateReportInfo(String reportName, String reportDataSource, String reportUrl);
-    void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity, List<ReportSubCriteriaParamEntity> prameters);
+    void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity);
     List<ReportCriteriaParamEntity> getReportParametersByReportId(String reportId);
+    List<ReportCriteriaParamEntity> getReportParametersByReportName(String reportName);    
     void updateReportParametersByReportName(String reportName, List<ReportCriteriaParamEntity> prameters);
+    void updateSubReportParametersByReportName(String reportName, List<ReportSubCriteriaParamEntity> prameters);
     List<ReportParamTypeEntity> getReportParameterTypes();
 }

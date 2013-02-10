@@ -80,13 +80,26 @@ public class ReportDataServiceImpl implements ReportDataService {
     public void updateReportParametersByReportName(final String reportName, final List<ReportCriteriaParamEntity> parameters) {
         criteriaParamDao.save(parameters);
     }
+    
+    @Override
+    @Transactional
+    public void updateSubReportParametersByReportName(final String reportName, final List<ReportSubCriteriaParamEntity> parameters) {
+    	subCriteriaParamDao.save(parameters);
+    }
+
 
     @Override
     @Transactional
     public List<ReportCriteriaParamEntity> getReportParametersByReportId(String reportId) {
         return criteriaParamDao.findByReportInfoId(reportId);
     }
-
+    
+    @Override
+    @Transactional
+    public List<ReportCriteriaParamEntity> getReportParametersByReportName(String reportName) {
+        return criteriaParamDao.findByReportInfoName(reportName);
+    }
+    
     @Override
     @Transactional
     public List<ReportParamTypeEntity> getReportParameterTypes() {
@@ -95,7 +108,7 @@ public class ReportDataServiceImpl implements ReportDataService {
     
     @Override
     @Transactional
-    public void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity, List<ReportSubCriteriaParamEntity> prameters){
+    public void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity){
     	reportSubscriptionDao.createOrUpdateSubscribedReportInfo(reportSubscriptionEntity);
         List<ReportSubCriteriaParamEntity> paramEntitiesSrc = subCriteriaParamDao.findByReportInfoName(reportSubscriptionEntity.getReportName());
         for(ReportSubCriteriaParamEntity paramEntity : paramEntitiesSrc) {

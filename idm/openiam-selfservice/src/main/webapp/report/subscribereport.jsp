@@ -13,7 +13,7 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading"><c:choose><c:when test="${subscribeReportsCommand.report.reportName!=null}">Edit Report ${subscribeReportsCommand.report.reportName}</c:when><c:otherwise>New Report</c:otherwise></c:choose></h2>
+                        <h2 class="contentheading"><c:choose><c:when test="${subscribeReportsCommand.report.reportName!=null}">Edit BIRT Report ${subscribeReportsCommand.report.reportName} Subscription</c:when><c:otherwise>BIRT Report Subscription</c:otherwise></c:choose></h2>
                     </td>
                 </tr>
             </table>
@@ -33,7 +33,6 @@
                     <tr>
                         <td>
                             <fieldset class="userformSearch">
-                                <legend>Report settings</legend>
 
                                 <table class="fieldsetTable" width="100%" height="200pt">
                                     <c:if test="${subscribeReportsCommand.report.reportName==null}">
@@ -43,7 +42,7 @@
                                                Report Name
                                             </label>
                                         </td><td> 
-									<form:select path="report.reportName" items="${reportsList}" /></td></tr>
+									<form:select path="report.reportName" items="${reportsList}" onchange="submit()"/></td></tr>
 									
                                     </c:if>
                                     <tr>

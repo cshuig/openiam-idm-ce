@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.cxf.common.util.StringUtils;
+import org.openiam.idm.srvc.report.dto.ReportCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
@@ -53,6 +54,13 @@ public class SubscribeReportsController extends SimpleFormController {
 				}
 				reportService.createOrUpdateSubscribedReportInfo(
 						reportCommand.getReport(), params);
+			}
+		}else{
+			if (!StringUtils.isEmpty(reportCommand.getReport().getReportName())) {
+				 ModelAndView modelAndView = new ModelAndView(getSuccessView(), "reportCommand", reportCommand);
+		            List<ReportCriteriaParamDto> paramDtos = reportService.getReportParametersByReportName(reportCommand.getReport().getReportName()).getParameters();
+		            modelAndView.addObject("reportParameters", paramDtos);
+		            return modelAndView;
 			}
 		}
 		return new ModelAndView(new RedirectView("reportList.selfserve", true));

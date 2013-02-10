@@ -12,6 +12,7 @@ import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.dozer.converter.ReportCriteriaParamDozerConverter;
+import org.openiam.dozer.converter.ReportSubCriteriaParamDozerConverter;
 import org.openiam.dozer.converter.ReportInfoDozerConverter;
 import org.openiam.dozer.converter.ReportSubscriptionDozerConverter;
 import org.openiam.dozer.converter.ReportParamTypeDozerConverter;
@@ -46,6 +47,8 @@ public class WebReportServiceImpl implements WebReportService {
     private ReportSubscriptionDozerConverter reportSubscriptionDozerConverter;
     @Autowired
     private ReportCriteriaParamDozerConverter criteriaParamDozerConverter;
+    @Autowired
+    private ReportSubCriteriaParamDozerConverter criteriaSubParamDozerConverter;
     @Autowired
     private ReportParamTypeDozerConverter paramTypeDozerConverter;
     @Autowired
@@ -127,6 +130,42 @@ public class WebReportServiceImpl implements WebReportService {
     }
 
     @Override
+    public GetReportParametersResponse getReportParametersByReportName(@WebParam(name = "reportName", targetNamespace = "") String reportName) {
+        GetReportParametersResponse response = new GetReportParametersResponse();
+        if (!StringUtils.isEmpty(reportName)) {
+            List<ReportCriteriaParamEntity> params = reportDataService.getReportParametersByReportName(reportName);
+            List<ReportCriteriaParamDto> paramsDtos = new LinkedList<ReportCriteriaParamDto>();
+            if(params != null) {
+               paramsDtos = criteriaParamDozerConverter.convertToDTOList(params, false);
+            }
+            response.setParameters(paramsDtos);
+            response.setStatus(ResponseStatus.SUCCESS);
+        } else {
+            response.setErrorCode(ResponseCode.INVALID_ARGUMENTS);
+            response.setErrorText("Invalid parameter list: reportName=" + reportName);
+            response.setStatus(ResponseStatus.FAILURE);
+        }
+        return response;
+    }
+
+    @Override
+    public GetReportInfoResponse getReportByName(@WebParam(name = "reportName", targetNamespace = "") String reportName) {
+    	GetReportInfoResponse response = new GetReportInfoResponse();
+        if (!StringUtils.isEmpty(reportName)) {
+            ReportInfoEntity reportInfoEntity = reportDataService.getReportByName(reportName);
+            ReportInfoDto reportInfoDto = reportInfoDozerConverter.convertToDTO(reportInfoEntity, false);
+            response.setReport(reportInfoDto);
+            response.setStatus(ResponseStatus.SUCCESS);
+        } else {
+            response.setErrorCode(ResponseCode.INVALID_ARGUMENTS);
+            response.setErrorText("Invalid parameter list: reportName=" + reportName);
+            response.setStatus(ResponseStatus.FAILURE);
+        }
+        return response;
+    }
+    
+    
+    @Override
     public GetReportParameterTypesResponse getReportParameterTypes() {
         GetReportParameterTypesResponse response = new GetReportParameterTypesResponse();
         List<ReportParamTypeEntity> paramTypeEntities = reportDataService.getReportParameterTypes();
@@ -157,8 +196,8 @@ public class WebReportServiceImpl implements WebReportService {
         Response response = new Response();
         if (reportSubscriptionDto != null) {
             try {
-                reportDataService.createOrUpdateSubscribedReportInfo(reportSubscriptionDozerConverter.convertToEntity(reportSubscriptionDto, true), null);
-                //reportDataService.updateReportParametersByReportName(reportName, criteriaParamDozerConverter.convertToEntityList(parameters, false));
+                reportDataService.createOrUpdateSubscribedReportInfo(reportSubscriptionDozerConverter.convertToEntity(reportSubscriptionDto, true));
+                reportDataService.updateSubReportParametersByReportName(reportSubscriptionDto.getReportName(), criteriaSubParamDozerConverter.convertToEntityList(parameters, false));
             } catch (Throwable t) {
                 response.setStatus(ResponseStatus.FAILURE);
                 response.setErrorCode(ResponseCode.SQL_EXCEPTION);
