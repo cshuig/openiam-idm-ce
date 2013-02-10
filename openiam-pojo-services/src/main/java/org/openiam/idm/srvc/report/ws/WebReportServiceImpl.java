@@ -20,6 +20,7 @@ import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.idm.srvc.report.domain.ReportParamTypeEntity;
 import org.openiam.idm.srvc.report.dto.ReportCriteriaParamDto;
+import org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportDataDto;
 import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
@@ -150,12 +151,13 @@ public class WebReportServiceImpl implements WebReportService {
         return reportsResponse;
     }
 
+    
     @Override
-    public Response createOrUpdateSubscribedReportInfo(@WebParam(name = "reportName", targetNamespace = "") String reportName, @WebParam(name = "reportDataSource", targetNamespace = "") String reportDataSource, @WebParam(name = "reportUrl", targetNamespace = "") String reportUrl, @WebParam(name = "parameters", targetNamespace = "") List<ReportCriteriaParamDto> parameters) {
+    public Response createOrUpdateSubscribedReportInfo(@WebParam(name = "reportSubscriptionDto", targetNamespace = "") ReportSubscriptionDto reportSubscriptionDto, @WebParam(name = "parameters", targetNamespace = "") List<ReportSubCriteriaParamDto> parameters) {
         Response response = new Response();
-        if (!StringUtils.isEmpty(reportName)) {
+        if (reportSubscriptionDto != null) {
             try {
-                reportDataService.createOrUpdateSubscribedReportInfo(reportName, reportDataSource, reportUrl);
+                reportDataService.createOrUpdateSubscribedReportInfo(reportSubscriptionDozerConverter.convertToEntity(reportSubscriptionDto, true), null);
                 //reportDataService.updateReportParametersByReportName(reportName, criteriaParamDozerConverter.convertToEntityList(parameters, false));
             } catch (Throwable t) {
                 response.setStatus(ResponseStatus.FAILURE);
@@ -166,7 +168,7 @@ public class WebReportServiceImpl implements WebReportService {
             response.setStatus(ResponseStatus.SUCCESS);
         } else {
             response.setErrorCode(ResponseCode.INVALID_ARGUMENTS);
-            response.setErrorText("Invalid parameter list: reportName=" + reportName);
+            response.setErrorText("Invalid parameter list: reportName=" + reportSubscriptionDto.getReportName());
             response.setStatus(ResponseStatus.FAILURE);
         }
         return response;

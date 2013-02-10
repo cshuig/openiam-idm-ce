@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openiam.idm.srvc.report.domain.ReportCriteriaParamEntity;
+import org.openiam.idm.srvc.report.domain.ReportSubCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.exception.ScriptEngineException;
@@ -23,7 +24,7 @@ public interface ReportDataService {
     List<ReportSubscriptionEntity> getAllSubscribedReports();
     ReportInfoEntity getReportByName(String name);
     void createOrUpdateReportInfo(String reportName, String reportDataSource, String reportUrl);
-    void createOrUpdateSubscribedReportInfo(String reportName, String reportDataSource, String reportUrl);
+    void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity, List<ReportSubCriteriaParamEntity> prameters);
     List<ReportCriteriaParamEntity> getReportParametersByReportId(String reportId);
     void updateReportParametersByReportName(String reportName, List<ReportCriteriaParamEntity> prameters);
     List<ReportParamTypeEntity> getReportParameterTypes();

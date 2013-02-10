@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
-import org.openiam.idm.srvc.report.ws.GetAllReportsResponse;
+import org.openiam.idm.srvc.report.ws.GetAllSubscribedReportsResponse;
 import org.openiam.idm.srvc.report.ws.WebReportService;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,7 +22,7 @@ public class ReportController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
     	ReportCommand reportCommand = new ReportCommand();
         if(!request.getParameterMap().containsKey("report.reportId")) {
-            GetAllReportsResponse allReportsResponse = reportService.getReports();
+            GetAllSubscribedReportsResponse allReportsResponse = reportService.getSubscribedReports();
             List<ReportSubscriptionDto> reports = (allReportsResponse != null && allReportsResponse.getReports() != null) ? allReportsResponse.getReports() : Collections.EMPTY_LIST;
             reportCommand.setRepors(reports);
         }
@@ -35,7 +35,7 @@ public class ReportController extends SimpleFormController {
             throws Exception {
     	ReportCommand reportCommand1 = (ReportCommand) command;
         ReportSubscriptionDto selectedReport = reportCommand1.getReport();
-        String reportLocation = selectedReport.getReportUrl();
+        /*String reportLocation = selectedReport.getReportUrl();
         if (request.getParameterMap().containsKey("open_btn")) {
             StringBuilder reportViewerLink = new StringBuilder();
             String requestURL = request.getRequestURL().toString();
@@ -45,7 +45,7 @@ public class ReportController extends SimpleFormController {
             reportViewerLink.append("__report=").append(reportLocation);
             response.sendRedirect(reportViewerLink.toString());
             return null;
-        } else if (request.getParameterMap().containsKey("edit_btn")) {
+        } else*/ if (request.getParameterMap().containsKey("edit_btn")) {
             ReportCommand reportCommand = new ReportCommand();
             reportCommand.setReport(selectedReport);
             return new ModelAndView(getSuccessView(), "reportCommand", reportCommand);
