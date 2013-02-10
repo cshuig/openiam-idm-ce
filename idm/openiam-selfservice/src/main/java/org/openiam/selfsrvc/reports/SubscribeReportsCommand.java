@@ -4,25 +4,10 @@ import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.springframework.web.multipart.MultipartFile;
 
 public class SubscribeReportsCommand {
-    private MultipartFile dataSourceScriptFile;
-    private MultipartFile reportDesignFile;
     private ReportSubscriptionDto report = new ReportSubscriptionDto();
-
-    public MultipartFile getDataSourceScriptFile() {
-        return dataSourceScriptFile;
-    }
-
-    public void setDataSourceScriptFile(MultipartFile dataSourceScriptFile) {
-        this.dataSourceScriptFile = dataSourceScriptFile;
-    }
-
-    public MultipartFile getReportDesignFile() {
-        return reportDesignFile;
-    }
-
-    public void setReportDesignFile(MultipartFile reportDesignFile) {
-        this.reportDesignFile = reportDesignFile;
-    }
+    private String[] paramName;
+    private String[] paramValue;
+    private String[] paramTypeId;
 
     public ReportSubscriptionDto getReport() {
         return report;
@@ -31,4 +16,28 @@ public class SubscribeReportsCommand {
     public void setReport(ReportSubscriptionDto report) {
         this.report = report;
     }
+
+	public String[] getParamName() {
+		return paramName;
+	}
+
+	public void setParamName(String[] paramName) {
+		this.paramName = paramName;
+	}
+
+	public String[] getParamValue() {
+		return paramValue;
+	}
+
+	public void setParamValue(String[] paramValue) {
+		this.paramValue = paramValue;
+	}
+
+	public String[] getParamTypeId() {
+		return paramTypeId;
+	}
+
+	public void setParamTypeId(String[] paramTypeId) {
+		this.paramTypeId = paramTypeId;
+	}
 }

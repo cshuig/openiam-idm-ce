@@ -1,7 +1,5 @@
 package org.openiam.idm.srvc.report.service;
 
-import java.util.List;
-
 import org.hibernate.Criteria;
 
 import org.hibernate.criterion.Restrictions;
@@ -38,16 +36,7 @@ public class ReportSubscriptionDaoImpl extends BaseDaoImpl<ReportSubscriptionEnt
         ReportSubscriptionEntity reportSubscription = findByName(reportSubscriptionEntity.getReportName());
         if(reportSubscription == null) {
            reportSubscription = reportSubscriptionEntity;
-           getSession().save(reportSubscriptionEntity);
-        }else{
-        	getSession().update(reportSubscriptionEntity);
         }
+        getSession().saveOrUpdate(reportSubscriptionEntity);
     }
-    
-    @Override
-    public List<ReportSubscriptionEntity> getAllActiveSubscribedReports(){
-        Criteria criteria = getSession().createCriteria(ReportSubscriptionEntity.class).add(Restrictions.eq("status", "ACTIVE"));
-        return (List<ReportSubscriptionEntity>) criteria.list();
-    }
-
 }
