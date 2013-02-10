@@ -30,7 +30,7 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading">Birt Reports</h2>
+                        <h2 class="contentheading">BIRT Reports Subscriptions</h2>
                     </td>
                 </tr>
             </table>
@@ -47,12 +47,11 @@
                     <tr>
                         <td>
                             <fieldset class="userformSearch">
-                                <legend>REPORT PARAMETERS</legend>
                                 <table class="fieldsetTable" width="100%" height="200pt">
                                     <tr>
                                         <th>Report Name</th>
-                                        <th>Data Source Script</th>
-                                        <th>Design File</th>
+                                        <th>Delivery Method</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                     <c:choose>

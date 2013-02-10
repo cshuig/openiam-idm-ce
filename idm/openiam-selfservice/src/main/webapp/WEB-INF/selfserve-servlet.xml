@@ -26,7 +26,7 @@
 <bean id="viewReportController" class="org.openiam.selfsrvc.reports.ReportController">
 		<property name="commandName" value="reportCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.ReportCommand" />
-		<property name="formView" value="/report/reportlist" />
+		<property name="formView" value="/report/viewReports" />
 		<property name="successView" value="report/subscribereport" />
         <property name="reportService" ref="reportServiceClient" />
      </bean>
@@ -863,7 +863,8 @@
                 <prop key="/changeRoleAccess.selfserve">startChangeRoleAccess</prop>
                 <prop key="/changeGroupAccess.selfserve">startChangeGroupAccess</prop>
                 <prop key="/changeResourceAccess.selfserve">startChangeResourceAccess</prop>
-				<prop key="/subscribeReport.selfserve">subscribeReportController</prop>
+				<!-- prop key="/subscribeReport.selfserve">subscribeReportController</prop> -->
+				<prop key="/subscribeReport.selfserve">reportController</prop>
 				<prop key="/reportList.selfserve">reportController</prop>
 				<prop key="/viewReport.selfserve">viewReportController</prop>
                 <prop key="/myexample.selfserve">myexample</prop>
