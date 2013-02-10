@@ -30,7 +30,7 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading">Birt Reports</h2>
+                        <h2 class="contentheading">Generated BIRT Reports</h2>
                     </td>
                 </tr>
             </table>
@@ -47,12 +47,9 @@
                     <tr>
                         <td>
                             <fieldset class="userformSearch">
-                                <legend>REPORT PARAMETERS</legend>
                                 <table class="fieldsetTable" width="100%" height="200pt">
                                     <tr>
                                         <th>Report Name</th>
-                                        <th>Data Source Script</th>
-                                        <th>Design File</th>
                                         <th>Actions</th>
                                     </tr>
                                     <c:choose>
@@ -60,10 +57,7 @@
                                         <c:forEach var="item" items="${reportCommand.reports}">
                                         <tr>
                                             <td>${item.reportName}</td>
-                                            <td>${item.reportDataSource}</td>
-                                            <td>${item.reportUrl}</td>
                                             <td>
-                                                <input type="submit" name="edit_btn" value="Edit" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.reportDataSource}','${item.reportUrl}','edit');">
                                                 <c:if test="${item.reportUrl != ''}">
                                                     <input type="submit" name="open_btn" value="Open" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.reportDataSource}','${item.reportUrl}','open');">
                                                 </c:if>
