@@ -99,7 +99,13 @@ public class ReportDataServiceImpl implements ReportDataService {
     public List<ReportCriteriaParamEntity> getReportParametersByReportName(String reportName) {
         return criteriaParamDao.findByReportInfoName(reportName);
     }
-    
+
+    @Override
+    @Transactional
+    public List<ReportSubCriteriaParamEntity> getSubReportParametersByReportName(String reportName) {
+        return subCriteriaParamDao.findByReportInfoName(reportName);
+    }
+
     @Override
     @Transactional
     public List<ReportParamTypeEntity> getReportParameterTypes() {
@@ -116,6 +122,11 @@ public class ReportDataServiceImpl implements ReportDataService {
         }
     }
     
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReportSubscriptionEntity> getAllActiveSubscribedReports() {
+        return reportSubscriptionDao.getAllActiveSubscribedReports();
+    }    
     @Override
     @Transactional(readOnly = true)
     public List<ReportSubscriptionEntity> getAllSubscribedReports() {

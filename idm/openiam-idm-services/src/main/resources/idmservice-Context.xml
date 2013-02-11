@@ -34,6 +34,7 @@
   		<property name="batchService" ref="batchDataService" />
 		<property name="loginManager" ref="loginWS" />
 		<property name="policyDataService" ref="policyDataService" />
+		<property name="reportDataService" ref="reportDataService" />
 		<property name="scriptEngine" value="org.openiam.script.GroovyScriptEngineIntegration" />
 		<property name="auditHelper" ref="auditHelper" />
 	</bean>	

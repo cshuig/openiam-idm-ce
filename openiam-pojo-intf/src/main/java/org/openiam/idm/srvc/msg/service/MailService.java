@@ -1,8 +1,8 @@
 package org.openiam.idm.srvc.msg.service;
 
+import org.openiam.base.ws.PropertyMap;
 import org.openiam.base.ws.PropertyMapAdapter;
 import org.openiam.base.ws.Response;
-import org.openiam.idm.srvc.msg.ws.NotificationRequest;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -19,16 +19,12 @@ import java.util.HashMap;
 public interface MailService {
 
     @WebMethod
-    void send(String from, String to, String subject, String msg, boolean isHtmlFormat);
-
-    /**
-     * Sends out a notification based on the information defined in the notification request.
-     *
-     * @param req
-     */
+    Response sendNotification(@WebParam(name = "notificationName", targetNamespace = "") String notificationName, @WebParam(name = "mailParams", targetNamespace = "") PropertyMap mailParams);
 
     @WebMethod
-    Response sendNotificationRequest(
-            @WebParam(name = "req", targetNamespace = "")
-            NotificationRequest req);
+    void send(String from, String to, String subject, String msg, boolean isHtmlFormat);
+
+    @WebMethod
+    void send(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath);
+    
 }
