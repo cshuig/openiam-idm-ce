@@ -34,26 +34,15 @@ import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.batch.birt.ReportGenerator;
 import org.openiam.idm.srvc.batch.dto.BatchTask;
 import org.openiam.idm.srvc.batch.service.BatchDataService;
-import org.openiam.idm.srvc.grp.dto.Group;
-import org.openiam.idm.srvc.grp.service.GroupDataService;
 import org.openiam.idm.srvc.msg.service.MailService;
 import org.openiam.idm.srvc.policy.service.PolicyDataService;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.idm.srvc.report.service.ReportDataService;
-import org.openiam.idm.srvc.role.dto.UserRole;
-import org.openiam.idm.srvc.role.ws.RoleDataWebService;
-import org.openiam.idm.srvc.role.ws.UserRoleListResponse;
-import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.user.dto.UserSearch;
-import org.openiam.idm.srvc.user.ws.UserDataWebService;
-import org.openiam.idm.srvc.user.ws.UserListResponse;
-import org.openiam.idm.srvc.user.ws.UserResponse;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -78,16 +67,12 @@ public class NightlyTask implements ApplicationContextAware {
 			.newSetFromMap(new ConcurrentHashMap());
 	protected LoginDataWebService loginManager;
 	protected PolicyDataService policyDataService;
-	@Autowired
 	protected ReportDataService reportDataService;
-	protected UserDataWebService userManager;
-	protected GroupDataService groupManager;
-	protected RoleDataWebService roleDataService;
 	protected MailService mailService;
 	protected BatchDataService batchService;
 	protected String scriptEngine;
 	protected AuditHelper auditHelper;
-	
+
 	static protected ResourceBundle res = ResourceBundle
 			.getBundle("datasource");
 	boolean isPrimary = Boolean.parseBoolean(res.getString("IS_PRIMARY"));
@@ -183,8 +168,8 @@ public class NightlyTask implements ApplicationContextAware {
 
 			}
 		}
-		//commented to make sure merge goes through without any issues
-		//executeBIRTTasks();
+
+		executeBIRTTasks();
 
 	}
 
@@ -204,67 +189,34 @@ public class NightlyTask implements ApplicationContextAware {
 					.getReportByName(report.getReportName());
 			List<ReportSubCriteriaParamEntity> reportParameters = reportDataService
 					.getSubReportParametersByReportName(report.getReportName());
-			Map<String, String> params = new LinkedHashMap<String, String>();
+			Map params = new LinkedHashMap<String, String>();
 			for (ReportSubCriteriaParamEntity parameter : reportParameters) {
 				params.put(parameter.getName(), parameter.getValue());
 			}
 			try {
-				UserResponse userResponse = userManager.getUserWithDependent(report.getUserId(), false);
-				User user = userResponse.getUser();
-					UserSearch search = new UserSearch();
-					List<String> emailAddresses = new ArrayList<String>();
-					List<String> userIds = new ArrayList<String>();
-					if ("SELF".equalsIgnoreCase(report.getDeliveryAudience())) {
-						emailAddresses.add(user.getEmail());
-						userIds.add(user.getUserId());
-					} else{ 
-						if ("ROLE".equalsIgnoreCase(report
-								.getDeliveryAudience())) {
-							UserRoleListResponse userRolesResponse = roleDataService.getUserRolesForUser(report.getUserId());
-							List<UserRole> userRoles = userRolesResponse.getUserRoleList();
-							List<String> roleList = new ArrayList<String>();
-							String domainId="";
-							//Assuming that domain of all users is same, or it will pick last one
-							//TODO --clarify the above assumption
-							for (UserRole role: userRoles){
-								roleList.add(role.getRoleId());
-								domainId = role.getServiceId();
-							}
-							search.setRoleIdList(roleList);
-							search.setDomainId(domainId);
-						} else if ("DEPT".equalsIgnoreCase(report
-								.getDeliveryAudience())) {
-							search.setDeptCd(user.getDeptCd());
-						} else if ("ORGANIZATION".equalsIgnoreCase(report
-								.getDeliveryAudience())) {
-							search.setOrgId(user.getCompanyId());
-						} else if ("DIVISION".equalsIgnoreCase(report
-								.getDeliveryAudience())) {
-							search.setDivision(user.getDivision());
-						} else if ("GROUP".equalsIgnoreCase(report
-								.getDeliveryAudience())) {
-							List<Group> groups = groupManager.getUserInGroups(report.getUserId());
-							List<String> groupList = new ArrayList<String>();
-							for (Group group: groups){
-								groupList.add(group.getGrpId());
-							}
-							search.setGroupIdList(groupList);
-						}
-						UserListResponse userListResponse = userManager.search(search);
-						List<User> userList = userListResponse.getUserList();
-						for (User user1: userList){
-							emailAddresses.add(user1.getEmail());
-							userIds.add(user.getUserId());
-						}
-					}
-					//emailAddresses.toArray();
-					//userIds.toArray();
-					//send email
-				
 				ReportGenerator.generateReport(report.getReportName(),
 						reportInfo.getReportFilePath(),
-						report.getDeliveryFormat(), report.getUserId(), params, report.getDeliveryMethod(), emailAddresses, userIds, mailService);
+						report.getDeliveryFormat(), report.getUserId(), params);
+				if ("EMAIL".equalsIgnoreCase(report.getDeliveryMethod())) {
+					if ("SELF".equalsIgnoreCase(report.getDeliveryAudience())) {
+						//TODO get email addresses and send email
+					} else if ("ROLE".equalsIgnoreCase(report
+							.getDeliveryAudience())) {
 
+					} else if ("DEPT".equalsIgnoreCase(report
+							.getDeliveryAudience())) {
+
+					} else if ("ORGANIZATION".equalsIgnoreCase(report
+							.getDeliveryAudience())) {
+
+					} else if ("DIVISION".equalsIgnoreCase(report
+							.getDeliveryAudience())) {
+
+					} else if ("GROUP".equalsIgnoreCase(report
+							.getDeliveryAudience())) {
+
+					}
+				}
 			} catch (EngineException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -326,39 +278,6 @@ public class NightlyTask implements ApplicationContextAware {
 
 	public void setReportDataService(ReportDataService reportDataService) {
 		this.reportDataService = reportDataService;
-	}
-
-	public UserDataWebService getUserManager() {
-		return userManager;
-	}
-
-	public void setUserManager(UserDataWebService userManager) {
-		this.userManager = userManager;
-	}
-
-
-	public RoleDataWebService getRoleDataService() {
-		return roleDataService;
-	}
-
-	public void setRoleDataService(RoleDataWebService roleDataService) {
-		this.roleDataService = roleDataService;
-	}
-
-	public MailService getMailService() {
-		return mailService;
-	}
-
-	public void setMailService(MailService mailService) {
-		this.mailService = mailService;
-	}
-
-	public GroupDataService getGroupManager() {
-		return groupManager;
-	}
-
-	public void setGroupManager(GroupDataService groupManager) {
-		this.groupManager = groupManager;
 	}
 
 }

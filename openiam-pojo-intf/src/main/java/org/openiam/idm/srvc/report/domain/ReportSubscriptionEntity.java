@@ -32,6 +32,8 @@ public class ReportSubscriptionEntity {
     private String deliveryAudience;
     @Column(name = "STATUS")
     private String status;
+    @Column(name = "USERID")
+    private String userId;
 
     public ReportSubscriptionEntity() {
     }
@@ -58,7 +60,8 @@ public class ReportSubscriptionEntity {
 		return "ReportSubscriptionEntity [id=" + id + ", reportName="
 				+ reportName + ", deliveryMethod=" + deliveryMethod
 				+ ", deliveryFormat=" + deliveryFormat + ", deliveryAudience="
-				+ deliveryAudience + ", status=" + status + "]";
+				+ deliveryAudience + ", status=" + status + ", userId="
+				+ userId + "]";
 	}
 
 	public String getDeliveryMethod() {
@@ -91,5 +94,13 @@ public class ReportSubscriptionEntity {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }

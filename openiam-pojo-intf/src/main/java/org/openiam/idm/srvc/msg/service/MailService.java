@@ -25,6 +25,6 @@ public interface MailService {
     void send(String from, String to, String subject, String msg, boolean isHtmlFormat);
 
     @WebMethod
-    void sendWithAttachment(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath);
+    void send(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath);
     
 }
