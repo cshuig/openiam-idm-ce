@@ -22,11 +22,13 @@ public interface ReportDataService {
     ReportDataDto getReportData(final String reportName, final Map<String, String> reportParams) throws ClassNotFoundException, ScriptEngineException, IOException;
     List<ReportInfoEntity> getAllReports();
     List<ReportSubscriptionEntity> getAllSubscribedReports();
+    List<ReportSubscriptionEntity> getAllActiveSubscribedReports();
     ReportInfoEntity getReportByName(String name);
     void createOrUpdateReportInfo(String reportName, String reportDataSource, String reportUrl);
     void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity);
     List<ReportCriteriaParamEntity> getReportParametersByReportId(String reportId);
     List<ReportCriteriaParamEntity> getReportParametersByReportName(String reportName);    
+    List<ReportSubCriteriaParamEntity> getSubReportParametersByReportName(String reportName);    
     void updateReportParametersByReportName(String reportName, List<ReportCriteriaParamEntity> prameters);
     void updateSubReportParametersByReportName(String reportName, List<ReportSubCriteriaParamEntity> prameters);
     List<ReportParamTypeEntity> getReportParameterTypes();
