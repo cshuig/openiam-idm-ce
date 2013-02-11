@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.cxf.common.util.StringUtils;
 import org.openiam.idm.srvc.report.dto.ReportCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto;
@@ -52,6 +54,10 @@ public class SubscribeReportsController extends SimpleFormController {
 								.getParamTypeId()[i]));
 					}
 				}
+		        HttpSession session = request.getSession();
+		        String userId = (String) session.getAttribute("userId");
+				ReportSubscriptionDto dto = reportCommand.getReport();
+				dto.setUserId(userId);
 				reportService.createOrUpdateSubscribedReportInfo(
 						reportCommand.getReport(), params);
 			}

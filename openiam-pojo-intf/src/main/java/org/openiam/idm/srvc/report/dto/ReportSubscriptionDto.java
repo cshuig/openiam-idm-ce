@@ -19,7 +19,8 @@ import javax.xml.bind.annotation.XmlType;
         "deliveryMethod",
         "deliveryFormat",
         "deliveryAudience",
-        "status"
+        "status",
+        "userId"
 })
 @DozerDTOCorrespondence(ReportSubscriptionEntity.class)
 public class ReportSubscriptionDto {
@@ -45,6 +46,7 @@ public class ReportSubscriptionDto {
     private String deliveryFormat;
     private String deliveryAudience;
     private String status;
+    private String userId;
     
 
     public ReportSubscriptionDto() {
@@ -113,6 +115,14 @@ public class ReportSubscriptionDto {
 				+ reportName + ", deliveryMethod=" + deliveryMethod
 				+ ", deliveryFormat=" + deliveryFormat + ", deliveryAudience="
 				+ deliveryAudience + ", status=" + status + "]";
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }
 
