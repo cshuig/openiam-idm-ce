@@ -34,12 +34,19 @@ import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.batch.birt.ReportGenerator;
 import org.openiam.idm.srvc.batch.dto.BatchTask;
 import org.openiam.idm.srvc.batch.service.BatchDataService;
+import org.openiam.idm.srvc.grp.dto.Group;
+import org.openiam.idm.srvc.grp.service.GroupDataService;
 import org.openiam.idm.srvc.msg.service.MailService;
 import org.openiam.idm.srvc.policy.service.PolicyDataService;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.idm.srvc.report.service.ReportDataService;
+import org.openiam.idm.srvc.role.dto.UserRole;
+import org.openiam.idm.srvc.role.service.RoleDataService;
+import org.openiam.idm.srvc.user.dto.User;
+import org.openiam.idm.srvc.user.dto.UserSearch;
+import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
@@ -68,6 +75,9 @@ public class NightlyTask implements ApplicationContextAware {
 	protected LoginDataWebService loginManager;
 	protected PolicyDataService policyDataService;
 	protected ReportDataService reportDataService;
+	protected UserDataService userDataService;
+	protected GroupDataService groupDataService;
+	protected RoleDataService roleDataService;
 	protected MailService mailService;
 	protected BatchDataService batchService;
 	protected String scriptEngine;
@@ -189,34 +199,59 @@ public class NightlyTask implements ApplicationContextAware {
 					.getReportByName(report.getReportName());
 			List<ReportSubCriteriaParamEntity> reportParameters = reportDataService
 					.getSubReportParametersByReportName(report.getReportName());
-			Map params = new LinkedHashMap<String, String>();
+			Map<String, String> params = new LinkedHashMap<String, String>();
 			for (ReportSubCriteriaParamEntity parameter : reportParameters) {
 				params.put(parameter.getName(), parameter.getValue());
 			}
 			try {
+				User user = userDataService.getUser(report.getUserId());
+					UserSearch search = new UserSearch();
+					List<String> emailAddresses = new ArrayList<String>();
+					List<String> userIds = new ArrayList<String>();
+					if ("SELF".equalsIgnoreCase(report.getDeliveryAudience())) {
+						emailAddresses.add(user.getEmail());
+						userIds.add(user.getUserId());
+					} else{ 
+						if ("ROLE".equalsIgnoreCase(report
+								.getDeliveryAudience())) {
+							List<UserRole> userRoles = roleDataService.getUserRolesForUser(report.getUserId());
+							List<String> roleList = new ArrayList<String>();
+							for (UserRole role: userRoles){
+								roleList.add(role.getRoleId());
+							}
+							search.setRoleIdList(roleList);
+						} else if ("DEPT".equalsIgnoreCase(report
+								.getDeliveryAudience())) {
+							search.setDeptCd(user.getDeptCd());
+						} else if ("ORGANIZATION".equalsIgnoreCase(report
+								.getDeliveryAudience())) {
+							search.setOrgId(user.getCompanyId());
+						} else if ("DIVISION".equalsIgnoreCase(report
+								.getDeliveryAudience())) {
+							search.setDivision(user.getDivision());
+						} else if ("GROUP".equalsIgnoreCase(report
+								.getDeliveryAudience())) {
+							List<Group> groups = groupDataService.getUserInGroups(report.getUserId());
+							List<String> groupList = new ArrayList<String>();
+							for (Group group: groups){
+								groupList.add(group.getGrpId());
+							}
+							search.setGroupIdList(groupList);
+						}
+						List<User> userList = userDataService.search(search);
+						for (User user1: userList){
+							emailAddresses.add(user1.getEmail());
+							userIds.add(user.getUserId());
+						}
+					}
+					emailAddresses.toArray();
+					userIds.toArray();
+					//send email
+				
 				ReportGenerator.generateReport(report.getReportName(),
 						reportInfo.getReportFilePath(),
-						report.getDeliveryFormat(), report.getUserId(), params);
-				if ("EMAIL".equalsIgnoreCase(report.getDeliveryMethod())) {
-					if ("SELF".equalsIgnoreCase(report.getDeliveryAudience())) {
-						//TODO get email addresses and send email
-					} else if ("ROLE".equalsIgnoreCase(report
-							.getDeliveryAudience())) {
+						report.getDeliveryFormat(), report.getUserId(), params, report.getDeliveryMethod(), emailAddresses, userIds, mailService);
 
-					} else if ("DEPT".equalsIgnoreCase(report
-							.getDeliveryAudience())) {
-
-					} else if ("ORGANIZATION".equalsIgnoreCase(report
-							.getDeliveryAudience())) {
-
-					} else if ("DIVISION".equalsIgnoreCase(report
-							.getDeliveryAudience())) {
-
-					} else if ("GROUP".equalsIgnoreCase(report
-							.getDeliveryAudience())) {
-
-					}
-				}
 			} catch (EngineException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -278,6 +313,30 @@ public class NightlyTask implements ApplicationContextAware {
 
 	public void setReportDataService(ReportDataService reportDataService) {
 		this.reportDataService = reportDataService;
+	}
+
+	public UserDataService getUserDataService() {
+		return userDataService;
+	}
+
+	public void setUserDataService(UserDataService userDataService) {
+		this.userDataService = userDataService;
+	}
+
+	public GroupDataService getGroupDataService() {
+		return groupDataService;
+	}
+
+	public void setGroupDataService(GroupDataService groupDataService) {
+		this.groupDataService = groupDataService;
+	}
+
+	public RoleDataService getRoleDataService() {
+		return roleDataService;
+	}
+
+	public void setRoleDataService(RoleDataService roleDataService) {
+		this.roleDataService = roleDataService;
 	}
 
 }
