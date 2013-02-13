@@ -3,25 +3,13 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%--@elvariable id="reports" type="java.util.List<org.openiam.core.dto.reports.ReportDto>"--%>
-<%--@elvariable id="reportCommand" type="org.openiam.webadmin.reports.ReportListCommand"--%>
+<%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.ReportCommand"--%>
 
 <!-- OpenIAM Legacy style sheets -->
 
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
-<script type="text/javascript">
-    var selectReport = function(reportId, reportName, actionName) {
-        $('#selectedReportId').val(reportId);
-        $('#selectedReportName').val(reportName);
-        if(actionName == 'open') {
-          $('#reportListForm').attr('target','_blank');
-        } else {
-           $('#reportListForm').removeAttr('target');
-        }
-        return true;
-    };
-</script>
+
 <table width="800pt">
     <tr>
         <td>
@@ -46,16 +34,14 @@
                                 <table class="fieldsetTable" width="100%" height="200pt">
                                     <tr>
                                         <th>Report Name</th>
-                                        <th>Actions</th>
+                                        
                                     </tr>
                                     <c:choose>
-                                    <c:when test="${reportCommand.reports!=null}">
-                                        <c:forEach var="item" items="${reportCommand.reports}">
+                                    <c:when test="${reportCommand.files!=null}">
+                                        <c:forEach var="item" items="${reportCommand.files}">
                                         <tr>
-                                            <td>${item.reportName}</td>
-                                            <td>
-                                                    <input type="submit" name="open_btn" value="Open" onclick="return selectReport('${item.reportId}','${item.reportName}','open');">
-                                            </td>
+                                            <td><a href="${item.path}" target="_blank">${item.name}</a></td>
+                                            
                                         </tr>
                                     </c:forEach>
                                    </c:when>
@@ -63,7 +49,6 @@
                                         <tr><td colspan="4">No reports</td></tr>
                                    </c:otherwise>
                                    </c:choose>
-                                    <tr><td colspan="4" align="left"><input type="submit" name="add_btn" value="New"></td></tr>
                                 </table>
                             </fieldset>
                         </td>
