@@ -20,15 +20,11 @@
         </td>
     <tr>
         <td>
-            <form:form method="POST" id="subscribeReportsCommand" action="subscribeReport.selfserve" commandName="subscribeReportsCommand" enctype="multipart/form-data">
+            <form:form method="POST" id="subscribeReportsCommand" action="subscribeReportOld.selfserve" commandName="subscribeReportsCommand" enctype="multipart/form-data">
                 <input type="hidden" name="report.reportId" value="${subscribeReportsCommand.report.reportId}" />
                 <c:if test="${subscribeReportsCommand.report.reportName!=null}">
                     <input type="hidden" name="report.reportName" value="${subscribeReportsCommand.report.reportName}" />
                 </c:if>
-                <input type="hidden" name="report.deliveryMethod" value="${subscribeReportsCommand.report.deliveryMethod}" />
-                <input type="hidden" name="report.deliveryFormat" value="${subscribeReportsCommand.report.deliveryFormat}" />
-                <input type="hidden" name="report.deliveryAudience" value="${subscribeReportsCommand.report.deliveryAudience}" />
-                <input type="hidden" name="report.status" value="${subscribeReportsCommand.report.status}" />
                 <table width="650pt" class="bodyTable" height="100%">
                     <tr>
                         <td>

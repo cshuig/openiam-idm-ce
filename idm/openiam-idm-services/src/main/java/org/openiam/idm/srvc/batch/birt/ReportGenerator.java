@@ -82,7 +82,7 @@ public class ReportGenerator {
 		if ("EMAIL".equalsIgnoreCase(deliveryMethod)){
 			//email reports
 			//TODO check fromAddress
-			mailService.send("BIRTReportSender", (String[])emailAddresses.toArray(), "Subscribed Report", "Please find your subscribed report attached.", false, outputFileName);
+			mailService.sendWithAttachment("BIRTReportSender", (String[])emailAddresses.toArray(), "Subscribed Report", "Please find your subscribed report attached.", false, outputFileName);
 		}else{
 			//replicate across userIds
 			File file = new File(outputFileName);
@@ -107,6 +107,12 @@ public class ReportGenerator {
 				log.warn("File " + file.getName() + " could not be deleted.");
 			}
 		}
+	}
+	
+	public static File[] getReportsListForUser(String userId) {
+		File dir = new File(res.getString("reportRoot") + "//GENERATED_REPORTS//VIEW//" + userId);
+		File[] files = dir.listFiles();
+		return files;
 	}
 
 }

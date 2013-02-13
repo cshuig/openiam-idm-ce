@@ -51,7 +51,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void send(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath) {
+    public void sendWithAttachment(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath) {
         sendWithCC(from, to, null, subject, msg, isHtmlFormat, attachmentPath);
     }
     
