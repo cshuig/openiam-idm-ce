@@ -37,7 +37,7 @@
         </td>
     <tr>
         <td>
-            <form:form id="reportListForm" commandName="reportCommand">
+            <form:form id="reportListForm" commandName="reportCommand" action="subscribeReportOld.selfserve">
                 <input id="selectedReportId" type="hidden" name="report.reportId" value="" />
                 <input id="selectedReportName" type="hidden" name="report.reportName" value="" />
                 <input id="selectedDeliveryMethod" type="hidden" name="report.deliveryMethod" value="" />
@@ -71,7 +71,9 @@
                                         <tr><td colspan="4">No reports</td></tr>
                                    </c:otherwise>
                                    </c:choose>
-                                    <tr><td colspan="4" align="left"><input type="submit" name="add_btn" value="New Subscription"></td></tr>
+                                    <tr>
+									<td colspan="4" align="left"><a href="subscribeReportOld.selfserve">New Subscription</a></td>
+									</tr>
                                 </table>
                             </fieldset>
                         </td>
