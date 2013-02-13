@@ -50,6 +50,7 @@ import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -74,9 +75,10 @@ public class NightlyTask implements ApplicationContextAware {
 			.newSetFromMap(new ConcurrentHashMap());
 	protected LoginDataWebService loginManager;
 	protected PolicyDataService policyDataService;
+	@Autowired
 	protected ReportDataService reportDataService;
-	protected UserDataService userDataService;
-	protected GroupDataService groupDataService;
+	protected UserDataService userManager;
+	protected GroupDataService groupManager;
 	protected RoleDataService roleDataService;
 	protected MailService mailService;
 	protected BatchDataService batchService;
@@ -204,7 +206,7 @@ public class NightlyTask implements ApplicationContextAware {
 				params.put(parameter.getName(), parameter.getValue());
 			}
 			try {
-				User user = userDataService.getUser(report.getUserId());
+				User user = userManager.getUser(report.getUserId());
 					UserSearch search = new UserSearch();
 					List<String> emailAddresses = new ArrayList<String>();
 					List<String> userIds = new ArrayList<String>();
@@ -231,14 +233,14 @@ public class NightlyTask implements ApplicationContextAware {
 							search.setDivision(user.getDivision());
 						} else if ("GROUP".equalsIgnoreCase(report
 								.getDeliveryAudience())) {
-							List<Group> groups = groupDataService.getUserInGroups(report.getUserId());
+							List<Group> groups = groupManager.getUserInGroups(report.getUserId());
 							List<String> groupList = new ArrayList<String>();
 							for (Group group: groups){
 								groupList.add(group.getGrpId());
 							}
 							search.setGroupIdList(groupList);
 						}
-						List<User> userList = userDataService.search(search);
+						List<User> userList = userManager.search(search);
 						for (User user1: userList){
 							emailAddresses.add(user1.getEmail());
 							userIds.add(user.getUserId());
@@ -315,21 +317,14 @@ public class NightlyTask implements ApplicationContextAware {
 		this.reportDataService = reportDataService;
 	}
 
-	public UserDataService getUserDataService() {
-		return userDataService;
+	public UserDataService getUserManager() {
+		return userManager;
 	}
 
-	public void setUserDataService(UserDataService userDataService) {
-		this.userDataService = userDataService;
+	public void setUserManager(UserDataService userManager) {
+		this.userManager = userManager;
 	}
 
-	public GroupDataService getGroupDataService() {
-		return groupDataService;
-	}
-
-	public void setGroupDataService(GroupDataService groupDataService) {
-		this.groupDataService = groupDataService;
-	}
 
 	public RoleDataService getRoleDataService() {
 		return roleDataService;
@@ -337,6 +332,22 @@ public class NightlyTask implements ApplicationContextAware {
 
 	public void setRoleDataService(RoleDataService roleDataService) {
 		this.roleDataService = roleDataService;
+	}
+
+	public MailService getMailService() {
+		return mailService;
+	}
+
+	public void setMailService(MailService mailService) {
+		this.mailService = mailService;
+	}
+
+	public GroupDataService getGroupManager() {
+		return groupManager;
+	}
+
+	public void setGroupManager(GroupDataService groupManager) {
+		this.groupManager = groupManager;
 	}
 
 }

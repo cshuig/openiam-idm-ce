@@ -33,11 +33,13 @@
 	<bean id="nightlyTask" class="org.openiam.idm.srvc.batch.NightlyTask">
 		<property name="batchService" ref="batchDataService" />
 		<property name="loginManager" ref="loginWS" />
-		<property name="groupDataService" ref="groupDataService" />
-		<property name="userDataService" ref="userDataService" />
+		<property name="groupManager" ref="groupManager" />
+		<property name="userManager" ref="userManager" />
 		<property name="policyDataService" ref="policyDataService" />
 		<property name="reportDataService" ref="reportDataService" />
-		<property name="scriptEngine"
+		<property name="roleDataService" ref="roleDataService" />
+		<property name="mailService" ref="mailService" />
+						<property name="scriptEngine"
 			value="org.openiam.script.GroovyScriptEngineIntegration" />
 		<property name="auditHelper" ref="auditHelper" />
 	</bean>

@@ -63,13 +63,13 @@ public class SubscribeReportsController extends SimpleFormController {
 			}
 		}else{
 			if (!StringUtils.isEmpty(reportCommand.getReport().getReportName())) {
-				 ModelAndView modelAndView = new ModelAndView(getSuccessView(), "reportCommand", reportCommand);
+				 ModelAndView modelAndView = new ModelAndView(new RedirectView("subscribeReportOld.selfserve", true), "reportCommand", reportCommand);
 		            List<ReportCriteriaParamDto> paramDtos = reportService.getReportParametersByReportName(reportCommand.getReport().getReportName()).getParameters();
 		            modelAndView.addObject("reportParameters", paramDtos);
 		            return modelAndView;
 			}
 		}
-		return new ModelAndView(new RedirectView("reportList.selfserve", true));
+		return new ModelAndView(new RedirectView("subscribeReport.selfserve", true));
 	}
 
 	@Override
