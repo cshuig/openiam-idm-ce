@@ -27,10 +27,6 @@ public class ReportSubCriteriaParamEntity {
     @Column(name = "PARAM_VALUE")
     private String value;
 
-    @OneToOne
-    @JoinColumn(name = "RCPT_ID")
-    private ReportParamTypeEntity type;
-
     public ReportSubCriteriaParamEntity() {
     }
 
@@ -66,14 +62,6 @@ public class ReportSubCriteriaParamEntity {
         this.value = value;
     }
 
-    public ReportParamTypeEntity getType() {
-        return type;
-    }
-
-    public void setType(ReportParamTypeEntity type) {
-        this.type = type;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,7 +72,6 @@ public class ReportSubCriteriaParamEntity {
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (report != null ? !report.equals(that.report) : that.report != null) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (value != null ? !value.equals(that.value) : that.value != null) return false;
 
         return true;
@@ -96,7 +83,6 @@ public class ReportSubCriteriaParamEntity {
         result = 31 * result + (report != null ? report.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (value != null ? value.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
     }
 
@@ -107,7 +93,6 @@ public class ReportSubCriteriaParamEntity {
                 ", report=" + report +
                 ", name='" + name + '\'' +
                 ", value='" + value + '\'' +
-                ", type=" + type +
                 '}';
     }
 }
