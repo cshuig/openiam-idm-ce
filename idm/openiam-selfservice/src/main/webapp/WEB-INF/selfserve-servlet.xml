@@ -10,7 +10,7 @@
 
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 	<bean id="subscribeReportController" class="org.openiam.selfsrvc.reports.SubscribeReportsController">
-		<property name="commandName" value="subscribeReportsCommand" />
+		<property name="commandName" value="reportCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.SubscribeReportsCommand" />
 		<property name="formView" value="/report/subscribereport" />
 		<property name="successView" value="report/reportlist" />

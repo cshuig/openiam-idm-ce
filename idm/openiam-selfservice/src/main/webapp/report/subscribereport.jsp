@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%--@elvariable id="subscribeReportsCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
+<%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
 <%--@elvariable id="reportParameters" type="java.util.List<org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto>"--%>
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
@@ -13,17 +13,17 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading"><c:choose><c:when test="${subscribeReportsCommand.report.reportName!=null}">Edit Subscription for BIRT Report ${subscribeReportsCommand.report.reportName}</c:when><c:otherwise>BIRT Report Subscription</c:otherwise></c:choose></h2>
+                        <h2 class="contentheading"><c:choose><c:when test="${reportCommand.report.reportName!=null}">Edit Subscription for BIRT Report ${reportCommand.report.reportName}</c:when><c:otherwise>BIRT Report Subscription</c:otherwise></c:choose></h2>
                     </td>
                 </tr>
             </table>
         </td>
     <tr>
         <td>
-            <form:form method="POST" id="subscribeReportsCommand" action="subscribeReportOld.selfserve" commandName="subscribeReportsCommand" enctype="multipart/form-data">
-                <input type="hidden" name="report.reportId" value="${subscribeReportsCommand.report.reportId}" />
-                <c:if test="${subscribeReportsCommand.report.reportName!=null}">
-                    <input type="hidden" name="report.reportName" value="${subscribeReportsCommand.report.reportName}" />
+            <form:form method="POST" id="reportCommand" action="subscribeReportOld.selfserve" commandName="reportCommand" enctype="multipart/form-data">
+                <input type="hidden" name="report.reportId" value="${reportCommand.report.reportId}" />
+                <c:if test="${reportCommand.report.reportName!=null}">
+                    <input type="hidden" name="report.reportName" value="${reportCommand.report.reportName}" />
                 </c:if>
                 <table width="650pt" class="bodyTable" height="100%">
                     <tr>
@@ -31,7 +31,7 @@
                             <fieldset class="userformSearch">
 
                                 <table class="fieldsetTable" width="100%" height="200pt">
-                                    <c:if test="${subscribeReportsCommand.report.reportName==null}">
+                                    <c:if test="${reportCommand.report.reportName==null}">
                                        <tr>
                                         <td class="tddark" width="200pt">
                                             <label class="control-label" for="designFileInpId">

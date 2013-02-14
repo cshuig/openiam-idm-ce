@@ -19,7 +19,7 @@ public class ReportSubscriptionEntity {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "REPORT_SUB_ID")
-    private String id;
+    private String reportId;
 
     @Column(name = "REPORT_NAME")
     private String reportName;
@@ -38,13 +38,7 @@ public class ReportSubscriptionEntity {
     public ReportSubscriptionEntity() {
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getReportName() {
         return reportName;
@@ -57,7 +51,7 @@ public class ReportSubscriptionEntity {
 
     @Override
 	public String toString() {
-		return "ReportSubscriptionEntity [id=" + id + ", reportName="
+		return "ReportSubscriptionEntity [reportId=" + reportId + ", reportName="
 				+ reportName + ", deliveryMethod=" + deliveryMethod
 				+ ", deliveryFormat=" + deliveryFormat + ", deliveryAudience="
 				+ deliveryAudience + ", status=" + status + ", userId="
@@ -102,5 +96,13 @@ public class ReportSubscriptionEntity {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(String reportId) {
+		this.reportId = reportId;
 	}
 }

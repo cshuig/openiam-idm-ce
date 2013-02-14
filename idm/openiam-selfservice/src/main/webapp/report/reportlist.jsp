@@ -3,8 +3,8 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%--@elvariable id="reports" type="java.util.List<org.openiam.core.dto.reports.ReportDto>"--%>
-<%--@elvariable id="reportCommand" type="org.openiam.webadmin.reports.ReportListCommand"--%>
+<%--@elvariable id="reports" type="java.util.List<org.openiam.idm.srvc.report.dto.ReportSubscriptionDto>"--%>
+<%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.ReportCommand"--%>
 
 <!-- OpenIAM Legacy style sheets -->
 
@@ -15,12 +15,16 @@
         $('#selectedReportId').val(reportId);
         $('#selectedReportName').val(reportName);
         $('#selectedDeliveryMethod').val(deliveryMethod);
+        $('#selectedDeliveryFormat').val(deliveryFormat);
+        $('#selectedDeliveryAudience').val(deliveryAudience);
+        $('#selectedUserId').val(userId);
         $('#selectedStatus').val(status);
         if(actionName == 'open') {
           $('#reportListForm').attr('target','_blank');
         } else {
            $('#reportListForm').removeAttr('target');
         }
+        this.form.action="subscribeReportOld.selfserve";
         return true;
     };
 </script>
@@ -41,6 +45,9 @@
                 <input id="selectedReportId" type="hidden" name="report.reportId" value="" />
                 <input id="selectedReportName" type="hidden" name="report.reportName" value="" />
                 <input id="selectedDeliveryMethod" type="hidden" name="report.deliveryMethod" value="" />
+                <input id="selectedDeliveryFormat" type="hidden" name="report.deliveryFormat" value="" />
+                <input id="selectedDeliveryAudience" type="hidden" name="report.deliveryAudience" value="" />
+                <input id="selectedUserId" type="hidden" name="report.userId" value="" />
                 <input id="selectedStatus" type="hidden" name="report.status" value="" />
 
                 <table width="800pt" class="bodyTable" height="100%">
@@ -62,7 +69,7 @@
                                             <td>${item.deliveryMethod}</td>
                                             <td>${item.status}</td>
                                             <td>
-                                                <input type="submit" name="edit_btn" value="Edit" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.deliveryMethod}','${item.status}','edit');">
+                                                <input type="submit" name="edit_btn" value="Edit" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.deliveryMethod}','${item.deliveryFormat}','${item.deliveryAudience}','${item.status}','${item.userId}','edit');">
                                             </td>
                                         </tr>
                                     </c:forEach>
