@@ -44,7 +44,7 @@
 
 							<filters>
 
-								<filter>${project.basedir}/../../distributions/configurations/iamconf/securityconf.properties</filter>
+								<filter>../../distributions/configurations/iamconf/securityconf.properties</filter>
 
 							</filters>
 
