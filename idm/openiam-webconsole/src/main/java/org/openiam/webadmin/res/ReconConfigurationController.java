@@ -47,7 +47,7 @@ public class ReconConfigurationController extends CancellableFormController {
 	protected BatchDataService batchDataService;
 	protected AsynchReconciliationService asynchReconService;
 	private ConnectorDataService connectorService;
-    private ResourceDataService resourceDataService;
+	private ResourceDataService resourceDataService;
 
 	public void setManagedSysService(ManagedSystemDataService managedSysService) {
 		this.managedSysService = managedSysService;
@@ -90,6 +90,16 @@ public class ReconConfigurationController extends CancellableFormController {
 		sb.append(mSys.getManagedSysId());
 		sb.append(mSys.getResourceId());
 		sb.append(".csv");
+		return sb.toString();
+	}
+
+	private String getReportPath(ManagedSys mSys) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(pathToCSV);
+		sb.append("report_");
+		sb.append(mSys.getManagedSysId());
+		sb.append(mSys.getResourceId());
+		sb.append(".html");
 		return sb.toString();
 	}
 
@@ -158,8 +168,9 @@ public class ReconConfigurationController extends CancellableFormController {
 		List<Menu> level3MenuList = navigationDataService.menuGroupByUser(
 				menuGrp, userId, "en").getMenuList();
 
-        Resource res = resourceDataService.getResource(resId);
-        request.setAttribute("menuL3", ResourceMenuHelper.resourceTypeMenu( res.getResourceType().getResourceTypeId(), level3MenuList ));
+		Resource res = resourceDataService.getResource(resId);
+		request.setAttribute("menuL3", ResourceMenuHelper.resourceTypeMenu(res
+				.getResourceType().getResourceTypeId(), level3MenuList));
 
 		return cmd;
 	}
@@ -353,11 +364,11 @@ public class ReconConfigurationController extends CancellableFormController {
 		this.asynchReconService = asynchReconService;
 	}
 
-    public ResourceDataService getResourceDataService() {
-        return resourceDataService;
-    }
+	public ResourceDataService getResourceDataService() {
+		return resourceDataService;
+	}
 
-    public void setResourceDataService(ResourceDataService resourceDataService) {
-        this.resourceDataService = resourceDataService;
-    }
+	public void setResourceDataService(ResourceDataService resourceDataService) {
+		this.resourceDataService = resourceDataService;
+	}
 }

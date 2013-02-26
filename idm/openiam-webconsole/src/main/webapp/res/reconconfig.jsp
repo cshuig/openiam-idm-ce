@@ -54,7 +54,8 @@
 				<form:hidden id="resId" path="config.resourceId" />
 				<form:hidden id="reconCSVName_" path="reconCSVName" />
 				<form:hidden id="csvDirectory_" path="csvDirectory" />
-				
+				<form:hidden id="pathToReport" path="config.reportPath" />
+
 				<table width="950pt">
 					<tr>
 						<td align="center" height="100%">
@@ -88,8 +89,14 @@
 										<tr>
 											<td class="tddark">Source CSV</td>
 											<td class="tdlightnormal"><span
-												style="color: #000099; cursor:pointer; text-decoration: underline;"
+												style="color: #000099; cursor: pointer; text-decoration: underline;"
 												onclick="showDialog();"> Upload CSV file</span></td>
+										</tr>
+										<tr>
+											<td class="tddark">Separator and end of line characters</td>
+											<td class="tdlightnormal"><form:input
+													path="config.separator" size="3" maxlength="1" /> <form:input
+													path="config.endOfLine" size="3" maxlength="2" /></td>
 										</tr>
 									</c:if>
 								</TABLE>
@@ -177,11 +184,10 @@
 		<input id="fileName" type="hidden" value="" /> <input type="file"
 			name="file1">
 		<div style="margin-top: 12px;">
-			<input type="hidden" name="recName" id="recName" />
-			<input type="hidden" name="csvDir" id="csvDir" /> 
-			<input type="hidden" name="rId" id="rId" /> 
-			<input
-				type="submit" value="UploadFile" onclick="showDialog();" /><span
+			<input type="hidden" name="recName" id="recName" /> <input
+				type="hidden" name="csvDir" id="csvDir" /> <input type="hidden"
+				name="rId" id="rId" /> <input type="submit" value="UploadFile"
+				onclick="showDialog();" /><span
 				style="color: #000099; margin-left: 12px; text-decoration: underline;"
 				onclick="showDialog();">Cancel</span>
 		</div>

@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mvel2.optimizers.impl.refl.nodes.ArrayLength;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.user.dto.UserSearch;
@@ -22,6 +21,10 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 
 	public UserCSVParser(String path) {
 		super(path);
+	}
+	
+	public UserCSVParser(char separator, char EOL, String path) {
+		super(separator,EOL,path);
 	}
 
 	public UserSearch userSearch(String keyFieldVal, List<AttributeMap> amList) {

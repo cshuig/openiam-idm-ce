@@ -6,23 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.html.HTML;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.common.util.CollectionUtils;
-import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.idm.srvc.mngsys.dto.ManagedSystemObjectMatch;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAO;
 import org.openiam.idm.srvc.recon.command.ReconciliationCommandFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
-import org.openiam.idm.srvc.recon.dto.ReconciliationResponse;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
+import org.openiam.idm.srvc.recon.ws.ReconciliationWebService;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.user.dto.User;
@@ -31,13 +27,11 @@ import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
-import org.openiam.spml2.msg.ErrorCode;
 import org.openiam.spml2.msg.ReconciliationHTMLReport;
 import org.openiam.spml2.msg.ReconciliationHTMLReportResults;
 import org.openiam.spml2.msg.ReconciliationHTMLRow;
 import org.openiam.spml2.msg.ResponseType;
 import org.openiam.spml2.msg.StatusCodeType;
-import org.openiam.spml2.spi.common.UserFields;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,7 +44,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected ManagedSystemDataService managedSysService;
 
 	protected UserDataService userMgr;
-
 	protected ResourceDataService resourceDataService;
 	protected ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
 	protected String pathToCSV;
@@ -83,6 +76,26 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		this.ac = ac;
 	}
 
+	protected char getSeparator(ReconciliationConfig config) {
+		char separator;
+
+		if (StringUtils.hasText(config.getSeparator()))
+			separator = config.getSeparator().toCharArray()[0];
+		else
+			separator = ',';
+		return separator;
+	}
+
+	protected char getEndOfLine(ReconciliationConfig config) {
+
+		char EOL;
+		if (StringUtils.hasText(config.getEndOfLine()))
+			EOL = config.getEndOfLine().toCharArray()[0];
+		else
+			EOL = '\n';
+		return EOL;
+	}
+
 	protected ResponseType reconcile(ReconciliationConfig config) {
 		ResponseType response = new ResponseType();
 		ReconciliationHTMLReport result = new ReconciliationHTMLReport();
@@ -101,8 +114,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			log.debug("Created Command for: " + situation.getSituation());
 		}
 
-		UserCSVParser parserIDM = new UserCSVParser(pathToCSV);
-		UserCSVParser parserSource = new UserCSVParser(pathToCSV);
+		UserCSVParser parserIDM = new UserCSVParser(this.getSeparator(config),
+				getEndOfLine(config), pathToCSV);
+		UserCSVParser parserSource = new UserCSVParser(
+				this.getSeparator(config), getEndOfLine(config), pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(mSys.getResourceId());
 		List<CSVObject<ProvisionUser>> idmUsers;
@@ -326,25 +341,25 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	protected List<CSVObject<ProvisionUser>> getUsersFromCSV(
-			ManagedSys managedSys) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(pathToCSV);
+			ManagedSys managedSys, char sep, char EOL) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		return userParser.getObjectListFromIDMCSV(managedSys, attrMapList);
 	}
 
 	protected Map<String, String> getUserProvisionMap(
-			CSVObject<ProvisionUser> obj, ManagedSys managedSys)
-			throws Exception {
-		UserCSVParser userParser = new UserCSVParser(pathToCSV);
+			CSVObject<ProvisionUser> obj, ManagedSys managedSys, char sep,
+			char EOL) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		return userParser.convertToMap(attrMapList, obj);
 	}
 
 	protected void addUsersToCSV(String principal, ProvisionUser newUser,
-			ManagedSys managedSys) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(pathToCSV);
+			ManagedSys managedSys, char sep, char EOL) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userParser.addObjectToIDMCSV(new CSVObject<ProvisionUser>(principal,
@@ -352,32 +367,33 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	protected void deleteUser(String principal, ProvisionUser newUser,
-			ManagedSys managedSys) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(pathToCSV);
+			ManagedSys managedSys, char sep, char EOL) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userParser.deleteObjectFromIDMCSV(principal, managedSys, attrMapList);
 	}
 
 	protected void updateUser(CSVObject<ProvisionUser> newUser,
-			ManagedSys managedSys) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(pathToCSV);
+			ManagedSys managedSys, char sep, char EOL) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userParser.updateObjectFromIDMCSV(newUser, managedSys, attrMapList);
 	}
 
 	protected boolean lookupObjectInCSV(String findValue,
-			ManagedSys managedSys, List<ExtensibleObject> extOnjectList)
-			throws Exception {
-		List<CSVObject<ProvisionUser>> users = this.getUsersFromCSV(managedSys);
+			ManagedSys managedSys, List<ExtensibleObject> extOnjectList,
+			char sep, char EOL) throws Exception {
+		List<CSVObject<ProvisionUser>> users = this.getUsersFromCSV(managedSys,
+				sep, EOL);
 		List<ExtensibleAttribute> eAttr = new ArrayList<ExtensibleAttribute>(0);
 
 		for (CSVObject<ProvisionUser> user : users) {
 			ExtensibleObject extOnject = new ExtensibleObject();
 			if (match(findValue, user, extOnject)) {
 				Map<String, String> res = this.getUserProvisionMap(user,
-						managedSys);
+						managedSys, sep, EOL);
 				for (String key : res.keySet())
 					if (res.get(key) != null)
 						eAttr.add(new ExtensibleAttribute(key, user

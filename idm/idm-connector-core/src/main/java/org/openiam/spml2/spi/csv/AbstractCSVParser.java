@@ -2,28 +2,20 @@ package org.openiam.spml2.spi.csv;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.idm.srvc.user.dto.UserSearch;
-import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.spml2.spi.common.UserFields;
 import org.springframework.util.StringUtils;
-
-import wslite.http.HTTPResponse;
 
 public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 	private char SEPARATOR;
@@ -90,6 +82,7 @@ public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 
 	protected abstract String putValueIntoString(T obj, E field);
 
+	@SuppressWarnings("resource")
 	protected FileReader getCSVFile(ManagedSys mngSys,
 			List<AttributeMap> attrMapList, Class<E> clazz, boolean isReconFile)
 			throws Exception {
