@@ -20,44 +20,38 @@ package org.openiam.webadmin.role;
 
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openiam.idm.srvc.menu.dto.Menu;
+import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
+import org.openiam.idm.srvc.res.dto.Resource;
+import org.openiam.idm.srvc.res.dto.ResourceType;
+import org.openiam.idm.srvc.res.service.ResourceDataService;
+import org.openiam.idm.srvc.role.ws.RoleDataWebService;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openiam.webadmin.util.AuditHelper;
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
-
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.openiam.base.ws.ResponseStatus;
-import org.openiam.idm.srvc.menu.dto.Menu;
-import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
-import org.openiam.idm.srvc.meta.ws.MetadataWebService;
-import org.openiam.idm.srvc.res.dto.Resource;
-import org.openiam.idm.srvc.res.dto.ResourceRole;
-import org.openiam.idm.srvc.res.dto.ResourceRoleId;
-import org.openiam.idm.srvc.res.service.ResourceDataService;
-import org.openiam.idm.srvc.role.dto.Role;
-import org.openiam.idm.srvc.role.dto.RoleId;
-import org.openiam.idm.srvc.role.ws.RoleDataWebService;
-import org.openiam.idm.srvc.role.ws.RoleListResponse;
-
-
-public class RoleResourceController extends SimpleFormController {
+public class RoleResourceController extends CancellableFormController {
 
 	protected RoleDataWebService roleDataService;
-	protected MetadataWebService metadataService;
+    protected ResourceDataService resourceDataService;
+    protected NavigatorDataWebService navigationDataService;
+
 	protected String roleTypeCategory;
 	protected String redirectView;
-	protected ResourceDataService resourceDataService;
-	protected NavigatorDataWebService navigationDataService;
+
 	protected String menuGroup;
-    protected AuditHelper auditHelper;
+
 	
 	private static final Log log = LogFactory.getLog(RoleResourceController.class);
 
@@ -65,14 +59,72 @@ public class RoleResourceController extends SimpleFormController {
 		super();
 	}
 
+    @Override
+    protected Map referenceData(HttpServletRequest request) throws Exception {
+
+        List<ResourceType> resTypeList = resourceDataService.getAllResourceTypes();
+
+        Map model = new HashMap();
+        model.put("resTypeList", resTypeList);
+
+        return model;
+    }
+
+    private void loadReferenceData(ModelAndView mav) {
+        List<ResourceType> resTypeList = resourceDataService.getAllResourceTypes();
+        mav.addObject("resTypeList", resTypeList);
+    }
+
+    private void restoreMenu(HttpServletRequest request, String userId) {
+
+        List<Menu> level3MenuList =  navigationDataService.menuGroupByUser(menuGroup, userId, "en").getMenuList();
+        request.setAttribute("menuL3", level3MenuList);
+    }
+
+    protected Object formBackingObject(HttpServletRequest request)
+            throws Exception {
+
+
+        RoleResourceCommand roleCommand = new RoleResourceCommand();
+
+        HttpSession session =  request.getSession();
+        String userId = (String)session.getAttribute("userId");
+
+        String roleId = (String)session.getAttribute("roleid");
+        String domainId = (String)session.getAttribute("domainid");
+
+
+        String type = request.getParameter("resType");
+        if (type != null && !type.isEmpty()) {
+            roleCommand.setResourceTypeId(type);
+
+        }
+
+        String mode = request.getParameter("mode");
+        if (mode != null && "1".equals(mode)) {
+            request.setAttribute("msg","The role has been successfully modified");
+        }
+
+        restoreMenu(request, userId);
+
+        if (roleId != null) {
+            // used by the ui add/remove role and resource associations
+            roleCommand.setDomainId(domainId);
+            roleCommand.setRoleId(roleId);
+        }
+
+        request.setAttribute("menuGroup", "SECURITY_ROLE");
+
+
+        return roleCommand;
+    }
 	
 	
-	@Override
+	/*@Override
 	protected Object formBackingObject(HttpServletRequest request)
 			throws Exception {
 		
-		log.info("RoleResourceController - formBakingObject called.");
-		Role role = null;
+
 		RoleResourceCommand roleCommand = new RoleResourceCommand();
 
 		HttpSession session =  request.getSession();
@@ -81,9 +133,23 @@ public class RoleResourceController extends SimpleFormController {
 		String roleId = (String)session.getAttribute("roleid");
 		String domainId = (String)session.getAttribute("domainid");
 
-		List<Menu> level3MenuList =  navigationDataService.menuGroupByUser(menuGroup, userId, "en").getMenuList();
-		request.setAttribute("menuL3", level3MenuList);	
-			
+        String type = request.getParameter("resType");
+        if (type != null && !type.isEmpty()) {
+            roleCommand.setResourceTypeId(type);
+            prePopulateCurrentResourceSelection(roleCommand,domainId,roleId);
+
+        }
+        String mode = request.getParameter("mode");
+        if (mode != null && "1".equals(mode)) {
+            request.setAttribute("msg","The role has been successfully modified");
+        }
+
+
+
+
+
+        restoreMenu(request, userId);
+
 		if (roleId != null) {		
 			// used by the ui add/remove role and resource associations
 			roleCommand.setDomainId(domainId);
@@ -92,43 +158,81 @@ public class RoleResourceController extends SimpleFormController {
 	
 		request.setAttribute("menuGroup", "SECURITY_ROLE");
 
-		// get all the resources
-		List<Resource> fullResList = new ArrayList<Resource>();
-		List<Resource> resList = resourceDataService.getAllResources();
-		
-		List<Resource> roleResourceList =  resourceDataService.getResourcesForRole(domainId, roleId);
-		
-	
-			// for each role in the main list, check the userRole list to see if its there
-			for (Resource res : resList) {
-				boolean found = false;
-				if (roleResourceList != null) {
-					for (Resource r : roleResourceList ) {
-						if (res.getResourceId().equalsIgnoreCase(r.getResourceId())) {
-							res.setSelected(true);
-							fullResList.add(res);
-							found = true;
-						}
-					}
-				}
-				if (!found) {
-					fullResList.add(res);
-				}
-			}
-		
-		
 
-		
-		
-		roleCommand.setResourceList(fullResList);
-
-		return roleCommand;
+        return roleCommand;
 	}
-	
+    */
+
+
+    @Override
+    protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map controlModel) throws Exception {
+
+        String resType = request.getParameter("resType");
+        String roleId = (String)request.getSession().getAttribute("roleid");
+        String domainId = (String)request.getSession().getAttribute("domainid");
+
+        List<Resource> resourceList =  prePopulateCurrentResourceSelection(resType,domainId, roleId);
+
+        if (resourceList != null ) {
+            controlModel = new HashMap();
+            controlModel.put("resourceList", resourceList);
+            controlModel.put("resType", resType);
+
+        }
+        return super.showForm(request, response, errors, controlModel);
+    }
 
 
 
-	
+
+    private List<Resource> prePopulateCurrentResourceSelection(String typeId,
+                                                     String domainId, String roleId) {
+
+        if (typeId == null || typeId.isEmpty()) {
+            return null;
+
+        }
+
+        List<Resource> fullResList = new ArrayList<Resource>();
+        List<Resource> resList =   resourceDataService.getResourcesByType(typeId);
+
+        List<Resource> roleResourceList =  resourceDataService.getResourcesForRole(domainId, roleId);
+
+
+        // for each role in the main list, check the userRole list to see if its there
+        if (resList != null) {
+            for (Resource res : resList) {
+                boolean found = false;
+                if (roleResourceList != null) {
+                    for (Resource r : roleResourceList ) {
+                        if (res.getResourceId().equalsIgnoreCase(r.getResourceId())) {
+                            res.setSelected(true);
+                            fullResList.add(res);
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) {
+                    fullResList.add(res);
+                }
+            }
+        }
+        if (!fullResList.isEmpty()) {
+            return fullResList;
+        } else {
+            return null;
+        }
+    }
+
+
+
+    @Override
+    protected ModelAndView onCancel(Object command) throws Exception {
+        return new ModelAndView(new RedirectView(getCancelView(),true));
+    }
+
+
+
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request,
 			HttpServletResponse response, Object command, BindException errors)
@@ -142,88 +246,23 @@ public class RoleResourceController extends SimpleFormController {
 		String domainId = (String)request.getSession().getAttribute("domainid");
 		String login = (String)request.getSession().getAttribute("login");
 
-		
-		// current resource-role list
-		List<Resource> curRoleResList = resourceDataService.getResourcesForRole(roleCommand.getDomainId(), roleCommand.getRoleId());
-		List<Resource> newRoleResList = roleCommand.getResourceList();
-	
-		//
-		log.info("comparing new resource selection with current selecton.");
-		
-		if (newRoleResList != null) {
-			for (Resource res  : newRoleResList) {
-				log.info("Checking resource id=" + res.getResourceId());
-				Resource curRes = getCurrentResource(res, curRoleResList);
-				if (curRes == null && res.getSelected()) {
-					// link role and resource
-					log.info("Adding resource (1) " + res.getResourceId() + " to role=" + roleCommand.getRoleId());
-					
-					resourceDataService.addResourceRole(getResourceRole(res, 
-							roleCommand.getRoleId() ,roleCommand.getDomainId()));
+        ModelAndView mav =  new ModelAndView(getSuccessView());
+        List<Resource> resourceList =  prePopulateCurrentResourceSelection(roleCommand.getResourceTypeId(), roleCommand.getDomainId(),
+                roleCommand.getRoleId());
 
-                    auditHelper.addLog("MODIFY", domainId,	login,
-                                    "WEBCONSOLE", userId, "0", "ROLE", roleCommand.getRoleId(),
-                                    null,   "SUCCESS", null,  "ADD RESOURCE",
-                                    res.getResourceId(), null, null,
-                                    roleCommand.getRoleId() + "-" + roleCommand.getDomainId(), request.getRemoteHost());
+        mav.addObject("roleResCmd", roleCommand);
+        mav.addObject("resType", roleCommand.getResourceTypeId());
+        mav.addObject("resourceList", resourceList);
+        mav.addObject("roleid", roleCommand.getRoleId());
+        mav.addObject("domainid", roleCommand.getDomainId());
+        loadReferenceData(mav);
 
+        restoreMenu(request, userId);
 
-				}else {
-						log.info("Check if resource should be removed");
-						log.info("Current Res=" + curRes);
-						log.info("Res Selected=" + res.getSelected());
-						   if (!res.getSelected() && curRes != null ) {
-							   log.info("attemptng to remove association to resource: " + res.getResourceId());
-							// remove the association
-							ResourceRole r = getResourceRole(curRes, 
-									roleCommand.getRoleId() ,roleCommand.getDomainId());
-									
-							if (r != null) {
-								log.info("removing resource " + res.getResourceId() + " to role=" + roleCommand.getRoleId());
-								
-								resourceDataService.removeResourceRole(r.getId());
+        return mav;
 
-                                auditHelper.addLog("MODIFY", domainId,	login,
-                                    "WEBCONSOLE", userId, "0", "ROLE", roleCommand.getRoleId(),
-                                    null,   "SUCCESS", null,  "REMOVE RESOURCE",
-                                    r.getId().getResourceId(), null, null,
-                                    roleCommand.getRoleId() + "-" + roleCommand.getDomainId(), request.getRemoteHost());
-							    }
-						}
-					
-				}
-			}
-		}
-	
-		ModelAndView mav = new ModelAndView(getSuccessView());
-		
-		return mav;
-
-		
 	}
-	
-	private ResourceRole getResourceRole(Resource res, String roleId, String domainId) {
-		ResourceRole rr = new ResourceRole();
-		ResourceRoleId id = new ResourceRoleId();
-		id.setDomainId(domainId);
-		id.setRoleId(roleId);
-		id.setResourceId(res.getResourceId());
-		id.setPrivilegeId("na");
-		rr.setId(id);
-		return rr;
-	}
-	
-	private Resource getCurrentResource(Resource newRes, List<Resource> curRoleResList) {
-		if (curRoleResList == null ) {
-			return null;
-		}
-		for (Resource curRes : curRoleResList) {
-			if (curRes.getResourceId().equalsIgnoreCase(newRes.getResourceId())) {
-				return curRes;
-			}
-		}
-		return null;
-	}
+
 
 
 	public String getRedirectView() {
@@ -269,29 +308,6 @@ public class RoleResourceController extends SimpleFormController {
 	}
 
 
-
-
-
-
-
-
-	public MetadataWebService getMetadataService() {
-		return metadataService;
-	}
-
-
-
-
-
-
-
-
-	public void setMetadataService(MetadataWebService metadataService) {
-		this.metadataService = metadataService;
-	}
-
-
-
 	public NavigatorDataWebService getNavigationDataService() {
 		return navigationDataService;
 	}
@@ -314,12 +330,4 @@ public class RoleResourceController extends SimpleFormController {
 	public void setMenuGroup(String menuGroup) {
 		this.menuGroup = menuGroup;
 	}
-
-    public AuditHelper getAuditHelper() {
-        return auditHelper;
-    }
-
-    public void setAuditHelper(AuditHelper auditHelper) {
-        this.auditHelper = auditHelper;
-    }
 }

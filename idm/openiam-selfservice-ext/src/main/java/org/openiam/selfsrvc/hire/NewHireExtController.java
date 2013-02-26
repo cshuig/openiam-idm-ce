@@ -608,7 +608,7 @@ public class NewHireExtController {
             for(Role role : roleList) {
                 OptionTag ot = new OptionTag();
                 ot.setLabel(role.getRoleName());
-                ot.setValue(role.getId().getRoleId()+"*"+role.getId().getServiceId());
+                ot.setValue(role.getId().getServiceId()+"*"+role.getId().getRoleId());
                 roles.add(ot);
             }
         }
