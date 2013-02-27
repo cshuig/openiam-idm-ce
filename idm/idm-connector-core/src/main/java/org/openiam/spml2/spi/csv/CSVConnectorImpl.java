@@ -49,14 +49,14 @@ public class CSVConnectorImpl extends AbstractSpml2Complete implements
 	private ModifyCSVCommand modifyCommand;
 	private ReconcileCSVCommand reconCommand;
 
-	public void setReconCommand(ReconcileCSVCommand reconCommand) {
-		this.reconCommand = reconCommand;
-	}
+
 
 	private ResourceDataService resourceDataService;
 
 	public void setResourceDataService(ResourceDataService resourceDataService) {
 		this.resourceDataService = resourceDataService;
+	}	public void setReconCommand(ReconcileCSVCommand reconCommand) {
+		this.reconCommand = reconCommand;
 	}
 
 

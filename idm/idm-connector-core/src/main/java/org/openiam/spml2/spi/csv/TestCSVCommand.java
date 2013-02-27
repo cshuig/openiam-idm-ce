@@ -9,10 +9,7 @@ public class TestCSVCommand extends AbstractCSVCommand {
 	public ResponseType test(ManagedSys managedSys) {
 		ResponseType response = new ResponseType();
 		try {
-			ReconciliationConfig conf = reconcileService.getConfigByResource(
-					managedSys.getResourceId()).getConfig();
-			this.getUsersFromCSV(managedSys, this.getSeparator(conf),
-					this.getEndOfLine(conf));
+			this.getUsersFromCSV(managedSys);
 		} catch (Exception e) {
 			response.setStatus(StatusCodeType.FAILURE);
 			response.setRequestID(managedSys.getManagedSysId());

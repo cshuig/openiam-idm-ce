@@ -108,9 +108,7 @@
 		<property name="lookupCommand" ref="csvLookupCommmand" />
 		<property name="reconCommand" ref="csvReconCommmand" />
 		<property name="modifyCommand" ref="csvModifyCommmand" />
-		<property name="resourceDataService" ref="resourceDataService" />
-		<property name="managedSysService" ref="managedSysService" />
-		<property name="loginManager" ref="loginManager" />
+				<property name="resourceDataService" ref="resourceDataService" />
 	</bean>
 
 

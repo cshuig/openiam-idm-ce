@@ -67,7 +67,7 @@ public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 						log.info(e.getMessage());
 						fieldValue = Enum.valueOf(clazz2, "DEFAULT");
 					}
-					this.putValueInDTO(obj, fieldValue, objValue);
+					this.putValueInDTO(obj, fieldValue, objValue.trim());
 					if (PRINCIPAL_OBJECT.equals(a.getMapForObjectType())) {
 						csvObject.setPrincipal(objValue);
 					}

@@ -26,10 +26,7 @@ public class AddCSVCommand extends AbstractCSVCommand {
 				response.setError(ErrorCode.CSV_ERROR);
 				response.addErrorMessage("Sync object is null");
 			}
-			ReconciliationConfig conf = reconcileService.getConfigByResource(
-					managedSys.getResourceId()).getConfig();
-			this.addUsersToCSV(psoID.getID(), user, managedSys,
-					this.getSeparator(conf), this.getEndOfLine(conf));
+			this.addUsersToCSV(psoID.getID(), user, managedSys);
 		} catch (Exception e) {
 			e.printStackTrace();
 

@@ -23,11 +23,8 @@ public class LookupCSVCommand extends AbstractCSVCommand {
 
 		// Initialise
 		try {
-			ReconciliationConfig conf = reconcileService.getConfigByResource(
-					managedSys.getResourceId()).getConfig();
 			if (this.lookupObjectInCSV(principal, managedSys,
-					response.getAny(), this.getSeparator(conf),
-					this.getEndOfLine(conf))) {
+					response.getAny())) {
 				response.setStatus(StatusCodeType.SUCCESS);
 
 			} else

@@ -22,9 +22,9 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 	public UserCSVParser(String path) {
 		super(path);
 	}
-	
+
 	public UserCSVParser(char separator, char EOL, String path) {
-		super(separator,EOL,path);
+		super(separator, EOL, path);
 	}
 
 	public UserSearch userSearch(String keyFieldVal, List<AttributeMap> amList) {
@@ -252,6 +252,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case suite:
 			user.setSuite(objValue);
 			break;
+		case postalAddress:
 		case address1:
 			user.setAddress1(objValue);
 			break;
@@ -280,6 +281,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 			user.setState(objValue);
 			break;
 		case postalCd:
+		case postalCode:
 			user.setPostalCd(objValue);
 			break;
 		case mail:
@@ -307,6 +309,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case countryCd:
 			user.setCountryCd(objValue);
 			break;
+		case telephoneNumber:
 		case phoneNbr:
 			user.setPhoneNbr(objValue);
 			break;
@@ -475,6 +478,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case suite:
 			objValue = convertToString(user.getSuite());
 			break;
+		case postalAddress:
 		case address1:
 			objValue = convertToString(user.getAddress1());
 			break;
@@ -503,6 +507,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 			objValue = convertToString(user.getState());
 			break;
 		case postalCd:
+		case postalCode:
 			objValue = convertToString(user.getPostalCd());
 			break;
 		case mail:
@@ -522,6 +527,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case countryCd:
 			objValue = convertToString(user.getCountryCd());
 			break;
+		case telephoneNumber:
 		case phoneNbr:
 			objValue = convertToString(user.getPhoneNbr());
 			break;

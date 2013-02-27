@@ -114,10 +114,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			log.debug("Created Command for: " + situation.getSituation());
 		}
 
-		UserCSVParser parserIDM = new UserCSVParser(this.getSeparator(config),
-				getEndOfLine(config), pathToCSV);
-		UserCSVParser parserSource = new UserCSVParser(
-				this.getSeparator(config), getEndOfLine(config), pathToCSV);
+		UserCSVParser parserIDM = new UserCSVParser(pathToCSV);
+		UserCSVParser parserSource = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(mSys.getResourceId());
 		List<CSVObject<ProvisionUser>> idmUsers;
@@ -341,25 +339,25 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	protected List<CSVObject<ProvisionUser>> getUsersFromCSV(
-			ManagedSys managedSys, char sep, char EOL) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
+			ManagedSys managedSys) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		return userParser.getObjectListFromIDMCSV(managedSys, attrMapList);
 	}
 
 	protected Map<String, String> getUserProvisionMap(
-			CSVObject<ProvisionUser> obj, ManagedSys managedSys, char sep,
-			char EOL) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
+			CSVObject<ProvisionUser> obj, ManagedSys managedSys)
+			throws Exception {
+		UserCSVParser userParser = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		return userParser.convertToMap(attrMapList, obj);
 	}
 
 	protected void addUsersToCSV(String principal, ProvisionUser newUser,
-			ManagedSys managedSys, char sep, char EOL) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
+			ManagedSys managedSys) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userParser.addObjectToIDMCSV(new CSVObject<ProvisionUser>(principal,
@@ -367,33 +365,32 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	protected void deleteUser(String principal, ProvisionUser newUser,
-			ManagedSys managedSys, char sep, char EOL) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
+			ManagedSys managedSys) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userParser.deleteObjectFromIDMCSV(principal, managedSys, attrMapList);
 	}
 
 	protected void updateUser(CSVObject<ProvisionUser> newUser,
-			ManagedSys managedSys, char sep, char EOL) throws Exception {
-		UserCSVParser userParser = new UserCSVParser(sep, EOL, pathToCSV);
+			ManagedSys managedSys) throws Exception {
+		UserCSVParser userParser = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userParser.updateObjectFromIDMCSV(newUser, managedSys, attrMapList);
 	}
 
 	protected boolean lookupObjectInCSV(String findValue,
-			ManagedSys managedSys, List<ExtensibleObject> extOnjectList,
-			char sep, char EOL) throws Exception {
-		List<CSVObject<ProvisionUser>> users = this.getUsersFromCSV(managedSys,
-				sep, EOL);
+			ManagedSys managedSys, List<ExtensibleObject> extOnjectList)
+			throws Exception {
+		List<CSVObject<ProvisionUser>> users = this.getUsersFromCSV(managedSys);
 		List<ExtensibleAttribute> eAttr = new ArrayList<ExtensibleAttribute>(0);
 
 		for (CSVObject<ProvisionUser> user : users) {
 			ExtensibleObject extOnject = new ExtensibleObject();
 			if (match(findValue, user, extOnject)) {
 				Map<String, String> res = this.getUserProvisionMap(user,
-						managedSys, sep, EOL);
+						managedSys);
 				for (String key : res.keySet())
 					if (res.get(key) != null)
 						eAttr.add(new ExtensibleAttribute(key, user

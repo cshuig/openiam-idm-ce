@@ -19,7 +19,6 @@ public class ReconciliationConfig implements java.io.Serializable {
 	private String frequency;
 	private String status;
 	private String reportPath;
-	// CSV ONLY
 	private String separator;
 	private String endOfLine;
 
