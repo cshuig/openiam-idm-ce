@@ -235,7 +235,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			}
 			// -----------------------------------------------
 			// Second run from Sourse search in IDM
-			report.add(new ReconciliationHTMLRow("Records from Remove CSV: "
+			report.add(new ReconciliationHTMLRow("Records from Remote CSV: "
 					+ sourceUsers.size() + " items", hList.size() + 1));
 			preffix = "Source: ";
 			for (CSVObject<ProvisionUser> u : sourceUsers) {

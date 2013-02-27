@@ -12,7 +12,7 @@ import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 
 public enum ReconciliationHTMLReportResults {
-	BROKEN_CSV("Broken record in CSV","#af6666"),
+	BROKEN_CSV("Broken record in CSV","#ff6666"),
 	NOT_EXIST_IN_IDM_DB("Record don't exist in DB, but exist in CSV","#aa7777"),
 	NOT_QNIQUE_KEY("Defined key is not unique","#bbbbff"),
 	IDM_DELETED("IDM Record status is 'Deleted'","#339933"),
