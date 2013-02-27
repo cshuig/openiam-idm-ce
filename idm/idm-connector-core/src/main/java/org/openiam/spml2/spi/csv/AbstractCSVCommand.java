@@ -145,10 +145,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					log.warn("Skip USER" + u.toString()
 							+ " key or objecy is NULL");
 					if (u.getObject() != null) {
-						report.add(new ReconciliationHTMLRow(preffix
-								+ ReconciliationHTMLReportResults.BROKEN_CSV
-										.getValue(), this.objectToString(hList,
-								parserIDM.convertToMap(attrMapList, u))));
+						report.add(new ReconciliationHTMLRow(preffix,
+								ReconciliationHTMLReportResults.BROKEN_CSV,
+								this.objectToString(hList,
+										parserIDM.convertToMap(attrMapList, u))));
 					}
 					continue;
 				}
@@ -158,18 +158,17 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 						u.getPrincipal(), attrMapList));
 				if (CollectionUtils.isEmpty(users)) {
 					report.add(new ReconciliationHTMLRow(
-							preffix
-									+ ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB
-											.getValue(), this.objectToString(
-									hList,
+							preffix,
+							ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB,
+							this.objectToString(hList,
 									parserIDM.convertToMap(attrMapList, u))));
 					continue;
 				}
 				if (users.size() > 1) {
-					report.add(new ReconciliationHTMLRow(preffix
-							+ ReconciliationHTMLReportResults.NOT_QNIQUE_KEY
-									.getValue(), this.objectToString(hList,
-							parserIDM.convertToMap(attrMapList, u))));
+					report.add(new ReconciliationHTMLRow(preffix,
+							ReconciliationHTMLReportResults.NOT_QNIQUE_KEY,
+							this.objectToString(hList,
+									parserIDM.convertToMap(attrMapList, u))));
 					continue;
 				}
 				List<Login> logins = users.get(0).getPrincipalList();
@@ -190,9 +189,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 							if (u.getPrincipal().endsWith(
 									sourceUser.getPrincipal())) {
 								report.add(new ReconciliationHTMLRow(
-										preffix
-												+ ReconciliationHTMLReportResults.IDM_DELETED
-														.getValue(),
+										preffix,
+										ReconciliationHTMLReportResults.IDM_DELETED,
 										this.objectToString(hList, parserIDM
 												.convertToMap(attrMapList, u))));
 								break;
@@ -200,10 +198,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 						}
 						continue;
 					}
-					report.add(new ReconciliationHTMLRow(preffix
-							+ ReconciliationHTMLReportResults.LOGIN_NOT_FOUND
-									.getValue(), this.objectToString(hList,
-							parserIDM.convertToMap(attrMapList, u))));
+					report.add(new ReconciliationHTMLRow(preffix,
+							ReconciliationHTMLReportResults.LOGIN_NOT_FOUND,
+							this.objectToString(hList,
+									parserIDM.convertToMap(attrMapList, u))));
 					continue;
 				} else {
 					boolean isFind = false;
@@ -214,9 +212,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 										sourceUser.getPrincipal().trim())) {
 
 							report.add(new ReconciliationHTMLRow(
-									preffix
-											+ ReconciliationHTMLReportResults.MATCH_FOUND
-													.getValue(),
+									preffix,
+									ReconciliationHTMLReportResults.MATCH_FOUND,
 									this.objectToString(
 											hList,
 											matchFields(parserIDM.convertToMap(
@@ -229,11 +226,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					}
 					if (!isFind) {
 						report.add(new ReconciliationHTMLRow(
-								preffix
-										+ ReconciliationHTMLReportResults.RESOURSE_DELETED
-												.getValue(), this
-										.objectToString(hList, parserIDM
-												.convertToMap(attrMapList, u))));
+								preffix,
+								ReconciliationHTMLReportResults.RESOURSE_DELETED,
+								this.objectToString(hList,
+										parserIDM.convertToMap(attrMapList, u))));
 					}
 				}
 			}
@@ -249,10 +245,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 							+ " key or object is NULL");
 					if (u.getObject() != null) {
 
-						report.add(new ReconciliationHTMLRow(preffix
-								+ ReconciliationHTMLReportResults.BROKEN_CSV
-										.getValue(), this.objectToString(hList,
-								parserIDM.convertToMap(attrMapList, u))));
+						report.add(new ReconciliationHTMLRow(preffix,
+								ReconciliationHTMLReportResults.BROKEN_CSV,
+								this.objectToString(hList,
+										parserIDM.convertToMap(attrMapList, u))));
 
 					}
 					continue;
@@ -262,22 +258,22 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					if (u.getPrincipal().trim()
 							.equalsIgnoreCase(sourceUser.getPrincipal().trim())) {
 						isFind = true;
-						report.add(new ReconciliationHTMLRow(preffix
-								+ ReconciliationHTMLReportResults.MATCH_FOUND
-										.getValue(), this.objectToString(
-								hList,
-								matchFields(parserIDM.convertToMap(attrMapList,
-										u), parserIDM.convertToMap(attrMapList,
-										sourceUser)))));
+						report.add(new ReconciliationHTMLRow(preffix,
+								ReconciliationHTMLReportResults.MATCH_FOUND,
+								this.objectToString(
+										hList,
+										matchFields(parserIDM.convertToMap(
+												attrMapList, u), parserIDM
+												.convertToMap(attrMapList,
+														sourceUser)))));
 						break;
 					}
 				}
 				if (!isFind) {
 					report.add(new ReconciliationHTMLRow(
-							preffix
-									+ ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB
-											.getValue(), this.objectToString(
-									hList,
+							preffix,
+							ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB,
+							this.objectToString(hList,
 									parserIDM.convertToMap(attrMapList, u))));
 				}
 			}

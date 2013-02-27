@@ -40,14 +40,43 @@ public class ReconciliationHTMLReport {
 		html.append("td {");
 		html.append("font-size:14px;");
 		html.append("}");
+
+		html.append(".legend {");
+		html.append("width:100%;");
+		html.append("height:80px;");
+		html.append("}");
+
+		html.append(".legend-item {");
+		html.append("width:10%;");
+		html.append("height:100%;");
+		html.append("padding:4px;");
+		html.append("margin:3px;");
+		html.append("float:left;");
+		html.append("}");
+
+		html.append(".clear {");
+		html.append("clear:both;");
+		html.append("}");
+
 		html.append("</style>");
 		html.append("</head>");
-		html.append("<body>");
+		html.append("<body>"); 
+		html.append("<div>");
+		html.append("<div style='position:fixed;top:0px;background-color:#ffffff'>");
 		html.append("<h2>");
 		html.append("Reconciliation result: ");
 		html.append(Calendar.getInstance().getTime().toString());
 		html.append("</h2>");
-		html.append("<table width='100%' border='1' cellspacing='0' cellpadding='0'>");
+		html.append("<div class='legend'>");
+		for (ReconciliationHTMLReportResults a : ReconciliationHTMLReportResults
+				.values()) {
+			html.append(this.legendItem(a));
+		}
+		html.append("<div class='clear' />");
+		html.append("</div>");
+		html.append("</div>");
+		html.append("</div>");
+		html.append("<table style='margin-top:170px;' width='100%' border='1' cellspacing='0' cellpadding='0'>");
 		for (ReconciliationHTMLRow row : report) {
 			html.append(row.toString());
 		}
@@ -55,6 +84,17 @@ public class ReconciliationHTMLReport {
 		html.append("</body>");
 		html.append("</html>");
 
+		return html.toString();
+	}
+
+	private String legendItem(ReconciliationHTMLReportResults a) {
+		StringBuilder html = new StringBuilder();
+		html.append("<div class='legend-item' style='background-color:"
+				+ a.getColor() + ";'>");
+		html.append("<p>");
+		html.append(a.getValue());
+		html.append("</p>");
+		html.append("</div>");
 		return html.toString();
 	}
 

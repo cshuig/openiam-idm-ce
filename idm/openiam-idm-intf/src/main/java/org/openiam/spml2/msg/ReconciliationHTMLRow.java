@@ -57,11 +57,13 @@ public class ReconciliationHTMLRow {
 		row = build.toString();
 	}
 
-	public ReconciliationHTMLRow(String result, String values) throws Exception {
+	public ReconciliationHTMLRow(String preffix,
+			ReconciliationHTMLReportResults result, String values)
+			throws Exception {
 		super();
 		StringBuilder build = new StringBuilder();
 
-		if (StringUtils.isEmpty(result) || StringUtils.isEmpty(values)
+		if (result == null || StringUtils.isEmpty(values)
 				|| values.split(",").length < 1) {
 			throw new Exception("wrong data");
 		}
@@ -70,8 +72,7 @@ public class ReconciliationHTMLRow {
 		if (values.charAt(values.length() - 1) == ',')
 			vals.add("&nbsp;");
 		build.append("<tr>");
-		build.append("<td style='background-color:" + RESULT_COLOR + "'>");
-		build.append(result);
+		build.append("<td style='width:200px;background-color:" + result.getColor() + ";'>");
 		build.append("</td>");
 		for (String str : vals) {
 			if (str.contains("][")) {
@@ -88,5 +89,10 @@ public class ReconciliationHTMLRow {
 
 	public String toString() {
 		return row;
+	}
+
+	public String getLenegd() {
+
+		return "";
 	}
 }
