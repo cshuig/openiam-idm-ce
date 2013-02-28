@@ -85,16 +85,15 @@
                     </tr>
                     <tr>
                       <td class="tddark">Separator and end of line characters</td>
-                      <td class="tdlightnormal">
-                      <form:select id="iSeparator" path="config.separator"
-                          multiple="false">
+                      <td class="tdlightnormal"><form:select id="iSeparator" path="config.separator"
+                          multiple="false"
+                        >
                           <form:option value="comma" label="Comma" />
                           <form:option value="semicolon" label="Semicolon" />
                           <form:option value="tab" label="Tab" />
                           <form:option value="space" label="Space" />
                           <form:option value="enter" label="Enter" />
-                        </form:select> 
-                        <form:select id="iEndOfLine" path="config.endOfLine" multiple="false">
+                        </form:select> <form:select id="iEndOfLine" path="config.endOfLine" multiple="false">
                           <form:option value="comma" label="Comma" />
                           <form:option value="semicolon" label="Semicolon" />
                           <form:option value="tab" label="Tab" />
@@ -161,7 +160,9 @@
                 />
               </c:if> <input type="submit" name="btn" value="Delete"
               onclick="return confirm('Are you sure you want to delete this Configuration?');"
-            /> <input type="submit" name="btn" value="Save" /> <input type="submit" name="_cancel" value="Cancel" /></td>
+            /> <c:if test="${reconCmd.isReportExist}">
+                <input type="submit" name="btn" value="Show report" />
+              </c:if> <input type="submit" name="btn" value="Save" /> <input type="submit" name="_cancel" value="Cancel" /></td>
           </tr>
         </table></TD>
   </TR>

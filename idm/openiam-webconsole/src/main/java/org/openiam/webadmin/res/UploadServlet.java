@@ -118,7 +118,7 @@ public class UploadServlet extends HttpServlet {
 						+ " is not a directory");
 			}
 
-			File file = new File(destinationDir, FILE_NAME);
+			File file = new File(FILE_NAME);
 			resultItem.write(file);
 			log("File successfuly uploaded to: " + DESTINATION_DIR_PATH
 					+ FILE_NAME);

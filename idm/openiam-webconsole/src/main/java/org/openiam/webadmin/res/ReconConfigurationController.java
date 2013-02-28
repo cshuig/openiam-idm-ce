@@ -1,5 +1,22 @@
 package org.openiam.webadmin.res;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.batch.dto.BatchTask;
@@ -22,17 +39,6 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.CancellableFormController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Controller for the new hire form.
@@ -80,26 +86,19 @@ public class ReconConfigurationController extends CancellableFormController {
 		return new ModelAndView(new RedirectView(getCancelView(), true));
 	}
 
-	private String getFileName(ManagedSys mSys, boolean isForReconciliation) {
+	private String getFileName(ManagedSys mSys, String prefix, boolean fullPath) {
 
 		StringBuilder sb = new StringBuilder();
-		if (!isForReconciliation)
+		if (fullPath)
 			sb.append(pathToCSV);
-		if (isForReconciliation)
-			sb.append("recon_");
+		sb.append(prefix);
 		sb.append(mSys.getManagedSysId());
 		sb.append(mSys.getResourceId());
-		sb.append(".csv");
-		return sb.toString();
-	}
-
-	private String getReportPath(ManagedSys mSys) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(pathToCSV);
-		sb.append("report_");
-		sb.append(mSys.getManagedSysId());
-		sb.append(mSys.getResourceId());
-		sb.append(".html");
+		if ("report_".equals(prefix)) {
+			sb.append(".html");
+		} else {
+			sb.append(".csv");
+		}
 		return sb.toString();
 	}
 
@@ -127,9 +126,11 @@ public class ReconConfigurationController extends CancellableFormController {
 
 			cmd.setIsCSV(isCSV);
 			if (isCSV) {
-				cmd.setReconCSVName(this.getFileName(mSys, true));
+				cmd.setReconCSVName(this.getFileName(mSys, "recon_", true));
 				cmd.setCsvDirectory(pathToCSV);
 			}
+			File file = new File(this.getFileName(mSys, "report_", true));
+			cmd.setIsReportExist(file.exists());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			cmd.setIsCSV(false);
@@ -190,7 +191,8 @@ public class ReconConfigurationController extends CancellableFormController {
 		ReconciliationConfig config = configCommand.getConfig();
 		List<ReconciliationSituation> situationList = configCommand
 				.getSituationList();
-
+		ManagedSys mSys = managedSysService.getManagedSysByResource(config
+				.getResourceId());
 		String btn = request.getParameter("btn");
 		String configId = config.getReconConfigId();
 		if (btn != null && btn.equalsIgnoreCase("Export to CSV")) {
@@ -198,11 +200,7 @@ public class ReconConfigurationController extends CancellableFormController {
 			File file;
 			int length = 0;
 			try {
-				file = new File(
-						this.getFileName(
-								managedSysService
-										.getManagedSysByResource(config
-												.getResourceId()), false));
+				file = new File(this.getFileName(mSys, "", true));
 				if (!file.exists()) {
 					log.error("Nothing to Export");
 				} else {
@@ -314,6 +312,18 @@ public class ReconConfigurationController extends CancellableFormController {
 				+ config.getResourceId();
 		log.info("redirecting to=" + view);
 
+		if (btn != null && btn.equalsIgnoreCase("Show report")) {
+			FileInputStream is = new FileInputStream(new File(this.getFileName(
+					mSys, "report_", true)));
+			ServletOutputStream os = response.getOutputStream();
+			byte[] buffer = new byte[65536];
+			int data;
+			while ((data = is.read(buffer)) != -1) {
+				os.write(buffer, 0, data);
+			}
+			os.flush();
+		}
+
 		if (btn != null && btn.equalsIgnoreCase("Reconcile Now")) {
 			if (config != null) {
 				asynchReconService.startReconciliation(config);
@@ -324,6 +334,21 @@ public class ReconConfigurationController extends CancellableFormController {
 
 		return new ModelAndView(new RedirectView(view, true));
 
+	}
+
+	private byte[] readFile(File file) {
+		int ch;
+		StringBuffer strContent = new StringBuffer("");
+		FileInputStream fin = null;
+		try {
+			fin = new FileInputStream(file);
+			while ((ch = fin.read()) != -1)
+				strContent.append((char) ch);
+			fin.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return strContent.toString().getBytes();
 	}
 
 	public String getRedirectView() {
