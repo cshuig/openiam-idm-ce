@@ -9,21 +9,13 @@ import javax.jws.WebService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openiam.idm.srvc.auth.dto.Login;
-import org.openiam.idm.srvc.auth.dto.LoginId;
-import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.idm.srvc.mngsys.dto.ManagedSystemObjectMatch;
-import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
-import org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAO;
 import org.openiam.idm.srvc.recon.command.ReconciliationCommandFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
-import org.openiam.provision.type.ExtensibleAttribute;
-import org.openiam.provision.type.ExtensibleObject;
 import org.openiam.spml2.base.AbstractSpml2Complete;
 import org.openiam.spml2.interf.ConnectorService;
 import org.openiam.spml2.msg.AddRequestType;
@@ -33,9 +25,7 @@ import org.openiam.spml2.msg.LookupRequestType;
 import org.openiam.spml2.msg.LookupResponseType;
 import org.openiam.spml2.msg.ModifyRequestType;
 import org.openiam.spml2.msg.ModifyResponseType;
-import org.openiam.spml2.msg.PSOIdentifierType;
 import org.openiam.spml2.msg.ResponseType;
-import org.openiam.spml2.msg.StatusCodeType;
 import org.openiam.spml2.msg.password.ExpirePasswordRequestType;
 import org.openiam.spml2.msg.password.ResetPasswordRequestType;
 import org.openiam.spml2.msg.password.ResetPasswordResponseType;
@@ -44,11 +34,9 @@ import org.openiam.spml2.msg.password.ValidatePasswordRequestType;
 import org.openiam.spml2.msg.password.ValidatePasswordResponseType;
 import org.openiam.spml2.msg.suspend.ResumeRequestType;
 import org.openiam.spml2.msg.suspend.SuspendRequestType;
-import org.openiam.spml2.spi.ldap.LdapConnectorImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
 
 @WebService(endpointInterface = "org.openiam.spml2.interf.ConnectorService", targetNamespace = "http://www.openiam.org/service/connector", portName = "CSVConnectorServicePort", serviceName = "CSVConnectorService")
 public class CSVConnectorImpl extends AbstractSpml2Complete implements
@@ -59,23 +47,18 @@ public class CSVConnectorImpl extends AbstractSpml2Complete implements
 	private TestCSVCommand testCommand;
 	private LookupCSVCommand lookupCommand;
 	private ModifyCSVCommand modifyCommand;
+	private ReconcileCSVCommand reconCommand;
+
+
 
 	private ResourceDataService resourceDataService;
-	private ManagedSystemDataService managedSysService;
 
 	public void setResourceDataService(ResourceDataService resourceDataService) {
 		this.resourceDataService = resourceDataService;
+	}	public void setReconCommand(ReconcileCSVCommand reconCommand) {
+		this.reconCommand = reconCommand;
 	}
 
-	public void setManagedSysService(ManagedSystemDataService managedSysService) {
-		this.managedSysService = managedSysService;
-	}
-
-	public void setLoginManager(LoginDataService loginManager) {
-		this.loginManager = loginManager;
-	}
-
-	private LoginDataService loginManager;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -92,7 +75,6 @@ public class CSVConnectorImpl extends AbstractSpml2Complete implements
 
 		Resource res = resourceDataService.getResource(config.getResourceId());
 		String managedSysId = res.getManagedSysId();
-		ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
 
 		Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();
 		for (ReconciliationSituation situation : config.getSituationSet()) {
@@ -102,70 +84,8 @@ public class CSVConnectorImpl extends AbstractSpml2Complete implements
 							managedSysId));
 			log.debug("Created Command for: " + situation.getSituation());
 		}
-
-		ResponseType response = new ResponseType();
-		response.setStatus(StatusCodeType.SUCCESS);
-
-		LookupRequestType request = new LookupRequestType();
-		ManagedSystemObjectMatch[] matchObjAry = managedSysService
-				.managedSysObjectParam(managedSysId, "USER");
-		if (matchObjAry.length == 0) {
-			log.error("No match object found for this managed sys");
-			response.setStatus(StatusCodeType.FAILURE);
-			return response;
-		}
-		String keyField = matchObjAry[0].getKeyField();
-		String searchString = keyField + "=*";
-		PSOIdentifierType idType = new PSOIdentifierType(searchString, null,
-				managedSysId);
-		request.setPsoID(idType);
-
-		LookupResponseType responseType = lookup(request);
-
-		if (responseType.getStatus() == StatusCodeType.FAILURE) {
-			response.setStatus(StatusCodeType.FAILURE);
-			return response;
-		}
-
-		if (responseType.getAny() != null && responseType.getAny().size() != 0) {
-			for (ExtensibleObject obj : responseType.getAny()) {
-				log.debug("Reconcile Found User");
-				String principal = null;
-				String searchPrincipal = null;
-				for (ExtensibleAttribute attr : obj.getAttributes()) {
-					if (attr.getName().equalsIgnoreCase(keyField)) {
-						principal = attr.getValue();
-						break;
-					}
-				}
-				if (principal != null) {
-					log.debug("reconcile principle found");
-
-					Login login = loginManager.getLoginByManagedSys(
-							mSys.getDomainId(), principal, managedSysId);
-					if (login == null) {
-						log.debug("Situation: IDM Not Found");
-						DeleteRequestType delete = new DeleteRequestType();
-						idType = new PSOIdentifierType(searchPrincipal, null,
-								managedSysId);
-						delete.setPsoID(idType);
-						delete(delete);
-						Login l = new Login();
-						LoginId id = new LoginId();
-						id.setDomainId(mSys.getDomainId());
-						id.setLogin(principal);
-						id.setManagedSysId(managedSysId);
-						l.setId(id);
-						ReconciliationCommand command = situations
-								.get("IDM Not Found");
-						if (command != null) {
-							log.debug("Call command for IDM Not Found");
-							command.execute(l, null, obj.getAttributes());
-						}
-					}
-				}
-			}
-		}
+		ResponseType response = reconCommand.reconcile(config);
+		
 		return response; // To change body of implemented methods use File |
 							// Settings | File Templates.
 	}

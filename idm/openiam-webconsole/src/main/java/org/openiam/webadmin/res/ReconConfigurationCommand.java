@@ -15,12 +15,14 @@ import java.util.List;
  */
 public class ReconConfigurationCommand implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private Resource res;
 	private ReconciliationConfig config = new ReconciliationConfig();
 	private List<ReconciliationSituation> situationList = new ArrayList<ReconciliationSituation>();
 	private boolean isCSV;
 	private String csvDirectory;
 	private String reconCSVName;
+	private boolean isReportExist;
 
 	public String getReconCSVName() {
 		return reconCSVName;
@@ -68,5 +70,13 @@ public class ReconConfigurationCommand implements Serializable {
 
 	public void setCsvDirectory(String csvDirectory) {
 		this.csvDirectory = csvDirectory;
+	}
+
+	public boolean getIsReportExist() {
+		return isReportExist;
+	}
+
+	public void setIsReportExist(boolean isReportExist) {
+		this.isReportExist = isReportExist;
 	}
 }

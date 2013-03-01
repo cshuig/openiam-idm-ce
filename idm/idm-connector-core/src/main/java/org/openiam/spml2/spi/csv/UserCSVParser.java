@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mvel2.optimizers.impl.refl.nodes.ArrayLength;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
+import org.openiam.idm.srvc.user.dto.UserSearch;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.spml2.spi.common.UserFields;
@@ -21,6 +21,87 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 
 	public UserCSVParser(String path) {
 		super(path);
+	}
+
+	public UserCSVParser(char separator, char EOL, String path) {
+		super(separator, EOL, path);
+	}
+
+	public UserSearch userSearch(String keyFieldVal, List<AttributeMap> amList) {
+		UserSearch search = new UserSearch();
+		for (AttributeMap am : amList) {
+			if ("PRINCIPAL".equals(am.getMapForObjectType())) {
+				UserFields field = Enum.valueOf(UserFields.class, am
+						.getAttributePolicy().getName());
+				putValueInSearch(search, field, keyFieldVal);
+			}
+		}
+		return search;
+	}
+
+	protected void putValueInSearch(UserSearch user, UserFields field,
+			String objValue) {
+		switch (field) {
+		case createDate:
+			user.setCreateDate(Date.valueOf(objValue));
+			break;
+
+		case departmentCD:
+		case deptCd:
+			user.setDeptCd(objValue);
+			break;
+		case employeeId:
+			user.setEmployeeId(objValue);
+			break;
+		case firstName:
+			user.setFirstName(objValue);
+			break;
+		case lastName:
+			user.setLastName(objValue);
+			break;
+		case locationCd:
+			user.setLocationCd(objValue);
+			break;
+		case classification:
+			user.setClassification(objValue);
+			break;
+		case userId:
+			user.setUserId(objValue);
+			break;
+		case userTypeInd:
+			user.setUserTypeInd(objValue);
+			break;
+		case division:
+			user.setDivision(objValue);
+			break;
+		case startDate:
+			try {
+				user.setStartDate(Date.valueOf(objValue));
+			} catch (Exception e) {
+				user.setStartDate(null);
+			}
+			break;
+		case lastDate:
+			try {
+				user.setLastDate(Date.valueOf(objValue));
+			} catch (Exception e) {
+				user.setLastDate(null);
+			}
+			break;
+		case showInSearch:
+			try {
+				user.setShowInSearch(Integer.valueOf(objValue));
+			} catch (Exception e) {
+				user.setShowInSearch(null);
+			}
+			break;
+		case DEFAULT:
+			break;
+		default:
+			break;
+
+		}
+
 	}
 
 	@Override
@@ -46,6 +127,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case createdBy:
 			user.setCreatedBy(objValue);
 			break;
+		case departmentCD:
 		case deptCd:
 			user.setDeptCd(objValue);
 			break;
@@ -170,6 +252,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case suite:
 			user.setSuite(objValue);
 			break;
+		case postalAddress:
 		case address1:
 			user.setAddress1(objValue);
 			break;
@@ -198,10 +281,12 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 			user.setState(objValue);
 			break;
 		case postalCd:
+		case postalCode:
 			user.setPostalCd(objValue);
 			break;
 		case mail:
 		case email:
+		case emailAddress:
 			user.setEmail(objValue);
 			break;
 		case showInSearch:
@@ -224,6 +309,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case countryCd:
 			user.setCountryCd(objValue);
 			break;
+		case telephoneNumber:
 		case phoneNbr:
 			user.setPhoneNbr(objValue);
 			break;
@@ -286,6 +372,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 			objValue = convertToString(user.getCreatedBy());
 			break;
 		case deptCd:
+		case departmentCD:
 			objValue = convertToString(user.getDeptCd());
 			break;
 		case deptName:
@@ -391,6 +478,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case suite:
 			objValue = convertToString(user.getSuite());
 			break;
+		case postalAddress:
 		case address1:
 			objValue = convertToString(user.getAddress1());
 			break;
@@ -419,10 +507,12 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 			objValue = convertToString(user.getState());
 			break;
 		case postalCd:
+		case postalCode:
 			objValue = convertToString(user.getPostalCd());
 			break;
 		case mail:
 		case email:
+		case emailAddress:
 			objValue = convertToString(user.getEmail());
 			break;
 		case showInSearch:
@@ -437,6 +527,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		case countryCd:
 			objValue = convertToString(user.getCountryCd());
 			break;
+		case telephoneNumber:
 		case phoneNbr:
 			objValue = convertToString(user.getPhoneNbr());
 			break;
@@ -474,31 +565,31 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		return objValue;
 	}
 
-	protected List<CSVObject<ProvisionUser>> getObjectList(
+	protected List<CSVObject<ProvisionUser>> getObjectListFromIDMCSV(
 			ManagedSys managedSys, List<AttributeMap> attrMapList)
 			throws Exception {
 		return getObjectList(managedSys, attrMapList, ProvisionUser.class,
-				UserFields.class);
+				UserFields.class, false);
 	}
 
-	public void addObjectToCSV(CSVObject<ProvisionUser> newObject,
+	public void addObjectToIDMCSV(CSVObject<ProvisionUser> newObject,
 			ManagedSys managedSys, List<AttributeMap> attrMapList)
 			throws Exception {
 		appendObjectToCSV(newObject, managedSys, attrMapList,
-				ProvisionUser.class, UserFields.class, true);
+				ProvisionUser.class, UserFields.class, true, false);
 	}
 
-	public void updateCSV(List<CSVObject<ProvisionUser>> newObject,
+	public void updateIDMCSV(List<CSVObject<ProvisionUser>> newObject,
 			ManagedSys managedSys, List<AttributeMap> attrMapList,
 			boolean append) throws Exception {
 		updateCSV(newObject, managedSys, attrMapList, ProvisionUser.class,
-				UserFields.class, append);
+				UserFields.class, append, false);
 	}
 
-	public void deleteObjectFromCSV(String principal, ManagedSys managedSys,
+	public void deleteObjectFromIDMCSV(String principal, ManagedSys managedSys,
 			List<AttributeMap> attrMapList) throws Exception {
-		List<CSVObject<ProvisionUser>> users = this.getObjectList(managedSys,
-				attrMapList);
+		List<CSVObject<ProvisionUser>> users = this.getObjectListFromIDMCSV(
+				managedSys, attrMapList);
 		Iterator<CSVObject<ProvisionUser>> userIter = users.iterator();
 		while (userIter.hasNext()) {
 			CSVObject<ProvisionUser> user = userIter.next();
@@ -508,14 +599,52 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 				}
 			}
 		}
-		this.updateCSV(users, managedSys, attrMapList, false);
+		this.updateIDMCSV(users, managedSys, attrMapList, false);
 	}
 
-	public void updateObjectFromCSV(CSVObject<ProvisionUser> newUser,
+	protected List<CSVObject<ProvisionUser>> getObjectListFromSourceCSV(
 			ManagedSys managedSys, List<AttributeMap> attrMapList)
 			throws Exception {
-		List<CSVObject<ProvisionUser>> users = this.getObjectList(managedSys,
-				attrMapList);
+		return getObjectList(managedSys, attrMapList, ProvisionUser.class,
+				UserFields.class, true);
+	}
+
+	public void addObjectToSourceCSV(CSVObject<ProvisionUser> newObject,
+			ManagedSys managedSys, List<AttributeMap> attrMapList)
+			throws Exception {
+		appendObjectToCSV(newObject, managedSys, attrMapList,
+				ProvisionUser.class, UserFields.class, true, true);
+	}
+
+	public void updateSourceCSV(List<CSVObject<ProvisionUser>> newObject,
+			ManagedSys managedSys, List<AttributeMap> attrMapList,
+			boolean append) throws Exception {
+		updateCSV(newObject, managedSys, attrMapList, ProvisionUser.class,
+				UserFields.class, append, true);
+	}
+
+	public void deleteObjectFromSourceCSV(String principal,
+			ManagedSys managedSys, List<AttributeMap> attrMapList)
+			throws Exception {
+		List<CSVObject<ProvisionUser>> users = this.getObjectListFromIDMCSV(
+				managedSys, attrMapList);
+		Iterator<CSVObject<ProvisionUser>> userIter = users.iterator();
+		while (userIter.hasNext()) {
+			CSVObject<ProvisionUser> user = userIter.next();
+			if (principal != null) {
+				if (principal.equals(user.getPrincipal())) {
+					userIter.remove();
+				}
+			}
+		}
+		this.updateIDMCSV(users, managedSys, attrMapList, true);
+	}
+
+	public void updateObjectFromIDMCSV(CSVObject<ProvisionUser> newUser,
+			ManagedSys managedSys, List<AttributeMap> attrMapList)
+			throws Exception {
+		List<CSVObject<ProvisionUser>> users = this.getObjectListFromIDMCSV(
+				managedSys, attrMapList);
 		List<CSVObject<ProvisionUser>> newUsers = new ArrayList<CSVObject<ProvisionUser>>(
 				0);
 		for (CSVObject<ProvisionUser> user : users) {
@@ -525,7 +654,24 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 				newUsers.add(user);
 			}
 		}
-		this.updateCSV(newUsers, managedSys, attrMapList, false);
+		this.updateIDMCSV(newUsers, managedSys, attrMapList, false);
+	}
+
+	public void updateObjectFromSourceCSV(CSVObject<ProvisionUser> newUser,
+			ManagedSys managedSys, List<AttributeMap> attrMapList)
+			throws Exception {
+		List<CSVObject<ProvisionUser>> users = this.getObjectListFromSourceCSV(
+				managedSys, attrMapList);
+		List<CSVObject<ProvisionUser>> newUsers = new ArrayList<CSVObject<ProvisionUser>>(
+				0);
+		for (CSVObject<ProvisionUser> user : users) {
+			if (newUser.getPrincipal().equals(user.getPrincipal())) {
+				newUsers.add(newUser);
+			} else {
+				newUsers.add(user);
+			}
+		}
+		this.updateIDMCSV(newUsers, managedSys, attrMapList, false);
 	}
 
 	public Map<String, String> convertToMap(List<AttributeMap> attrMap,
