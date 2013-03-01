@@ -20,6 +20,7 @@ import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
 import org.openiam.idm.srvc.recon.ws.ReconciliationWebService;
 import org.openiam.idm.srvc.res.dto.Resource;
+import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
@@ -37,21 +38,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
 
+import com.ctc.wstx.util.StringUtil;
+
 public class AbstractCSVCommand implements ApplicationContextAware {
 	protected static final Log log = LogFactory
 			.getLog(AbstractCSVCommand.class);
 
 	protected ManagedSystemDataService managedSysService;
 
-	protected UserDataService userMgr;
 	protected ResourceDataService resourceDataService;
 	protected ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
 	protected String pathToCSV;
 	public static ApplicationContext ac;
-
-	public void setUserMgr(UserDataService userMgr) {
-		this.userMgr = userMgr;
-	}
 
 	public void setPathToCSV(String pathToCSV) {
 		this.pathToCSV = pathToCSV;
@@ -113,13 +111,26 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 							managedSysId));
 			log.debug("Created Command for: " + situation.getSituation());
 		}
-
+		if (config.getUserList() == null) {
+			log.error("user list from DB is empty");
+			response.setStatus(StatusCodeType.FAILURE);
+			response.setErrorMessage("user list from DB is empty");
+			return response;
+		}
 		UserCSVParser parserIDM = new UserCSVParser(pathToCSV);
 		UserCSVParser parserSource = new UserCSVParser(pathToCSV);
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(mSys.getResourceId());
 		List<CSVObject<ProvisionUser>> idmUsers;
 		List<CSVObject<ProvisionUser>> sourceUsers;
+		List<CSVObject<ProvisionUser>> dbUsers = new ArrayList<CSVObject<ProvisionUser>>();
+		for (User u : config.getUserList()) {
+			ProvisionUser pu_ = new ProvisionUser(u);
+			pu_.setPrincipalList(u.getPrincipalList());
+			dbUsers.add(parserIDM
+					.toCsvObject(pu_, attrMapList));
+		}
+
 		try {
 			idmUsers = parserIDM.getObjectListFromIDMCSV(mSys, attrMapList);
 			sourceUsers = parserSource.getObjectListFromSourceCSV(mSys,
@@ -136,146 +147,27 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			report.add(new ReconciliationHTMLRow(header.toString()));
 			log.info("Generate headred " + header.toString()); // -----------------------------------------------------------
 			// First run from IDM search in Sourse
-			String preffix = "IDM: ";
 			report.add(new ReconciliationHTMLRow("Records from IDM: "
 					+ idmUsers.size() + " items", hList.size() + 1));
-			for (CSVObject<ProvisionUser> u : idmUsers) {
-				log.info("User " + u.toString());
-				if (u.getObject() == null || u.getPrincipal() == null) {
-					log.warn("Skip USER" + u.toString()
-							+ " key or objecy is NULL");
-					if (u.getObject() != null) {
-						report.add(new ReconciliationHTMLRow(preffix,
-								ReconciliationHTMLReportResults.BROKEN_CSV,
-								this.objectToString(hList,
-										parserIDM.convertToMap(attrMapList, u))));
-					}
-					continue;
-				}
-
-				Login l = null;
-				List<User> users = userMgr.search(parserIDM.userSearch(
-						u.getPrincipal(), attrMapList));
-				if (CollectionUtils.isEmpty(users)) {
-					report.add(new ReconciliationHTMLRow(
-							preffix,
-							ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB,
-							this.objectToString(hList,
-									parserIDM.convertToMap(attrMapList, u))));
-					continue;
-				}
-				if (users.size() > 1) {
-					report.add(new ReconciliationHTMLRow(preffix,
-							ReconciliationHTMLReportResults.NOT_QNIQUE_KEY,
-							this.objectToString(hList,
-									parserIDM.convertToMap(attrMapList, u))));
-					continue;
-				}
-				List<Login> logins = users.get(0).getPrincipalList();
-				if (logins != null) {
-					for (Login login : logins) {
-						if (login.getId().getDomainId()
-								.equalsIgnoreCase(mSys.getDomainId())
-								&& login.getId().getManagedSysId()
-										.equalsIgnoreCase(managedSysId)) {
-							l = login;
-							break;
-						}
-					}
-				}
-				if (l == null) {
-					if (users.get(0).getStatus().equals(UserStatusEnum.DELETED)) {
-						for (CSVObject<ProvisionUser> sourceUser : sourceUsers) {
-							if (u.getPrincipal().endsWith(
-									sourceUser.getPrincipal())) {
-								report.add(new ReconciliationHTMLRow(
-										preffix,
-										ReconciliationHTMLReportResults.IDM_DELETED,
-										this.objectToString(hList, parserIDM
-												.convertToMap(attrMapList, u))));
-								break;
-							}
-						}
-						continue;
-					}
-					report.add(new ReconciliationHTMLRow(preffix,
-							ReconciliationHTMLReportResults.LOGIN_NOT_FOUND,
-							this.objectToString(hList,
-									parserIDM.convertToMap(attrMapList, u))));
-					continue;
-				} else {
-					boolean isFind = false;
-					for (CSVObject<ProvisionUser> sourceUser : sourceUsers) {
-						if (u.getPrincipal()
-								.trim()
-								.equalsIgnoreCase(
-										sourceUser.getPrincipal().trim())) {
-
-							report.add(new ReconciliationHTMLRow(
-									preffix,
-									ReconciliationHTMLReportResults.MATCH_FOUND,
-									this.objectToString(
-											hList,
-											matchFields(parserIDM.convertToMap(
-													attrMapList, u), parserIDM
-													.convertToMap(attrMapList,
-															sourceUser)))));
-							isFind = true;
-							break;
-						}
-					}
-					if (!isFind) {
-						report.add(new ReconciliationHTMLRow(
-								preffix,
-								ReconciliationHTMLReportResults.RESOURSE_DELETED,
-								this.objectToString(hList,
-										parserIDM.convertToMap(attrMapList, u))));
-					}
-				}
+			try {
+				reconCicle(hList, report, "IDM: ", parserIDM, idmUsers,
+						dbUsers, attrMapList, mSys);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				response.setStatus(StatusCodeType.FAILURE);
+				response.setErrorMessage(e.getMessage());
+				return response;
 			}
-			// -----------------------------------------------
-			// Second run from Sourse search in IDM
 			report.add(new ReconciliationHTMLRow("Records from Remote CSV: "
 					+ sourceUsers.size() + " items", hList.size() + 1));
-			preffix = "Source: ";
-			for (CSVObject<ProvisionUser> u : sourceUsers) {
-				boolean isFind = false;
-				if (u.getObject() == null || u.getPrincipal() == null) {
-					log.warn("Skip USER" + u.toString()
-							+ " key or object is NULL");
-					if (u.getObject() != null) {
-
-						report.add(new ReconciliationHTMLRow(preffix,
-								ReconciliationHTMLReportResults.BROKEN_CSV,
-								this.objectToString(hList,
-										parserIDM.convertToMap(attrMapList, u))));
-
-					}
-					continue;
-				}
-
-				for (CSVObject<ProvisionUser> sourceUser : idmUsers) {
-					if (u.getPrincipal().trim()
-							.equalsIgnoreCase(sourceUser.getPrincipal().trim())) {
-						isFind = true;
-						report.add(new ReconciliationHTMLRow(preffix,
-								ReconciliationHTMLReportResults.MATCH_FOUND,
-								this.objectToString(
-										hList,
-										matchFields(parserIDM.convertToMap(
-												attrMapList, u), parserIDM
-												.convertToMap(attrMapList,
-														sourceUser)))));
-						break;
-					}
-				}
-				if (!isFind) {
-					report.add(new ReconciliationHTMLRow(
-							preffix,
-							ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB,
-							this.objectToString(hList,
-									parserIDM.convertToMap(attrMapList, u))));
-				}
+			try {
+				reconCicle(hList, report, "Source: ", parserIDM, sourceUsers,
+						dbUsers, attrMapList, mSys);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				response.setStatus(StatusCodeType.FAILURE);
+				response.setErrorMessage(e.getMessage());
+				return response;
 			}
 			// -----------------------------------------------
 		} catch (Exception e) {
@@ -332,6 +224,150 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		}
 
 		return res;
+	}
+
+	/**
+	 * 
+	 * @param hList
+	 *            - List of Caption header value
+	 * @param report
+	 *            - List to add report strings
+	 * @param preffix
+	 *            - IDM or Sourcer csv pref
+	 * @param parser
+	 *            - UserParser for reconsile
+	 * @param reconUserList
+	 *            - list to reconsile with db Users list
+	 * @param dbUsers
+	 *            - list of IDM users
+	 * @param attrMapList
+	 *            - List<AttributeMap> attrMapList
+	 * @param mSys
+	 *            - ManagedSys mSys
+	 * @throws Exception
+	 */
+	private void reconCicle(List<String> hList,
+			List<ReconciliationHTMLRow> report, String preffix,
+			UserCSVParser parser, List<CSVObject<ProvisionUser>> reconUserList,
+			List<CSVObject<ProvisionUser>> dbUsers,
+			List<AttributeMap> attrMapList, ManagedSys mSys) throws Exception {
+		for (CSVObject<ProvisionUser> u : reconUserList) {
+			log.info("User " + u.toString());
+			if (u.getObject() == null || u.getPrincipal() == null) {
+				log.warn("Skip USER" + u.toString() + " key or objecy is NULL");
+				if (u.getObject() != null) {
+					report.add(new ReconciliationHTMLRow(preffix,
+							ReconciliationHTMLReportResults.BROKEN_CSV,
+							this.objectToString(hList,
+									parser.convertToMap(attrMapList, u))));
+				}
+				continue;
+			}
+
+			if (!isUnique(u, reconUserList)) {
+				report.add(new ReconciliationHTMLRow(preffix,
+						ReconciliationHTMLReportResults.NOT_UNIQUE_KEY, this
+								.objectToString(hList,
+										parser.convertToMap(attrMapList, u))));
+				continue;
+			}
+			boolean isFind = false;
+			boolean isMultiple = false;
+			CSVObject<ProvisionUser> finded = null;
+			for (CSVObject<ProvisionUser> o : dbUsers) {
+
+				if (!StringUtils.hasText(o.getPrincipal())) {
+					continue;
+				}
+				if (o.getPrincipal().equals(u.getPrincipal())) {
+					if (!isFind) {
+						isFind = true;
+						finded = o;
+						continue;
+					} else {
+						isMultiple = true;
+						report.add(new ReconciliationHTMLRow(preffix,
+								ReconciliationHTMLReportResults.NOT_UNIQUE_KEY,
+								this.objectToString(hList,
+										parser.convertToMap(attrMapList, u))));
+						break;
+					}
+				}
+			}
+
+			if (!isFind) {
+				report.add(new ReconciliationHTMLRow(preffix,
+						ReconciliationHTMLReportResults.NOT_EXIST_IN_IDM_DB,
+						this.objectToString(hList,
+								parser.convertToMap(attrMapList, u))));
+			} else if (!isMultiple && finded != null) {
+				Login l = null;
+				List<Login> logins = finded.getObject().getPrincipalList();
+				if (logins != null) {
+					for (Login login : logins) {
+						if (login.getId().getDomainId()
+								.equalsIgnoreCase(mSys.getDomainId())
+								&& login.getId()
+										.getManagedSysId()
+										.equalsIgnoreCase(
+												mSys.getManagedSysId())) {
+							l = login;
+							break;
+						}
+					}
+				}
+				if (l == null) {
+					if (UserStatusEnum.DELETED.equals(finded.getObject()
+							.getStatus())) {
+						report.add(new ReconciliationHTMLRow(preffix,
+								ReconciliationHTMLReportResults.IDM_DELETED,
+								this.objectToString(hList,
+										parser.convertToMap(attrMapList, u))));
+						continue;
+					}
+					report.add(new ReconciliationHTMLRow(preffix,
+							ReconciliationHTMLReportResults.LOGIN_NOT_FOUND,
+							this.objectToString(hList,
+									parser.convertToMap(attrMapList, u))));
+					continue;
+				} else {
+					report.add(new ReconciliationHTMLRow(preffix,
+							ReconciliationHTMLReportResults.MATCH_FOUND, this
+									.objectToString(
+											hList,
+											matchFields(parser.convertToMap(
+													attrMapList, u), parser
+													.convertToMap(attrMapList,
+															finded)))));
+					continue;
+				}
+			}
+		}
+	}
+
+	private boolean isUnique(CSVObject<ProvisionUser> obj,
+			List<CSVObject<ProvisionUser>> list) {
+		if (obj == null || list == null)
+			return false;
+
+		if (!StringUtils.hasText(obj.getPrincipal()))
+			return false;
+
+		boolean isFinded = false;
+		for (CSVObject<ProvisionUser> l : list) {
+			if (l.equals(obj)) {
+				if (isFinded)
+					return false;
+				isFinded = true;
+				continue;
+			}
+			if (obj.getPrincipal().equals(l.getPrincipal())) {
+				if (isFinded)
+					return false;
+				isFinded = true;
+			}
+		}
+		return true;
 	}
 
 	protected List<CSVObject<ProvisionUser>> getUsersFromCSV(

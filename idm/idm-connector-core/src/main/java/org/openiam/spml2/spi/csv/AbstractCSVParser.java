@@ -20,7 +20,7 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 	private char SEPARATOR;
 	private char END_OF_LINE;
-	private static String PRINCIPAL_OBJECT = "PRINCIPAL";
+	protected static String PRINCIPAL_OBJECT = "PRINCIPAL";
 	private String pathToCSV;
 	private String header;
 
@@ -262,7 +262,7 @@ public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 	 * @param o
 	 * @return
 	 */
-	protected String convertToString(Object o) {
+	protected static String convertToString(Object o) {
 		return o == null ? "" : String.valueOf(o);
 	}
 

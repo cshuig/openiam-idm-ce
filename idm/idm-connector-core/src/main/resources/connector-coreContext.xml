@@ -108,7 +108,7 @@
 		<property name="lookupCommand" ref="csvLookupCommmand" />
 		<property name="reconCommand" ref="csvReconCommmand" />
 		<property name="modifyCommand" ref="csvModifyCommmand" />
-				<property name="resourceDataService" ref="resourceDataService" />
+		<property name="resourceDataService" ref="resourceDataService" />
 	</bean>
 
 
@@ -137,7 +137,6 @@
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
-		<property name="userMgr" ref="userManager" />
 		<property name="pathToCSV" value="${csv.path}" />
 	</bean>
 

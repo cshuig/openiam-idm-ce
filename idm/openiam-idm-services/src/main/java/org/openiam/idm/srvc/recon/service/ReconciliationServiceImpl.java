@@ -181,6 +181,20 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 			ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
 			ProvisionConnector connector = connectorService.getConnector(mSys
 					.getConnectorId());
+
+			List<User> users = new ArrayList<User>();
+			for (ResourceRole rRole : res.getResourceRoles()) {
+				User[] usrAry = roleDataService.getUsersInRole(
+						mSys.getDomainId(), rRole.getId().getRoleId());
+				if (usrAry != null) {
+					for (User user : usrAry) {
+						user.setPrincipalList(loginManager.getLoginByUser(user
+								.getUserId()));
+						users.add(user);
+					}
+				}
+			}
+			config.setUserList(users);
 			if (connector.getServiceUrl().contains("CSV")) {
 				ResponseType rep = connectorAdapter.reconcileResource(mSys,
 						config, muleContext);
@@ -198,17 +212,6 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 								situation.getSituationResp(), situation,
 								managedSysId));
 				log.debug("Created Command for: " + situation.getSituation());
-			}
-
-			List<User> users = new ArrayList<User>();
-			for (ResourceRole rRole : res.getResourceRoles()) {
-				User[] usrAry = roleDataService.getUsersInRole(
-						mSys.getDomainId(), rRole.getId().getRoleId());
-				if (usrAry != null) {
-					for (User user : usrAry) {
-						users.add(user);
-					}
-				}
 			}
 
 			List<Login> principalList = loginManager

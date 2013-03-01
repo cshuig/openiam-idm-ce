@@ -1,16 +1,20 @@
 package org.openiam.idm.srvc.recon.dto;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Set;
+
+import org.openiam.idm.srvc.user.dto.User;
 
 // Generated May 29, 2010 8:20:09 PM by Hibernate Tools 3.2.2.GA
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ReconciliationConfig", propOrder = { "reconConfigId",
 		"resourceId", "frequency", "status", "situationSet", "reportPath",
-		"separator", "endOfLine" })
+		"separator", "endOfLine","userList" })
 public class ReconciliationConfig implements java.io.Serializable {
 
 	private static final long serialVersionUID = 431603790346613674L;
@@ -18,9 +22,12 @@ public class ReconciliationConfig implements java.io.Serializable {
 	private String resourceId;
 	private String frequency;
 	private String status;
+	
+	//Not saved in DB
 	private String reportPath;
 	private String separator;
 	private String endOfLine;
+	private List<User> userList;
 
 	public String getSeparator() {
 		return separator;
@@ -103,5 +110,13 @@ public class ReconciliationConfig implements java.io.Serializable {
 
 	public void setReportPath(String reportPath) {
 		this.reportPath = reportPath;
+	}
+
+	public List<User> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<User> userList) {
+		this.userList = userList;
 	}
 }

@@ -39,6 +39,29 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 		return search;
 	}
 
+	public CSVObject<ProvisionUser> toCsvObject(ProvisionUser pu,
+			List<AttributeMap> attrMap) {
+		CSVObject<ProvisionUser> object = new CSVObject<ProvisionUser>();
+		object.setObject(pu);
+		for (AttributeMap a : attrMap) {
+			if (a.getAttributePolicy() != null
+					&& a.getAttributePolicy().getName() != null) {
+				if (PRINCIPAL_OBJECT.equals(a.getMapForObjectType())) {
+					UserFields fieldValue;
+					try {
+						fieldValue = Enum.valueOf(UserFields.class, a
+								.getAttributePolicy().getName());
+					} catch (IllegalArgumentException e) {
+						log.info(e.getMessage());
+						fieldValue = Enum.valueOf(UserFields.class, "DEFAULT");
+					}
+					object.setPrincipal(this.putValueIntoString(pu, fieldValue));
+				}
+			}
+		}
+		return object;
+	}
+
 	protected void putValueInSearch(UserSearch user, UserFields field,
 			String objValue) {
 		switch (field) {
