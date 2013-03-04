@@ -183,8 +183,8 @@ public class NightlyTask implements ApplicationContextAware {
 
 			}
 		}
-
-		executeBIRTTasks();
+		//commented to make sure merge goes through without any issues
+		//executeBIRTTasks();
 
 	}
 
