@@ -34,10 +34,10 @@
 		<property name="batchService" ref="batchDataService" />
 		<property name="loginManager" ref="loginWS" />
 		<property name="groupManager" ref="groupManager" />
-		<property name="userManager" ref="userManager" />
+		<property name="userManager" ref="userWS" />
 		<property name="policyDataService" ref="policyDataService" />
 		<property name="reportDataService" ref="reportDataService" />
-		<property name="roleDataService" ref="roleDataService" />
+		<property name="roleDataService" ref="roleWS" />
 		<property name="mailService" ref="mailService" />
 						<property name="scriptEngine"
 			value="org.openiam.script.GroovyScriptEngineIntegration" />

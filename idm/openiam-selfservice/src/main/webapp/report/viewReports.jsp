@@ -39,8 +39,9 @@
                                     <c:choose>
                                     <c:when test="${reportCommand.files!=null}">
                                         <c:forEach var="item" items="${reportCommand.files}">
+										<c:set var="path" value="file://${item.path}" />
                                         <tr>
-                                            <td><a href="${item.path}" target="_blank">${item.name}</a></td>
+                                            <td><a href="${path}" target="_blank">${item.name}</a></td>
                                             
                                         </tr>
                                     </c:forEach>
