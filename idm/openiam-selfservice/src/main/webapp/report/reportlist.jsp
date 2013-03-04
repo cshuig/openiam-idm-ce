@@ -11,7 +11,7 @@
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
 <script type="text/javascript">
-    var selectReport = function(reportId, reportName, deliveryMethod, status, actionName) {
+    var selectReport = function(reportId, reportName, deliveryMethod, deliveryFormat, deliveryAudience, status, userId, actionName) {
         $('#selectedReportId').val(reportId);
         $('#selectedReportName').val(reportName);
         $('#selectedDeliveryMethod').val(deliveryMethod);
@@ -58,6 +58,8 @@
                                     <tr>
                                         <th>Report Name</th>
                                         <th>Delivery Method</th>
+                                        <th>Delivery Format</th>
+                                        <th>Delivery Audience</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -67,6 +69,8 @@
                                         <tr>
                                             <td>${item.reportName}</td>
                                             <td>${item.deliveryMethod}</td>
+                                            <td>${item.deliveryFormat}</td>
+                                            <td>${item.deliveryAudience}</td>
                                             <td>${item.status}</td>
                                             <td>
                                                 <input type="submit" name="edit_btn" value="Edit" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.deliveryMethod}','${item.deliveryFormat}','${item.deliveryAudience}','${item.status}','${item.userId}','edit');">
