@@ -38,8 +38,10 @@ public class ReportSubscriptionDaoImpl extends BaseDaoImpl<ReportSubscriptionEnt
         ReportSubscriptionEntity reportSubscription = findByName(reportSubscriptionEntity.getReportName());
         if(reportSubscription == null) {
            reportSubscription = reportSubscriptionEntity;
+           getSession().save(reportSubscriptionEntity);
+        }else{
+        	getSession().update(reportSubscriptionEntity);
         }
-        getSession().saveOrUpdate(reportSubscriptionEntity);
     }
     
     @Override

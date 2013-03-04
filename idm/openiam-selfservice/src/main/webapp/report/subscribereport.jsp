@@ -5,8 +5,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
 <%--@elvariable id="reportParameters" type="java.util.List<org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto>"--%>
-
+<jsp:useBean id="reportCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand" class="org.openiam.selfsrvc.reports.SubscribeReportsCommand" scope="session">  
+</jsp:useBean>  
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
+<c:set var="reportCommand" value="${sessionScope.reportCommand}" />
 <table width="800pt">
     <tr>
         <td>
