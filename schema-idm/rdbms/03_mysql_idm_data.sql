@@ -53,7 +53,7 @@ insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('420'
 
 insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('450','AD_GROUP_TYPE','DN');
 insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('451','AD_GROUP_TYPE','CN');
-insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('452','AD_GROUP_TYPE','sAccountName');
+insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('452','AD_GROUP_TYPE','sAMAccountName');
 insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('453','AD_GROUP_TYPE','objectClass');
 
 /* LDAP GROUP DEFINITION */
@@ -120,6 +120,13 @@ insert into METADATA_TYPE(TYPE_ID, DESCRIPTION) values('SOAP_Connector','SOAP Co
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION) values('SCRIPT_Connector','Script Connector');
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION) values('GOOGLE_Connector','GOOGLE APPS Connector');
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION) values('LINUX_Connector','Linux Connector');
+
+
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('WEB-APP','WEB Apps', 0);
+insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('WEB-APP1','WEB-APP','PROXY_URL');
+
+INSERT INTO RESOURCE_TYPE (RESOURCE_TYPE_ID, DESCRIPTION, METADATA_TYPE_ID, PROVISION_RESOURCE) VALUES('WEB-APP', 'Web Application', 'WEB-APP', 0);
+
 
 UPDATE METADATA_TYPE
 SET ACTIVE = 1, SYNC_MANAGED_SYS = 1;
@@ -230,7 +237,7 @@ insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISP
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ORG','IDMAN','Organization','Organization','orglist.cnt', 'en',2);
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('USER_BULK','IDMAN','User Bulk Ops','User Bulk Ops','userBulk.cnt', 'en',3);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('QUERYUSER','USER','Query','Query User','idman/userSearch.do?action=view', 'en',1);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('QUERYUSER','USER','Query','Query User','userSearch.cnt', 'en',1);
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ADDUSER','USER','Add','Add User','newUser.cnt', 'en',2);
 
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('USERSUMMARY','QUERYUSER','User Details','User Details','editUser.cnt', 'en',1);
@@ -261,7 +268,9 @@ insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISP
 
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ROLE_SUMMARY','SECURITY_ROLE','Detail','Role Details','roleDetail.cnt', 'en',1);
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ROLE_RESMAP','SECURITY_ROLE','Resource Map','Resource Map','roleResource.cnt', 'en',2);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ROLE_POLICY','SECURITY_ROLE','Policy','Role Policy','rolePolicy.cnt', 'en',3);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ROLE_GRPMAP','SECURITY_ROLE','Group Map','Group Map','roleGroupMap.cnt', 'en',3);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ROLE_MENUMAP','SECURITY_ROLE','Menu Map','Menu Map','roleMenuMap.cnt', 'en',4);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('ROLE_POLICY','SECURITY_ROLE','Policy','Role Policy','rolePolicy.cnt', 'en',5);
 
 
 
@@ -290,31 +299,28 @@ insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, disp
 
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('ACCESSCENTER','SELFSERVICE', 'Access Management Center', 'Access Management Center', null, 'en', '1',0);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('NEWHIRE','ACCESSCENTER','New User', 'New User', '{SELFSERVICE_EXT}/priv/newhire/edit.jsp', 'en', '1',0);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('REQINBOX', 'ACCESSCENTER' , 'In-Box','In-Box','{SELFSERVICE}/myPendingRequest.selfserve', 'en','3',0);
-INSERT INTO MENU (MENU_ID,LANGUAGE_CD,MENU_GROUP,MENU_NAME,MENU_DESC,URL,ACTIVE,DISPLAY_ORDER,PUBLIC_URL) VALUES ('CREATEREQ','en','ACCESSCENTER','Create Request','Create Request','{SELFSERVICE}/createRequest.selfserve',null,'4',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('NEWHIRE','ACCESSCENTER','New User', 'New User', '{SELFSERVICE_EXT}priv/newhire/edit.jsp', 'en', '1',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('REQINBOX', 'ACCESSCENTER' , 'In-Box','In-Box','{SELFSERVICE}myPendingRequest.selfserve', 'en','3',0);
+INSERT INTO MENU (MENU_ID,LANGUAGE_CD,MENU_GROUP,MENU_NAME,MENU_DESC,URL,ACTIVE,DISPLAY_ORDER,PUBLIC_URL) VALUES ('CREATEREQ','en','ACCESSCENTER','Create Request','Create Request','{SELFSERVICE}createRequest.selfserve',null,'4',0);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('MANAGEREQ', 'ACCESSCENTER' , 'Request History','Request History','{SELFSERVICE}/requestList.selfserve', 'en','5',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('MANAGEREQ', 'ACCESSCENTER' , 'Request History','Request History','{SELFSERVICE}requestList.selfserve', 'en','5',0);
 
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('SELFCENTER','SELFSERVICE','Self Service Center', 'Self Service Center', null, 'en', '2',0);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('DIRECTORY','SELFCENTER','Directory Lookup', 'Directory Lookup', '{SELFSERVICE}/pub/directory.do?method=view', 'en', '1',1);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('CHNGPSWD','SELFCENTER', 'Change Password', 'Change Password', '{SELFSERVICE}/passwordChange.selfserve', 'en', '3',0);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('IDQUEST','SELFCENTER', 'Challenge Response', 'Challenge Response', '{SELFSERVICE}/identityQuestion.selfserve', 'en', '4',0);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('PROFILE','SELFCENTER', 'Edit Your Profile', 'Edit Your Profile', '{SELFSERVICE_EXT}/priv/profile/edit.jsp', 'en', '6',0);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('MY-ID-LIST','SELFCENTER', 'My Identities', 'My Identities', '{SELFSERVICE}/myIdentityList.selfserve', 'en', '7',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('DIRECTORY','SELFCENTER','Directory Lookup', 'Directory Lookup', '{SELFSERVICE}pub/directory.do?method=view', 'en', '1',1);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('CHNGPSWD','SELFCENTER', 'Change Password', 'Change Password', '{SELFSERVICE}passwordChange.selfserve', 'en', '3',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('IDQUEST','SELFCENTER', 'Challenge Response', 'Challenge Response', '{SELFSERVICE}identityQuestion.selfserve', 'en', '4',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('PROFILE','SELFCENTER', 'Edit Your Profile', 'Edit Your Profile', '{SELFSERVICE_EXT}priv/profile/edit.jsp', 'en', '6',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('MY-ID-LIST','SELFCENTER', 'My Identities', 'My Identities', '{SELFSERVICE}myIdentityList.selfserve', 'en', '7',0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('MY-APPS','SELFCENTER', 'Launch Apps', 'Launch Apps', '{SELFSERVICE}launchApp.selfserve', 'en', '8',0);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('REPORTSCENTER','SELFSERVICE','Reports Center', 'Reports Center', null, 'en', '3',0);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('SUBSCRIBE_REPORT','REPORTSCENTER','Subscribe to Report', 'Subscribe to Report', 'report/subscribeReport.do', 'en', '1',0);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('VIEW_REPORTS','REPORTSCENTER', 'View Reports', 'View Reports', 'report/viewReports.do', 'en', '2',0);
-
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER, PUBLIC_URL) values('SELF_QUERYUSER','ACCESSCENTER','Manage User','Manage User','{SELFSERVICE}/idman/userSearch.do?action=view', 'en',1,0);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERSUMMARY','SELF_QUERYUSER','User Details','User Details','{SELFSERVICE}/editUser.selfserve', 'en',1);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERIDENTITY','SELF_QUERYUSER','Identities','User Identities','{SELFSERVICE}/userIdentity.selfserve', 'en',2);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERGROUP','SELF_QUERYUSER','Group','User Groups','{SELFSERVICE}/userGroup.selfserve', 'en',3);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERROLE','SELF_QUERYUSER','Role','User Role','{SELFSERVICE}/userRole.selfserve', 'en',4);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERPSWDRESET','SELF_QUERYUSER','Password Reset','Password Reset','{SELFSERVICE}/resetPassword.selfserve', 'en',7);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER, PUBLIC_URL) values('SELF_QUERYUSER','ACCESSCENTER','Manage User','Manage User','{SELFSERVICE}idman/userSearch.do?action=view', 'en',1,0);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERSUMMARY','SELF_QUERYUSER','User Details','User Details','{SELFSERVICE}editUser.selfserve', 'en',1);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERIDENTITY','SELF_QUERYUSER','Identities','User Identities','{SELFSERVICE}userIdentity.selfserve', 'en',2);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERGROUP','SELF_QUERYUSER','Group','User Groups','{SELFSERVICE}userGroup.selfserve', 'en',3);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERROLE','SELF_QUERYUSER','Role','User Role','{SELFSERVICE}userRole.selfserve', 'en',4);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SELF_USERPSWDRESET','SELF_QUERYUSER','Password Reset','Password Reset','{SELFSERVICE}resetPassword.selfserve', 'en',7);
 
 
 
@@ -371,6 +377,8 @@ INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('RESENTITLEMENT','SUP
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('ROLE_SUMMARY','SUPER_SEC_ADMIN','IDM');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('ROLE_RESMAP','SUPER_SEC_ADMIN','IDM');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('ROLE_POLICY','SUPER_SEC_ADMIN','IDM');
+INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('ROLE_GRPMAP','SUPER_SEC_ADMIN','IDM');
+INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('ROLE_MENUMAP','SUPER_SEC_ADMIN','IDM');
 
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('SECURITY_GROUP','SUPER_SEC_ADMIN','IDM');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID,SERVICE_ID) VALUES('SECURITY_ROLE','SUPER_SEC_ADMIN','IDM');
@@ -419,12 +427,6 @@ INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('CHNGPSWD','HELPDESK
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('IDQUEST','HELPDESK','USR_SEC_DOMAIN');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('PROFILE','HELPDESK','USR_SEC_DOMAIN');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('CREATEREQ','HELPDESK','USR_SEC_DOMAIN');
-
-INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('REPORTSCENTER','END_USER','USR_SEC_DOMAIN');
-INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('SUBSCRIBE_REPORT','END_USER','USR_SEC_DOMAIN');
-INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('VIEW_REPORTS','END_USER','USR_SEC_DOMAIN');
-
-
 
 insert into LOGIN(SERVICE_ID, LOGIN, MANAGED_SYS_ID, USER_ID, PASSWORD,RESET_PWD, IS_LOCKED, AUTH_FAIL_COUNT) VALUES('IDM','sysadmin','0','3000','b83a81d1b3f5f209a70ec02c3d7f7fc5',0,0,0);
 insert into LOGIN(SERVICE_ID, LOGIN, MANAGED_SYS_ID, USER_ID, PASSWORD,RESET_PWD, IS_LOCKED, AUTH_FAIL_COUNT) VALUES('USR_SEC_DOMAIN','sysadmin','0','3000','b83a81d1b3f5f209a70ec02c3d7f7fc5',0,0,0);
@@ -684,6 +686,8 @@ insert into POLICY (POLICY_ID, POLICY_DEF_ID, NAME, DESCRIPTION, STATUS, CREATE_
 insert into POLICY (POLICY_ID, POLICY_DEF_ID, NAME, DESCRIPTION, STATUS, CREATE_DATE, CREATED_BY, RULE_TEXT,  RULE_SRC_URL) VALUES ('4654','104', 'ad-city', 'City', 1,curdate(), '3000', '','provision/ad/city.groovy');
 insert into POLICY (POLICY_ID, POLICY_DEF_ID, NAME, DESCRIPTION, STATUS, CREATE_DATE, CREATED_BY, RULE_TEXT,  RULE_SRC_URL) VALUES ('4655','104', 'ad-state', 'State', 1,curdate(), '3000', '','provision/ad/state.groovy');
 insert into POLICY (POLICY_ID, POLICY_DEF_ID, NAME, DESCRIPTION, STATUS, CREATE_DATE, CREATED_BY, RULE_TEXT,  RULE_SRC_URL) VALUES ('4656','104', 'ad-zip', 'Zip', 1,curdate(), '3000', '','provision/ad/zip.groovy');
+insert into POLICY (POLICY_ID, POLICY_DEF_ID, NAME, DESCRIPTION, STATUS, CREATE_DATE, CREATED_BY, RULE_TEXT,  RULE_SRC_URL) VALUES ('4657','104', 'manager', 'manager', 1,curdate(), '3000', '','provision/manager.groovy');
+insert into POLICY (POLICY_ID, POLICY_DEF_ID, NAME, DESCRIPTION, STATUS, CREATE_DATE, CREATED_BY, RULE_TEXT,  RULE_SRC_URL) VALUES ('4658','104', 'ad-manager', 'ad-manager', 1,curdate(), '3000', '','provision/ad/manager.groovy');
 
 
 /* USED AS LOGICAL GROUPING FOR RESOURCES */
@@ -759,7 +763,6 @@ insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION)
 
 insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION) VALUES ('260', 'WORKFLOW', 'NEW_USER', 1, 'NEW USER');
 insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION) VALUES ('261', 'WORKFLOW', 'CHANGE_USER_STATUS', 2, 'CHANGE USER STATUS');
-insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION) VALUES ('263', 'WORKFLOW', 'MODIFY_USER_ORG', 3, 'MODIFY USER ORG ATTRIBUTES');
 insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION) VALUES ('262', 'WORKFLOW', 'CHANGE_ROLE', 4, 'CHANGE ROLE MEMBERSHIP');
 insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION) VALUES ('264', 'WORKFLOW', 'CHANGE_APPLICATION', 5, 'APPLICATION ACCESS');
 insert into RES (RESOURCE_ID, RESOURCE_TYPE_ID,NAME, DISPLAY_ORDER, DESCRIPTION) VALUES ('265', 'WORKFLOW', 'CHANGE_GROUP', 6, 'CHANGE GROUP MEMBERSHIP');
@@ -781,8 +784,8 @@ insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUE
 insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('220', '110','ON_DELETE', 'DELETE');
 insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('221', '110','INCLUDE_IN_PASSWORD_SYNC', 'Y');
 insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('222', '110','GROUP_MEMBERSHIP_ENABLED', 'Y');
-insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('223', '101','PRE_PROCESS', null);
-insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('224', '101','POST_PROCESS', null);
+insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('223', '110','PRE_PROCESS', null);
+insert into RESOURCE_PROP(RESOURCE_PROP_ID, RESOURCE_ID, NAME, PROP_VALUE) VALUES ('224', '110','POST_PROCESS', null);
 
 
 /* Send user object to Linux connectors */
@@ -877,7 +880,6 @@ INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('512', '110', '110','USER', 'company', '4640');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('513', '110', '110','USER', 'initials', '4642');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('514', '110', '110','USER', 'department', '4643');
-INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('515', '110', '110','USER', 'telephoneNumber', '4644');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('516', '110', '110','USER', 'title', '4645');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('517', '110', '110','USER', 'unicodePwd', '4646');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('518', '110', '110','USER', 'userAccountControl', '4650');
@@ -888,6 +890,11 @@ INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID, STATUS,DATA_TYPE) VALUES ('523', '110', '110','USER', 'st', '4655', 'ACTIVE', 'String');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID, STATUS,DATA_TYPE) VALUES ('524', '110', '110','USER', 'postalCode', '4656', 'ACTIVE', 'String');
 
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('515', '110', '110','USER', 'telephoneNumber', '4511');
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('526', '110', '110','USER', 'facsimileTelephoneNumber', '4512');
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('527', '110', '110','USER', 'mobile', '4513');
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('528', '110', '110','USER', 'mail', '4502');
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('529', '110', '110','USER', 'manager', '4658');
 
 UPDATE ATTRIBUTE_MAP
 SET DATA_TYPE = 'string'
@@ -932,6 +939,18 @@ INSERT INTO NOTIFICATION(MSG_ID,MSG_NAME,PROVIDER_SCRIPT,MSG_TYPE) VALUES('8a008
 INSERT INTO NOTIFICATION(MSG_ID,MSG_NAME,PROVIDER_SCRIPT,MSG_TYPE) VALUES('8a0081053ba8db9d013ba8eb000c0004','REQUEST_REJECTED','RequestRejectNotification.groovy','SYSTEM');
 INSERT INTO NOTIFICATION(MSG_ID,MSG_NAME,PROVIDER_SCRIPT,MSG_TYPE) VALUES('8a0081053ba8db9d013ba8ebe3380005','NEW_PENDING_REQUEST','RequestNotification.groovy','SYSTEM');
 INSERT INTO NOTIFICATION(MSG_ID,MSG_NAME,PROVIDER_SCRIPT,MSG_TYPE) VALUES('8a0081053ba8db9d013ba8ec3e580006','REQUEST_PASSWORD_RESET','RequestPasswordResetNotification.groovy','SYSTEM');
+
+
+INSERT INTO REPORT_PARAMETER_TYPE(RCPT_ID, TYPE_NAME,TYPE_DESCRIPTION) VALUES ('1', 'STRING','String');
+INSERT INTO REPORT_PARAMETER_TYPE(RCPT_ID, TYPE_NAME,TYPE_DESCRIPTION) VALUES ('2', 'DATE','Date');
+
+insert into REPORT_INFO(report_info_id, report_name, DATASOURCE_FILE_PATH, report_file_path) values('b75e18298e534899afa61a8d44ecc210', 'AUDIT_REPORT', 'AuditReport.groovy', 'AuditReport.rptdesign');
+insert into REPORT_INFO(report_info_id, report_name, DATASOURCE_FILE_PATH, report_file_path) values('b75e18298e534899afa61a8d44ecc212', 'USER_REPORT', 'UserReport.groovy', 'UserReport1.rptdesign');
+
+INSERT INTO SYNCH_CONFIG (SYNCH_CONFIG_ID,NAME,STATUS,SYNCH_SRC,FILE_NAME,SRC_LOGIN_ID,SRC_PASSWORD,SRC_HOST,DRIVER,CONNECTION_URL,QUERY,QUERY_TIME_FIELD,BASE_DN,LAST_EXEC_TIME, LAST_REC_PROCESSED,MANAGED_SYS_ID,LOAD_MATCH_ONLY,UPDATE_ATTRIBUTE,SYNCH_FREQUENCY,SYNCH_TYPE,DELETE_RULE,PROCESS_RULE,VALIDATION_RULE, TRANSFORMATION_RULE,MATCH_FIELD_NAME,MATCH_MANAGED_SYS_ID,MATCH_SRC_FIELD_NAME,CUSTOM_MATCH_RULE,CUSTOM_ADAPTER_SCRIPT,CUSTOM_MATCH_ATTR, WS_URL,WS_SCRIPT,WS_ENDPOINT) 
+ VALUES ('40288f823ccb4e59013ccb743caf0003','ACTIVE DIR SYNC TEMPLATE','ACTIVE','LDAP','',null, null, null,'', '','(&(objectclass=user))','','OU=idm-test,DC=ad,DC=openiamdemo,DC=info',null,NULL,NULL,NULL,NULL,'','FULL',NULL,'USER','/sync/ValidateActiveDirRecord.groovy','/sync/TransformActiveDirRecord.groovy','ATTRIBUTE',NULL,'sAMAccountName','','','sAMAccountName','','','');
+INSERT INTO SYNCH_CONFIG (SYNCH_CONFIG_ID,NAME,STATUS,SYNCH_SRC,FILE_NAME,SRC_LOGIN_ID,SRC_PASSWORD,SRC_HOST,DRIVER,CONNECTION_URL,QUERY,QUERY_TIME_FIELD,BASE_DN,LAST_EXEC_TIME, LAST_REC_PROCESSED,MANAGED_SYS_ID,LOAD_MATCH_ONLY,UPDATE_ATTRIBUTE,SYNCH_FREQUENCY,SYNCH_TYPE,DELETE_RULE,PROCESS_RULE,VALIDATION_RULE, TRANSFORMATION_RULE,MATCH_FIELD_NAME,MATCH_MANAGED_SYS_ID,MATCH_SRC_FIELD_NAME,CUSTOM_MATCH_RULE,CUSTOM_ADAPTER_SCRIPT,CUSTOM_MATCH_ATTR, WS_URL,WS_SCRIPT,WS_ENDPOINT)
+VALUES ('40288f823ccca124013cccefeba0029d','CSV LOAD TEMPLATE','ACTIVE','CSV','/PATH/MYDATAFILE.csv','','','','','','','','',NULL,'',NULL,NULL,NULL,'','FULL',NULL,'USER','/sync/ValidateSrcRecord.groovy','/sync/TransformCSVRecord.groovy','ATTRIBUTE',NULL,'LOGINID','','','LOGINID','','','');
 
 
 commit;
