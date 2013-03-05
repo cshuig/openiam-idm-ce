@@ -21,7 +21,6 @@ import org.openiam.idm.srvc.mngsys.dto.ApproverAssociation;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.msg.service.MailService;
 import org.openiam.idm.srvc.msg.service.MailTemplateParameters;
-import org.openiam.idm.srvc.msg.ws.NotificationRequest;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.policy.service.PolicyDataService;
@@ -344,7 +343,8 @@ public class SelfRegistrationController extends CancellableFormController {
                 if (approver != null && approver.getEmail() != null  ) {
                     mailParameters.put(MailTemplateParameters.TO.value(), approver.getEmail());
                 }
-                mailService.sendNotificationRequest(new NotificationRequest(NEW_PENDING_REQUEST_NOTIFICATION,mailParameters));
+
+                mailService.sendNotification(NEW_PENDING_REQUEST_NOTIFICATION, new PropertyMap(mailParameters));
             } else {
                 // approverType is ROLE
                 // get
@@ -375,7 +375,8 @@ public class SelfRegistrationController extends CancellableFormController {
                             mailParameters.put(MailTemplateParameters.TO.value(), u.getEmail());
                         }
 
-                        mailService.sendNotificationRequest(new NotificationRequest(NEW_PENDING_REQUEST_NOTIFICATION,mailParameters));
+                        mailService.sendNotification(NEW_PENDING_REQUEST_NOTIFICATION, new PropertyMap(mailParameters));
+
                     }
 
                 }
@@ -518,17 +519,24 @@ public class SelfRegistrationController extends CancellableFormController {
 
 
         Phone ph = buildPhone(usr, "DESK PHONE", cmd.getWorkAreaCode(), cmd.getWorkPhone());
-
+        if (cmd.getWorkPhoneId() != null && cmd.getWorkPhoneId().length() > 0) {
+            ph.setPhoneId(cmd.getWorkPhoneId());
+        }
         usr.setAreaCd(ph.getAreaCd());
         usr.setPhoneNbr(ph.getPhoneNbr());
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "CELL PHONE", cmd.getCellAreaCode(), cmd.getCellPhone());
         log.info("CELL PHONE: " + cmd.getCellPhoneId());
+        if (cmd.getCellPhoneId() != null && cmd.getCellPhoneId().length() > 0) {
+            ph.setPhoneId(cmd.getCellPhoneId());
+        }
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "FAX", cmd.getFaxAreaCode(), cmd.getFaxPhone());
-
+        if (cmd.getFaxPhoneId() != null && cmd.getFaxPhoneId().length() > 0) {
+            ph.setPhoneId(cmd.getFaxPhoneId());
+        }
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "HOME PHONE", cmd.getHomePhoneAreaCode(), cmd.getHomePhoneNbr());
@@ -538,11 +546,15 @@ public class SelfRegistrationController extends CancellableFormController {
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "ALT CELL PHONE", cmd.getAltCellAreaCode(), cmd.getAltCellNbr());
-
+        if (cmd.getAltCellNbrId() != null && cmd.getAltCellNbrId().length() > 0) {
+            ph.setPhoneId(cmd.getAltCellNbrId());
+        }
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "PERSONAL PHONE", cmd.getPersonalAreaCode(), cmd.getPersonalNbr());
-
+        if (cmd.getPersonalNbrId() != null && cmd.getPersonalNbrId().length() > 0) {
+            ph.setPhoneId(cmd.getPersonalNbrId());
+        }
         usr.getPhones().add(ph);
 
 

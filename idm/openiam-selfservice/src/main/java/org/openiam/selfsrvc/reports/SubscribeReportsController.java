@@ -39,6 +39,8 @@ public class SubscribeReportsController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request,
 			HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
+		HttpSession session = request.getSession(true);
+	 	session.removeAttribute("reportCommand");
 		SubscribeReportsCommand reportCommand = ((SubscribeReportsCommand) command);
 		if (request.getParameterMap().containsKey("save")) {
 			if (!StringUtils.isEmpty(reportCommand.getReport().getReportName())) {
@@ -54,18 +56,23 @@ public class SubscribeReportsController extends SimpleFormController {
 								.getParamTypeId()[i]));
 					}
 				}
-		        HttpSession session = request.getSession();
+		        //HttpSession session = request.getSession();
 		        String userId = (String) session.getAttribute("userId");
 				ReportSubscriptionDto dto = reportCommand.getReport();
 				dto.setUserId(userId);
+				if (dto.getReportId() == null || "".equals(dto.getReportId()) || dto.getReportId().trim().length() <=0)
+					dto.setReportId(null);
 				reportService.createOrUpdateSubscribedReportInfo(
 						reportCommand.getReport(), params);
 			}
 		}else{
-			if (!StringUtils.isEmpty(reportCommand.getReport().getReportName())) {
-				 ModelAndView modelAndView = new ModelAndView(new RedirectView("subscribeReportOld.selfserve", true), "reportCommand", reportCommand);
+			if (!StringUtils.isEmpty(reportCommand.getReport().getReportId())) {
+				 ModelAndView modelAndView = new ModelAndView(new RedirectView("subscribeReportOld.selfserve", true));
 		            List<ReportCriteriaParamDto> paramDtos = reportService.getReportParametersByReportName(reportCommand.getReport().getReportName()).getParameters();
 		            modelAndView.addObject("reportParameters", paramDtos);
+		            modelAndView.addObject("reportCommand", reportCommand);
+				    //HttpSession session = request.getSession(true);
+				 	session.setAttribute("reportCommand", reportCommand);
 		            return modelAndView;
 			}
 		}

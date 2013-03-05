@@ -35,7 +35,7 @@ public class ReportGenerator {
 		IReportEngineFactory factory = (IReportEngineFactory) Platform
 				.createFactoryObject( IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY );
 		IReportEngine engine = factory.createReportEngine( config );
-		IReportRunnable design = engine.openReportDesign(res.getString("reportRoot") + "//" + reportDesign);//e.g "C:/ficus/openIAM/repository/openiam-idm-ce/distributions/configurations/idmreports/AuditReport.rptdesign" 
+		IReportRunnable design = engine.openReportDesign(res.getString("reportRoot") + "/" + reportDesign);//e.g "C:/ficus/openIAM/repository/openiam-idm-ce/distributions/configurations/idmreports/AuditReport.rptdesign" 
 		IRunAndRenderTask task = engine.createRunAndRenderTask(design); 
 		
 		//Set parameter values and validate
@@ -50,8 +50,8 @@ public class ReportGenerator {
 		
 		task.validateParameters();
 
-		String outputDir = res.getString("reportRoot") + "//GENERATED_REPORTS//" + deliveryMethod + "//" ;
-		String outputFileName = outputDir + userId + "//" + reportName;
+		String outputDir = res.getString("reportRoot") + "/GENERATED_REPORTS/" + deliveryMethod + "/" ;
+		String outputFileName = outputDir + userId + "/" + reportName;
 		if ("HTML".equalsIgnoreCase(format)){
 			//Setup rendering to HTML
 			HTMLRenderOption options = new HTMLRenderOption();
@@ -82,12 +82,18 @@ public class ReportGenerator {
 		if ("EMAIL".equalsIgnoreCase(deliveryMethod)){
 			//email reports
 			//TODO check fromAddress
-			mailService.sendWithAttachment("BIRTReportSender", (String[])emailAddresses.toArray(), "Subscribed Report", "Please find your subscribed report attached.", false, outputFileName);
+			
+			Object[] emailAddressesObjectArray = emailAddresses.toArray();
+			String[] emailAddressesArray = new String[emailAddressesObjectArray.length];
+			for (int i=0; i< emailAddressesObjectArray.length; i++){
+				emailAddressesArray[i] = (String) emailAddressesObjectArray[i];
+			}
+			mailService.sendWithAttachment("BIRTReportSender", emailAddressesArray, "Subscribed Report", "Please find your subscribed report attached.", false, outputFileName);
 		}else{
 			//replicate across userIds
 			File file = new File(outputFileName);
 			for (String userID : userIds){
-				File destDir = new File(outputDir + "//" + userID);
+				File destDir = new File(outputDir + "/" + userID);
 				try {
 					FileUtils.copyFileToDirectory(file, destDir);
 				} catch (IOException e) {
@@ -99,18 +105,25 @@ public class ReportGenerator {
 	}
 
 	public static void deleteGeneratedDirs() {
-		File dir = new File(res.getString("reportRoot") + "//GENERATED_REPORTS");
+		try {
+			FileUtils.deleteDirectory(new File(res.getString("reportRoot") + "/GENERATED_REPORTS"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*File dir = new File(res.getString("reportRoot") + "/GENERATED_REPORTS");
 		File[] files = dir.listFiles();
 		for (File file: files){
+			
 			boolean deleted = file.delete();
 			if (!deleted){
 				log.warn("File " + file.getName() + " could not be deleted.");
 			}
-		}
+		}*/
 	}
 	
 	public static File[] getReportsListForUser(String userId) {
-		File dir = new File(res.getString("reportRoot") + "//GENERATED_REPORTS//VIEW//" + userId);
+		File dir = new File(res.getString("reportRoot") + "/GENERATED_REPORTS/VIEW/" + userId);
 		File[] files = dir.listFiles();
 		return files;
 	}

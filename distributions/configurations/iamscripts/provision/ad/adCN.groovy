@@ -1,7 +1,11 @@
-name=user.firstName + " " + user.lastName
+import org.springframework.context.support.ClassPathXmlApplicationContext
+
+def loginManager = context.getBean("loginManager")
+
+loginId=lg.getId().getLogin();
 
 
-loginId = matchParam.keyField + "=" + name  + "," + matchParam.baseDn;
+loginId = matchParam.keyField + "=" + loginId  + "," + matchParam.baseDn;
 
 output=loginId
 

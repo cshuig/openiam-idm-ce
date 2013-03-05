@@ -212,7 +212,7 @@
 										path="syncConfig.connectionUrl" size="60" maxlength="100" />
 								</td>
 							</tr>
-							<tr class="common-row">
+							<tr class="db-row">
 								<td class="tddark">SQL Query / Directory Filter</td>
 								<td class="tdlightnormal"><form:textarea
 										path="syncConfig.query" rows="5" cols="60" /></td>

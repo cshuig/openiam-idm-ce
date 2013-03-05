@@ -37,19 +37,17 @@ import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.menu.dto.Menu;
 import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
 import org.openiam.idm.srvc.meta.ws.MetadataWebService;
-import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.dto.ResourceRoleId;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.role.dto.Role;
 import org.openiam.idm.srvc.role.dto.RoleId;
-import org.openiam.idm.srvc.role.dto.RolePolicy;
 import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.role.ws.RoleListResponse;
 
 
-public class RolePolicyController extends SimpleFormController {
+public class GroupRoleController extends SimpleFormController {
 
 	protected RoleDataWebService roleDataService;
 	protected MetadataWebService metadataService;
@@ -59,9 +57,9 @@ public class RolePolicyController extends SimpleFormController {
 	protected NavigatorDataWebService navigationDataService;
 	protected String menuGroup;
 	
-	private static final Log log = LogFactory.getLog(RolePolicyController.class);
+	private static final Log log = LogFactory.getLog(GroupRoleController.class);
 
-	public RolePolicyController() {
+	public GroupRoleController() {
 		super();
 	}
 
@@ -73,7 +71,7 @@ public class RolePolicyController extends SimpleFormController {
 		
 		log.info("RoleResourceController - formBakingObject called.");
 		Role role = null;
-		RolePolicyCommand roleCommand = new RolePolicyCommand();
+		GroupRoleCommand roleCommand = new GroupRoleCommand();
 
 		HttpSession session =  request.getSession();
 		String userId = (String)session.getAttribute("userId");
@@ -92,22 +90,35 @@ public class RolePolicyController extends SimpleFormController {
 	
 		request.setAttribute("menuGroup", "SECURITY_ROLE");
 
-		// get all the role policy
-		List<RolePolicy> policyList = roleDataService.getAllRolePolicies(domainId, roleId).getRolePolicy();;		
+		// get all the resources
+		List<Resource> fullResList = new ArrayList<Resource>();
+		List<Resource> resList = resourceDataService.getAllResources();
 		
-		if (policyList == null) {
-			policyList = new ArrayList<RolePolicy>();
-		}
-		// create a blank row so that the user can enter in a new policy
-		RolePolicy rp = new RolePolicy();
-		rp.setRoleId(roleId);
-		rp.setServiceId(domainId);
-		rp.setName("**ENTER NAME**");
-		policyList.add(rp);
+		List<Resource> roleResourceList =  resourceDataService.getResourcesForRole(domainId, roleId);
 		
-		roleCommand.setPolicyList(policyList);
+	
+			// for each role in the main list, check the userRole list to see if its there
+			for (Resource res : resList) {
+				boolean found = false;
+				if (roleResourceList != null) {
+					for (Resource r : roleResourceList ) {
+						if (res.getResourceId().equalsIgnoreCase(r.getResourceId())) {
+							res.setSelected(true);
+							fullResList.add(res);
+							found = true;
+						}
+					}
+				}
+				if (!found) {
+					fullResList.add(res);
+				}
+			}
 		
 		
+
+		
+		
+		//roleCommand.setResourceList(fullResList);
 
 		return roleCommand;
 	}
@@ -122,57 +133,74 @@ public class RolePolicyController extends SimpleFormController {
 			throws Exception {
 
 		
-		RolePolicyCommand roleCommand = (RolePolicyCommand)command;
-		List<RolePolicy> policyList = roleCommand.getPolicyList();
+		GroupRoleCommand roleCommand = (GroupRoleCommand)command;
 		
-		String domainId =  roleCommand.getDomainId();
-		String roleId = roleCommand.getRoleId();
+		// current resource-role list
+		List<Resource> curRoleResList = resourceDataService.getResourcesForRole(roleCommand.getDomainId(), roleCommand.getRoleId());
+		List<Resource> newRoleResList = null; //roleCommand.getResourceList();
+	
+		//
+		log.info("comparing new resource selection with current selecton.");
 		
-		
-		
-		// process the map
-		String btn = request.getParameter("btn");
-		if (btn.equalsIgnoreCase("Delete")) {
-			if (policyList != null) {			
-				for ( RolePolicy rp : policyList) {
-					if (rp.getSelected()) {
-						String id = rp.getRolePolicyId();
-						if (id != null && id.length() > 0) {
-							this.roleDataService.removeRolePolicy(rp);
+		if (newRoleResList != null) {
+			for (Resource res  : newRoleResList) {
+				log.info("Checking resource id=" + res.getResourceId());
+				Resource curRes = getCurrentResource(res, curRoleResList);
+				if (curRes == null && res.getSelected()) {
+					// link role and resource
+					log.info("Adding resource (1) " + res.getResourceId() + " to role=" + roleCommand.getRoleId());
+					
+					resourceDataService.addResourceRole(getResourceRole(res, 
+							roleCommand.getRoleId() ,roleCommand.getDomainId()));
+				}else {
+						log.info("Check if resource should be removed");
+						log.info("Current Res=" + curRes);
+						log.info("Res Selected=" + res.getSelected());
+						   if (!res.getSelected() && curRes != null ) {
+							   log.info("attemptng to remove association to resource: " + res.getResourceId());
+							// remove the association
+							ResourceRole r = getResourceRole(curRes, 
+									roleCommand.getRoleId() ,roleCommand.getDomainId());
+									
+							if (r != null) {
+								log.info("removing resource " + res.getResourceId() + " to role=" + roleCommand.getRoleId());
+								
+								resourceDataService.removeResourceRole(r.getId());
+							}
 						}
-					}
-				}				
-			}
-		}else {
-		
-			if (policyList != null) {			
-				for ( RolePolicy rp : policyList) {
-					if (rp.getRolePolicyId() == null || rp.getRolePolicyId().length() == 0) {
-						// new 
-						String name = rp.getName();
-						if (name != null && name.length() > 1 && !name.equalsIgnoreCase("**ENTER NAME**")) {
-							rp.setRolePolicyId(null);
-							rp.setRoleId(roleId);
-							rp.setServiceId(domainId);
-							roleDataService.addRolePolicy(rp);
-						}
-					}else {
-						// update
-						rp.setRoleId(roleId);
-						rp.setServiceId(domainId);
-						roleDataService.updateRolePolicy(rp);
-					}
+					
 				}
-				
 			}
 		}
-
-				
+	
 		ModelAndView mav = new ModelAndView(getSuccessView());
 		
 		return mav;
 
 		
+	}
+	
+	private ResourceRole getResourceRole(Resource res, String roleId, String domainId) {
+		ResourceRole rr = new ResourceRole();
+		ResourceRoleId id = new ResourceRoleId();
+		id.setDomainId(domainId);
+		id.setRoleId(roleId);
+		id.setResourceId(res.getResourceId());
+		id.setPrivilegeId("na");
+		rr.setId(id);
+		return rr;
+	}
+	
+	private Resource getCurrentResource(Resource newRes, List<Resource> curRoleResList) {
+		if (curRoleResList == null ) {
+			return null;
+		}
+		for (Resource curRes : curRoleResList) {
+			if (curRes.getResourceId().equalsIgnoreCase(newRes.getResourceId())) {
+				return curRes;
+			}
+		}
+		return null;
 	}
 
 

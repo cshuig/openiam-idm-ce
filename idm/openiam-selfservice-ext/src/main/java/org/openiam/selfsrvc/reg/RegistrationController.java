@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openiam.base.ws.PropertyMap;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.ContactConstants;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
@@ -12,7 +13,6 @@ import org.openiam.idm.srvc.mngsys.dto.ApproverAssociation;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.msg.service.MailService;
 import org.openiam.idm.srvc.msg.service.MailTemplateParameters;
-import org.openiam.idm.srvc.msg.ws.NotificationRequest;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.prov.request.dto.ProvisionRequest;
@@ -273,7 +273,7 @@ public class RegistrationController {
         for(Role role : roleList) {
             OptionTag ot = new OptionTag();
             ot.setLabel(role.getRoleName());
-            ot.setValue(role.getId().getServiceId()+"*"+role.getId().getRoleId());
+            ot.setValue(role.getId().getRoleId()+"*"+role.getId().getServiceId());
             roles.add(ot);
         }
         return roles;
@@ -320,26 +320,36 @@ public class RegistrationController {
 
     private void setPhone(RegistrationCommand cmd, ProvisionUser usr) {
        Phone ph = buildPhone(usr, "DESK PHONE", cmd.getWorkAreaCode(), cmd.getWorkPhone());
-
+        if (cmd.getWorkPhone() != null && cmd.getWorkPhone().length() > 0) {
+            ph.setPhoneId(cmd.getWorkPhone());
+        }
         usr.setAreaCd(ph.getAreaCd());
         usr.setPhoneNbr(ph.getPhoneNbr());
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "CELL PHONE", cmd.getCellAreaCode(), cmd.getCellPhone());
         LOG.info("CELL PHONE: " + cmd.getCellPhone());
-
+        if (cmd.getCellPhone() != null && cmd.getCellPhone().length() > 0) {
+            ph.setPhoneId(cmd.getCellPhone());
+        }
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "FAX", cmd.getFaxAreaCode(), cmd.getFaxPhone());
-
+        if (cmd.getFaxPhone() != null && cmd.getFaxPhone().length() > 0) {
+            ph.setPhoneId(cmd.getFaxPhone());
+        }
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "HOME PHONE", cmd.getHomePhoneAreaCode(), cmd.getHomePhoneNbr());
-
+        if (cmd.getHomePhoneNbr() != null && cmd.getHomePhoneNbr().length() > 0) {
+            ph.setPhoneId(cmd.getHomePhoneNbr());
+        }
         usr.getPhones().add(ph);
 
         ph = buildPhone(usr, "ALT CELL PHONE", cmd.getAltCellAreaCode(), cmd.getAltCellNbr());
-
+        if (cmd.getAltCellNbr() != null && cmd.getAltCellNbr().length() > 0) {
+            ph.setPhoneId(cmd.getAltCellNbr());
+        }
         usr.getPhones().add(ph);
     }
 
@@ -382,7 +392,7 @@ public class RegistrationController {
                     mailParameters.put(MailTemplateParameters.TO.value(), approver.getEmail());
                 }
 
-                mailServiceClient.sendNotificationRequest(new NotificationRequest(NEW_PENDING_REQUEST_NOTIFICATION,mailParameters));
+                mailServiceClient.sendNotification(NEW_PENDING_REQUEST_NOTIFICATION, new PropertyMap(mailParameters));
             } else {
                 // approverType is ROLE
                 // get
@@ -413,7 +423,7 @@ public class RegistrationController {
                             mailParameters.put(MailTemplateParameters.TO.value(), u.getEmail());
                         }
 
-                        mailServiceClient.sendNotificationRequest(new NotificationRequest(NEW_PENDING_REQUEST_NOTIFICATION,mailParameters));
+                        mailServiceClient.sendNotification(NEW_PENDING_REQUEST_NOTIFICATION, new PropertyMap(mailParameters));
 
                     }
 

@@ -84,15 +84,7 @@
     <tiles:insert attribute='menubar'/>
 	<% } %>
 	<div id="content">
-        <table width="100%">
-            <tr>
-                <td width="10%"></td>
-                <td width="80%">
 		<tiles:insert attribute='body'/>
-                </td>
-                <td width="10%"></td>
-            </tr>
-        </table>
 	</div>
 	</div>
 </div>

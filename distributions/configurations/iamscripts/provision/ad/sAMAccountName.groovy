@@ -7,7 +7,7 @@ def secDomain = "USR_SEC_DOMAIN";
 
 ctr = 1;
 
-loginID=lg.id.login;
+loginID=user.firstName + "." + user.lastName
 
 if (securityDomain != null) {
 	secDomain = securityDomain;	
