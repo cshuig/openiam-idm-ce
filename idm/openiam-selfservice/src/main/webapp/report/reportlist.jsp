@@ -3,24 +3,28 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%--@elvariable id="reports" type="java.util.List<org.openiam.core.dto.reports.ReportDto>"--%>
-<%--@elvariable id="reportListCommand" type="org.openiam.webadmin.reports.ReportListCommand"--%>
+<%--@elvariable id="reports" type="java.util.List<org.openiam.idm.srvc.report.dto.ReportSubscriptionDto>"--%>
+<%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.ReportCommand"--%>
 
 <!-- OpenIAM Legacy style sheets -->
 
 
 <script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
 <script type="text/javascript">
-    var selectReport = function(reportId, reportName, reportDataSource, reportUrl, actionName) {
+    var selectReport = function(reportId, reportName, deliveryMethod, deliveryFormat, deliveryAudience, status, userId, actionName) {
         $('#selectedReportId').val(reportId);
         $('#selectedReportName').val(reportName);
-        $('#selectedReportDataSource').val(reportDataSource);
-        $('#selectedReportUrl').val(reportUrl);
+        $('#selectedDeliveryMethod').val(deliveryMethod);
+        $('#selectedDeliveryFormat').val(deliveryFormat);
+        $('#selectedDeliveryAudience').val(deliveryAudience);
+        $('#selectedUserId').val(userId);
+        $('#selectedStatus').val(status);
         if(actionName == 'open') {
           $('#reportListForm').attr('target','_blank');
         } else {
            $('#reportListForm').removeAttr('target');
         }
+        this.form.action="subscribeReportOld.selfserve";
         return true;
     };
 </script>
@@ -30,43 +34,46 @@
             <table width="100%">
                 <tr>
                     <td class="pageTitle" width="70%">
-                        <h2 class="contentheading">Birt Reports</h2>
+                        <h2 class="contentheading">BIRT Reports Subscriptions</h2>
                     </td>
                 </tr>
             </table>
         </td>
     <tr>
         <td>
-            <form:form id="reportListForm" commandName="reportListCommand">
+            <form:form id="reportListForm" commandName="reportCommand" action="subscribeReportOld.selfserve">
                 <input id="selectedReportId" type="hidden" name="report.reportId" value="" />
                 <input id="selectedReportName" type="hidden" name="report.reportName" value="" />
-                <input id="selectedReportDataSource" type="hidden" name="report.reportDataSource" value="" />
-                <input id="selectedReportUrl" type="hidden" name="report.reportUrl" value="" />
+                <input id="selectedDeliveryMethod" type="hidden" name="report.deliveryMethod" value="" />
+                <input id="selectedDeliveryFormat" type="hidden" name="report.deliveryFormat" value="" />
+                <input id="selectedDeliveryAudience" type="hidden" name="report.deliveryAudience" value="" />
+                <input id="selectedUserId" type="hidden" name="report.userId" value="" />
+                <input id="selectedStatus" type="hidden" name="report.status" value="" />
 
                 <table width="800pt" class="bodyTable" height="100%">
                     <tr>
                         <td>
                             <fieldset class="userformSearch">
-                                <legend>REPORT PARAMETERS</legend>
                                 <table class="fieldsetTable" width="100%" height="200pt">
                                     <tr>
                                         <th>Report Name</th>
-                                        <th>Data Source Script</th>
-                                        <th>Design File</th>
+                                        <th>Delivery Method</th>
+                                        <th>Delivery Format</th>
+                                        <th>Delivery Audience</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                     <c:choose>
-                                    <c:when test="${reportListCommand.reports!=null}">
-                                        <c:forEach var="item" items="${reportListCommand.reports}">
+                                    <c:when test="${reportCommand.reports!=null}">
+                                        <c:forEach var="item" items="${reportCommand.reports}">
                                         <tr>
                                             <td>${item.reportName}</td>
-                                            <td>${item.reportDataSource}</td>
-                                            <td>${item.reportUrl}</td>
+                                            <td>${item.deliveryMethod}</td>
+                                            <td>${item.deliveryFormat}</td>
+                                            <td>${item.deliveryAudience}</td>
+                                            <td>${item.status}</td>
                                             <td>
-                                                <input type="submit" name="edit_btn" value="Edit" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.reportDataSource}','${item.reportUrl}','edit');">
-                                                <c:if test="${item.reportUrl != ''}">
-                                                    <input type="submit" name="open_btn" value="Open" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.reportDataSource}','${item.reportUrl}','open');">
-                                                </c:if>
+                                                <input type="submit" name="edit_btn" value="Edit" onclick="return selectReport('${item.reportId}','${item.reportName}','${item.deliveryMethod}','${item.deliveryFormat}','${item.deliveryAudience}','${item.status}','${item.userId}','edit');">
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -75,7 +82,9 @@
                                         <tr><td colspan="4">No reports</td></tr>
                                    </c:otherwise>
                                    </c:choose>
-                                    <tr><td colspan="4" align="left"><input type="submit" name="add_btn" value="New"></td></tr>
+                                    <tr>
+									<td colspan="4" align="left"><a href="subscribeReportOld.selfserve">New Subscription</a></td>
+									</tr>
                                 </table>
                             </fieldset>
                         </td>

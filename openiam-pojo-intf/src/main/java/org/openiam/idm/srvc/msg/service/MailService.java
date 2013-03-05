@@ -31,4 +31,8 @@ public interface MailService {
     Response sendNotificationRequest(
             @WebParam(name = "req", targetNamespace = "")
             NotificationRequest req);
+    
+    @WebMethod
+    void sendWithAttachment(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath);
+    
 }

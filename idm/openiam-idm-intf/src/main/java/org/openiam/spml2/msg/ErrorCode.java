@@ -26,7 +26,7 @@ public enum ErrorCode {
 	@XmlEnumValue("noSuchIdentifier")
 	NO_SUCH_IDENTIFIER("noSuchIdentifier"),
 
-	@XmlEnumValue("customError")
+	@XmlEnumValue("customError") 
 	CUSTOM_ERROR("customError"),
 
 	@XmlEnumValue("otherError")

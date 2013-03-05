@@ -3,6 +3,7 @@ package org.openiam.idm.srvc.user.service;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 import org.openiam.idm.srvc.continfo.dto.Phone;
+import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.dto.*;
 
 import javax.jws.WebMethod;
@@ -28,7 +29,9 @@ public interface UserDataService {
 	public static String START_DATE= "u.START_DATE";
 	public static String LAST_DATE= "u.LAST_DATE";
 	public static String BIRTH_DATE= "u.BIRTHDATE";
-	
+
+    public User getUser(String userId) ;
+    
     /**
      * Returns a user object for the id. The dependents flag determines if the method return the dependent objects such as
      * Attributes, EmailAddress, Phone and Address. True will return these collections. False will not.

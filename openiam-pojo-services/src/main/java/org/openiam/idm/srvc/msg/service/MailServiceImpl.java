@@ -47,11 +47,17 @@ public class MailServiceImpl implements MailService {
     private static ResourceBundle res = ResourceBundle.getBundle("securityconf");
 
     @Override
-    public void send(String from, String to, String subject, String msg, boolean isHtmlFormat) {
-        sendWithCC(from, to, null, subject, msg, isHtmlFormat);
+    public void send(String from, String toString, String subject, String msg, boolean isHtmlFormat) {
+    	String[] to = {toString};
+        sendWithCC(from, to, null, subject, msg, isHtmlFormat, null);
     }
 
-    public void sendWithCC(String from, String to, String cc, String subject, String msg, boolean isHtmlFormat) {
+    @Override
+    public void sendWithAttachment(String from, String[] to, String subject, String msg, boolean isHtmlFormat, String attachmentPath) {
+        sendWithCC(from, to, null, subject, msg, isHtmlFormat, attachmentPath);
+    }
+    
+    public void sendWithCC(String from, String[] to, String cc, String subject, String msg, boolean isHtmlFormat, String attachmentPath) {
         log.debug("To:" + to + ", From:" + from + ", Subject:" + subject);
 
         Message message = new Message();
@@ -60,7 +66,9 @@ public class MailServiceImpl implements MailService {
         } else {
             message.setFrom(defaultSender);
         }
-        message.addTo(to);
+        for (String toString: to){
+        	message.addTo(toString);
+        }
         if (cc != null && !cc.isEmpty()) {
             message.addCc(cc);
         }
@@ -73,6 +81,9 @@ public class MailServiceImpl implements MailService {
         message.setSubject(subject);
         message.setBody(msg);
         message.setBodyType(isHtmlFormat ? Message.BodyType.HTML_TEXT : Message.BodyType.PLAIN_TEXT);
+        if (null != attachmentPath){
+        	message.addAttachments(attachmentPath);
+        }
         try {
             mailSender.send(message);
         } catch (Exception e) {

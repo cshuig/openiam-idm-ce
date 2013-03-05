@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.openiam.idm.srvc.report.domain.ReportCriteriaParamEntity;
+import org.openiam.idm.srvc.report.domain.ReportSubCriteriaParamEntity;
 import org.openiam.idm.srvc.report.domain.ReportInfoEntity;
+import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.exception.ScriptEngineException;
 import org.openiam.idm.srvc.report.domain.ReportParamTypeEntity;
 import org.openiam.idm.srvc.report.dto.ReportDataDto;
@@ -24,13 +26,17 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ReportDataServiceImpl implements ReportDataService {
-
+ 
     private static final String scriptEngine = "org.openiam.script.GroovyScriptEngineIntegration";
 
     @Autowired
     private ReportInfoDao reportDao;
     @Autowired
+    private ReportSubscriptionDao reportSubscriptionDao;
+    @Autowired
     private ReportCriteriaParamDao criteriaParamDao;
+    @Autowired
+    private ReportSubCriteriaParamDao subCriteriaParamDao;
     @Autowired
     private ReportParamTypeDao reportParamTypeDao;
     @Override
@@ -74,11 +80,30 @@ public class ReportDataServiceImpl implements ReportDataService {
     public void updateReportParametersByReportName(final String reportName, final List<ReportCriteriaParamEntity> parameters) {
         criteriaParamDao.save(parameters);
     }
+    
+    @Override
+    @Transactional
+    public void updateSubReportParametersByReportName(final String reportName, final List<ReportSubCriteriaParamEntity> parameters) {
+    	subCriteriaParamDao.save(parameters);
+    }
+
 
     @Override
     @Transactional
     public List<ReportCriteriaParamEntity> getReportParametersByReportId(String reportId) {
         return criteriaParamDao.findByReportInfoId(reportId);
+    }
+    
+    @Override
+    @Transactional
+    public List<ReportCriteriaParamEntity> getReportParametersByReportName(String reportName) {
+        return criteriaParamDao.findByReportInfoName(reportName);
+    }
+
+    @Override
+    @Transactional
+    public List<ReportSubCriteriaParamEntity> getSubReportParametersByReportName(String reportName) {
+        return subCriteriaParamDao.findByReportInfoName(reportName);
     }
 
     @Override
@@ -86,4 +111,25 @@ public class ReportDataServiceImpl implements ReportDataService {
     public List<ReportParamTypeEntity> getReportParameterTypes() {
         return reportParamTypeDao.findAll();
     }
+    
+    @Override
+    @Transactional
+    public void createOrUpdateSubscribedReportInfo(ReportSubscriptionEntity reportSubscriptionEntity){
+    	reportSubscriptionDao.createOrUpdateSubscribedReportInfo(reportSubscriptionEntity);
+        List<ReportSubCriteriaParamEntity> paramEntitiesSrc = subCriteriaParamDao.findByReportInfoName(reportSubscriptionEntity.getReportName());
+        for(ReportSubCriteriaParamEntity paramEntity : paramEntitiesSrc) {
+        	subCriteriaParamDao.delete(paramEntity);
+        }
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReportSubscriptionEntity> getAllActiveSubscribedReports() {
+        return reportSubscriptionDao.getAllActiveSubscribedReports();
+    }    
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReportSubscriptionEntity> getAllSubscribedReports() {
+        return reportSubscriptionDao.findAll();
+    }    
 }

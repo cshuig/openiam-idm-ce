@@ -1,111 +1,152 @@
-<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%--@elvariable id="reportCommand" type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"--%>
-
-<script type="text/javascript" src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
-<script type="text/javascript">
-    $(function() {
-        $('#sourceFileInpId').change(function(e) {
-            $('#fakeReportDataSourceFileInput').val($(this).val());
-        });
-        $('#designFileInpId').change(function(e) {
-            $('#fakeReportDesignFileInput').val($(this).val());
-        });
-    });
-    var selectDataSourceFile = function() {
-        $('#sourceFileInpId').click();
-        return false;
-    };
-    var selectDesignFile = function() {
-        $('#designFileInpId').click();
-        return false;
-    };
-</script>
+<%--@elvariable id="reportParameters" type="java.util.List<org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto>"--%>
+<jsp:useBean id="reportCommand"
+	type="org.openiam.selfsrvc.reports.SubscribeReportsCommand"
+	class="org.openiam.selfsrvc.reports.SubscribeReportsCommand"
+	scope="session">
+</jsp:useBean>
+<script type="text/javascript"
+	src="<c:url value='/scripts/jquery-1.7.1.min.js'/>"></script>
+<c:set var="reportCommand" value="${sessionScope.reportCommand}" />
 <table width="800pt">
-    <tr>
-        <td>
-            <table width="100%">
-                <tr>
-                    <td class="pageTitle" width="70%">
-                        <h2 class="contentheading"><c:choose><c:when test="${reportCommand.report.reportName!=null}">Edit Report ${reportCommand.report.reportName}</c:when><c:otherwise>New Report</c:otherwise></c:choose></h2>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    <tr>
-        <td>
-            <form:form method="POST" id="reportCommand" action="subscribeReport.selfserve" commandName="reportCommand" enctype="multipart/form-data">
-                <input type="hidden" name="report.reportId" value="${reportCommand.report.reportId}" />
-                <c:if test="${reportCommand.report.reportName!=null}">
-                    <input type="hidden" name="report.reportName" value="${reportCommand.report.reportName}" />
-                </c:if>
-                <input type="hidden" name="report.reportDataSource" value="${reportCommand.report.reportDataSource}" />
-                <input type="hidden" name="report.reportUrl" value="${reportCommand.report.reportUrl}" />
-                <table width="650pt" class="bodyTable" height="100%">
-                    <tr>
-                        <td>
-                            <fieldset class="userformSearch">
-                                <legend>Report settings</legend>
+	<tr>
+		<td>
+			<table width="100%">
+				<tr>
+					<td class="pageTitle" width="70%">
+						<h2 class="contentheading">
+							<c:choose>
+								<c:when test="${reportCommand.report.reportId!=null}">Edit Subscription for BIRT Report ${reportCommand.report.reportName}</c:when>
+								<c:otherwise>BIRT Report Subscription</c:otherwise>
+							</c:choose>
+						</h2>
+					</td>
+				</tr>
+			</table>
+		</td>
+	<tr>
+		<td><form:form method="POST" id="reportCommand"
+				action="subscribeReportOld.selfserve" commandName="reportCommand"
+				enctype="multipart/form-data">
+				<input type="hidden" name="report.reportId"
+					value="${reportCommand.report.reportId}" />
+				<c:if test="${reportCommand.report.reportName!=null}">
+					<input type="hidden" name="report.reportName"
+						value="${reportCommand.report.reportName}" />
+				</c:if>
+				<table width="650pt" class="bodyTable" height="100%">
+					<tr>
+						<td>
+							<fieldset class="userformSearch">
 
-                                <table class="fieldsetTable" width="100%" height="200pt">
-                                    <c:if test="${reportCommand.report.reportName==null}">
-                                       <tr valign="top">
-                                        <td class="tddark" width="200pt">
-                                            <label class="control-label" for="reportName">
-                                                Please enter report name
-                                            </label>
-                                        </td>
-                                        <td class="msg">
-                                            <input type="text" id="reportName"
-                                                   name="report.reportName"
-                                                   value="${reportCommand.report.reportName}"/>
-                                        </td>
-                                    </tr>
-                                    </c:if>
-                                    <tr valign="top">
-                                        <td class="tddark" width="200pt">
-                                            <label class="control-label" for="sourceFileInpId">
-                                                Please upload report datasource script:
-                                            </label>
-                                        </td>
-                                        <td class="msg">
-                                            <input type="text" id="fakeReportDataSourceFileInput" readonly="true"
-                                                   value="${reportCommand.report.reportDataSource}"/>
-                                            <input type="button" value="Select" style="font-size:0.8em" onclick="selectDataSourceFile();"/>
-                                            <input id="sourceFileInpId" type="file" style="display:none"
-                                                   name="dataSourceScriptFile" value="${reportCommand.report.reportDataSource}">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="tddark" width="200pt">
-                                            <label class="control-label" for="designFileInpId">
-                                                Please upload report design file:
-                                            </label>
-                                        </td>
-                                        <td class="msg">
-                                            <input type="text" id="fakeReportDesignFileInput" readonly="true"
-                                                   value="${reportCommand.report.reportUrl}"/>
-                                            <input type="button" value="Select" style="font-size:0.8em" onclick="selectDesignFile();"/>
-                                            <input id="designFileInpId" type="file" style="display:none"
-                                                   name="reportDesignFile"
-                                                   value="${reportCommand.report.reportUrl}">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" align="right">
-                                            <input type="submit" name="cancel" value="Cancel">
-                                            <input type="submit" name="save" value="Save">
-                                        </td>
-                                    </tr>
-                                </table>
-                            </fieldset>
-                        </td>
-                    </tr>
-                </table>
-            </form:form>
-        </td>
-    </tr>
+								<table class="fieldsetTable" width="100%" height="200pt">
+									<c:if test="${reportCommand.report.reportId==null}">
+										<tr>
+											<td class="tddark" width="200pt"><label
+												class="control-label" for="designFileInpId"> Report
+													Name </label></td>
+											<td><form:select path="report.reportName"
+													items="${reportsList}" onchange="submit()" /></td>
+										</tr>
+
+									</c:if>
+									<tr>
+										<td class="tddark" width="200pt"><label
+											class="control-label" for="designFileInpId"> Delivery
+												Method </label></td>
+										<td><select name="report.deliveryMethod">
+												<c:forEach items="${deliveryMethodList}" var="paramType"
+													varStatus="sts">
+													<option
+														<c:if test="${paramType.key == reportCommand.report.deliveryMethod}"> selected="selected" </c:if>
+														value="${paramType.key}" label="${paramType.value}">${paramType.value}</option>
+												</c:forEach>
+										</select> </td>
+									</tr>
+									<tr>
+										<td class="tddark" width="200pt"><label
+											class="control-label" for="designFileInpId"> Delivery
+												Format </label></td>
+										<td>
+										<select name="report.deliveryFormat">
+												<c:forEach items="${deliveryFormatList}" var="paramType"
+													varStatus="sts">
+													<option
+														<c:if test="${paramType.key == reportCommand.report.deliveryFormat}"> selected="selected" </c:if>
+														value="${paramType.key}" label="${paramType.value}">${paramType.value}</option>
+												</c:forEach>
+										</select>
+										</td>
+									</tr>
+									<tr>
+										<td class="tddark" width="200pt"><label
+											class="control-label" for="designFileInpId"> Delivery
+												Audience </label></td>
+										<td><select name="report.deliveryAudience">
+												<c:forEach items="${deliveryAudienceList}" var="paramType"
+													varStatus="sts">
+													<option
+														<c:if test="${paramType.key == reportCommand.report.deliveryAudience}"> selected="selected" </c:if>
+														value="${paramType.key}" label="${paramType.value}">${paramType.value}</option>
+												</c:forEach>
+										</select></td>
+									</tr>
+									<tr>
+										<td class="tddark" width="200pt"><label
+											class="control-label" for="designFileInpId"> Status </label>
+										</td>
+										<td><select name="status">
+												<c:forEach items="${statusList}" var="paramType"
+													varStatus="sts">
+													<option
+														<c:if test="${paramType.key == reportCommand.report.status}"> selected="selected" </c:if>
+														value="${paramType.key}" label="${paramType.value}">${paramType.value}</option>
+												</c:forEach>
+										</select></td>
+									</tr>
+
+									<c:choose>
+										<c:when test="${not empty reportParameters}">
+											<tr>
+												<td colspan="2">Parameters</td>
+											</tr>
+											<tr>
+												<td colspan="2">
+													<table id="paramTable">
+														<c:forEach items="${reportParameters}" var="rep"
+															varStatus="status">
+															<tr>
+																<td><span>Name: </span> <input type="text"
+																	name="paramName" value="${rep.name}" /></td>
+																<td><span>Type: </span> <input type="text"
+																	name="paramName" value="${rep.typeId}" /></td>
+																<td><span>Value: </span> <input type="text"
+																	name="paramName" value="${rep.value}" /></td>
+															</tr>
+														</c:forEach>
+													</table>
+												</td>
+											</tr>
+										</c:when>
+
+									</c:choose>
+
+									<tr>
+										<td colspan="2" align="right"><input type="submit"
+											name="cancel" value="Cancel"> <input type="submit"
+											name="save" value="Save"></td>
+									</tr>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</table>
+			</form:form></td>
+	</tr>
 </table>

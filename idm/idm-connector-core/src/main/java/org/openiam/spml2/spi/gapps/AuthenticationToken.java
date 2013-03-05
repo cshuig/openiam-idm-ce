@@ -15,7 +15,7 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 import com.google.gdata.client.appsforyourdomain.AppsForYourDomainQuery;
-import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
+//import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.EmailListRecipientService;
 import com.google.gdata.client.appsforyourdomain.EmailListService;
 import com.google.gdata.client.appsforyourdomain.NicknameService;
