@@ -28,6 +28,7 @@ import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.role.dto.Role;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.res.dto.Resource;
 
@@ -174,6 +175,75 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		addresses = user.getAddresses();
 		// set the email address in a hibernate friendly manner
 
+	}
+
+	public ProvisionUser(UserWrapperEntity user) {
+		birthdate = user.getBirthdate();
+		companyId = user.getCompanyId();
+		companyOwnerId = user.getCompanyOwnerId();
+		createDate = user.getCreateDate();
+		createdBy = user.getCreatedBy();
+		deptCd = user.getDeptCd();
+		deptName = user.getDeptName();
+		employeeId = user.getEmployeeId();
+		employeeType = user.getEmployeeType();
+
+		firstName = user.getFirstName();
+		jobCode = user.getJobCode();
+		lastName = user.getLastName();
+		lastUpdate = user.getLastUpdate();
+		this.lastUpdatedBy = user.getLastUpdatedBy();
+		this.locationCd = user.getLocationCd();
+		this.locationName = user.getLocationName();
+		this.managerId = user.getManagerId();
+		this.metadataTypeId = user.getMetadataTypeId();
+		this.classification = user.getClassification();
+		this.middleInit = user.getMiddleInit();
+		this.prefix = user.getPrefix();
+		this.sex = user.getSex();
+		this.status = user.getStatus();
+		this.secondaryStatus = user.getSecondaryStatus();
+		this.suffix = user.getSuffix();
+		this.title = user.getTitle();
+		this.userId = user.getUserId();
+		this.userTypeInd = user.getUserTypeInd();
+		this.division = user.getDivision();
+		this.mailCode = user.getMailCode();
+		this.costCenter = user.getCostCenter();
+		this.startDate = user.getStartDate();
+		this.lastDate = user.getLastDate();
+		this.nickname = user.getNickname();
+		this.maidenName = user.getMaidenName();
+		this.passwordTheme = user.getPasswordTheme();
+		this.country = user.getCountry();
+		this.bldgNum = user.getBldgNum();
+		this.streetDirection = user.getStreetDirection();
+		this.address1 = user.getAddress1();
+		this.address2 = user.getAddress2();
+		this.address3 = user.getAddress3();
+		this.address4 = user.getAddress4();
+		this.address5 = user.getAddress5();
+		this.address6 = user.getAddress6();
+		this.address7 = user.getAddress7();
+		this.city = user.getCity();
+		this.state = user.getState();
+		this.postalCd = user.getPostalCd();
+		this.email = user.getEmail();
+		this.areaCd = user.getAreaCd();
+		this.countryCd = user.getCountryCd();
+		this.phoneNbr = user.getPhoneNbr();
+		this.phoneExt = user.getPhoneExt();
+		this.showInSearch = user.getShowInSearch();
+		this.delAdmin = user.getDelAdmin();
+		this.alternateContactId = user.getAlternateContactId();
+
+		this.createdBy = user.getCreatedBy();
+		this.startDate = user.getStartDate();
+		this.lastDate = user.getLastDate();
+
+		this.userOwnerId = user.getUserOwnerId();
+		this.dateChallengeRespChanged = user.getDateChallengeRespChanged();
+		this.datePasswordChanged = user.getDatePasswordChanged();
 	}
 
 	/**

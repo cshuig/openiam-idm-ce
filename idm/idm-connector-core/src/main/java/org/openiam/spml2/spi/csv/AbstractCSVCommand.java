@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.openiam.idm.srvc.auth.dto.Login;
+import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
@@ -22,6 +23,7 @@ import org.openiam.idm.srvc.recon.ws.ReconciliationWebService;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
@@ -45,9 +47,18 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			.getLog(AbstractCSVCommand.class);
 
 	protected ManagedSystemDataService managedSysService;
-
 	protected ResourceDataService resourceDataService;
 	protected ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
+	protected LoginDataService loginManager;
+
+	/**
+	 * @param loginManager
+	 *            the loginManager to set
+	 */
+	public void setLoginManager(LoginDataService loginManager) {
+		this.loginManager = loginManager;
+	}
+
 	protected String pathToCSV;
 	public static ApplicationContext ac;
 
@@ -124,11 +135,9 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		List<CSVObject<ProvisionUser>> idmUsers;
 		List<CSVObject<ProvisionUser>> sourceUsers;
 		List<CSVObject<ProvisionUser>> dbUsers = new ArrayList<CSVObject<ProvisionUser>>();
-		for (User u : config.getUserList()) {
+		for (UserWrapperEntity u : config.getUserList()) {
 			ProvisionUser pu_ = new ProvisionUser(u);
-			pu_.setPrincipalList(u.getPrincipalList());
-			dbUsers.add(parserIDM
-					.toCsvObject(pu_, attrMapList));
+			dbUsers.add(parserIDM.toCsvObject(pu_, attrMapList));
 		}
 
 		try {
@@ -279,7 +288,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 				if (!StringUtils.hasText(o.getPrincipal())) {
 					continue;
 				}
-				if (o.getPrincipal().equals(u.getPrincipal())) {
+				if (o.getPrincipal().replaceFirst("^0*", "")
+						.equals(u.getPrincipal().replaceFirst("^0*", ""))) {
 					if (!isFind) {
 						isFind = true;
 						finded = o;
@@ -302,7 +312,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 								parser.convertToMap(attrMapList, u))));
 			} else if (!isMultiple && finded != null) {
 				Login l = null;
-				List<Login> logins = finded.getObject().getPrincipalList();
+				List<Login> logins = loginManager.getLoginByUser(finded
+						.getObject().getUserId());
 				if (logins != null) {
 					for (Login login : logins) {
 						if (login.getId().getDomainId()

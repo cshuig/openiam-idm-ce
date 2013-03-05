@@ -46,6 +46,7 @@ import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.role.service.RoleDataService;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
@@ -182,20 +183,16 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 			ProvisionConnector connector = connectorService.getConnector(mSys
 					.getConnectorId());
 
-			List<User> users = new ArrayList<User>();
-			for (ResourceRole rRole : res.getResourceRoles()) {
-				User[] usrAry = roleDataService.getUsersInRole(
-						mSys.getDomainId(), rRole.getId().getRoleId());
-				if (usrAry != null) {
-					for (User user : usrAry) {
-						user.setPrincipalList(loginManager.getLoginByUser(user
-								.getUserId()));
-						users.add(user);
-					}
-				}
-			}
-			config.setUserList(users);
 			if (connector.getServiceUrl().contains("CSV")) {
+				// Get user without fetches
+				List<UserWrapperEntity> users = new ArrayList<UserWrapperEntity>();
+				for (ResourceRole rRole : res.getResourceRoles()) {
+					List<UserWrapperEntity> ids = roleDataService
+							.findUserWByRole(mSys.getDomainId(), rRole.getId()
+									.getRoleId());
+					users.addAll(ids);
+				}
+				config.setUserList(users);
 				ResponseType rep = connectorAdapter.reconcileResource(mSys,
 						config, muleContext);
 				ReconciliationResponse resp = new ReconciliationResponse(
@@ -204,6 +201,17 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 			}
 			log.debug("ManagedSysId = " + managedSysId);
 			log.debug("Getting identities for managedSys");
+
+			List<User> users = new ArrayList<User>();
+			for (ResourceRole rRole : res.getResourceRoles()) {
+				User[] usrAry = roleDataService.getUsersInRole(
+						mSys.getDomainId(), rRole.getId().getRoleId());
+				if (usrAry != null) {
+					for (User user : usrAry) {
+						users.add(user);
+					}
+				}
+			}
 
 			Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();
 			for (ReconciliationSituation situation : config.getSituationSet()) {

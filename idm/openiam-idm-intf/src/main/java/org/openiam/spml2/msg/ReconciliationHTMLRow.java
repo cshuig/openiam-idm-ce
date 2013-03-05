@@ -62,27 +62,31 @@ public class ReconciliationHTMLRow {
 			throws Exception {
 		super();
 		StringBuilder build = new StringBuilder();
-
+		List<String> vals = new ArrayList<String>(Arrays.asList(values
+				.split(",")));
 		if (result == null || StringUtils.isEmpty(values)
 				|| values.split(",").length < 1) {
 			throw new Exception("wrong data");
 		}
-		List<String> vals = new ArrayList<String>(Arrays.asList(values
-				.split(",")));
+		// Check diffs
+		StringBuilder td = new StringBuilder();
+		for (String str : vals) {
+			if (str.contains("][")) {
+				td.append("<td style='background-color:" + CONFLICT_COLOR
+						+ "'>");
+			} else
+				td.append("<td>");
+			td.append(str);
+			td.append("</td>");
+		}
+
 		if (values.charAt(values.length() - 1) == ',')
 			vals.add("&nbsp;");
 		build.append("<tr>");
-		build.append("<td style='width:200px;background-color:" + result.getColor() + ";'>");
+		build.append("<td style='width:200px;background-color:"
+				+ result.getColor() + ";'>");
 		build.append("</td>");
-		for (String str : vals) {
-			if (str.contains("][")) {
-				build.append("<td style='background-color:" + CONFLICT_COLOR
-						+ "'>");
-			} else
-				build.append("<td>");
-			build.append(str);
-			build.append("</td>");
-		}
+		build.append(td);
 		build.append("</tr>");
 		row = build.toString();
 	}

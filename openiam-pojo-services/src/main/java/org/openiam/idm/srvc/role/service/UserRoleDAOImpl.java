@@ -15,6 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openiam.idm.srvc.role.domain.UserRoleEntity;
 import org.openiam.idm.srvc.role.dto.UserRole;
 import org.openiam.idm.srvc.user.domain.UserEntity;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.User;
 
 import static org.hibernate.criterion.Example.create;
@@ -164,6 +165,26 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 		qry.setString("roleId", roleId);
 		qry.setString("domainId", domainId);
 		qry.executeUpdate();			
+	}
+
+	@Override
+	public List<UserWrapperEntity> findUserWByRole(String domainId, String roleId) {
+
+		log.debug("findUserByRole: domainId=" + domainId);
+		log.debug("findUserByRole: roleId=" + roleId);
+		
+		Session session = sessionFactory.getCurrentSession();
+
+		Query qry = session.createQuery("select usr from org.openiam.idm.srvc.user.domain.UserWrapperEntity as usr, UserRoleEntity ur " +
+						" where ur.serviceId = :domainId and ur.roleId = :roleId and ur.userId = usr.userId " +
+						" order by usr.lastName, usr.firstName ");
+		
+		qry.setString("domainId",domainId);
+		qry.setString("roleId",roleId);
+		List<UserWrapperEntity> result = (List<UserWrapperEntity>)qry.list();
+		if (result == null || result.size() == 0)
+			return null;
+		return result;			
 	}
 
 }
