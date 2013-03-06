@@ -55,7 +55,8 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields> 
 						log.info(e.getMessage());
 						fieldValue = Enum.valueOf(UserFields.class, "DEFAULT");
 					}
-					object.setPrincipal(this.putValueIntoString(pu, fieldValue));
+					object.setPrincipal(this.putValueIntoString(pu, fieldValue)
+							.replaceFirst("^0*", ""));
 				}
 			}
 		}

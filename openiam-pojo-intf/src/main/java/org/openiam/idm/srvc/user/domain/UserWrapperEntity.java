@@ -18,11 +18,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.ParamDef;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 
 @Entity
+@FilterDef(name = "parentTypeFilter", parameters = @ParamDef(name = "parentFilter", type = "string"))
 @Table(name = "USERS")
 public class UserWrapperEntity {
 	@Id

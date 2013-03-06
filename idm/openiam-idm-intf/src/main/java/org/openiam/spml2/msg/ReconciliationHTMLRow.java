@@ -13,7 +13,7 @@ public class ReconciliationHTMLRow {
 	private static final String HEADER_COLOR = "#a3a3a3";
 	private static final String SUB_HEADER_COLOR = "#c3c3c3";
 	private static final String RESULT_COLOR = "#e3e3e3";
-	private static final String CONFLICT_COLOR = "#990000";
+	private static final String CONFLICT_COLOR = "#ff4455";
 	/**
 	 * 
 	 */
@@ -72,6 +72,7 @@ public class ReconciliationHTMLRow {
 		StringBuilder td = new StringBuilder();
 		for (String str : vals) {
 			if (str.contains("][")) {
+				result=ReconciliationHTMLReportResults.MATCH_FOUND_DIFFERENT;
 				td.append("<td style='background-color:" + CONFLICT_COLOR
 						+ "'>");
 			} else
