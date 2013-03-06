@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.openiam.idm.srvc.user.dto.User;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 
 // Generated May 29, 2010 8:20:09 PM by Hibernate Tools 3.2.2.GA
 
@@ -27,7 +27,7 @@ public class ReconciliationConfig implements java.io.Serializable {
 	private String reportPath;
 	private String separator;
 	private String endOfLine;
-	private List<User> userList;
+	private List<UserWrapperEntity> userList;
 
 	public String getSeparator() {
 		return separator;
@@ -112,11 +112,11 @@ public class ReconciliationConfig implements java.io.Serializable {
 		this.reportPath = reportPath;
 	}
 
-	public List<User> getUserList() {
+	public List<UserWrapperEntity> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(List<User> userList) {
+	public void setUserList(List<UserWrapperEntity> userList) {
 		this.userList = userList;
 	}
 }

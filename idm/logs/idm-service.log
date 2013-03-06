@@ -1,0 +1,54 @@
+2013-03-05 22:29:45,973 [main] WARN  [org.hibernate.id.UUIDHexGenerator] Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+2013-03-05 22:29:46,605 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on table REQUEST_APPROVER is ''
+2013-03-05 22:29:46,606 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,606 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_APPROVER.SERVICE_ID is ''
+2013-03-05 22:29:46,606 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,607 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_APPROVER.APPROVER_TYPE is ''
+2013-03-05 22:29:46,607 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,607 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_APPROVER.APPROVER_ID is ''
+2013-03-05 22:29:46,607 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,608 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_APPROVER.APPROVAL_LEVEL is ''
+2013-03-05 22:29:46,608 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,608 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on table REQUEST_FORM is ''
+2013-03-05 22:29:46,609 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,609 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_FORM.IS_DEFAULT is ''
+2013-03-05 22:29:46,609 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,609 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_FORM.CREATE_DATE is ''
+2013-03-05 22:29:46,610 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,611 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_FORM.CREATED_BY is ''
+2013-03-05 22:29:46,611 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,611 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column REQUEST_FORM.FORM_TEMPLATE_URL is ''
+2013-03-05 22:29:46,611 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,615 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on table SERVICE is ''
+2013-03-05 22:29:46,616 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,616 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.SERVICE_NAME is ''
+2013-03-05 22:29:46,616 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,616 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.STATUS is ''
+2013-03-05 22:29:46,617 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,617 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.LOCATION_IP_ADDRESS is ''
+2013-03-05 22:29:46,617 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,617 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.COMPANY_OWNER_ID is ''
+2013-03-05 22:29:46,618 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,618 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.START_DATE is ''
+2013-03-05 22:29:46,619 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,619 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.END_DATE is ''
+2013-03-05 22:29:46,620 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,620 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.LICENSE_KEY is ''
+2013-03-05 22:29:46,620 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,621 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.SERVICE_TYPE is ''
+2013-03-05 22:29:46,621 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,621 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.PARENT_SERVICE_ID is ''
+2013-03-05 22:29:46,621 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,622 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.ROOT_RESOURCE_ID is ''
+2013-03-05 22:29:46,622 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,622 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE.ACCESS_CONTROL_MODEL is ''
+2013-03-05 22:29:46,622 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,623 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on table SERVICE_CONFIG is ''
+2013-03-05 22:29:46,623 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,623 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE_CONFIG.SERVICE_ID is ''
+2013-03-05 22:29:46,624 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,624 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE_CONFIG.NAME is ''
+2013-03-05 22:29:46,624 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,625 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unsuccessful: comment on column SERVICE_CONFIG.VALUE is ''
+2013-03-05 22:29:46,625 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Unexpected token: COMMENT in statement [comment]
+2013-03-05 22:29:46,801 [main] WARN  [org.dozer.config.GlobalSettings] Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.

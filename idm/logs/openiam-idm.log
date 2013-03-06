@@ -1,0 +1,361 @@
+2013-03-05 22:29:48,028 DEBUG [org.openiam.idm.srvc.continfo.service.AddressDAOImpl] persist successful
+2013-03-05 22:29:48,040 DEBUG [org.openiam.idm.srvc.continfo.service.AddressDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,057 DEBUG [org.openiam.idm.srvc.continfo.service.AddressDAOImpl] delete successful
+2013-03-05 22:29:48,209 DEBUG [org.openiam.idm.srvc.continfo.service.AddressDAOImpl] merging instance
+2013-03-05 22:29:48,211 DEBUG [org.openiam.idm.srvc.continfo.service.AddressDAOImpl] merge successful
+2013-03-05 22:29:48,221 DEBUG [org.openiam.idm.srvc.continfo.service.PhoneDAOImpl] merge successful
+2013-03-05 22:29:48,222 DEBUG [org.openiam.idm.srvc.continfo.service.PhoneDAOImpl] persist successful
+2013-03-05 22:29:48,225 DEBUG [org.openiam.idm.srvc.continfo.service.PhoneDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,248 DEBUG [org.openiam.idm.srvc.continfo.service.PhoneDAOImpl] delete successful
+2013-03-05 22:29:48,278 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] persisting UserRole instance
+2013-03-05 22:29:48,278 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] persist successful
+2013-03-05 22:29:48,280 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] getting UserRole instance with id: 
+2013-03-05 22:29:48,284 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,322 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] persisting UserRole instance
+2013-03-05 22:29:48,322 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] persist successful
+2013-03-05 22:29:48,322 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] deleting UserRole instance
+2013-03-05 22:29:48,324 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] delete successful
+2013-03-05 22:29:48,335 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] persisting UserRole instance
+2013-03-05 22:29:48,335 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] persist successful
+2013-03-05 22:29:48,335 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] merging UserRole instance
+2013-03-05 22:29:48,335 DEBUG [org.openiam.idm.srvc.org.service.UserAffiliationDAOImpl] merge successful
+2013-03-05 22:29:48,345 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] persisting GroupAttribute instance
+2013-03-05 22:29:48,345 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,349 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] getting CompanyAttribute instance with id: 
+2013-03-05 22:29:48,349 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,350 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] persisting GroupAttribute instance
+2013-03-05 22:29:48,350 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,350 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] deleting GroupAttribute instance
+2013-03-05 22:29:48,350 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] delete successful
+2013-03-05 22:29:48,362 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] persisting GroupAttribute instance
+2013-03-05 22:29:48,362 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,362 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] merging Group instance
+2013-03-05 22:29:48,362 DEBUG [org.openiam.idm.srvc.grp.service.GroupAttributeDAOImpl] merge successful
+2013-03-05 22:29:48,373 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] persisting Group instance
+2013-03-05 22:29:48,389 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] getting Grp instance with id: 
+2013-03-05 22:29:48,389 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,390 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] getting Grp instance with id: 
+2013-03-05 22:29:48,391 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,412 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] persisting Group instance
+2013-03-05 22:29:48,413 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] getting Grp instance with id: ff8081813d3bd101013d3bd10afc000b
+2013-03-05 22:29:48,413 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] get successful, instance found
+2013-03-05 22:29:48,413 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] groupId=ff8081813d3bd101013d3bd10afc000b does not contain a parentGroupId
+2013-03-05 22:29:48,419 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] persisting Group instance
+2013-03-05 22:29:48,419 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] deleting Group instance
+2013-03-05 22:29:48,419 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] Group id=ff8081813d3bd101013d3bd10b03000c successfully updated.
+2013-03-05 22:29:48,421 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] persisting Group instance
+2013-03-05 22:29:48,438 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] merging Group instance. GrpId = null
+2013-03-05 22:29:48,438 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] Group id=null successfully updated.
+2013-03-05 22:29:48,446 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persisting UserGrp instance
+2013-03-05 22:29:48,447 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persist successful
+2013-03-05 22:29:48,448 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] getting UserGrp instance with id: 
+2013-03-05 22:29:48,452 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,460 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persisting UserGrp instance
+2013-03-05 22:29:48,460 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persist successful
+2013-03-05 22:29:48,460 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] deleting UserGrp instance
+2013-03-05 22:29:48,460 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] delete successful
+2013-03-05 22:29:48,461 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persisting UserGrp instance
+2013-03-05 22:29:48,461 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persist successful
+2013-03-05 22:29:48,467 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persisting UserGrp instance
+2013-03-05 22:29:48,467 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] persist successful
+2013-03-05 22:29:48,467 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] merging UserGrp instance
+2013-03-05 22:29:48,467 DEBUG [org.openiam.idm.srvc.grp.service.UserGroupDAOImpl] merge successful
+2013-03-05 22:29:48,474 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] persisting OrganizationAttribute instance
+2013-03-05 22:29:48,474 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,477 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] getting CompanyAttribute instance with id: 
+2013-03-05 22:29:48,478 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,480 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] persisting OrganizationAttribute instance
+2013-03-05 22:29:48,480 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,480 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] deleting OrganizationAttribute instance
+2013-03-05 22:29:48,480 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] delete successful
+2013-03-05 22:29:48,486 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] persisting OrganizationAttribute instance
+2013-03-05 22:29:48,486 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,486 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] merging Organization instance
+2013-03-05 22:29:48,487 DEBUG [org.openiam.idm.srvc.org.service.OrganizationAttributeDAOImpl] merge successful
+2013-03-05 22:29:48,494 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] persisting Organization instance
+2013-03-05 22:29:48,494 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] persist successful
+2013-03-05 22:29:48,497 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] getting Organization instance with id: 
+2013-03-05 22:29:48,498 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,499 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] getting Organization instances for childobjects of  
+2013-03-05 22:29:48,501 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] getting Organization for a classification  
+2013-03-05 22:29:48,505 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] getting Organization for a type  
+2013-03-05 22:29:48,507 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] getting Organization instance with id: 
+2013-03-05 22:29:48,508 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,510 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] getting Organization instances at parent level  
+2013-03-05 22:29:48,512 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] persisting Organization instance
+2013-03-05 22:29:48,512 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] persist successful
+2013-03-05 22:29:48,512 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] deleting Address instance
+2013-03-05 22:29:48,513 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] delete successful
+2013-03-05 22:29:48,517 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] persisting Organization instance
+2013-03-05 22:29:48,517 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] persist successful
+2013-03-05 22:29:48,517 DEBUG [org.openiam.idm.srvc.org.service.OrganizationDAOImpl] merging Organization instance
+2013-03-05 22:29:48,525 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] persisting IdentityQuestGrp instance
+2013-03-05 22:29:48,526 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] persist successful
+2013-03-05 22:29:48,527 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] getting IdentityQuestGrp instance with id: 
+2013-03-05 22:29:48,528 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,528 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] persisting IdentityQuestGrp instance
+2013-03-05 22:29:48,529 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] persist successful
+2013-03-05 22:29:48,529 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] deleting IdentityQuestGrp instance
+2013-03-05 22:29:48,529 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] delete successful
+2013-03-05 22:29:48,529 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] persisting IdentityQuestGrp instance
+2013-03-05 22:29:48,530 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] persist successful
+2013-03-05 22:29:48,530 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] merging IdentityQuestGrp instance
+2013-03-05 22:29:48,531 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestGroupDAOImpl] merge successful
+2013-03-05 22:29:48,538 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] persisting IdentityQuestionEntity instance
+2013-03-05 22:29:48,538 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] persist successful
+2013-03-05 22:29:48,552 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] getting IdentityQuestionEntity instance with id: 
+2013-03-05 22:29:48,552 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,553 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] persisting IdentityQuestionEntity instance
+2013-03-05 22:29:48,553 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] persist successful
+2013-03-05 22:29:48,553 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] deleting IdentityQuestionEntity instance
+2013-03-05 22:29:48,554 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] delete successful
+2013-03-05 22:29:48,555 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] merging IdentityQuestionEntity instance
+2013-03-05 22:29:48,555 DEBUG [org.openiam.idm.srvc.pswd.service.IdentityQuestionDAOImpl] merge successful
+2013-03-05 22:29:48,562 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] persisting PwdHistory instance
+2013-03-05 22:29:48,563 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] persist successful
+2013-03-05 22:29:48,564 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] getting PwdHistory instance with id: 
+2013-03-05 22:29:48,564 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,565 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] persisting PwdHistory instance
+2013-03-05 22:29:48,565 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] persist successful
+2013-03-05 22:29:48,565 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] deleting PwdHistory instance
+2013-03-05 22:29:48,565 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] delete successful
+2013-03-05 22:29:48,566 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] merging PwdHistory instance
+2013-03-05 22:29:48,566 DEBUG [org.openiam.idm.srvc.pswd.service.PasswordHistoryDAOImpl] merge successful
+2013-03-05 22:29:48,574 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] persisting UserIdentityAns instance
+2013-03-05 22:29:48,574 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] persist successful
+2013-03-05 22:29:48,580 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] getting UserIdentityAns instance with id: 
+2013-03-05 22:29:48,581 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,581 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] persisting UserIdentityAns instance
+2013-03-05 22:29:48,582 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] persist successful
+2013-03-05 22:29:48,582 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] deleting UserIdentityAns instance
+2013-03-05 22:29:48,582 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] delete successful
+2013-03-05 22:29:48,583 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] merging UserIdentityAns instance
+2013-03-05 22:29:48,583 DEBUG [org.openiam.idm.srvc.pswd.service.UserIdentityAnswerDAOImpl] merge successful
+2013-03-05 22:29:48,623 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] persisting instance
+2013-03-05 22:29:48,623 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] persist successful
+2013-03-05 22:29:48,624 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] persisting instance
+2013-03-05 22:29:48,625 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] persist successful
+2013-03-05 22:29:48,625 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] getting ResourceRole instance with id: ff8081813d3bd101013d3bd10bd0002a--
+2013-03-05 22:29:48,625 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,625 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] getting Resource instance with id: ff8081813d3bd101013d3bd10bd0002a
+2013-03-05 22:29:48,625 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] get successful, instance found
+2013-03-05 22:29:48,626 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] persist successful
+2013-03-05 22:29:48,629 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] finding Resource instance by example
+2013-03-05 22:29:48,633 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,635 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] getting Resource instance with id: 
+2013-03-05 22:29:48,635 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,651 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,661 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,663 DEBUG [org.openiam.idm.srvc.res.service.ResourceDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,678 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] persisting instance
+2013-03-05 22:29:48,678 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] persist successful
+2013-03-05 22:29:48,679 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] getting ResourceProp instance with id: 
+2013-03-05 22:29:48,680 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,681 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] get successful, instance found
+2013-03-05 22:29:48,683 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] get successful, instance found
+2013-03-05 22:29:48,684 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] persisting instance
+2013-03-05 22:29:48,684 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] persist successful
+2013-03-05 22:29:48,684 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] deleting instance
+2013-03-05 22:29:48,684 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] delete successful
+2013-03-05 22:29:48,685 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] persisting instance
+2013-03-05 22:29:48,685 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] persist successful
+2013-03-05 22:29:48,685 DEBUG [org.openiam.idm.srvc.res.service.ResourcePrivilegeDAOImpl] merge successful
+2013-03-05 22:29:48,695 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persisting instance
+2013-03-05 22:29:48,696 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persist successful
+2013-03-05 22:29:48,699 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] finding ResourceProp instance by example
+2013-03-05 22:29:48,700 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,702 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] getting ResourceProp instance with id: 
+2013-03-05 22:29:48,702 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,704 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persisting ResourceProp instance
+2013-03-05 22:29:48,704 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persist successful
+2013-03-05 22:29:48,705 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persisting instance
+2013-03-05 22:29:48,705 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persist successful
+2013-03-05 22:29:48,705 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] deleting ResourceProp instance
+2013-03-05 22:29:48,706 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] delete successful
+2013-03-05 22:29:48,713 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persisting instance
+2013-03-05 22:29:48,713 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] persist successful
+2013-03-05 22:29:48,713 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] merging ResourceProp instance
+2013-03-05 22:29:48,713 DEBUG [org.openiam.idm.srvc.res.service.ResourcePropDAOImpl] merge successful
+2013-03-05 22:29:48,750 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] persisting instance
+2013-03-05 22:29:48,750 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] persist successful
+2013-03-05 22:29:48,754 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] finding ResourceRole instance by example
+2013-03-05 22:29:48,755 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,757 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] getting ResourceRole instance with id: --
+2013-03-05 22:29:48,757 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,759 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] get successful, instance found
+2013-03-05 22:29:48,774 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] persisting instance
+2013-03-05 22:29:48,774 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] persist successful
+2013-03-05 22:29:48,774 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] deleting ResourceRole instance
+2013-03-05 22:29:48,774 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] delete successful
+2013-03-05 22:29:48,778 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] removeResourceRole: domainId=
+2013-03-05 22:29:48,778 DEBUG [org.openiam.idm.srvc.res.service.ResourceRoleDAOImpl] removeResourceRole: roleId=
+2013-03-05 22:29:48,791 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] persisting ResourceType instance
+2013-03-05 22:29:48,791 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] persist successful
+2013-03-05 22:29:48,794 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] finding ResourceType instance by example
+2013-03-05 22:29:48,795 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,796 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] getting ResourceType instance with id: 
+2013-03-05 22:29:48,796 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,797 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] persisting ResourceType instance
+2013-03-05 22:29:48,797 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] persist successful
+2013-03-05 22:29:48,797 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] deleting ResourceType instance
+2013-03-05 22:29:48,797 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] delete successful
+2013-03-05 22:29:48,801 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] merging ResourceType instance
+2013-03-05 22:29:48,801 DEBUG [org.openiam.idm.srvc.res.service.ResourceTypeDAOImpl] merge successful
+2013-03-05 22:29:48,809 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] persisting instance
+2013-03-05 22:29:48,809 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] persist successful
+2013-03-05 22:29:48,813 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] finding ResourceUser instance by example
+2013-03-05 22:29:48,814 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,815 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] getting ResourceUser instance with id: --
+2013-03-05 22:29:48,816 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,816 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] persisting instance
+2013-03-05 22:29:48,817 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] persist successful
+2013-03-05 22:29:48,817 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] deleting ResourceUser instance
+2013-03-05 22:29:48,817 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] delete successful
+2013-03-05 22:29:48,823 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] persisting instance
+2013-03-05 22:29:48,824 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] persist successful
+2013-03-05 22:29:48,824 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] merging ResourceUser instance
+2013-03-05 22:29:48,824 DEBUG [org.openiam.idm.srvc.res.service.ResourceUserDAOImpl] merge successful
+2013-03-05 22:29:48,830 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] persisting instance
+2013-03-05 22:29:48,831 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] persist successful
+2013-03-05 22:29:48,834 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] finding UserPrivilege instance by example
+2013-03-05 22:29:48,834 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,835 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] getting UserPrivilege instance with id: 
+2013-03-05 22:29:48,836 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,837 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] persisting instance
+2013-03-05 22:29:48,837 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] persist successful
+2013-03-05 22:29:48,837 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] deleting instance
+2013-03-05 22:29:48,837 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] delete successful
+2013-03-05 22:29:48,841 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] persisting instance
+2013-03-05 22:29:48,841 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] persist successful
+2013-03-05 22:29:48,841 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] merging instance. id = ff8081813d3bd101013d3bd10ca90037
+2013-03-05 22:29:48,841 DEBUG [org.openiam.idm.srvc.res.service.UserPrivilegeDAOImpl] merge successful
+2013-03-05 22:29:48,849 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,849 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,856 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,856 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,856 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] finding RoleAttribute instance by example
+2013-03-05 22:29:48,859 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] find by example successful, result size: 1
+2013-03-05 22:29:48,861 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] getting RoleAttribute instance with id: 
+2013-03-05 22:29:48,861 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,862 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,863 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,863 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] deleting RoleAttribute instance
+2013-03-05 22:29:48,863 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] delete successful
+2013-03-05 22:29:48,864 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,864 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] persist successful
+2013-03-05 22:29:48,864 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] merging RoleAttribute instance
+2013-03-05 22:29:48,864 DEBUG [org.openiam.idm.srvc.role.service.RoleAttributeDAOImpl] merge successful
+2013-03-05 22:29:48,872 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persisting Role instance
+2013-03-05 22:29:48,872 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist successful
+2013-03-05 22:29:48,873 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persisting Role instance
+2013-03-05 22:29:48,874 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist successful
+2013-03-05 22:29:48,874 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] getting Grp instance with id: 
+2013-03-05 22:29:48,874 DEBUG [org.openiam.idm.srvc.grp.service.GroupDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,874 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] getting Role instance with id: RoleId{roleId='', serviceId=''}
+2013-03-05 22:29:48,874 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] get successful, instance found
+2013-03-05 22:29:48,875 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist user to group successful
+2013-03-05 22:29:48,878 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] getting Role instance with id: RoleId{roleId='', serviceId=''}
+2013-03-05 22:29:48,879 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,925 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persisting Role instance
+2013-03-05 22:29:48,925 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist successful
+2013-03-05 22:29:48,925 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] deleting Role instance
+2013-03-05 22:29:48,925 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] delete successful
+2013-03-05 22:29:48,926 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persisting Role instance
+2013-03-05 22:29:48,926 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist successful
+2013-03-05 22:29:48,926 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] getting Role instance with id: RoleId{roleId='', serviceId=''}
+2013-03-05 22:29:48,927 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] get successful, instance found
+2013-03-05 22:29:48,927 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persisting Role instance
+2013-03-05 22:29:48,928 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist successful
+2013-03-05 22:29:48,928 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] getting Role instance with id: RoleId{roleId='', serviceId=''}
+2013-03-05 22:29:48,928 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] get successful, instance found
+2013-03-05 22:29:48,931 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persisting Role instance
+2013-03-05 22:29:48,931 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] persist successful
+2013-03-05 22:29:48,931 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] merging Role instance
+2013-03-05 22:29:48,931 DEBUG [org.openiam.idm.srvc.role.service.RoleDAOImpl] merge successful
+2013-03-05 22:29:48,939 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,939 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] persist successful
+2013-03-05 22:29:48,940 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] getting RoleAttribute instance with id: 
+2013-03-05 22:29:48,941 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,944 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,944 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] persist successful
+2013-03-05 22:29:48,944 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] deleting RoleAttribute instance
+2013-03-05 22:29:48,944 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] delete successful
+2013-03-05 22:29:48,945 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] persisting RoleAttribute instance
+2013-03-05 22:29:48,945 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] persist successful
+2013-03-05 22:29:48,945 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] merging RoleAttribute instance
+2013-03-05 22:29:48,945 DEBUG [org.openiam.idm.srvc.role.service.RolePolicyDAOImpl] merge successful
+2013-03-05 22:29:48,953 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] persisting UserRole instance
+2013-03-05 22:29:48,953 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] persist successful
+2013-03-05 22:29:48,954 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] getting UserRole instance with id: 
+2013-03-05 22:29:48,954 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] get successful, no instance found
+2013-03-05 22:29:48,955 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] findUserByRole: domainId=
+2013-03-05 22:29:48,955 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] findUserByRole: roleId=
+2013-03-05 22:29:48,965 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] persisting UserRole instance
+2013-03-05 22:29:48,965 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] persist successful
+2013-03-05 22:29:48,965 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] deleting UserRole instance
+2013-03-05 22:29:48,965 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] delete successful
+2013-03-05 22:29:48,966 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] removeUserFromRole: roleId=
+2013-03-05 22:29:48,970 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] removeUserFromRole: userId=
+2013-03-05 22:29:48,970 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] removeUserFromRole: roleId=
+2013-03-05 22:29:48,974 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] persisting UserRole instance
+2013-03-05 22:29:48,975 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] persist successful
+2013-03-05 22:29:48,975 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] merging UserRole instance
+2013-03-05 22:29:48,975 DEBUG [org.openiam.idm.srvc.role.service.UserRoleDAOImpl] merge successful
+2013-03-05 22:29:48,982 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] persisting Supervisor instance
+2013-03-05 22:29:48,982 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] persist successful
+2013-03-05 22:29:48,983 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] finding Supervisor instance by example
+2013-03-05 22:29:48,986 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:48,988 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] getting Supervisor instance with id: 
+2013-03-05 22:29:48,991 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] get successful, no instance found
+2013-03-05 22:29:49,009 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] persisting Supervisor instance
+2013-03-05 22:29:49,010 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] persist successful
+2013-03-05 22:29:49,010 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] deleting Supervisor instance
+2013-03-05 22:29:49,010 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] delete successful
+2013-03-05 22:29:49,011 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] merging Supervisor instance
+2013-03-05 22:29:49,011 DEBUG [org.openiam.idm.srvc.user.service.SupervisorDAOImpl] merge successful
+2013-03-05 22:29:49,022 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] persisting UserAttribute instance
+2013-03-05 22:29:49,023 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] persist successful
+2013-03-05 22:29:49,024 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] persisting UserAttribute instance
+2013-03-05 22:29:49,024 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] persist successful
+2013-03-05 22:29:49,024 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] attaching clean UserAttribute instance
+2013-03-05 22:29:49,025 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] attach successful
+2013-03-05 22:29:49,026 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] attaching dirty UserAttribute instance
+2013-03-05 22:29:49,026 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] attach successful
+2013-03-05 22:29:49,032 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] getting UserAttribute instance with id: 
+2013-03-05 22:29:49,034 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] get successful, no instance found
+2013-03-05 22:29:49,039 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] deleting UserAttribute instance
+2013-03-05 22:29:49,040 INFO  [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] delete attribute=org.openiam.idm.srvc.user.domain.UserAttributeEntity@0
+2013-03-05 22:29:49,040 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] delete successful
+2013-03-05 22:29:49,041 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] merging UserAttribute instance
+2013-03-05 22:29:49,042 DEBUG [org.openiam.idm.srvc.user.service.UserAttributeDAOImpl] merge successful
+2013-03-05 22:29:49,053 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] persisting User instance
+2013-03-05 22:29:49,054 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] persist successful
+2013-03-05 22:29:49,059 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] getting User instance with id: 
+2013-03-05 22:29:49,062 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] get successful, no instance found
+2013-03-05 22:29:49,063 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] finding User based on the lastUpdate date range that is provided
+2013-03-05 22:29:49,103 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] deleting User instance
+2013-03-05 22:29:49,103 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] delete successful
+2013-03-05 22:29:49,105 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] search select:  select DISTINCT u.USER_ID, u.TYPE_ID,  u.TITLE, u.MIDDLE_INIT, u.LAST_NAME, u.FIRST_NAME, u.BIRTHDATE, u.STATUS, u.SECONDARY_STATUS, u.DEPT_NAME, u.DEPT_CD,  u.LAST_UPDATE, u.CREATED_BY, u.CREATE_DATE, u.SEX,  u.USER_TYPE_IND, u.SUFFIX, u.PREFIX, u.LAST_UPDATED_BY, u.LOCATION_NAME, u.LOCATION_CD, u.EMPLOYEE_TYPE, u.EMPLOYEE_ID,  u.JOB_CODE, u.MANAGER_ID, u.COMPANY_OWNER_ID, u.COMPANY_ID,  u.LAST_DATE, u.START_DATE, u.COST_CENTER, u.DIVISION, u.PASSWORD_THEME, u.NICKNAME, u.MAIDEN_NAME, u.MAIL_CODE,  u.COUNTRY, u.BLDG_NUM, u.STREET_DIRECTION, u.SUITE,   u.ADDRESS1, u.ADDRESS2, u.ADDRESS3, u.ADDRESS4, u.ADDRESS5, u.ADDRESS6, u.ADDRESS7, u.CITY, u.STATE, u.POSTAL_CD, u.EMAIL_ADDRESS, u.ALTERNATE_ID, u.USER_OWNER_ID, u.DATE_PASSWORD_CHANGED, u.DATE_CHALLENGE_RESP_CHANGED, u.PHONE_NBR, u.PHONE_EXT, u.AREA_CD, u.COUNTRY_CD, u.CLASSIFICATION, u.SHOW_IN_SEARCH, u.DEL_ADMIN  from 	USERS u   ORDER BY u.LAST_NAME, u.FIRST_NAME
+2013-03-05 22:29:49,106 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] search result is null
+2013-03-05 22:29:49,108 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] persisting User instance
+2013-03-05 22:29:49,108 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] persist successful
+2013-03-05 22:29:49,108 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] merging User instance
+2013-03-05 22:29:49,109 DEBUG [org.openiam.idm.srvc.user.service.UserDAOImpl] merge successful
+2013-03-05 22:29:49,120 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] persisting UserNoteEntity instance
+2013-03-05 22:29:49,120 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] persist successful
+2013-03-05 22:29:49,120 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] attaching clean UserNoteEntity instance
+2013-03-05 22:29:49,120 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] attach successful
+2013-03-05 22:29:49,121 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] persisting UserNoteEntity instance
+2013-03-05 22:29:49,121 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] persist successful
+2013-03-05 22:29:49,121 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] attaching dirty UserNoteEntity instance
+2013-03-05 22:29:49,122 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] attach successful
+2013-03-05 22:29:49,123 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] deleting UserNoteEntity instance
+2013-03-05 22:29:49,123 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] delete successful
+2013-03-05 22:29:49,129 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] finding UserNoteEntity instance by example
+2013-03-05 22:29:49,132 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] find by example successful, result size: 0
+2013-03-05 22:29:49,133 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] getting UserNote instance with id: 
+2013-03-05 22:29:49,135 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] get successful, no instance found
+2013-03-05 22:29:49,140 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] merging UserNote instance
+2013-03-05 22:29:49,140 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] merge successful
+2013-03-05 22:29:49,141 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] persisting UserNoteEntity instance
+2013-03-05 22:29:49,142 DEBUG [org.openiam.idm.srvc.user.service.UserNoteDAOImpl] persist successful

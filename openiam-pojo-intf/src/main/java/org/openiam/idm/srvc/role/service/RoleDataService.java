@@ -1,6 +1,7 @@
 package org.openiam.idm.srvc.role.service;
 
 import org.openiam.idm.srvc.role.dto.*;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.User;
 
 import java.util.List;
@@ -298,6 +299,7 @@ public interface RoleDataService {
     // problem generating wsdl with this method
     User[] getUsersInRole(String domainId, String roleId);
 
+    
     /**
      * Returns an array of Role objects that indicate the Roles a user is
      * associated to.
@@ -336,6 +338,9 @@ public interface RoleDataService {
     List<Role> getUserRolesByDomain(String domainId, String userId);
 
     List<Role> search(RoleSearch search);
+
+
+	List<UserWrapperEntity> findUserWByRole(String domainId, String roleId);
 
 
 }

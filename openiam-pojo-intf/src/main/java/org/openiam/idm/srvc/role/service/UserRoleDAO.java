@@ -21,46 +21,48 @@
  */
 package org.openiam.idm.srvc.role.service;
 
-import org.openiam.idm.srvc.role.domain.UserRoleEntity;
-import org.openiam.idm.srvc.role.dto.UserRole;
-import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.dto.User;
-
 import java.util.List;
+
+import org.openiam.idm.srvc.role.domain.UserRoleEntity;
+import org.openiam.idm.srvc.user.domain.UserEntity;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 
 /**
  * DAO Interface for UserRole. Manages the relationship between user and role.
- *
+ * 
  * @author Suneet Shah
  */
 public interface UserRoleDAO {
 
-    public void add(UserRoleEntity transientInstance);
+	public void add(UserRoleEntity transientInstance);
 
-    public void remove(UserRoleEntity persistentInstance);
+	public void remove(UserRoleEntity persistentInstance);
 
-    public UserRoleEntity update(UserRoleEntity detachedInstance);
+	public UserRoleEntity update(UserRoleEntity detachedInstance);
 
-    public UserRoleEntity findById(java.lang.String id);
+	public UserRoleEntity findById(java.lang.String id);
 
-    public void removeUserFromRole(String serviceId, String roleId, String userId);
+	public void removeUserFromRole(String serviceId, String roleId,
+			String userId);
 
-    public void removeAllUsersInRole(String domainId, String roleId);
+	public void removeAllUsersInRole(String domainId, String roleId);
 
-    /**
-     * Get all the UserRole objects for this user
-     *
-     * @param userId
-     * @return
-     */
-    public List<UserRoleEntity> findUserRoleByUser(String userId);
+	/**
+	 * Get all the UserRole objects for this user
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public List<UserRoleEntity> findUserRoleByUser(String userId);
 
-    /**
-     * Returns a list of users in a role.
-     *
-     * @param roleId
-     * @return
-     */
-    List<UserEntity> findUserByRole(String domainId, String roleId);
+	/**
+	 * Returns a list of users in a role.
+	 * 
+	 * @param roleId
+	 * @return
+	 */
+	List<UserEntity> findUserByRole(String domainId, String roleId);
+
+	List<UserWrapperEntity> findUserWByRole(String domainId, String roleId);
 
 }
