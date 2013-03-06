@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.common.util.CollectionUtils;
-import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
@@ -20,14 +20,10 @@ import org.openiam.idm.srvc.recon.command.ReconciliationCommandFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
-import org.openiam.idm.srvc.recon.ws.ReconciliationWebService;
 import org.openiam.idm.srvc.res.dto.Resource;
-import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
-import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
@@ -40,8 +36,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
-
-import com.ctc.wstx.util.StringUtil;
 
 public class AbstractCSVCommand implements ApplicationContextAware {
 	protected static final Log log = LogFactory
@@ -171,14 +165,23 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			report.add(new ReconciliationHTMLRow("Records from Remote CSV: "
 					+ sourceUsers.size() + " items", hList.size() + 1));
 			try {
-				reconCicle(hList, report, "Source: ", parserIDM, sourceUsers,
-						dbUsers, attrMapList, mSys);
+				dbUsers.removeAll(reconCicle(hList, report, "Source: ",
+						parserIDM, sourceUsers, dbUsers, attrMapList, mSys));
 			} catch (Exception e) {
 				log.error(e.getMessage());
 				response.setStatus(StatusCodeType.FAILURE);
 				response.setErrorMessage(e.getMessage());
 				return response;
 			}
+			report.add(new ReconciliationHTMLRow("Records from DB: "
+					+ dbUsers.size() + " items", hList.size() + 1));
+			for (CSVObject<ProvisionUser> obj : dbUsers) {
+				report.add(new ReconciliationHTMLRow("DB",
+						ReconciliationHTMLReportResults.NOT_EXIST_IN_CSV, this
+								.objectToString(hList, parserIDM.convertToMap(
+										attrMapList, obj))));
+			}
+
 			// -----------------------------------------------
 		} catch (Exception e) {
 			log.error(e);
@@ -255,12 +258,14 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	 *            - ManagedSys mSys
 	 * @throws Exception
 	 */
-	private void reconCicle(List<String> hList,
+	private Set<CSVObject<ProvisionUser>> reconCicle(List<String> hList,
 			List<ReconciliationHTMLRow> report, String preffix,
 			UserCSVParser parser, List<CSVObject<ProvisionUser>> reconUserList,
 			List<CSVObject<ProvisionUser>> dbUsers,
 			List<AttributeMap> attrMapList, ManagedSys mSys) throws Exception {
 		long c = Calendar.getInstance().getTimeInMillis();
+		Set<CSVObject<ProvisionUser>> used = new HashSet<CSVObject<ProvisionUser>>(
+				0);
 		for (CSVObject<ProvisionUser> u : reconUserList) {
 			log.info("User " + u.toString());
 			if (u.getObject() == null || u.getPrincipal() == null) {
@@ -285,12 +290,15 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			boolean isMultiple = false;
 			CSVObject<ProvisionUser> finded = null;
 			for (CSVObject<ProvisionUser> o : dbUsers) {
-
+				if (used.contains(o))
+					continue;
 				if (!StringUtils.hasText(o.getPrincipal())) {
+					used.add(o);
 					continue;
 				}
 				if (o.getPrincipal().contains("*")
 						|| o.getPrincipal().contains("#")) {
+					used.add(o);
 					continue;
 				}
 				if (o.getPrincipal().replaceFirst("^0*", "")
@@ -298,6 +306,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					if (!isFind) {
 						isFind = true;
 						finded = o;
+						used.add(finded);
 						continue;
 					} else {
 						isMultiple = true;
@@ -322,7 +331,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 							ReconciliationHTMLReportResults.IDM_DELETED,
 							this.objectToString(hList,
 									parser.convertToMap(attrMapList, u))));
-					continue;
 				} else {
 					report.add(new ReconciliationHTMLRow(preffix,
 							ReconciliationHTMLReportResults.MATCH_FOUND, this
@@ -332,7 +340,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 													attrMapList, u), parser
 													.convertToMap(attrMapList,
 															finded)))));
-					continue;
 				}
 				// TODO fix login cheking
 				// Login l = null;
@@ -378,6 +385,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		c = Calendar.getInstance().getTimeInMillis() - c;
 		log.info("RECONCILIATION TIME:" + c
 				+ "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		return used;
 	}
 
 	private boolean isUnique(CSVObject<ProvisionUser> obj,
