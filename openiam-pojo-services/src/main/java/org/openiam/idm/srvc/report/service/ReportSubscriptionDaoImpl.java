@@ -40,7 +40,11 @@ public class ReportSubscriptionDaoImpl extends BaseDaoImpl<ReportSubscriptionEnt
            reportSubscription = reportSubscriptionEntity;
            getSession().save(reportSubscriptionEntity);
         }else{
-        	getSession().update(reportSubscriptionEntity);
+        	reportSubscription.setDeliveryAudience(reportSubscriptionEntity.getDeliveryAudience());
+        	reportSubscription.setDeliveryFormat(reportSubscriptionEntity.getDeliveryFormat());
+        	reportSubscription.setDeliveryMethod(reportSubscriptionEntity.getDeliveryMethod());
+        	reportSubscription.setStatus(reportSubscriptionEntity.getStatus());
+        	getSession().update(reportSubscription);
         }
     }
     

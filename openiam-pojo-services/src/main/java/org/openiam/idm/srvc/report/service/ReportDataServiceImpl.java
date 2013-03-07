@@ -83,7 +83,10 @@ public class ReportDataServiceImpl implements ReportDataService {
     
     @Override
     @Transactional
-    public void updateSubReportParametersByReportName(final String reportName, final List<ReportSubCriteriaParamEntity> parameters) {
+    public void updateSubReportParametersByReportName(final ReportSubscriptionEntity reportSubscriptionEntity, final List<ReportSubCriteriaParamEntity> parameters) {
+    	for (ReportSubCriteriaParamEntity subParam: parameters){
+    		subParam.setReport(reportSubscriptionEntity);
+    	}
     	subCriteriaParamDao.save(parameters);
     }
 

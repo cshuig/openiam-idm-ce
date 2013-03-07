@@ -196,8 +196,9 @@ public class WebReportServiceImpl implements WebReportService {
         Response response = new Response();
         if (reportSubscriptionDto != null) {
             try {
-                reportDataService.createOrUpdateSubscribedReportInfo(reportSubscriptionDozerConverter.convertToEntity(reportSubscriptionDto, true));
-                reportDataService.updateSubReportParametersByReportName(reportSubscriptionDto.getReportName(), criteriaSubParamDozerConverter.convertToEntityList(parameters, false));
+            	ReportSubscriptionEntity entity = reportSubscriptionDozerConverter.convertToEntity(reportSubscriptionDto, true);
+                reportDataService.createOrUpdateSubscribedReportInfo(entity);
+                reportDataService.updateSubReportParametersByReportName(entity, criteriaSubParamDozerConverter.convertToEntityList(parameters, false));
             } catch (Throwable t) {
                 response.setStatus(ResponseStatus.FAILURE);
                 response.setErrorCode(ResponseCode.SQL_EXCEPTION);

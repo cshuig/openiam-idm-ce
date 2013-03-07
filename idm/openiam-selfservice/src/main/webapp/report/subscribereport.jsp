@@ -101,7 +101,7 @@
 										<td class="tddark" width="200pt"><label
 											class="control-label" for="designFileInpId"> Status </label>
 										</td>
-										<td><select name="status">
+										<td><select name="report.status">
 												<c:forEach items="${statusList}" var="paramType"
 													varStatus="sts">
 													<option
@@ -125,9 +125,9 @@
 																<td><span>Name: </span> <input type="text"
 																	name="paramName" value="${rep.name}" /></td>
 																<td><span>Type: </span> <input type="text"
-																	name="paramName" value="${rep.typeId}" /></td>
+																	name="paramTypeId" value="${rep.typeId}" /></td>
 																<td><span>Value: </span> <input type="text"
-																	name="paramName" value="${rep.value}" /></td>
+																	name="paramValue" value="${rep.value}" /></td>
 															</tr>
 														</c:forEach>
 													</table>
