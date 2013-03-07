@@ -20,6 +20,7 @@ import org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
 import org.openiam.idm.srvc.report.ws.GetAllReportsResponse;
+import org.openiam.idm.srvc.report.ws.GetReportParametersResponse;
 import org.openiam.idm.srvc.report.ws.WebReportService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -76,7 +77,7 @@ public class SubscribeReportsController extends SimpleFormController {
 		            return modelAndView;
 			}
 		}
-		return new ModelAndView(new RedirectView("subscribeReport.selfserve", true));
+		return new ModelAndView(new RedirectView("subscribeReportOld.selfserve", true));
 	}
 
 	@Override
@@ -129,11 +130,29 @@ public class SubscribeReportsController extends SimpleFormController {
 		List<ReportInfoDto> reportsList = (allReportsResponse != null && allReportsResponse
 				.getReports() != null) ? allReportsResponse.getReports()
 				: Collections.EMPTY_LIST;
-		for (ReportInfoDto reportSubscriptionDto : reportsList) {
-			reports.put(reportSubscriptionDto.getReportName(),
-					reportSubscriptionDto.getReportName());
+				
+		java.util.List<org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto> reportParameters = new java.util.ArrayList<org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto>();
+		//setting parameters for the first report only, need to handle in onchange
+		boolean paramsSet = false;
+		for (ReportInfoDto reportInfoDto : reportsList) {
+			reports.put(reportInfoDto.getReportName(),
+					reportInfoDto.getReportName());
+			if (!paramsSet){
+				GetReportParametersResponse paramResponse = reportService.getReportParametersByReportId(reportInfoDto.getReportId());
+				List<ReportCriteriaParamDto> params = paramResponse.getParameters();
+				for (ReportCriteriaParamDto param: params){
+					ReportSubCriteriaParamDto subParamDto = new ReportSubCriteriaParamDto();
+					subParamDto.setReportId(reportInfoDto.getReportId());
+					subParamDto.setName(param.getName());
+					subParamDto.setTypeId(param.getTypeId());
+					reportParameters.add(subParamDto);
+				}
+				referenceData.put("reportParameters", reportParameters);
+				paramsSet = true;
+			}
 		}
 		referenceData.put("reportsList", reports);
+		
 		return referenceData;
 	}
 }

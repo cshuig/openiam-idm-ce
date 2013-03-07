@@ -30,6 +30,6 @@ public interface ReportDataService {
     List<ReportCriteriaParamEntity> getReportParametersByReportName(String reportName);    
     List<ReportSubCriteriaParamEntity> getSubReportParametersByReportName(String reportName);    
     void updateReportParametersByReportName(String reportName, List<ReportCriteriaParamEntity> prameters);
-    void updateSubReportParametersByReportName(String reportName, List<ReportSubCriteriaParamEntity> prameters);
+    void updateSubReportParametersByReportName(ReportSubscriptionEntity reportSubscriptionEntity, List<ReportSubCriteriaParamEntity> prameters);
     List<ReportParamTypeEntity> getReportParameterTypes();
 }

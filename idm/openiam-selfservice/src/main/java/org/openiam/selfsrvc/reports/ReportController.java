@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
 import org.openiam.idm.srvc.report.dto.ReportSubscriptionDto;
@@ -30,6 +31,8 @@ public class ReportController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
     	ReportCommand reportCommand = new ReportCommand();
         if(!request.getParameterMap().containsKey("report.reportId")) {
+        	HttpSession session = request.getSession(true);
+    	 	session.removeAttribute("reportCommand");
             GetAllSubscribedReportsResponse allReportsResponse = reportService.getSubscribedReports();
             List<ReportSubscriptionDto> reports = (allReportsResponse != null && allReportsResponse.getReports() != null) ? allReportsResponse.getReports() : Collections.EMPTY_LIST;
             reportCommand.setRepors(reports);
