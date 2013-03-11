@@ -1,7 +1,10 @@
 package org.openiam.idm.srvc.csv;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +28,11 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 	@Override
 	protected void putValueInDTO(ProvisionUser user, UserFields field,
 			String objValue) {
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		switch (field) {
 		case birthdate:
 			try {
-				user.setBirthdate(Date.valueOf(objValue));
+				user.setBirthdate(sdf.parse(objValue));
 			} catch (Exception e) {
 				user.setBirthdate(null);
 			}
@@ -40,7 +44,11 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			user.setCompanyOwnerId(objValue);
 			break;
 		case createDate:
-			user.setCreateDate(Date.valueOf(objValue));
+			try {
+				user.setCreateDate(sdf.parse(objValue));
+			} catch (Exception e) {
+				user.setCreateDate(null);
+			}
 			break;
 		case createdBy:
 			user.setCreatedBy(objValue);
@@ -69,7 +77,7 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			break;
 		case lastUpdate:
 			try {
-				user.setLastUpdate(Date.valueOf(objValue));
+				user.setLastUpdate(sdf.parse(objValue));
 			} catch (Exception e) {
 				user.setLastUpdate(null);
 			}
@@ -134,14 +142,14 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			break;
 		case startDate:
 			try {
-				user.setStartDate(Date.valueOf(objValue));
+				user.setStartDate(sdf.parse(objValue));
 			} catch (Exception e) {
 				user.setStartDate(null);
 			}
 			break;
 		case lastDate:
 			try {
-				user.setLastDate(Date.valueOf(objValue));
+				user.setLastDate(sdf.parse(objValue));
 			} catch (Exception e) {
 				user.setLastDate(null);
 			}
@@ -249,14 +257,14 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			break;
 		case datePasswordChanged:
 			try {
-				user.setDatePasswordChanged(Date.valueOf(objValue));
+				user.setDatePasswordChanged(sdf.parse(objValue));
 			} catch (Exception e) {
 				user.setDatePasswordChanged(null);
 			}
 			break;
 		case dateChallengeRespChanged:
 			try {
-				user.setDateChallengeRespChanged(Date.valueOf(objValue));
+				user.setDateChallengeRespChanged(sdf.parse(objValue));
 			} catch (Exception e) {
 				user.setDateChallengeRespChanged(null);
 			}
@@ -272,10 +280,12 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 
 	@Override
 	protected String putValueIntoString(ProvisionUser user, UserFields field) {
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		String objValue = "";
 		switch (field) {
 		case birthdate:
-			objValue = toString(user.getBirthdate());
+			objValue = user.getBirthdate() == null ? "" : toString(sdf
+					.format(user.getBirthdate()));
 			break;
 		case companyId:
 			objValue = toString(user.getCompanyId());
@@ -284,7 +294,8 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			objValue = toString(user.getCompanyOwnerId());
 			break;
 		case createDate:
-			objValue = toString(user.getCreateDate());
+			objValue = user.getCreateDate() == null ? "" : toString(sdf
+					.format(user.getCreateDate()));
 			break;
 		case createdBy:
 			objValue = toString(user.getCreatedBy());
@@ -312,7 +323,8 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			objValue = toString(user.getLastName());
 			break;
 		case lastUpdate:
-			objValue = toString(user.getLastUpdate());
+			objValue = user.getLastUpdate() == null ? "" : toString(sdf
+					.format(user.getLastUpdate()));
 			break;
 		case lastUpdatedBy:
 			objValue = toString(user.getLastUpdatedBy());
@@ -367,10 +379,12 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			objValue = toString(user.getCostCenter());
 			break;
 		case startDate:
-			objValue = toString(user.getStartDate());
+			objValue = user.getStartDate() == null ? "" : toString(sdf
+					.format(user.getStartDate()));
 			break;
 		case lastDate:
-			objValue = toString(user.getLastDate());
+			objValue = user.getLastDate() == null ? "" : toString(sdf
+					.format(user.getLastDate()));
 			break;
 		case mailCode:
 			objValue = toString(user.getMailCode());
@@ -462,10 +476,12 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 			objValue = toString(user.getUserOwnerId());
 			break;
 		case datePasswordChanged:
-			objValue = toString(user.getDatePasswordChanged());
+			objValue = user.getDatePasswordChanged() == null ? ""
+					: toString(sdf.format(user.getDatePasswordChanged()));
 			break;
 		case dateChallengeRespChanged:
-			objValue = toString(user.getDateChallengeRespChanged());
+			objValue = user.getDateChallengeRespChanged() == null ? ""
+					: toString(sdf.format(user.getDateChallengeRespChanged()));
 			break;
 		case userAttributes:
 		case principalList:
