@@ -153,7 +153,15 @@
             <b>typeId</b>
         </field>
     </mapping>
-
+    <mapping>
+        <class-a>org.openiam.idm.srvc.report.domain.ReportSubCriteriaParamEntity</class-a>
+        <class-b>org.openiam.idm.srvc.report.dto.ReportSubCriteriaParamDto</class-b>
+        <field>
+            <a>report.reportId</a>
+            <b>reportId</b>
+        </field>
+    </mapping>
+    
     <mapping>
         <class-a>org.openiam.idm.srvc.report.domain.ReportInfoEntity</class-a>
         <class-b>org.openiam.idm.srvc.report.dto.ReportInfoDto</class-b>

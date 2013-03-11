@@ -18,9 +18,10 @@ import org.openiam.idm.srvc.report.ws.GetReportInfoResponse;
 import org.openiam.idm.srvc.report.ws.WebReportService;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-public class ReportController extends SimpleFormController {
+public class ReportController extends CancellableFormController {
 
     private WebReportService reportService;
 

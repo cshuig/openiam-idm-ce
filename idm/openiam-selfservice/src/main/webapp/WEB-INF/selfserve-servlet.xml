@@ -15,6 +15,7 @@
 		<property name="formView" value="/report/subscribereport" />
 		<property name="successView" value="report/reportlist" />
         <property name="reportService" ref="reportServiceClient" />
+         <property name="cancelView" value="/welcomePage.selfserve" />
      </bean>
      <bean id="reportController" class="org.openiam.selfsrvc.reports.ReportController">
 		<property name="commandName" value="reportCommand" />
@@ -22,14 +23,16 @@
 		<property name="formView" value="/report/reportlist" />
 		<property name="successView" value="/report/subscribereport" />
         <property name="reportService" ref="reportServiceClient" />
-     </bean>
+         <property name="cancelView" value="/welcomePage.selfserve" />
+        </bean>
 <bean id="viewReportController" class="org.openiam.selfsrvc.reports.ViewReportController">
 		<property name="commandName" value="reportCommand" />
 		<property name="commandClass" value="org.openiam.selfsrvc.reports.ReportCommand" />
 		<property name="formView" value="/report/viewReports" />
 		<property name="successView" value="report/viewReports" />
         <property name="reportService" ref="reportServiceClient" />
-     </bean>
+         <property name="cancelView" value="/welcomePage.selfserve" />
+        </bean>
      <!--  Native Spring MVC Controller  -->
      <!--  All new web functionality should be declared in this file  -->
        <bean id="welcomePage" class="org.openiam.selfsrvc.WelcomePageController">

@@ -22,7 +22,7 @@
 					<td class="pageTitle" width="70%">
 						<h2 class="contentheading">
 							<c:choose>
-								<c:when test="${reportCommand.report.reportId!=null}">Edit Subscription for BIRT Report ${reportCommand.report.reportName}</c:when>
+								<c:when test="${reportCommand.report.reportId!=null && reportCommand.report.reportId.trim().length() > 0}">Edit Subscription for BIRT Report ${reportCommand.report.reportName}</c:when>
 								<c:otherwise>BIRT Report Subscription</c:otherwise>
 							</c:choose>
 						</h2>
@@ -36,7 +36,7 @@
 				enctype="multipart/form-data">
 				<input type="hidden" name="report.reportId"
 					value="${reportCommand.report.reportId}" />
-				<c:if test="${reportCommand.report.reportName!=null}">
+				<c:if test="${reportCommand.report.reportName!=null && reportCommand.report.reportId.trim().length() > 0}">
 					<input type="hidden" name="report.reportName"
 						value="${reportCommand.report.reportName}" />
 				</c:if>
@@ -46,13 +46,23 @@
 							<fieldset class="userformSearch">
 
 								<table class="fieldsetTable" width="100%" height="200pt">
-									<c:if test="${reportCommand.report.reportId==null}">
+									<c:if test="${reportCommand.report.reportId==null || reportCommand.report.reportId.trim().length() <= 0}">
 										<tr>
 											<td class="tddark" width="200pt"><label
 												class="control-label" for="designFileInpId"> Report
 													Name </label></td>
-											<td><form:select path="report.reportName"
-													items="${reportsList}" onchange="submit()" /></td>
+											<td><!--form:select path="report.reportName"
+													items="${reportsList}" onchange="submit()" /-->
+													<select name="report.reportName" onchange="submit()">
+												<c:forEach items="${reportsList}" var="paramType"
+													varStatus="sts">
+													<option
+														<c:if test="${paramType.key == reportCommand.report.reportName}"> selected="selected" </c:if>
+														value="${paramType.key}" label="${paramType.value}">${paramType.value}</option>
+												</c:forEach>
+										</select>
+													
+													</td>
 										</tr>
 
 									</c:if>
@@ -114,19 +124,19 @@
 									<c:choose>
 										<c:when test="${not empty reportParameters}">
 											<tr>
-												<td colspan="2">Parameters</td>
+												<td colspan="2"><b>Parameters</b></td>
 											</tr>
 											<tr>
-												<td colspan="2">
-													<table id="paramTable">
+												<td colspan="4">
+													<table id="paramTable" width="100%">
 														<c:forEach items="${reportParameters}" var="rep"
 															varStatus="status">
 															<tr>
-																<td><span>Name: </span> <input type="text"
+																<td><span>Name: </span> </td><td> <input type="text"
 																	name="paramName" value="${rep.name}" /></td>
-																<td><span>Type: </span> <input type="text"
-																	name="paramTypeId" value="${rep.typeId}" /></td>
-																<td><span>Value: </span> <input type="text"
+																<!-- td><span>Type: </span> <input type="text"
+																	name="paramTypeId" value="${rep.typeId}" /></td> -->
+																<td><span>Value: </span> </td><td> <input type="text"
 																	name="paramValue" value="${rep.value}" /></td>
 															</tr>
 														</c:forEach>
