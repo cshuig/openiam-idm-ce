@@ -2,30 +2,36 @@
 <!DOCTYPE hibernate-mapping SYSTEM "classpath://hibernate-mapping-3.0.dtd" >
 <!-- Generated May 29, 2010 8:20:09 PM by Hibernate Tools 3.2.2.GA -->
 <hibernate-mapping>
-    <class name="org.openiam.idm.srvc.recon.dto.ReconciliationConfig" table="RECONCILIATION_CONFIG" >
-        <id name="reconConfigId" type="string">
-            <column name="RECON_CONFIG_ID" length="32" />
-            <generator class="uuid" />
-        </id>
-        <property name="resourceId" type="string">
-            <column name="RESOURCE_ID" length="32" />
-        </property>
-        <property name="frequency" type="string">
-            <column name="FREQUENCY" length="20" />
-        </property>
-        <property name="status" type="string">
-            <column name="STATUS" length="20" />
-        </property>
+	<class name="org.openiam.idm.srvc.recon.dto.ReconciliationConfig"
+		table="RECONCILIATION_CONFIG">
+		<id name="reconConfigId" type="string">
+			<column name="RECON_CONFIG_ID" length="32" />
+			<generator class="uuid" />
+		</id>
+		<property name="resourceId" type="string">
+			<column name="RESOURCE_ID" length="32" />
+		</property>
+		<property name="frequency" type="string">
+			<column name="FREQUENCY" length="20" />
+		</property>
+		<property name="status" type="string">
+			<column name="STATUS" length="20" />
+		</property>
+		<property name="separator" type="string">
+			<column name="CSV_LINE_SEPARATOR" length="10" />
+		</property>
+		<property name="endOfLine" type="string">
+			<column name="CSV_END_OF_LINE" length="10" />
+		</property>
+		<set name="situationSet" inverse="false" cascade="all" lazy="false">
+			<key>
+				<column name="RECON_CONFIG_ID" length="32" not-null="true" />
+			</key>
+			<one-to-many class="org.openiam.idm.srvc.recon.dto.ReconciliationSituation" />
+		</set>
 
-         <set name="situationSet" inverse="false" cascade="all" lazy="false" >
-            <key>
-                <column name="RECON_CONFIG_ID" length="32" not-null="true" />
-            </key>
-            <one-to-many class="org.openiam.idm.srvc.recon.dto.ReconciliationSituation" />
-        </set>
 
-
-    </class>
+	</class>
 </hibernate-mapping>
 
 

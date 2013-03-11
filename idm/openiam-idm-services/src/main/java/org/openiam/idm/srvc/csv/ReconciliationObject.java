@@ -1,15 +1,15 @@
-package org.openiam.spml2.spi.csv;
+package org.openiam.idm.srvc.csv;
 
-public class CSVObject<T> {
+public class ReconciliationObject<T> {
 
 	private String principal;
 	private T object;
 
-	public CSVObject() {
+	public ReconciliationObject() {
 
 	}
 
-	public CSVObject(String principal, T object) {
+	public ReconciliationObject(String principal, T object) {
 		super();
 		this.principal = principal;
 		this.object = object;
@@ -53,9 +53,9 @@ public class CSVObject<T> {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof CSVObject))
+		if (!(obj instanceof ReconciliationObject))
 			return false;
-		CSVObject other = (CSVObject) obj;
+		ReconciliationObject other = (ReconciliationObject) obj;
 		if (object == null) {
 			if (other.object != null)
 				return false;

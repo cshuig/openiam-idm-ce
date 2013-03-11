@@ -1,4 +1,4 @@
-package org.openiam.spml2.msg;
+package org.openiam.idm.srvc.recon.report;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,25 +11,32 @@ import java.util.Map;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 
-public class ReconciliationHTMLReport {
+public class ReconciliationReport {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private List<ReconciliationHTMLRow> report = new ArrayList<ReconciliationHTMLRow>();
+	private List<ReconciliationReportRow> report = new ArrayList<ReconciliationReportRow>();
 
-	public List<ReconciliationHTMLRow> getReport() {
+	public List<ReconciliationReportRow> getReport() {
 		return report;
 	}
 
-	public void setReport(List<ReconciliationHTMLRow> report) {
+	public void setReport(List<ReconciliationReportRow> report) {
 		this.report = report;
 	}
 
-	@Override
-	public String toString() {
+	public String toCSV() {
+		StringBuilder csv = new StringBuilder();
+		for (ReconciliationReportRow row : report) {
+			csv.append(row.toCSV());
+		}
+		return csv.toString();
+	}
+
+	public String toHTML() {
 		StringBuilder html = new StringBuilder();
 		html.append("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'>");
 		html.append("<html>");
@@ -60,7 +67,7 @@ public class ReconciliationHTMLReport {
 
 		html.append("</style>");
 		html.append("</head>");
-		html.append("<body>"); 
+		html.append("<body>");
 		html.append("<div>");
 		html.append("<div style='position:fixed;top:0px;background-color:#ffffff'>");
 		html.append("<h2>");
@@ -68,7 +75,7 @@ public class ReconciliationHTMLReport {
 		html.append(Calendar.getInstance().getTime().toString());
 		html.append("</h2>");
 		html.append("<div class='legend'>");
-		for (ReconciliationHTMLReportResults a : ReconciliationHTMLReportResults
+		for (ReconciliationReportResults a : ReconciliationReportResults
 				.values()) {
 			html.append(this.legendItem(a));
 		}
@@ -77,8 +84,8 @@ public class ReconciliationHTMLReport {
 		html.append("</div>");
 		html.append("</div>");
 		html.append("<table style='margin-top:170px;' width='100%' border='1' cellspacing='0' cellpadding='0'>");
-		for (ReconciliationHTMLRow row : report) {
-			html.append(row.toString());
+		for (ReconciliationReportRow row : report) {
+			html.append(row.toHTML());
 		}
 		html.append("</table>");
 		html.append("</body>");
@@ -87,7 +94,7 @@ public class ReconciliationHTMLReport {
 		return html.toString();
 	}
 
-	private String legendItem(ReconciliationHTMLReportResults a) {
+	private String legendItem(ReconciliationReportResults a) {
 		StringBuilder html = new StringBuilder();
 		html.append("<div class='legend-item' style='background-color:"
 				+ a.getColor() + ";'>");
@@ -98,17 +105,28 @@ public class ReconciliationHTMLReport {
 		return html.toString();
 	}
 
-	public void save(String pathToCSV, ManagedSys mSys) throws IOException {
-
+	public void save(String pathToCSV, ManagedSys mSys, boolean isHTML)
+			throws IOException {
 		StringBuilder sb = new StringBuilder(pathToCSV);
 		sb.append("report_");
 		sb.append(mSys.getManagedSysId());
 		sb.append(mSys.getResourceId());
-		sb.append(".html");
-
+		if (isHTML)
+			sb.append(".html");
+		else
+			sb.append(".csv");
 		FileWriter fw = new FileWriter(sb.toString());
-		fw.append(this.toString());
+		if (isHTML)
+			fw.append(this.toHTML());
+		else
+			fw.append(this.toCSV());
+		
 		fw.flush();
 		fw.close();
+	}
+
+	public void save(String pathToCSV, ManagedSys mSys) throws IOException {
+		this.save(pathToCSV, mSys, true);
+		this.save(pathToCSV, mSys, false);
 	}
 }

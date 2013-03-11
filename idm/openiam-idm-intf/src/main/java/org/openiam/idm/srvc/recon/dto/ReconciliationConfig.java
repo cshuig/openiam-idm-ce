@@ -22,11 +22,12 @@ public class ReconciliationConfig implements java.io.Serializable {
 	private String resourceId;
 	private String frequency;
 	private String status;
+	private String separator;
+	private String endOfLine;
 	
 	//Not saved in DB
 	private String reportPath;
-	private String separator;
-	private String endOfLine;
+
 	private List<UserWrapperEntity> userList;
 
 	public String getSeparator() {

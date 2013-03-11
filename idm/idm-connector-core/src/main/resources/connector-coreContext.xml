@@ -113,6 +113,7 @@
 
 
 	<bean id="csvAddCommmand" class="org.openiam.spml2.spi.csv.AddCSVCommand">
+		<property name="userCSVParser" ref="userCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
@@ -120,6 +121,7 @@
 	</bean>
 
 	<bean id="csvTestCommmand" class="org.openiam.spml2.spi.csv.TestCSVCommand">
+		<property name="userCSVParser" ref="userCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
@@ -127,6 +129,7 @@
 	</bean>
 
 	<bean id="csvLookupCommmand" class="org.openiam.spml2.spi.csv.LookupCSVCommand">
+		<property name="userCSVParser" ref="userCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
@@ -134,6 +137,7 @@
 	</bean>
 
 	<bean id="csvReconCommmand" class="org.openiam.spml2.spi.csv.ReconcileCSVCommand">
+		<property name="userCSVParser" ref="userCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
@@ -142,6 +146,7 @@
 	</bean>
 
 	<bean id="csvModifyCommmand" class="org.openiam.spml2.spi.csv.ModifyCSVCommand">
+		<property name="userCSVParser" ref="userCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />

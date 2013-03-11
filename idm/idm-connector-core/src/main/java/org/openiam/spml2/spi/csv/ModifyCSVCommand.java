@@ -1,7 +1,7 @@
 package org.openiam.spml2.spi.csv;
 
+import org.openiam.idm.srvc.csv.ReconciliationObject;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.spml2.msg.DeleteRequestType;
 import org.openiam.spml2.msg.ErrorCode;
@@ -33,7 +33,7 @@ public class ModifyCSVCommand extends AbstractCSVCommand {
 				response.setError(ErrorCode.CSV_ERROR);
 				response.addErrorMessage("Sync object is null");
 			}
-			this.updateUser(new CSVObject<ProvisionUser>(psoID.getID(), user),
+			this.updateUser(new ReconciliationObject<ProvisionUser>(psoID.getID(), user),
 					managedSys);
 		} catch (Exception e) {
 			e.printStackTrace();

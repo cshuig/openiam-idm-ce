@@ -39,7 +39,7 @@
 		<property name="reportDataService" ref="reportDataService" />
 		<property name="roleDataService" ref="roleWS" />
 		<property name="mailService" ref="mailService" />
-						<property name="scriptEngine"
+		<property name="scriptEngine"
 			value="org.openiam.script.GroovyScriptEngineIntegration" />
 		<property name="auditHelper" ref="auditHelper" />
 	</bean>
@@ -187,6 +187,12 @@
 	<bean id="managedSysDAO" class="org.openiam.idm.srvc.mngsys.service.ManagedSysDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+
+	<bean id="userCSVParser" class="org.openiam.idm.srvc.csv.UserCSVParser">
+		<property name="pathToCSV" value="${csv.path}" />
+	</bean>
+
+
 	<bean id="managedSysObjectMatchDAO"
 		class="org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"></property>
