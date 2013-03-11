@@ -41,8 +41,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
 
-import com.google.gdata.data.introspection.Collection;
-
 public class AbstractCSVCommand implements ApplicationContextAware {
 	protected static final Log log = LogFactory
 			.getLog(AbstractCSVCommand.class);
