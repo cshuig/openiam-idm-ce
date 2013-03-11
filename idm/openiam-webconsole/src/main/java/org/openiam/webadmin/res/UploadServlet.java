@@ -1,15 +1,11 @@
 package org.openiam.webadmin.res;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.Timestamp;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -24,11 +20,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.poi.util.TempFile;
-import org.apache.xmlbeans.impl.common.ReaderInputStream;
 import org.springframework.util.StringUtils;
-
-import com.lowagie.text.pdf.codec.Base64.OutputStream;
 
 public class UploadServlet extends HttpServlet {
 	/**
@@ -122,17 +114,17 @@ public class UploadServlet extends HttpServlet {
 			resultItem.write(file);
 			log("File successfuly uploaded to: " + DESTINATION_DIR_PATH
 					+ FILE_NAME);
-//			// Update CSV according to internal format: 'a,b,c,d\n'
-//			if (',' == seprator && '\n' == endOfLine) {
-//				log("Format is as internal");
-//			} else {
-//				Calendar calendar = Calendar.getInstance();
-//				log("CSV Remake start in ");
-//				this.remakeFile(file, seprator, endOfLine);
-//				log("CSV Remake complete after"
-//						+ (Calendar.getInstance().getTimeInMillis() - calendar
-//								.getTimeInMillis()) / 1000 + "sec");
-//			}
+			// Update CSV according to internal format: 'a,b,c,d\n'
+			if (',' == seprator && '\n' == endOfLine) {
+				log("Format is as internal");
+			} else {
+				Calendar calendar = Calendar.getInstance();
+				log("CSV Remake start in ");
+				this.remakeFile(file, seprator, endOfLine);
+				log("CSV Remake complete after"
+						+ (Calendar.getInstance().getTimeInMillis() - calendar
+								.getTimeInMillis()) / 1000 + "sec");
+			}
 			response.sendRedirect(request.getContextPath()
 					+ "/reconcilConfig.cnt?menuid=RESRECONCILE&menugrp=SECURITY_RES&objId="
 					+ resId);
