@@ -142,7 +142,7 @@ public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 	 * @param mngSys
 	 * @return
 	 */
-	private String getFileName(ManagedSys mngSys, CSVSource source) {
+	public String getFileName(ManagedSys mngSys, CSVSource source) {
 		StringBuilder sb = new StringBuilder(pathToCSV);
 		if (CSVSource.UPLOADED.equals(source)) {
 			sb.append("recon_");

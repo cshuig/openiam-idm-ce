@@ -122,17 +122,17 @@ public class UploadServlet extends HttpServlet {
 			resultItem.write(file);
 			log("File successfuly uploaded to: " + DESTINATION_DIR_PATH
 					+ FILE_NAME);
-			// Update CSV according to internal format: 'a,b,c,d\n'
-			if (',' == seprator && '\n' == endOfLine) {
-				log("Format is as internal");
-			} else {
-				Calendar calendar = Calendar.getInstance();
-				log("CSV Remake start in ");
-				this.remakeFile(file, seprator, endOfLine);
-				log("CSV Remake complete after"
-						+ (Calendar.getInstance().getTimeInMillis() - calendar
-								.getTimeInMillis()) / 1000 + "sec");
-			}
+//			// Update CSV according to internal format: 'a,b,c,d\n'
+//			if (',' == seprator && '\n' == endOfLine) {
+//				log("Format is as internal");
+//			} else {
+//				Calendar calendar = Calendar.getInstance();
+//				log("CSV Remake start in ");
+//				this.remakeFile(file, seprator, endOfLine);
+//				log("CSV Remake complete after"
+//						+ (Calendar.getInstance().getTimeInMillis() - calendar
+//								.getTimeInMillis()) / 1000 + "sec");
+//			}
 			response.sendRedirect(request.getContextPath()
 					+ "/reconcilConfig.cnt?menuid=RESRECONCILE&menugrp=SECURITY_RES&objId="
 					+ resId);

@@ -26,6 +26,8 @@ import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.report.ReconciliationReport;
 import org.openiam.idm.srvc.recon.report.ReconciliationReportResults;
 import org.openiam.idm.srvc.recon.report.ReconciliationReportRow;
+import org.openiam.idm.srvc.recon.service.CSVImproveScript;
+import org.openiam.idm.srvc.recon.service.PopulationScript;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
@@ -34,6 +36,8 @@ import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
+import org.openiam.script.ScriptFactory;
+import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.msg.ResponseType;
 import org.openiam.spml2.msg.StatusCodeType;
 import org.springframework.beans.BeansException;
@@ -50,6 +54,22 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
 	protected LoginDataService loginManager;
 	protected CSVParser<ProvisionUser> userCSVParser;
+	protected String scriptEngine;
+
+	/**
+	 * @param scriptEngine
+	 *            the scriptEngine to set
+	 */
+	public void setScriptEngine(String scriptEngine) {
+		this.scriptEngine = scriptEngine;
+	}
+
+	public void improveFile(String pathToFile) throws Exception {
+		ScriptIntegration se = ScriptFactory.createModule(this.scriptEngine);
+		CSVImproveScript script = (CSVImproveScript) se.instantiateClass(null,
+				"/recon/ImproveScript.groovy");
+		script.execute(pathToFile);
+	}
 
 	/**
 	 * @param userCSVParser
@@ -155,6 +175,9 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		try {
 			idmUsers = userCSVParser.getObjects(mSys, attrMapList,
 					CSVSource.IDM);
+
+			// Improve uploaded file
+			improveFile(userCSVParser.getFileName(mSys, CSVSource.UPLOADED));
 			sourceUsers = userCSVParser.getObjects(mSys, attrMapList,
 					CSVSource.UPLOADED);
 			// Fill header

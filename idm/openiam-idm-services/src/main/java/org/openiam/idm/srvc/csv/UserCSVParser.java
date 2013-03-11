@@ -542,4 +542,9 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 		return getObjectList(managedSys, attrMapList, ProvisionUser.class,
 				UserFields.class, source);
 	}
+
+	@Override
+	public String getFileName(ManagedSys mngSys, CSVSource source) {
+		return super.getFileName(mngSys, source);
+	}
 }

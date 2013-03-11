@@ -28,4 +28,6 @@ public interface CSVParser<T> {
 
 	Map<String, String> convertToMap(List<AttributeMap> attrMap,
 			ReconciliationObject<T> obj);
+
+	public String getFileName(ManagedSys mngSys, CSVSource source);
 }
