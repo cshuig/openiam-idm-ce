@@ -86,19 +86,17 @@ public class ReconConfigurationController extends CancellableFormController {
 		return new ModelAndView(new RedirectView(getCancelView(), true));
 	}
 
-	private String getFileName(ManagedSys mSys, String prefix, boolean fullPath) {
+	private String getFileName(ManagedSys mSys, String prefix, boolean isShow) {
 
 		StringBuilder sb = new StringBuilder();
-		if (fullPath)
-			sb.append(pathToCSV);
+		sb.append(pathToCSV);
 		sb.append(prefix);
 		sb.append(mSys.getManagedSysId());
 		sb.append(mSys.getResourceId());
-		if ("report_".equals(prefix)) {
+		if (isShow)
 			sb.append(".html");
-		} else {
+		else
 			sb.append(".csv");
-		}
 		return sb.toString();
 	}
 
@@ -126,10 +124,10 @@ public class ReconConfigurationController extends CancellableFormController {
 
 			cmd.setIsCSV(isCSV);
 			if (isCSV) {
-				cmd.setReconCSVName(this.getFileName(mSys, "recon_", true));
+				cmd.setReconCSVName(this.getFileName(mSys, "recon_", false));
 				cmd.setCsvDirectory(pathToCSV);
 			}
-			File file = new File(this.getFileName(mSys, "report_", true));
+			File file = new File(this.getFileName(mSys, "report_", false));
 			cmd.setIsReportExist(file.exists());
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -196,43 +194,13 @@ public class ReconConfigurationController extends CancellableFormController {
 		String btn = request.getParameter("btn");
 		String configId = config.getReconConfigId();
 		if (btn != null && btn.equalsIgnoreCase("Export to CSV")) {
-			FileInputStream stream = null;
-			File file;
-			int length = 0;
-			try {
-				file = new File(this.getFileName(mSys, "", true));
-				if (!file.exists()) {
-					log.error("Nothing to Export");
-				} else {
-					response.setContentType("application/octet-stream");
-					response.setHeader("Content-Disposition",
-							"attachment;filename=ExportData.csv");
-					//
-					// Stream to the requester.
-					//
-					ServletOutputStream op = response.getOutputStream();
-					byte[] bbuf = new byte[1024];
-					DataInputStream in = new DataInputStream(
-							new FileInputStream(file));
-					while ((in != null) && ((length = in.read(bbuf)) != -1)) {
-						op.write(bbuf, 0, length);
-					}
-					in.close();
-					op.flush();
-					op.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (stream != null) {
-					try {
-						stream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			return download(response, mSys, "");
 		}
+
+		if (btn != null && btn.equalsIgnoreCase("Export report")) {
+			return download(response, mSys, "report_");
+		}
+
 		if (btn != null && btn.equalsIgnoreCase("Delete")) {
 
 			reconcileService.removeConfig(configId);
@@ -322,6 +290,7 @@ public class ReconConfigurationController extends CancellableFormController {
 				os.write(buffer, 0, data);
 			}
 			os.flush();
+			return null;
 		}
 
 		if (btn != null && btn.equalsIgnoreCase("Reconcile Now")) {
@@ -334,6 +303,47 @@ public class ReconConfigurationController extends CancellableFormController {
 
 		return new ModelAndView(new RedirectView(view, true));
 
+	}
+
+	private ModelAndView download(HttpServletResponse response,
+			ManagedSys mSys, String preffix) {
+		FileInputStream stream = null;
+		File file;
+		int length = 0;
+		try {
+			file = new File(this.getFileName(mSys, preffix, true));
+			if (!file.exists()) {
+				log.error("Nothing to Export");
+			} else {
+				response.setContentType("text/plain");
+				response.setHeader("Content-Disposition",
+						"attachment;filename=ExportData.csv");
+				//
+				// Stream to the requester.
+				//
+				ServletOutputStream op = response.getOutputStream();
+				byte[] bbuf = new byte[1024];
+				DataInputStream in = new DataInputStream(new FileInputStream(
+						file));
+				while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+					op.write(bbuf, 0, length);
+				}
+				in.close();
+				op.flush();
+				op.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
 	}
 
 	private byte[] readFile(File file) {

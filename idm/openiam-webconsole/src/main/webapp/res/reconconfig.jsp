@@ -152,17 +152,29 @@
             </td>
           </tr>
           <tr align="right">
-            <td colspan="2"><c:if test="${reconCmd.isCSV}">
+            <td colspan="2">
+            
+            
+              <c:if test="${reconCmd.isCSV}">
                 <input type="submit" name="btn" value="Export to CSV" />
-              </c:if> <c:if test="${reconCmd.config != null}">
+              </c:if>
+                      
+              
+               <c:if test="${reconCmd.isReportExist}">
+                <input type="submit" name="btn" value="Show report" />
+                <input type="submit" name="btn" value="Export report" />
+              </c:if> 
+              <span style="margin-left:40px;"></span>
+              
+              
+              
+              <c:if test="${reconCmd.config != null}">
                 <input type="submit" name="btn" value="Reconcile Now"
                   onclick="return confirm('Are your sure that you want to start reconciliation?');"
                 />
               </c:if> <input type="submit" name="btn" value="Delete"
               onclick="return confirm('Are you sure you want to delete this Configuration?');"
-            /> <c:if test="${reconCmd.isReportExist}">
-                <input type="submit" name="btn" value="Show report" />
-              </c:if> <input type="submit" name="btn" value="Save" /> <input type="submit" name="_cancel" value="Cancel" /></td>
+            /> <input type="submit" name="btn" value="Save" /> <input type="submit" name="_cancel" value="Cancel" /></td>
           </tr>
         </table></TD>
   </TR>
