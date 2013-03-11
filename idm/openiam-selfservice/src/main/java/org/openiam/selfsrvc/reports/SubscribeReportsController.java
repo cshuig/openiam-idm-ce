@@ -27,14 +27,16 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class SubscribeReportsController extends SimpleFormController {
+public class SubscribeReportsController extends CancellableFormController {
 	private static ResourceBundle res = ResourceBundle
 			.getBundle("securityconf");
 
 	private WebReportService reportService;
+	private String reportName = "";
 
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request,
@@ -48,13 +50,11 @@ public class SubscribeReportsController extends SimpleFormController {
 				List<ReportSubCriteriaParamDto> params = new LinkedList<ReportSubCriteriaParamDto>();
 				if (reportCommand.getParamName() != null) {
 					for (int i = 0; i < reportCommand.getParamName().length; i++) {
-						String paramTypeId = reportCommand.getParamTypeId()[i];
+						//String paramTypeId = reportCommand.getParamTypeId()[i];
 						params.add(new ReportSubCriteriaParamDto(reportCommand
 								.getReport().getReportId(), reportCommand
 								.getParamName()[i], reportCommand
-								.getParamValue()[i],
-								reportCommand
-								.getParamTypeId()[i]));
+								.getParamValue()[i]));
 					}
 				}
 		        //HttpSession session = request.getSession();
@@ -65,9 +65,11 @@ public class SubscribeReportsController extends SimpleFormController {
 					dto.setReportId(null);
 				reportService.createOrUpdateSubscribedReportInfo(
 						reportCommand.getReport(), params);
+				return new ModelAndView(new RedirectView("subscribeReport.selfserve", true));
 			}
 		}else{
-			if (!StringUtils.isEmpty(reportCommand.getReport().getReportId())) {
+			reportName = reportCommand.getReport().getReportName();
+			if (!StringUtils.isEmpty(reportCommand.getReport().getReportName())) {
 				 ModelAndView modelAndView = new ModelAndView(new RedirectView("subscribeReportOld.selfserve", true));
 		            List<ReportCriteriaParamDto> paramDtos = reportService.getReportParametersByReportName(reportCommand.getReport().getReportName()).getParameters();
 		            modelAndView.addObject("reportParameters", paramDtos);
@@ -138,14 +140,20 @@ public class SubscribeReportsController extends SimpleFormController {
 			reports.put(reportInfoDto.getReportName(),
 					reportInfoDto.getReportName());
 			if (!paramsSet){
-				GetReportParametersResponse paramResponse = reportService.getReportParametersByReportId(reportInfoDto.getReportId());
+				if (null == reportName || reportName.trim().length() <= 0){
+					//use the first report as report Name else use the selected value
+					reportName = reportInfoDto.getReportName();
+				}
+				GetReportParametersResponse paramResponse = reportService.getReportParametersByReportName(reportName);
 				List<ReportCriteriaParamDto> params = paramResponse.getParameters();
-				for (ReportCriteriaParamDto param: params){
-					ReportSubCriteriaParamDto subParamDto = new ReportSubCriteriaParamDto();
-					subParamDto.setReportId(reportInfoDto.getReportId());
-					subParamDto.setName(param.getName());
-					subParamDto.setTypeId(param.getTypeId());
-					reportParameters.add(subParamDto);
+				if (null != params){
+					for (ReportCriteriaParamDto param: params){
+						ReportSubCriteriaParamDto subParamDto = new ReportSubCriteriaParamDto();
+						subParamDto.setReportId(reportInfoDto.getReportId());
+						subParamDto.setName(param.getName());
+						subParamDto.setTypeId(param.getTypeId());
+						reportParameters.add(subParamDto);
+					}
 				}
 				referenceData.put("reportParameters", reportParameters);
 				paramsSet = true;

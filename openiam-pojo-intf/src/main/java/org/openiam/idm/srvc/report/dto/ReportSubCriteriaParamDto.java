@@ -34,7 +34,11 @@ public class ReportSubCriteriaParamDto {
         this.value = value;
         this.typeId = typeId;
     }
-
+    public ReportSubCriteriaParamDto(String reportId, String name, String value) {
+        this.reportId = reportId;
+        this.name = name;
+        this.value = value;
+    }
     public String getId() {
         return id;
     }
