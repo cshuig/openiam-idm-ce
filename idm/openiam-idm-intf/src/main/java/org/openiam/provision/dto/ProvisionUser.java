@@ -46,7 +46,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ProvisionUser", propOrder = { "memberOfGroups", "requestId",
 		"sessionId", "memberOfRoles", "userResourceList", "userAffiliations",
-		"srcSystemId", "provisionModel", "securityDomain",
+		"srcSystemId", "provisionModel", 
 		"notifyTargetSystems", "emailCredentialsToNewUsers",
 		"emailCredentialsToSupervisor", "provisionOnStartDate",
 		"addInitialPasswordToHistory", "passwordPolicy", "password",
@@ -64,7 +64,6 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 	protected List<UserResourceAssociation> userResourceList;
 
 	public ProvisionModelEnum provisionModel;
-	public String securityDomain;
 
 	boolean emailCredentialsToNewUsers = false;
 	boolean emailCredentialsToSupervisor = false;
@@ -592,13 +591,6 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		this.provisionModel = provisionModel;
 	}
 
-	public String getSecurityDomain() {
-		return securityDomain;
-	}
-
-	public void setSecurityDomain(String securityDomain) {
-		this.securityDomain = securityDomain;
-	}
 
 	public String getSessionId() {
 		return sessionId;
@@ -621,8 +613,7 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		return "ProvisionUser{" + "memberOfGroups=" + memberOfGroups
 				+ ", memberOfRoles=" + memberOfRoles + ", userAffiliations="
 				+ userAffiliations + ", userResourceList=" + userResourceList
-				+ ", provisionModel=" + provisionModel + ", securityDomain='"
-				+ securityDomain + '\'' + ", emailCredentialsToNewUsers="
+				+ ", provisionModel=" + provisionModel + ", emailCredentialsToNewUsers="
 				+ emailCredentialsToNewUsers
 				+ ", emailCredentialsToSupervisor="
 				+ emailCredentialsToSupervisor
