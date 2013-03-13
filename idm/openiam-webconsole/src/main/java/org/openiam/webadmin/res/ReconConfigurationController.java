@@ -1,9 +1,5 @@
 package org.openiam.webadmin.res;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,15 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.common.util.StringUtils;
 import org.openiam.idm.srvc.batch.dto.BatchTask;
 import org.openiam.idm.srvc.batch.service.BatchDataService;
+import org.openiam.idm.srvc.file.FileWebService;
 import org.openiam.idm.srvc.menu.dto.Menu;
 import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
@@ -50,6 +47,7 @@ public class ReconConfigurationController extends CancellableFormController {
 	protected String redirectView;
 	protected NavigatorDataWebService navigationDataService;
 	protected ReconciliationWebService reconcileService;
+	protected FileWebService fileWebService;
 	protected BatchDataService batchDataService;
 	protected AsynchReconciliationService asynchReconService;
 	private ConnectorDataService connectorService;
@@ -59,12 +57,7 @@ public class ReconConfigurationController extends CancellableFormController {
 		this.managedSysService = managedSysService;
 	}
 
-	public void setPathToCSV(String pathToCSV) {
-		this.pathToCSV = pathToCSV;
-	}
-
 	protected ManagedSystemDataService managedSysService;
-	private String pathToCSV;
 
 	private static final Log log = LogFactory
 			.getLog(ReconConfigurationController.class);
@@ -84,20 +77,6 @@ public class ReconConfigurationController extends CancellableFormController {
 	@Override
 	protected ModelAndView onCancel(Object command) throws Exception {
 		return new ModelAndView(new RedirectView(getCancelView(), true));
-	}
-
-	private String getFileName(ManagedSys mSys, String prefix, boolean isShow) {
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(pathToCSV);
-		sb.append(prefix);
-		sb.append(mSys.getManagedSysId());
-		sb.append(mSys.getResourceId());
-		if (isShow)
-			sb.append(".html");
-		else
-			sb.append(".csv");
-		return sb.toString();
 	}
 
 	@Override
@@ -121,14 +100,13 @@ public class ReconConfigurationController extends CancellableFormController {
 
 			boolean isCSV = pCon != null
 					&& pCon.getServiceUrl().contains("CSVConnectorService");
-
 			cmd.setIsCSV(isCSV);
 			if (isCSV) {
-				cmd.setReconCSVName(this.getFileName(mSys, "recon_", false));
-				cmd.setCsvDirectory(pathToCSV);
+				session.setAttribute("mSysId", mSys.getManagedSysId());
+				session.setAttribute("resId", mSys.getResourceId());
 			}
-			File file = new File(this.getFileName(mSys, "report_", false));
-			cmd.setIsReportExist(file.exists());
+			String file = this.getFileContent(mSys, "report_", "csv");
+			cmd.setIsReportExist(!StringUtils.isEmpty(file));
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			cmd.setIsCSV(false);
@@ -149,10 +127,6 @@ public class ReconConfigurationController extends CancellableFormController {
 					new ReconciliationSituation(null, "IDM Not Found"));
 			cmd.getSituationList().add(
 					new ReconciliationSituation(null, "Login Not Found"));
-			// cmd.getSituationList().add(new ReconciliationSituation(null,
-			// "IDM Changed"));
-			// cmd.getSituationList().add(new ReconciliationSituation(null,
-			// "Resource Changed"));
 		} else {
 			// move set to a list
 			cmd.setConfig(config);
@@ -178,6 +152,18 @@ public class ReconConfigurationController extends CancellableFormController {
 		this.connectorService = connectorService;
 	}
 
+	public static String getFileName(ManagedSys ms, String preffix, String type) {
+		if (ms == null)
+			return "";
+		StringBuilder sb = new StringBuilder();
+		sb.append(preffix);
+		sb.append(ms.getManagedSysId());
+		sb.append(ms.getResourceId());
+		sb.append(".");
+		sb.append(type);
+		return sb.toString();
+	}
+
 	protected ModelAndView onSubmit(HttpServletRequest request,
 			HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -193,6 +179,7 @@ public class ReconConfigurationController extends CancellableFormController {
 				.getResourceId());
 		String btn = request.getParameter("btn");
 		String configId = config.getReconConfigId();
+
 		if (btn != null && btn.equalsIgnoreCase("Export to CSV")) {
 			return download(response, mSys, "");
 		}
@@ -202,7 +189,6 @@ public class ReconConfigurationController extends CancellableFormController {
 		}
 
 		if (btn != null && btn.equalsIgnoreCase("Delete")) {
-
 			reconcileService.removeConfig(configId);
 
 			// remove the synch job that is linked to it.
@@ -281,15 +267,10 @@ public class ReconConfigurationController extends CancellableFormController {
 		log.info("redirecting to=" + view);
 
 		if (btn != null && btn.equalsIgnoreCase("Show report")) {
-			FileInputStream is = new FileInputStream(new File(this.getFileName(
-					mSys, "report_", true)));
-			ServletOutputStream os = response.getOutputStream();
-			byte[] buffer = new byte[65536];
-			int data;
-			while ((data = is.read(buffer)) != -1) {
-				os.write(buffer, 0, data);
-			}
-			os.flush();
+			response.getWriter().write(
+					fileWebService.getFile(ReconConfigurationController
+							.getFileName(mSys, "report_", "html")));
+			response.getWriter().flush();
 			return null;
 		}
 
@@ -300,65 +281,49 @@ public class ReconConfigurationController extends CancellableFormController {
 			}
 
 		}
-
 		return new ModelAndView(new RedirectView(view, true));
 
 	}
 
+	public static char getCharFromString(String str) {
+		if (!StringUtils.isEmpty(str) || "comma".equals(str))
+			return ',';
+		if ("tab".equals(str))
+			return '\t';
+		if ("semicolon".equals(str))
+			return ';';
+		if ("space".equals(str))
+			return ' ';
+		if ("enter".equals(str))
+			return '\n';
+		return ',';
+	}
+
 	private ModelAndView download(HttpServletResponse response,
 			ManagedSys mSys, String preffix) {
-		FileInputStream stream = null;
-		File file;
-		int length = 0;
-		try {
-			file = new File(this.getFileName(mSys, preffix, true));
-			if (!file.exists()) {
-				log.error("Nothing to Export");
-			} else {
-				response.setContentType("text/plain");
-				response.setHeader("Content-Disposition",
-						"attachment;filename=ExportData.csv");
-				//
-				// Stream to the requester.
-				//
-				ServletOutputStream op = response.getOutputStream();
-				byte[] bbuf = new byte[1024];
-				DataInputStream in = new DataInputStream(new FileInputStream(
-						file));
-				while ((in != null) && ((length = in.read(bbuf)) != -1)) {
-					op.write(bbuf, 0, length);
-				}
-				in.close();
-				op.flush();
-				op.close();
+		String file = this.getFileContent(mSys, preffix, "csv");
+		if (StringUtils.isEmpty(file)) {
+			log.error("Nothing to Export");
+		} else {
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition",
+					"attachment;filename=ExportData.csv");
+			try {
+				response.getWriter().write(file);
+				response.getWriter().flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+
 		}
 		return null;
 	}
 
-	private byte[] readFile(File file) {
-		int ch;
-		StringBuffer strContent = new StringBuffer("");
-		FileInputStream fin = null;
-		try {
-			fin = new FileInputStream(file);
-			while ((ch = fin.read()) != -1)
-				strContent.append((char) ch);
-			fin.close();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return strContent.toString().getBytes();
+	private String getFileContent(ManagedSys ms, String preffix, String type) {
+		return fileWebService.getFile(ReconConfigurationController.getFileName(
+				ms, preffix, type));
+
 	}
 
 	public String getRedirectView() {
@@ -405,5 +370,13 @@ public class ReconConfigurationController extends CancellableFormController {
 
 	public void setResourceDataService(ResourceDataService resourceDataService) {
 		this.resourceDataService = resourceDataService;
+	}
+
+	/**
+	 * @param fileWebService
+	 *            the fileWebService to set
+	 */
+	public void setFileWebService(FileWebService fileWebService) {
+		this.fileWebService = fileWebService;
 	}
 }

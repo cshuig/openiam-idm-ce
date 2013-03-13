@@ -193,6 +193,14 @@
 	</bean>
 
 
+	<bean id="fileService" class="org.openiam.idm.srvc.file.FileService">
+		<property name="pathToCSV" value="${csv.path}" />
+	</bean>
+
+	<bean id="fileWebService" class="org.openiam.idm.srvc.file.FileWebServiceImpl">
+		<property name="fileService" ref="fileService" />
+	</bean>
+
 	<bean id="managedSysObjectMatchDAO"
 		class="org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"></property>

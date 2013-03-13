@@ -767,8 +767,8 @@
 		<property name="batchDataService" ref="batchServiceClient" />
 		<property name="connectorService" ref="connectorServiceClient" />
 		<property name="managedSysService" ref="managedSysServiceClient" />
-		<property name="pathToCSV" value="${csv.path}" />
 		<property name="resourceDataService" ref="resourceServiceClient" />
+		<property name="fileWebService" ref="fileWebService" />
 	</bean>
 
 
@@ -1164,14 +1164,6 @@
 				<prop key="/birtReportList.cnt">reportListController</prop>
 				<prop key="/birtReport.cnt">reportController</prop>
 			</props>
-		</property>
-	</bean>
-	<bean
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations">
-			<list>
-				<value>classpath:securityconf.properties</value>
-			</list>
 		</property>
 	</bean>
 </beans>

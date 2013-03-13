@@ -7,9 +7,6 @@
 <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
 <script>
 	function showDialog() {
-		$("#recName").val($("#reconCSVName_").val());
-		$("#csvDir").val($("#csvDirectory_").val());
-		$("#rId").val($("#resId").val());
 		$("#eol").val($("#iEndOfLine").val());
 		$("#sep").val($("#iSeparator").val());
 		if ($("#dialog").css('display') == 'none') {
@@ -49,10 +46,6 @@
   <tr>
     <td><form:form commandName="reconCmd">
         <form:hidden path="config.reconConfigId" />
-        <form:hidden id="resId" path="config.resourceId" />
-        <form:hidden id="reconCSVName_" path="reconCSVName" />
-        <form:hidden id="csvDirectory_" path="csvDirectory" />
-        <form:hidden id="pathToReport" path="config.reportPath" />
         <table width="950pt">
           <tr>
             <td align="center" height="100%">
@@ -152,23 +145,12 @@
             </td>
           </tr>
           <tr align="right">
-            <td colspan="2">
-            
-            
-              <c:if test="${reconCmd.isCSV}">
+            <td colspan="2"><c:if test="${reconCmd.isCSV}">
                 <input type="submit" name="btn" value="Export to CSV" />
-              </c:if>
-                      
-              
-               <c:if test="${reconCmd.isReportExist}">
+              </c:if> <c:if test="${reconCmd.isReportExist}">
                 <input type="submit" name="btn" value="Show report" />
                 <input type="submit" name="btn" value="Export report" />
-              </c:if> 
-              <span style="margin-left:40px;"></span>
-              
-              
-              
-              <c:if test="${reconCmd.config != null}">
+              </c:if> <span style="margin-left: 40px;"></span> <c:if test="${reconCmd.config != null}">
                 <input type="submit" name="btn" value="Reconcile Now"
                   onclick="return confirm('Are your sure that you want to start reconciliation?');"
                 />
@@ -187,14 +169,13 @@
   style="display: none; position: absolute; z-index: 120; background-color: #fff; border: 3px solid #74A824;"
 >
   <h3 style="margin-left: 12px; margin-top: 12px;">Upload CSV file</h3>
-  <form action="upload" enctype="multipart/form-data" method="POST">
-    <input id="fileName" type="hidden" value="" /> <input type="file" name="file1">
+  <form action="upload.do" enctype="multipart/form-data" method="POST">
+    <input type="file" name="file1" />
     <div style="margin-top: 12px;">
-      <input type="hidden" name="recName" id="recName" /> <input type="hidden" name="csvDir" id="csvDir" /> <input
-        type="hidden" name="rId" id="rId"
-      /> <input type="hidden" name="csvEOL" id="eol" /> <input type="hidden" name="csvSep" id="sep" /> <input
-        type="submit" value="UploadFile" onclick="showDialog();"
-      /> <span style="color: #000099; margin-left: 12px; text-decoration: underline;" onclick="showDialog();">Cancel</span>
+      <input type="hidden" name="csvEOL" id="eol" /> 
+      <input type="hidden" name="csvSep" id="sep" /> 
+      <input type="submit" value="UploadFile" onclick="showDialog();" /> 
+      <span style="color: #000099; margin-left: 12px; text-decoration: underline;" onclick="showDialog();">Cancel</span>
     </div>
   </form>
 </div>
