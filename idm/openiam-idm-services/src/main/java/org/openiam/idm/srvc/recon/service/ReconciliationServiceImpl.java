@@ -21,6 +21,7 @@
  */
 package org.openiam.idm.srvc.recon.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +29,16 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.record.formula.functions.Hlookup;
 import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.connector.type.RemoteReconciliationConfig;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
+import org.openiam.idm.srvc.csv.CSVParser;
+import org.openiam.idm.srvc.csv.ReconciliationObject;
+import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.dto.ProvisionConnector;
 import org.openiam.idm.srvc.mngsys.service.ConnectorDataService;
@@ -42,6 +47,9 @@ import org.openiam.idm.srvc.recon.command.ReconciliationCommandFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.dto.ReconciliationResponse;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
+import org.openiam.idm.srvc.recon.report.ReconciliationReport;
+import org.openiam.idm.srvc.recon.report.ReconciliationReportResults;
+import org.openiam.idm.srvc.recon.report.ReconciliationReportRow;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
@@ -50,6 +58,7 @@ import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
+import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.resp.LookupUserResponse;
 import org.openiam.provision.service.ConnectorAdapter;
 import org.openiam.provision.service.ProvisionService;
@@ -65,6 +74,15 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	protected ReconciliationSituationDAO reconSituationDao;
 	protected ReconciliationResultDAO reconResultDao;
+
+	/**
+	 * @param userCSVParser
+	 *            the userCSVParser to set
+	 */
+	public void setUserCSVParser(CSVParser<ProvisionUser> userCSVParser) {
+		this.userCSVParser = userCSVParser;
+	}
+
 	protected ReconciliationConfigDAO reconConfigDao;
 	protected ReconciliationResultDAO reconResultDetailDao;
 	protected MuleContext muleContext;
@@ -77,6 +95,16 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 	protected ConnectorAdapter connectorAdapter;
 	protected RemoteConnectorAdapter remoteConnectorAdapter;
 	protected RoleDataService roleDataService;
+	protected CSVParser<ProvisionUser> userCSVParser;
+	private String pathToCSV;
+
+	/**
+	 * @param pathToCSV
+	 *            the pathToCSV to set
+	 */
+	public void setPathToCSV(String pathToCSV) {
+		this.pathToCSV = pathToCSV;
+	}
 
 	private static final Log log = LogFactory
 			.getLog(ReconciliationServiceImpl.class);
@@ -171,20 +199,20 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	public ReconciliationResponse startReconciliation(
 			ReconciliationConfig config) {
+		ReconciliationReport report = new ReconciliationReport();
+		ReconciliationResponse resp = new ReconciliationResponse();
+		Resource res = resourceDataService.getResource(config.getResourceId());
+		String managedSysId = res.getManagedSysId();
+		ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
 		try {
 			log.debug("Reconciliation started for configId="
 					+ config.getReconConfigId() + " - resource="
 					+ config.getResourceId());
 
-			Resource res = resourceDataService.getResource(config
-					.getResourceId());
-			String managedSysId = res.getManagedSysId();
-			ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
 			ProvisionConnector connector = connectorService.getConnector(mSys
 					.getConnectorId());
-
+			// IF managed system is CSV
 			if (connector.getServiceUrl().contains("CSV")) {
-				// Get user without fetches
 				List<UserWrapperEntity> users = new ArrayList<UserWrapperEntity>();
 				for (ResourceRole rRole : res.getResourceRoles()) {
 					List<UserWrapperEntity> ids = roleDataService
@@ -192,25 +220,27 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 									.getRoleId());
 					users.addAll(ids);
 				}
+				// Get user without fetches
 				config.setUserList(users);
-				ResponseType rep = connectorAdapter.reconcileResource(mSys,
-						config, muleContext);
-				ReconciliationResponse resp = new ReconciliationResponse(
-						ResponseStatus.SUCCESS);
+				log.debug("Start recon");
+				connectorAdapter.reconcileResource(mSys, config, muleContext);
+				log.debug("end recon");
+				resp = new ReconciliationResponse(ResponseStatus.SUCCESS);
 				return resp;
 			}
+
+			List<AttributeMap> attrMap = managedSysService
+					.getResourceAttributeMaps(config.getResourceId());
+			// Fill report header
+			report.getReport().add(new ReconciliationReportRow(attrMap));
 			log.debug("ManagedSysId = " + managedSysId);
 			log.debug("Getting identities for managedSys");
 
-			List<User> users = new ArrayList<User>();
+			List<UserWrapperEntity> users = new ArrayList<UserWrapperEntity>();
 			for (ResourceRole rRole : res.getResourceRoles()) {
-				User[] usrAry = roleDataService.getUsersInRole(
+				List<UserWrapperEntity> ids = roleDataService.findUserWByRole(
 						mSys.getDomainId(), rRole.getId().getRoleId());
-				if (usrAry != null) {
-					for (User user : usrAry) {
-						users.add(user);
-					}
-				}
+				users.addAll(ids);
 			}
 
 			Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();
@@ -226,11 +256,15 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 					.getAllLoginByManagedSys(managedSysId);
 			if (principalList == null || principalList.isEmpty()) {
 				log.debug("No identities found for managedSysId in IDM repository");
-				ReconciliationResponse resp = new ReconciliationResponse(
-						ResponseStatus.SUCCESS);
+				resp = new ReconciliationResponse(ResponseStatus.SUCCESS);
+				report.getReport()
+						.add(new ReconciliationReportRow(
+								"No identities found for managedSysId in IDM repository",
+								ReconciliationReport.getHeader(attrMap).size() + 1));
+				report.save(pathToCSV, mSys);
 				return resp;
 			}
-			for (User u : users) {
+			for (UserWrapperEntity u : users) {
 				Login l = null;
 				User user = userMgr.getUserWithDependent(u.getUserId(), true);
 				List<Login> logins = user.getPrincipalList();
@@ -255,14 +289,25 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 					// Possibility: User was created before the managed Sys was
 					// associated.
 					// Situation: Login Not Found
+
+					report.getReport()
+							.add(new ReconciliationReportRow(
+									"DB: ",
+									ReconciliationReportResults.LOGIN_NOT_FOUND,
+									this.objectToString(ReconciliationReport
+											.getHeader(attrMap), attrMap, u)));
 					ReconciliationCommand command = situations
 							.get("Login Not Found");
 					if (command != null) {
 						log.debug("Call command for IDM Login Not Found");
 						command.execute(l, user, null);
 					}
-					ReconciliationResponse resp = new ReconciliationResponse(
-							ResponseStatus.SUCCESS);
+					new ReconciliationResponse(ResponseStatus.SUCCESS);
+					report.getReport()
+							.add(new ReconciliationReportRow(
+									"No identities found for managedSysId in IDM repository",
+									ReconciliationReport.getHeader(attrMap)
+											.size() + 1));
 					return resp;
 				}
 
@@ -284,6 +329,12 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 					// Situation: Resource Delete
 					ReconciliationCommand command = situations
 							.get("Resource Delete");
+					report.getReport()
+							.add(new ReconciliationReportRow(
+									"DB: ",
+									ReconciliationReportResults.RESOURCE_DELETED,
+									this.objectToString(ReconciliationReport
+											.getHeader(attrMap), attrMap, u)));
 					if (command != null) {
 						log.debug("Call command for Resource Delete");
 						command.execute(l, user, null);
@@ -295,6 +346,14 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 						// Situation: IDM Delete
 						ReconciliationCommand command = situations
 								.get("IDM Delete");
+						report.getReport()
+								.add(new ReconciliationReportRow(
+										"DB: ",
+										ReconciliationReportResults.IDM_DELETED,
+										this.objectToString(
+												ReconciliationReport
+														.getHeader(attrMap),
+												attrMap, u)));
 						if (command != null) {
 							log.debug("Call command for IDM Delete");
 							command.execute(l, user, null);
@@ -303,6 +362,15 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 						// Situation: IDM Changed/Resource Changed/Match Found
 						ReconciliationCommand command = situations
 								.get("Match Found");
+						report.getReport()
+								.add(new ReconciliationReportRow(
+										"",
+										ReconciliationReportResults.MATCH_FOUND,
+										this.objectToString(
+												ReconciliationReport
+														.getHeader(attrMap),
+												matchFields(attrMap, u,
+														new UserWrapperEntity()))));
 						if (command != null) {
 							log.debug("Call command for Match Found");
 							command.execute(l, user, null);
@@ -334,15 +402,42 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
-			ReconciliationResponse resp = new ReconciliationResponse(
-					ResponseStatus.FAILURE);
+			resp = new ReconciliationResponse(ResponseStatus.FAILURE);
 			resp.setErrorText(e.getMessage());
+		}
+
+		try {
+			report.save(pathToCSV, mSys);
+			return resp;
+		} catch (IOException e) {
+			log.error(e);
+			e.printStackTrace();
+			resp = new ReconciliationResponse(ResponseStatus.FAILURE);
+			resp.setErrorText("CAN't call report.save()" + e.getMessage());
 			return resp;
 		}
-		ReconciliationResponse resp = new ReconciliationResponse(
-				ResponseStatus.SUCCESS);
-		return resp;
+	}
 
+	private String objectToString(List<String> head, Map<String, String> obj) {
+		return userCSVParser.objectToString(head, obj);
+	}
+
+	private ReconciliationObject<ProvisionUser> toReconUser(
+			List<AttributeMap> attrMapList, UserWrapperEntity u) {
+		return userCSVParser.toReconciliationObject(new ProvisionUser(u),
+				attrMapList);
+	}
+
+	private String objectToString(List<String> head,
+			List<AttributeMap> attrMapList, UserWrapperEntity u) {
+		return userCSVParser.objectToString(head, attrMapList,
+				toReconUser(attrMapList, u));
+	}
+
+	private Map<String, String> matchFields(List<AttributeMap> attrMap,
+			UserWrapperEntity u, UserWrapperEntity o) {
+		return userCSVParser.matchFields(attrMap, toReconUser(attrMap, u),
+				toReconUser(attrMap, o));
 	}
 
 	public LoginDataService getLoginManager() {

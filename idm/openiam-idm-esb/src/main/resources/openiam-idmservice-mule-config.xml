@@ -215,7 +215,7 @@
 		<service name="AsynchReconciliationWebService">
 			<inbound>
 				<inbound-endpoint address="${webservice.path}AsynchReconciliationWebService"
-					exchange-pattern="one-way">
+					exchange-pattern="request-response">
 					<cxf:jaxws-service />
 				</inbound-endpoint>
 			</inbound>

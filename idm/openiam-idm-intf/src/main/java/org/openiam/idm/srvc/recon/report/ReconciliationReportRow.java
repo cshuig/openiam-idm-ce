@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 
 public class ReconciliationReportRow {
 	private static final String HEADER_COLOR = "#a3a3a3";
@@ -17,29 +19,30 @@ public class ReconciliationReportRow {
 	private String htmlRow = "";
 	private String csvRow = "";
 
-	public ReconciliationReportRow(String header) throws Exception {
+	public ReconciliationReportRow(List<AttributeMap> attrMapList)
+			throws Exception {
 		super();
+		List<String> header = ReconciliationReport.getHeader(attrMapList);
 		htmlRow = generateHTMLHeader(header);
 		csvRow = generateCSVHeader(header);
 	}
 
-	private String generateHTMLHeader(String header) throws Exception {
+	private String generateHTMLHeader(List<String> header) throws Exception {
 		StringBuilder build = new StringBuilder();
 
-		if (StringUtils.isEmpty(header) || header.split(",").length < 1) {
+		if (CollectionUtils.isEmpty(header)) {
 			throw new Exception("wrongHeader");
 		}
-		String head[] = header.split(",");
 		build.append("<tr style='background-color:" + HEADER_COLOR + "'>");
 		build.append("<td rowSpan='2' align='center'>");
 		build.append("Case");
 		build.append("</td>");
-		build.append("<td align='center' colSpan='" + head.length + "'>");
+		build.append("<td align='center' colSpan='" + header.size() + "'>");
 		build.append("Fields name");
 		build.append("</td>");
 		build.append("</tr>");
 		build.append("<tr style='background-color:" + HEADER_COLOR + "'>");
-		for (String str : head) {
+		for (String str : header) {
 			build.append("<td>");
 			build.append(str);
 			build.append("</td>");
@@ -56,6 +59,16 @@ public class ReconciliationReportRow {
 		build.append("\"");
 		build.append('\n');
 		return build.toString();
+	}
+
+	private String generateCSVHeader(List<String> heads) throws Exception {
+		StringBuilder header = new StringBuilder();
+		for (String head : heads) {
+			header.append(head);
+			header.append(",");
+		}
+		header.deleteCharAt(header.length() - 1);
+		return generateCSVHeader(header.toString());
 	}
 
 	public ReconciliationReportRow(String sepatatorText, int colSpan)

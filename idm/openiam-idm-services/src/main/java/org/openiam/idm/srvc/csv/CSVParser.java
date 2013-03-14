@@ -30,4 +30,13 @@ public interface CSVParser<T> {
 			ReconciliationObject<T> obj);
 
 	public String getFileName(ManagedSys mngSys, CSVSource source);
+
+	String objectToString(List<String> head, Map<String, String> obj);
+
+	String objectToString(List<String> head, List<AttributeMap> attrMapList,
+			ReconciliationObject<ProvisionUser> u);
+
+	Map<String, String> matchFields(List<AttributeMap> attrMap,
+			ReconciliationObject<ProvisionUser> u,
+			ReconciliationObject<ProvisionUser> o);
 }

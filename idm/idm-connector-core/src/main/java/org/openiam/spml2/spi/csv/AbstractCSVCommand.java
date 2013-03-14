@@ -56,6 +56,9 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected CSVParser<ProvisionUser> userCSVParser;
 	protected String scriptEngine;
 
+	protected String pathToCSV;
+	public static ApplicationContext ac;
+
 	/**
 	 * @param scriptEngine
 	 *            the scriptEngine to set
@@ -86,9 +89,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	public void setLoginManager(LoginDataService loginManager) {
 		this.loginManager = loginManager;
 	}
-
-	protected String pathToCSV;
-	public static ApplicationContext ac;
 
 	public void setPathToCSV(String pathToCSV) {
 		this.pathToCSV = pathToCSV;
@@ -180,21 +180,13 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			improveFile(userCSVParser.getFileName(mSys, CSVSource.UPLOADED));
 			sourceUsers = userCSVParser.getObjects(mSys, attrMapList,
 					CSVSource.UPLOADED);
-			// Fill header
-			StringBuilder header = new StringBuilder();
-			List<String> hList = new ArrayList<String>(0);
-			for (AttributeMap map : attrMapList) {
-				hList.add(map.getAttributeName());
-				header.append(map.getAttributeName());
-				header.append(",");
-			}
-			header.deleteCharAt(header.length() - 1);
-			report.add(new ReconciliationReportRow(header.toString()));
-			log.info("Generate headred " + header.toString()); // -----------------------------------------------------------
+			List<String> hList = ReconciliationReport.getHeader(attrMapList);
+			report.add(new ReconciliationReportRow(attrMapList));
 			// First run from IDM search in Sourse
 			report.add(new ReconciliationReportRow("Records from IDM: "
 					+ idmUsers.size() + " items", hList.size() + 1));
 			try {
+				log.debug("First cycle");
 				reconCicle(hList, report, "IDM: ", idmUsers, dbUsers,
 						attrMapList, mSys);
 			} catch (Exception e) {
@@ -206,6 +198,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			report.add(new ReconciliationReportRow("Records from Remote CSV: "
 					+ sourceUsers.size() + " items", hList.size() + 1));
 			try {
+				log.debug("Second cycle");
 				dbUsers.removeAll(reconCicle(hList, report, "Source: ",
 						sourceUsers, dbUsers, attrMapList, mSys));
 			} catch (Exception e) {
@@ -218,7 +211,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					+ dbUsers.size() + " items", hList.size() + 1));
 			for (ReconciliationObject<ProvisionUser> obj : dbUsers) {
 				report.add(new ReconciliationReportRow("DB: ",
-						ReconciliationReportResults.NOT_EXIST_IN_CSV, this
+						ReconciliationReportResults.NOT_EXIST_IN_RESOURCE, this
 								.objectToString(hList, attrMapList, obj)));
 			}
 
@@ -240,52 +233,19 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	private String objectToString(List<String> head, Map<String, String> obj) {
-		StringBuilder stb = new StringBuilder();
-		for (String h : head) {
-			stb.append(obj.get(h.trim()) == null ? "" : obj.get(h));
-			stb.append(",");
-		}
-		stb.deleteCharAt(stb.length() - 1);
-		return stb.toString();
+		return userCSVParser.objectToString(head, obj);
 	}
 
 	private String objectToString(List<String> head,
 			List<AttributeMap> attrMapList,
 			ReconciliationObject<ProvisionUser> u) {
-		return this.objectToString(head,
-				userCSVParser.convertToMap(attrMapList, u));
+		return userCSVParser.objectToString(head, attrMapList, u);
 	}
 
 	private Map<String, String> matchFields(List<AttributeMap> attrMap,
 			ReconciliationObject<ProvisionUser> u,
 			ReconciliationObject<ProvisionUser> o) {
-		Map<String, String> res = new HashMap<String, String>(0);
-		Map<String, String> one = userCSVParser.convertToMap(attrMap, u);
-		Map<String, String> two = userCSVParser.convertToMap(attrMap, o);
-		for (String field : one.keySet()) {
-
-			if (one.get(field) == null && two.get(field) == null) {
-				res.put(field, null);
-				continue;
-			}
-			if (one.get(field) == null && two.get(field) != null) {
-				res.put(field, two.get(field));
-				continue;
-			}
-			if (one.get(field) != null && two.get(field) == null) {
-				res.put(field, one.get(field));
-				continue;
-			}
-			if (one.get(field) != null && two.get(field) != null) {
-				String firstVal = one.get(field).replaceFirst("^0*", "");
-				String secondVal = two.get(field).replaceFirst("^0*", "");
-				res.put(field, firstVal.equalsIgnoreCase(secondVal) ? secondVal
-						: ("[" + firstVal + "][" + secondVal + "]"));
-				continue;
-			}
-		}
-
-		return res;
+		return userCSVParser.matchFields(attrMap, u, o);
 	}
 
 	/**
@@ -332,8 +292,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			boolean isMultiple = false;
 			ReconciliationObject<ProvisionUser> finded = null;
 			for (ReconciliationObject<ProvisionUser> o : dbUsers) {
-				if (used.contains(o))
+				if (used.contains(o)) {
+					log.debug("already used");
 					continue;
+				}
 				if (!StringUtils.hasText(o.getPrincipal())) {
 					used.add(o);
 					continue;

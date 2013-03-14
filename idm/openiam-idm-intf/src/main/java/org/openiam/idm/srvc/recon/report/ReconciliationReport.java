@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 
@@ -128,5 +129,14 @@ public class ReconciliationReport {
 	public void save(String pathToCSV, ManagedSys mSys) throws IOException {
 		this.save(pathToCSV, mSys, true);
 		this.save(pathToCSV, mSys, false);
+	}
+
+	public static List<String> getHeader(List<AttributeMap> attrMapList) {
+		// Fill header
+		List<String> hList = new ArrayList<String>(0);
+		for (AttributeMap map : attrMapList) {
+			hList.add(map.getAttributeName());
+		}
+		return hList;
 	}
 }

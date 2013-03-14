@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -563,4 +564,56 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 	public String getFileName(ManagedSys mngSys, CSVSource source) {
 		return super.getFileName(mngSys, source);
 	}
+
+	@Override
+	public String objectToString(List<String> head, Map<String, String> obj) {
+		StringBuilder stb = new StringBuilder();
+		for (String h : head) {
+			stb.append(obj.get(h.trim()) == null ? "" : obj.get(h));
+			stb.append(",");
+		}
+		stb.deleteCharAt(stb.length() - 1);
+		return stb.toString();
+	}
+
+	@Override
+	public String objectToString(List<String> head,
+			List<AttributeMap> attrMapList,
+			ReconciliationObject<ProvisionUser> u) {
+		return this.objectToString(head, this.convertToMap(attrMapList, u));
+	}
+
+	@Override
+	public Map<String, String> matchFields(List<AttributeMap> attrMap,
+			ReconciliationObject<ProvisionUser> u,
+			ReconciliationObject<ProvisionUser> o) {
+		Map<String, String> res = new HashMap<String, String>(0);
+		Map<String, String> one = this.convertToMap(attrMap, u);
+		Map<String, String> two = this.convertToMap(attrMap, o);
+		for (String field : one.keySet()) {
+
+			if (one.get(field) == null && two.get(field) == null) {
+				res.put(field, null);
+				continue;
+			}
+			if (one.get(field) == null && two.get(field) != null) {
+				res.put(field, two.get(field));
+				continue;
+			}
+			if (one.get(field) != null && two.get(field) == null) {
+				res.put(field, one.get(field));
+				continue;
+			}
+			if (one.get(field) != null && two.get(field) != null) {
+				String firstVal = one.get(field).replaceFirst("^0*", "");
+				String secondVal = two.get(field).replaceFirst("^0*", "");
+				res.put(field, firstVal.equalsIgnoreCase(secondVal) ? secondVal
+						: ("[" + firstVal + "][" + secondVal + "]"));
+				continue;
+			}
+		}
+
+		return res;
+	}
+
 }

@@ -405,6 +405,8 @@
 		<property name="connectorAdapter" ref="connectorAdapter" />
 		<property name="remoteConnectorAdapter" ref="remoteConnectorAdapter" />
 		<property name="connectorService" ref="connectorService" />
+		<property name="userCSVParser" ref="userCSVParser" />
+		<property name="pathToCSV" value="${csv.path}" />
 	</bean>
 
 
