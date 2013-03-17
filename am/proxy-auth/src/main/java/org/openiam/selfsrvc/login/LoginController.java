@@ -91,7 +91,9 @@ public class LoginController extends SimpleFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         LoginCommand loginCmd = new LoginCommand();
-        loginCmd.setClientIP( request.getRemoteHost());
+        String remoteHost = request.getRemoteHost();
+
+        loginCmd.setClientIP( remoteHost);
 
         String expire = request.getParameter("expire");
         if (expire != null) {
