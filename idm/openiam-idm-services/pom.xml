@@ -244,11 +244,6 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
-<dependency>
-            <groupId>org.eclipse.birt.runtime</groupId>
-            <artifactId>viewservlets</artifactId>
-            <version>4.2.0</version>
-        </dependency>
       <dependency>
             <groupId>org.eclipse.birt.runtime</groupId>
             <artifactId>org.eclipse.birt.runtime</artifactId>

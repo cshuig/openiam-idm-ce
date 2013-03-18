@@ -847,7 +847,7 @@
 
 
 	<!-- Local DataSource that works in any environment -->
-	<!-- Note that DriverManagerDataSource does not pool; it is not intended 
+	<!-- Note that DriverManagerDataSource does not pool; it is not intended
 		for production -->
 	<!-- See JPetStore for an example of using Commons DBCP BasicDataSource 
 		as alternative -->
@@ -870,20 +870,10 @@
 		<property name="testWhileIdle" value="true" />
 		<property name="validationQuery" value="${openiam.hibernate.validationQuery}" />
 		<property name="maxWait" value="${openiam.hibernate.timeout}" />
-		<property name="removeAbandoned" value="true" />
+<!--		<property name="removeAbandoned" value="true" />
 		<property name="removeAbandonedTimeout" value="60" />
-		<property name="logAbandoned" value="true" />
+		<property name="logAbandoned" value="true" />-->
 	</bean>
-
-
-
-
-	<!-- JNDI DataSource for J2EE environments -->
-	<!-- <jee:jndi-lookup id="dataSource" jndi-name="java:openiamDS"/> -->
-	<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> 
-		<property name="jndiName"> <value>java:comp/env/jdbc/openiamDS</value> </property> 
-		</bean> -->
-
 
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter"
 		lazy-init="false">
