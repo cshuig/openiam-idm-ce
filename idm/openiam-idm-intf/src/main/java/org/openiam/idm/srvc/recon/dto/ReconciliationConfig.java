@@ -14,7 +14,8 @@ import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ReconciliationConfig", propOrder = { "reconConfigId",
 		"resourceId", "frequency", "status", "situationSet", "reportPath",
-		"separator", "endOfLine","userList" })
+		"separator", "endOfLine", "userList",
+		"notificationEmailAddress" })
 public class ReconciliationConfig implements java.io.Serializable {
 
 	private static final long serialVersionUID = 431603790346613674L;
@@ -24,8 +25,9 @@ public class ReconciliationConfig implements java.io.Serializable {
 	private String status;
 	private String separator;
 	private String endOfLine;
-	
-	//Not saved in DB
+	private String notificationEmailAddress;
+
+	// Not saved in DB
 	private String reportPath;
 
 	private List<UserWrapperEntity> userList;
@@ -119,5 +121,20 @@ public class ReconciliationConfig implements java.io.Serializable {
 
 	public void setUserList(List<UserWrapperEntity> userList) {
 		this.userList = userList;
+	}
+
+	/**
+	 * @return the notificationEmailAddress
+	 */
+	public String getNotificationEmailAddress() {
+		return notificationEmailAddress;
+	}
+
+	/**
+	 * @param notificationEmailAddress
+	 *            the notificationEmailAddress to set
+	 */
+	public void setNotificationEmailAddress(String notificationEmailAddress) {
+		this.notificationEmailAddress = notificationEmailAddress;
 	}
 }

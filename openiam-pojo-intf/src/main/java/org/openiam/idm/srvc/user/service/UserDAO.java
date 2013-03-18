@@ -1,6 +1,7 @@
 package org.openiam.idm.srvc.user.service;
 
 import org.openiam.idm.srvc.user.domain.UserEntity;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.DelegationFilterSearch;
 import org.openiam.idm.srvc.user.dto.UserSearch;
 
@@ -43,5 +44,5 @@ public interface UserDAO {
 
     List<UserEntity> findByDelegationProperties(DelegationFilterSearch search);
 
-
+    public  List<UserWrapperEntity>  findAllUsers();
 }

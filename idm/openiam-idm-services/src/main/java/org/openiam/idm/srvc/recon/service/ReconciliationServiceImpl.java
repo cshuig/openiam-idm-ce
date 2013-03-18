@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.record.formula.functions.Hlookup;
 import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
 import org.openiam.base.ws.ResponseStatus;
@@ -63,7 +62,6 @@ import org.openiam.provision.resp.LookupUserResponse;
 import org.openiam.provision.service.ConnectorAdapter;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.service.RemoteConnectorAdapter;
-import org.openiam.spml2.msg.ResponseType;
 
 /**
  * @author suneet
@@ -213,12 +211,11 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 					.getConnectorId());
 			// IF managed system is CSV
 			if (connector.getServiceUrl().contains("CSV")) {
-				List<UserWrapperEntity> users = new ArrayList<UserWrapperEntity>();
-				for (ResourceRole rRole : res.getResourceRoles()) {
-					List<UserWrapperEntity> ids = roleDataService
-							.findUserWByRole(mSys.getDomainId(), rRole.getId()
-									.getRoleId());
-					users.addAll(ids);
+				List<UserWrapperEntity> users = userMgr.getAllUsers();
+				if (users == null) {
+					resp = new ReconciliationResponse(ResponseStatus.FAILURE);
+					resp.setErrorText("USERS table is empty");
+					return resp;
 				}
 				// Get user without fetches
 				config.setUserList(users);

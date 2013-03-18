@@ -94,6 +94,10 @@
                           <form:option value="enter" label="Enter" />
                         </form:select>
                     </tr>
+                    <tr>
+                      <td class="tddark">Email address for notification of completion</td>
+                      <td class="tdlightnormal"><form:input path="config.notificationEmailAddress" /></td>
+                    </tr>
                   </c:if>
                 </TABLE>
               </fieldset>
@@ -172,10 +176,9 @@
   <form action="upload.do" enctype="multipart/form-data" method="POST">
     <input type="file" name="file1" />
     <div style="margin-top: 12px;">
-      <input type="hidden" name="csvEOL" id="eol" /> 
-      <input type="hidden" name="csvSep" id="sep" /> 
-      <input type="submit" value="UploadFile" onclick="showDialog();" /> 
-      <span style="color: #000099; margin-left: 12px; text-decoration: underline;" onclick="showDialog();">Cancel</span>
+      <input type="hidden" name="csvEOL" id="eol" /> <input type="hidden" name="csvSep" id="sep" /> <input
+        type="submit" value="UploadFile" onclick="showDialog();"
+      /> <span style="color: #000099; margin-left: 12px; text-decoration: underline;" onclick="showDialog();">Cancel</span>
     </div>
   </form>
 </div>

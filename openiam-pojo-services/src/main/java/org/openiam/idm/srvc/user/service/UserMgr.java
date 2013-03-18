@@ -18,6 +18,7 @@ import org.openiam.idm.srvc.user.domain.SupervisorEntity;
 import org.openiam.idm.srvc.user.domain.UserAttributeEntity;
 import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.domain.UserNoteEntity;
+import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
 import org.openiam.idm.srvc.user.dto.*;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.dto.LoginId;
@@ -1445,4 +1446,9 @@ public class UserMgr implements UserDataService {
     public void setSysConfiguration(SysConfiguration sysConfiguration) {
         this.sysConfiguration = sysConfiguration;
     }
+
+	@Override
+	public List <UserWrapperEntity> getAllUsers() {
+		return userDao.findAllUsers();
+	}
 }

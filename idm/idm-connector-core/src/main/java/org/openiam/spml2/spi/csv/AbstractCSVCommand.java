@@ -2,6 +2,7 @@ package org.openiam.spml2.spi.csv;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAO;
+import org.openiam.idm.srvc.msg.service.MailService;
 import org.openiam.idm.srvc.recon.command.ReconciliationCommandFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
@@ -55,6 +57,15 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected LoginDataService loginManager;
 	protected CSVParser<ProvisionUser> userCSVParser;
 	protected String scriptEngine;
+	private MailService mailService;
+
+	/**
+	 * @param mailService
+	 *            the mailService to set
+	 */
+	public void setMailService(MailService mailService) {
+		this.mailService = mailService;
+	}
 
 	protected String pathToCSV;
 	public static ApplicationContext ac;
@@ -134,9 +145,11 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	protected ResponseType reconcile(ReconciliationConfig config) {
+		long c = Calendar.getInstance().getTimeInMillis();
 		ResponseType response = new ResponseType();
 		ReconciliationReport result = new ReconciliationReport();
 		List<ReconciliationReportRow> report = new ArrayList<ReconciliationReportRow>();
+		StringBuilder message = new StringBuilder();
 		result.setReport(report);
 		Resource res = resourceDataService.getResource(config.getResourceId());
 		String managedSysId = res.getManagedSysId();
@@ -164,8 +177,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			response.setErrorMessage("attrMapList is empty");
 			return response;
 		}
-		List<ReconciliationObject<ProvisionUser>> idmUsers;
-		List<ReconciliationObject<ProvisionUser>> sourceUsers;
+		List<ReconciliationObject<ProvisionUser>> idmUsers = null;
+		List<ReconciliationObject<ProvisionUser>> sourceUsers = null;
 		List<ReconciliationObject<ProvisionUser>> dbUsers = new ArrayList<ReconciliationObject<ProvisionUser>>();
 		for (UserWrapperEntity u : config.getUserList()) {
 			ProvisionUser pu_ = new ProvisionUser(u);
@@ -193,7 +206,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 				log.error(e.getMessage());
 				response.setStatus(StatusCodeType.FAILURE);
 				response.setErrorMessage(e.getMessage());
-				return response;
+				message.append("ERROR:" + response.getErrorMessage());
 			}
 			report.add(new ReconciliationReportRow("Records from Remote CSV: "
 					+ sourceUsers.size() + " items", hList.size() + 1));
@@ -205,7 +218,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 				log.error(e.getMessage());
 				response.setStatus(StatusCodeType.FAILURE);
 				response.setErrorMessage(e.getMessage());
-				return response;
+				message.append("ERROR:" + response.getErrorMessage());
 			}
 			report.add(new ReconciliationReportRow("Records from DB: "
 					+ dbUsers.size() + " items", hList.size() + 1));
@@ -220,7 +233,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			log.error(e);
 			response.setStatus(StatusCodeType.FAILURE);
 			response.setErrorMessage(e.getMessage() + e.getStackTrace());
-			return response;
+			message.append(response.getErrorMessage());
 		}
 		try {
 			result.save(pathToCSV, mSys);
@@ -228,6 +241,33 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			log.error("can't save report");
 			response.setStatus(StatusCodeType.FAILURE);
 			response.setErrorMessage(e.getMessage() + e.getStackTrace());
+			message.append("ERROR:" + response.getErrorMessage());
+		}
+		c = Calendar.getInstance().getTimeInMillis() - c;
+		log.debug("RECONCILIATION TIME:" + c
+				+ "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		// TODO
+		// REMOVE AFTER TEST
+		// config.setIsNotification(true);
+		// config.setNotificationEmailAddress("elpilasgsm@gmail.com");
+		//
+		if (StringUtils.hasText(config.getNotificationEmailAddress())) {
+			message.append("Resource: " + res.getName() + ".\n");
+			message.append("Uploaded CSV file: " + mSys.getManagedSysId()
+					+ mSys.getResourceId()
+					+ ".csv was successfully reconciled.\n");
+			message.append("Totals:\n");
+			message.append("Records from IDM: " + idmUsers.size() + " items.\n");
+			message.append("Records from Remote CSV: " + sourceUsers.size()
+					+ " items.\n");
+			message.append("Records from DB: " + dbUsers.size() + " items.\n");
+			message.append("Reconciliation time: " + c + "ms.\n");
+			mailService.sendWithAttachment("CSVConnector",
+					Arrays.asList(config.getNotificationEmailAddress())
+							.toArray(new String[0]),
+					"Reconciliation report is ready!", message.toString(),
+					false, pathToCSV + "report_" + mSys.getManagedSysId()
+							+ mSys.getResourceId() + ".html");
 		}
 		return response;
 	}
@@ -266,7 +306,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			List<ReconciliationObject<ProvisionUser>> reconUserList,
 			List<ReconciliationObject<ProvisionUser>> dbUsers,
 			List<AttributeMap> attrMapList, ManagedSys mSys) throws Exception {
-		long c = Calendar.getInstance().getTimeInMillis();
 		Set<ReconciliationObject<ProvisionUser>> used = new HashSet<ReconciliationObject<ProvisionUser>>(
 				0);
 		for (ReconciliationObject<ProvisionUser> u : reconUserList) {
@@ -379,9 +418,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 				// }
 			}
 		}
-		c = Calendar.getInstance().getTimeInMillis() - c;
-		log.info("RECONCILIATION TIME:" + c
-				+ "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		return used;
 	}
 

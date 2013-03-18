@@ -23,6 +23,9 @@
 		<property name="endOfLine" type="string">
 			<column name="CSV_END_OF_LINE" length="10" />
 		</property>
+				<property name="notificationEmailAddress" type="string">
+			<column name="NOTIFICATION_EMAIL_ADDRESS" length="80" />
+		</property>
 		<set name="situationSet" inverse="false" cascade="all" lazy="false">
 			<key>
 				<column name="RECON_CONFIG_ID" length="32" not-null="true" />

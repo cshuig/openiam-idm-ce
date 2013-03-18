@@ -15,30 +15,37 @@ public class ImproveScript implements org.openiam.idm.srvc.recon.service.CSVImpr
 		if (!file.exists()) {
 			return -1;
 		}
-		//PARSE FILE AS CSV
+		// PARSE FILE AS CSV
 		CSVParser parser = new CSVParser(new FileReader(file));
 		String[][] fromParse = parser.getAllValues();
 
-		//CSV ROWS LIST. EXAMPLE : {1,4,5,6,6\n}
+		// CSV ROWS LIST. EXAMPLE : {1,4,5,6,6\n}
 		List<String> rows = new ArrayList<String>();
-		//NUMBER OF COLUMS FOR FIXING
+		// NUMBER OF COLUMS FOR FIXING
+		int colEmployee = 0;
 		int col = 0;
 		// FLAG TO MARK "IS formattedName FIELD EXIST IN CSV FILE"
 		boolean isFind = false;
-		//Check is already fixed CSV?
-		int fields;
+		// Check is already fixed CSV?
+		int fields = 0;
 		for (String names : fromParse[0]) {
-			if (names.equals(formattedName) || names.equals(formattedName+"_2") ||  names.equals(formattedName+"_3") ){
+			if (names.equals(formattedName)
+					|| names.equals(formattedName + "_2")
+					|| names.equals(formattedName + "_3")) {
 				fields++;
 			}
-			if (fields==3)
+			if (fields == 3)
 				return 0;
 		}
-		//END CHECK-------------------------------------------------------
+		// END CHECK-------------------------------------------------------
 
 		// Fix header
 		StringBuilder nameStr = new StringBuilder();
 		for (String names : fromParse[0]) {
+			if ("EMPLOYEE_ID".equals(names)) {
+				colEmployee++;
+			}
+
 			nameStr.append(names);
 			nameStr.append(',');
 			if (names.equals(formattedName)) {
@@ -58,6 +65,11 @@ public class ImproveScript implements org.openiam.idm.srvc.recon.service.CSVImpr
 		for (int i = 1; i < fromParse.length; i++) {
 			nameStr = new StringBuilder();
 			for (int j = 0; j < fromParse[i].length; j++) {
+				if (j == colEmployee) {
+					nameStr.append(fromParse[i][j].replaceFirst("^0*", ""));
+					nameStr.append(',');
+					continue;
+				}
 				if (j == col) {
 					String[] names = fromParse[i][j].split(",");
 					if (names.length == 2) {
@@ -87,7 +99,7 @@ public class ImproveScript implements org.openiam.idm.srvc.recon.service.CSVImpr
 			rows.add(nameStr.toString());
 		}
 
-		//OVERWRITE FILE
+		// OVERWRITE FILE
 		StringBuilder fileStr = new StringBuilder();
 		for (String row : rows) {
 			fileStr.append(row);
@@ -95,8 +107,7 @@ public class ImproveScript implements org.openiam.idm.srvc.recon.service.CSVImpr
 		FileWriter fw = new FileWriter(path);
 		fw.write(fileStr.toString());
 		fw.close();
-		//---------------------------------
+		// ---------------------------------
 		return 0;
 	}
 }
-

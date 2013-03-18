@@ -139,6 +139,7 @@
 	<bean id="csvReconCommmand" class="org.openiam.spml2.spi.csv.ReconcileCSVCommand">
 		<property name="scriptEngine"
 			value="org.openiam.script.GroovyScriptEngineIntegration" />
+		<property name="mailService" ref="mailService" />
 		<property name="userCSVParser" ref="userCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
