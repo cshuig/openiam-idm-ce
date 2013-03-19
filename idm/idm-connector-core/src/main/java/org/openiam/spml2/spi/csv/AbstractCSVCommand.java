@@ -253,8 +253,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		//
 		if (StringUtils.hasText(config.getNotificationEmailAddress())) {
 			message.append("Resource: " + res.getName() + ".\n");
-			message.append("Uploaded CSV file: " + mSys.getManagedSysId()
-					+ mSys.getResourceId()
+			message.append("Uploaded CSV file: " + mSys.getResourceId()
 					+ ".csv was successfully reconciled.\n");
 			message.append("Totals:\n");
 			message.append("Records from IDM: " + idmUsers.size() + " items.\n");
@@ -266,7 +265,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					Arrays.asList(config.getNotificationEmailAddress())
 							.toArray(new String[0]),
 					"Reconciliation report is ready!", message.toString(),
-					false, pathToCSV + "report_" + mSys.getManagedSysId()
+					false, pathToCSV + "report_" 
 							+ mSys.getResourceId() + ".html");
 		}
 		return response;

@@ -86,7 +86,7 @@ public class UploadAction extends DispatchActionSupport {
 						+ (Calendar.getInstance().getTimeInMillis() - calendar
 								.getTimeInMillis()) / 1000 + "sec");
 			}
-			fileWebService.saveFile("recon_" + mSysId + resId + ".csv",
+			fileWebService.saveFile("recon_" + resId + ".csv",
 					fromFile);
 		} catch (FileUploadException ex) {
 			log.error("Error encountered while parsing the request", ex);

@@ -71,6 +71,10 @@
                   </tr>
                   <c:if test="${reconCmd.isCSV}">
                     <tr>
+                      <td class="tddark">Reconciliation CSV file name</td>
+                      <td class="tdlightnormal"><label style="font-size:135%">${reconCmd.reconCSVName}</label></td>
+                    </tr>
+                    <tr>
                       <td class="tddark">Source CSV</td>
                       <td class="tdlightnormal"><span
                         style="color: #000099; cursor: pointer; text-decoration: underline;" onclick="showDialog();"
