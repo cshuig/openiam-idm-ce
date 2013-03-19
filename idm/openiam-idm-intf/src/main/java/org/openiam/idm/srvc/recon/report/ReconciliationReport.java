@@ -4,13 +4,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.codec.binary.Hex;
+import org.openiam.exception.EncryptionException;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 
 public class ReconciliationReport {
 
@@ -110,7 +109,6 @@ public class ReconciliationReport {
 			throws IOException {
 		StringBuilder sb = new StringBuilder(pathToCSV);
 		sb.append("report_");
-		sb.append(mSys.getManagedSysId());
 		sb.append(mSys.getResourceId());
 		if (isHTML)
 			sb.append(".html");
@@ -121,7 +119,7 @@ public class ReconciliationReport {
 			fw.append(this.toHTML());
 		else
 			fw.append(this.toCSV());
-		
+
 		fw.flush();
 		fw.close();
 	}

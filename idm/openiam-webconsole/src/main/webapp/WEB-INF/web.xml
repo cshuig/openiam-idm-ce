@@ -110,14 +110,6 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
-	<!-- <servlet> -->
-	<!-- <servlet-name>UploadServlet</servlet-name> -->
-	<!-- <servlet-class>org.openiam.webadmin.res.UploadServlet</servlet-class> -->
-	<!-- </servlet> -->
-	<!-- <servlet-mapping> -->
-	<!-- <servlet-name>UploadServlet</servlet-name> -->
-	<!-- <url-pattern>/upload</url-pattern> -->
-	<!-- </servlet-mapping> -->
 
 	<servlet-mapping>
 		<servlet-name>action</servlet-name>

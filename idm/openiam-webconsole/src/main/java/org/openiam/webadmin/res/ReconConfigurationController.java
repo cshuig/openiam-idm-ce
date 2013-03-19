@@ -104,6 +104,15 @@ public class ReconConfigurationController extends CancellableFormController {
 			if (isCSV) {
 				session.setAttribute("mSysId", mSys.getManagedSysId());
 				session.setAttribute("resId", mSys.getResourceId());
+				if (mSys.getResourceId() != null
+						&& !StringUtils.isEmpty(fileWebService
+								.getFile(ReconConfigurationController
+										.getFileName(mSys, "recon_", "csv"))))
+					cmd.setReconCSVName(ReconConfigurationController
+							.getFileName(mSys, "recon_", "csv"));
+				else {
+					cmd.setReconCSVName("Resource not exists or CSV is not uploaded");
+				}
 			}
 			String file = this.getFileContent(mSys, "report_", "csv");
 			cmd.setIsReportExist(!StringUtils.isEmpty(file));
@@ -157,7 +166,6 @@ public class ReconConfigurationController extends CancellableFormController {
 			return "";
 		StringBuilder sb = new StringBuilder();
 		sb.append(preffix);
-		sb.append(ms.getManagedSysId());
 		sb.append(ms.getResourceId());
 		sb.append(".");
 		sb.append(type);
@@ -179,13 +187,17 @@ public class ReconConfigurationController extends CancellableFormController {
 				.getResourceId());
 		String btn = request.getParameter("btn");
 		String configId = config.getReconConfigId();
-
+		ModelAndView mavDownload = null;
 		if (btn != null && btn.equalsIgnoreCase("Export to CSV")) {
-			return download(response, mSys, "");
+			mavDownload = download(response, mSys, "");
+			if (mavDownload != null)
+				return mavDownload;
 		}
 
 		if (btn != null && btn.equalsIgnoreCase("Export report")) {
-			return download(response, mSys, "report_");
+			mavDownload = download(response, mSys, "");
+			if (mavDownload != null)
+				return mavDownload;
 		}
 
 		if (btn != null && btn.equalsIgnoreCase("Delete")) {

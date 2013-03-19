@@ -147,7 +147,6 @@ public abstract class AbstractCSVParser<T, E extends Enum<E>> {
 		if (CSVSource.UPLOADED.equals(source)) {
 			sb.append("recon_");
 		}
-		sb.append(mngSys.getManagedSysId());
 		sb.append(mngSys.getResourceId());
 		sb.append(".csv");
 		return sb.toString();
