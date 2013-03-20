@@ -25,6 +25,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.util.StringUtils;
 import org.openiam.base.id.UUIDGen;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseCode;
@@ -38,7 +39,6 @@ import org.openiam.idm.srvc.synch.dto.LineObject;
 import org.openiam.idm.srvc.synch.dto.SyncResponse;
 import org.openiam.idm.srvc.synch.dto.SynchConfig;
 import org.openiam.idm.srvc.synch.service.MatchObjectRule;
-import org.openiam.idm.srvc.synch.service.SourceAdapter;
 import org.openiam.idm.srvc.synch.service.TransformScript;
 import org.openiam.idm.srvc.synch.service.ValidationScript;
 import org.openiam.idm.srvc.user.dto.User;
@@ -46,7 +46,6 @@ import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import java.io.*;
@@ -64,18 +63,13 @@ import java.util.Set;
  */
 public class CSVAdapter extends  AbstractSrcAdapter  {
 
-    protected LineObject rowHeader = new LineObject();
-    protected ProvisionUser pUser = new ProvisionUser();
+    private AuditHelper auditHelper;
 
-    protected AuditHelper auditHelper;
+    private String systemAccount;
 
-    ProvisionService provService = null;
-    String systemAccount;
-
-    MatchRuleFactory matchRuleFactory;
+    private MatchRuleFactory matchRuleFactory;
 
     private static final Log log = LogFactory.getLog(CSVAdapter.class);
-
 
 
     public SyncResponse startSynch(SynchConfig config) {
@@ -85,8 +79,7 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
 
         Reader reader = null;
 
-        MatchObjectRule matchRule = null;
-        provService = (ProvisionService) ac.getBean("defaultProvision");
+        ProvisionService provService = (ProvisionService) ac.getBean("defaultProvision");
 
         String requestId = UUIDGen.getUUID();
 
@@ -94,74 +87,43 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
         synchStartLog.setSynchAttributes("SYNCH_USER", config.getSynchConfigId(), "START", "SYSTEM", requestId);
         synchStartLog = auditHelper.logEvent(synchStartLog);
 
-
-
         try {
-            matchRule = matchRuleFactory.create(config);
-        } catch (ClassNotFoundException cnfe) {
-
-            log.error(cnfe);
-
-
-            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.CLASS_NOT_FOUND.toString(), cnfe.toString());
-            auditHelper.logEvent(synchStartLog);
-
-
-            SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-            resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
-            return resp;
-        }
-
-
-        File file = new File(config.getFileName());
-        try {
+            File file = new File(config.getFileName());
             reader = new FileReader(file);
-        } catch (FileNotFoundException fe) {
-            fe.printStackTrace();
+            CSVParser parser = new CSVParser(reader, CSVStrategy.EXCEL_STRATEGY);
 
-            log.error(fe);
-
-            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.FILE_EXCEPTION.toString(), fe.toString());
-            auditHelper.logEvent(synchStartLog);
-
-            SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-            resp.setErrorCode(ResponseCode.FILE_EXCEPTION);
-            return resp;
-
-        }
-
-
-        CSVParser parser = new CSVParser(reader, CSVStrategy.EXCEL_STRATEGY);
-        try {
             int ctr = 0;
-            String[][] fileContentAry = parser.getAllValues();
-            int size = fileContentAry.length;
+            String[][] rows = parser.getAllValues();
 
+            //initialization if validation script config exists
+            ValidationScript validationScript = StringUtils.isNotEmpty(config.getValidationRule()) ? SynchScriptFactory.createValidationScript(config.getValidationRule()) : null;
+            //initialization if transformation script config exists
+            TransformScript transformScript = StringUtils.isNotEmpty(config.getTransformationRule()) ? SynchScriptFactory.createTransformationScript(config.getTransformationRule()) : null;
+            //init match rules
+            MatchObjectRule matchRule = matchRuleFactory.create(config);
+            LineObject rowHeader = null;
 
-            for (String[] lineAry : fileContentAry) {
-                log.debug("File Row #= " + ctr);
+            for (String[] row : rows) {
+                log.debug("*** Record counter: " + ctr);
 
                 if (ctr == 0) {
-                    populateTemplate(lineAry);
-                    ctr++;
+                    rowHeader = populateTemplate(row);
+
                 } else {
                     //populate the data object
-                    pUser = new ProvisionUser();
+                    ProvisionUser pUser = new ProvisionUser();
 
                     LineObject rowObj = rowHeader.copy();
-                    populateRowObject(rowObj, lineAry);
-
-                    try {
-
-                        log.debug(" - Validation being called");
+                    populateRowObject(rowObj, row);
+                    log.debug(" - Validation being called");
 
                         // validate
-                        if (config.getValidationRule() != null && config.getValidationRule().length() > 0) {
-                            ValidationScript script = SynchScriptFactory.createValidationScript(config.getValidationRule());
-                            int retval = script.isValid(rowObj);
+                        if (validationScript != null) {
+                            int retval = validationScript.isValid(rowObj);
                             if (retval == ValidationScript.NOT_VALID) {
-                                log.debug(" - Validation failed...");
-                                // log this object in the exception log
+                                log.debug(" - Validation failed...transformation will not be called.");
+
+                                continue;
                             }
                             if (retval == ValidationScript.SKIP) {
                                 continue;
@@ -175,7 +137,7 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
 
                         log.debug(" - Row Attr..." + rowAttr);
                         //
-                        matchRule = matchRuleFactory.create(config);
+
                         User usr = matchRule.lookup(config, rowAttr);
 
                         //@todo - Update lookup so that an exception is thrown
@@ -184,8 +146,7 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
                         log.debug(" - Preparing transform script");
 
                         // transform
-                        if (config.getTransformationRule() != null && config.getTransformationRule().length() > 0) {
-                            TransformScript transformScript = SynchScriptFactory.createTransformationScript(config.getTransformationRule());
+                        if (transformScript != null) {
 
                             transformScript.init();
 
@@ -231,27 +192,33 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
                         // show the user object
 
 
-                    } catch (ClassNotFoundException cnfe) {
-
-
-                        log.error(cnfe);
-
-                        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.CLASS_NOT_FOUND.toString(), cnfe.toString());
-                        auditHelper.logEvent(synchStartLog);
-
-                        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                        resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
-                        return resp;
-                    }
-
                 }
-
+                ctr++;
             }
+        } catch (FileNotFoundException fe) {
+            fe.printStackTrace();
 
-        } catch (IOException io) {
+            log.error(fe);
+
+            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.FILE_EXCEPTION.toString(), fe.toString());
+            auditHelper.logEvent(synchStartLog);
+
+            SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+            resp.setErrorCode(ResponseCode.FILE_EXCEPTION);
+            return resp;
+
+        } catch (ClassNotFoundException cnfe) {
 
 
+        log.error(cnfe);
 
+        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.CLASS_NOT_FOUND.toString(), cnfe.toString());
+        auditHelper.logEvent(synchStartLog);
+
+        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+        resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
+        return resp;
+    } catch (IOException io) {
             io.printStackTrace();
 
             synchStartLog.updateSynchAttributes("FAIL", ResponseCode.IO_EXCEPTION.toString(), io.toString());
@@ -260,17 +227,19 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
             SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
             resp.setErrorCode(ResponseCode.IO_EXCEPTION);
             return resp;
-
-
+        } finally {
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
 
         log.debug("CSV SYNCHRONIZATION COMPLETE^^^^^^^^");
 
-
-        SyncResponse resp = new SyncResponse(ResponseStatus.SUCCESS);
-        return resp;
-
+        return new SyncResponse(ResponseStatus.SUCCESS);
     }
 
     public Response testConnection(SynchConfig config) {
@@ -300,18 +269,17 @@ public class CSVAdapter extends  AbstractSrcAdapter  {
         return resp;
     }
 
-    private void populateTemplate(String[] lineAry) {
-        Map<String, Attribute> columnMap = new HashMap<String, Attribute>();
-
+    private LineObject populateTemplate(String[] lineAry) {
+        LineObject rowHeader = new LineObject();
         int ctr = 0;
         for (String s : lineAry) {
-            Attribute a = new Attribute(s, null);
+            Attribute a =new Attribute(s, null);
             a.setType("STRING");
             a.setColumnNbr(ctr);
-            columnMap.put(a.getName(), a);
+            rowHeader.put(a.getName(), a);
             ctr++;
         }
-        rowHeader.setColumnMap(columnMap);
+        return rowHeader;
     }
 
 
