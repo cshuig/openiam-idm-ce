@@ -4,6 +4,7 @@ import org.openiam.dozer.converter.MailTemplateDozerConverter;
 import org.openiam.idm.srvc.msg.domain.MailTemplateEntity;
 import org.openiam.idm.srvc.msg.dto.MailTemplateDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,9 +13,10 @@ public class MailTemplateServiceImpl implements MailTemplateService {
     @Autowired
     private MailTemplateDozerConverter mailTemplateDozerConverter;
 
-    MailTemplateDAO mailTemplateDAO;
+    private MailTemplateDAO mailTemplateDAO;
 
     @Override
+    @Transactional
     public MailTemplateDto addTemplate(MailTemplateDto transientInstance) {
         if (transientInstance == null) {
             throw new NullPointerException("Config object is null");
@@ -25,6 +27,7 @@ public class MailTemplateServiceImpl implements MailTemplateService {
     }
 
     @Override
+    @Transactional
     public void removeTemplate(String id) {
         if (id == null) {
             throw new NullPointerException("id is null");
@@ -35,6 +38,7 @@ public class MailTemplateServiceImpl implements MailTemplateService {
     }
 
     @Override
+    @Transactional
     public MailTemplateDto updateTemplate(MailTemplateDto detachedInstance) {
         if (detachedInstance == null) {
             throw new NullPointerException("policy is null");
@@ -44,6 +48,7 @@ public class MailTemplateServiceImpl implements MailTemplateService {
     }
 
     @Override
+    @Transactional (readOnly = true)
     public MailTemplateDto getTemplateById(String id) {
         if (id == null) {
             throw new NullPointerException("id is null");
@@ -53,6 +58,7 @@ public class MailTemplateServiceImpl implements MailTemplateService {
     }
 
     @Override
+    @Transactional (readOnly = true)
     public List<MailTemplateDto> getAllTemplates() {
         return mailTemplateDozerConverter.convertToDTOList(mailTemplateDAO.findAll(), true);
     }

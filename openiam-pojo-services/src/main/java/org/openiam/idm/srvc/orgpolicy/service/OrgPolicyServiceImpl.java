@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.openiam.idm.srvc.orgpolicy.dto.OrgPolicy;
 import org.openiam.idm.srvc.orgpolicy.dto.OrgPolicyUserLog;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -34,12 +35,13 @@ import org.openiam.idm.srvc.orgpolicy.dto.OrgPolicyUserLog;
  */
 public class OrgPolicyServiceImpl implements OrgPolicyService {
 
-	OrgPolicyDAO acceptanceDao;
-	OrgPolicyUserLogDAO userLogDao; 
+	private OrgPolicyDAO acceptanceDao;
+	private OrgPolicyUserLogDAO userLogDao;
 	
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#addNotification(org.openiam.idm.srvc.msg.dto.SysMessageDelivery)
 	 */
+    @Transactional
 	public OrgPolicy addPolicyMessage(OrgPolicy policy) {
 		if (policy == null) {
 			throw new NullPointerException("policy is null");
@@ -51,6 +53,7 @@ public class OrgPolicyServiceImpl implements OrgPolicyService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#getActiveMessagesForUser(java.lang.String)
 	 */
+    @Transactional (readOnly = true)
 	public List<OrgPolicy> getActiveOrgPoliciesForUser(String userId) {
 		List<OrgPolicy> orgPolicyPendingList = new ArrayList<OrgPolicy>();
 		if (userId == null) {
@@ -80,6 +83,7 @@ public class OrgPolicyServiceImpl implements OrgPolicyService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#getNotificationById(java.lang.String)
 	 */
+    @Transactional (readOnly = true)
 	public OrgPolicy getPolicyMessageById(String id) {
 		if (id == null) {
 			throw new NullPointerException("id is null");
@@ -91,6 +95,7 @@ public class OrgPolicyServiceImpl implements OrgPolicyService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#removeNotification(org.openiam.idm.srvc.msg.dto.SysMessageDelivery)
 	 */
+    @Transactional
 	public void removePolicyMessage(String orgPolicyId) {
 		if (orgPolicyId == null) {
 			throw new NullPointerException("policyId is null");
@@ -104,6 +109,7 @@ public class OrgPolicyServiceImpl implements OrgPolicyService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#updateNotification(org.openiam.idm.srvc.msg.dto.SysMessageDelivery)
 	 */
+    @Transactional
 	public OrgPolicy updatePolicyMessage(OrgPolicy msg) {
 		if (msg == null) {
 			throw new NullPointerException("msg is null");
@@ -123,11 +129,12 @@ public class OrgPolicyServiceImpl implements OrgPolicyService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.orgpolicy.service.OrgPolicyAcceptanceService#getAllPolicyMessages()
 	 */
+    @Transactional (readOnly = true)
 	public List<OrgPolicy> getAllPolicyMessages() {
 		return acceptanceDao.findAll();
 	}
 
-
+    @Transactional (readOnly = true)
 	public List<OrgPolicyUserLog> getLogEntryForUser(String userId) {
 		if (userId == null) {
 			throw new NullPointerException("userId is null");
@@ -138,6 +145,7 @@ public class OrgPolicyServiceImpl implements OrgPolicyService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.orgpolicy.service.OrgPolicyService#logUserResponse(java.lang.String, java.lang.String)
 	 */
+    @Transactional
 	public void logUserResponse(String orgPolicyId, String userId, String response) {
 		OrgPolicyUserLog log = new OrgPolicyUserLog();
 		log.setOrgPolicyId(orgPolicyId);

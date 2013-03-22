@@ -44,6 +44,8 @@ import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.util.encrypt.Cryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -90,6 +92,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 		return responseValidator.getQuestions(null);
 	}
 
+    @Transactional(readOnly = true)
 	public List<IdentityQuestion> questionsByUser(String userId) {
 		if (userId == null) {
 			throw new NullPointerException("UserId is null");
@@ -134,6 +137,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 
 	}
 
+    @Transactional
 	public IdentityQuestion addQuestion(IdentityQuestion question) {
 		if (question == null) {
 			throw new NullPointerException("question is null");
@@ -143,6 +147,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 						true)), true);
 	}
 
+    @Transactional
 	public IdentityQuestion updateQuestion(IdentityQuestion question) {
 		if (question == null) {
 			throw new NullPointerException("question is null");
@@ -152,6 +157,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 						question, true)), true);
 	}
 
+    @Transactional
 	public void removeQuestion(String questionId) {
 		if (questionId == null) {
 			throw new NullPointerException("question is null");
@@ -187,6 +193,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 		return true;
 	}
 
+    @Transactional
 	public UserIdentityAnswer addAnswer(UserIdentityAnswer answer) {
 		if (answer == null) {
 			throw new NullPointerException("Answer object is null");
@@ -196,6 +203,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 						true)), true);
 	}
 
+    @Transactional
 	public UserIdentityAnswer updateAnswer(UserIdentityAnswer answer) {
 		if (answer == null) {
 			throw new NullPointerException("Answer object is null");
@@ -205,6 +213,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 						answer, true)), true);
 	}
 
+    @Transactional (readOnly = true)
 	public UserIdentityAnswer getAnswer(String answerId) {
 		if (answerId == null) {
 			throw new NullPointerException("answerId object is null");
@@ -213,6 +222,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 				identityAnswerDao.findById(answerId), true);
 	}
 
+    @Transactional
 	public void removeAnswer(String answerId) {
 		if (answerId == null) {
 			throw new NullPointerException("answerId object is null");
@@ -247,6 +257,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 	 * org.openiam.idm.srvc.pswd.service.ChallengeResponseService#isResponseValid
 	 * (java.lang.String, java.lang.String, java.lang.String, java.util.List)
 	 */
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public boolean isResponseValid(String domainId, String login,
 			String managedSysId, String questGrpId,
 			List<UserIdentityAnswer> newAnswerList) {
@@ -295,6 +306,7 @@ public class ChallengeResponseServiceImpl implements ChallengeResponseService {
 	 * org.openiam.idm.srvc.pswd.service.ChallengeResponseService#saveAnswers
 	 * (java.util.List)
 	 */
+    @Transactional (propagation = Propagation.REQUIRED)
 	public void saveAnswers(List<UserIdentityAnswer> ansList) {
 		if (ansList == null) {
 			throw new NullPointerException("anslist is null");

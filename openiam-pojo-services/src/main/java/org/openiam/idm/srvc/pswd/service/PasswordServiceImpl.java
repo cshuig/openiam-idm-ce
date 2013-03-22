@@ -56,6 +56,8 @@ import org.openiam.util.encrypt.Cryptor;
 import org.openiam.util.encrypt.HashDigest;
 import org.openiam.idm.srvc.pswd.dto.ValidatePasswordResetTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -88,6 +90,7 @@ public class PasswordServiceImpl implements PasswordService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.policy.pswd.PasswordService#isPasswordValid(org.openiam.idm.srvc.policy.dto.Password)
 	 */
+    @Transactional(propagation = Propagation.REQUIRED)
 	public PasswordValidationCode isPasswordValid(Password pswd) throws ObjectNotFoundException {
 		
 		Policy pswdPolicy = getPasswordPolicy(pswd.getDomainId(), pswd.getPrincipal(), pswd.getManagedSysId());
@@ -108,6 +111,7 @@ public class PasswordServiceImpl implements PasswordService {
 	}
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PasswordValidationCode isPasswordValidForUser(Password pswd, User user, Login lg) throws ObjectNotFoundException {
 
         Policy pswdPolicy = getPasswordPolicyByUser(pswd.getDomainId(), user);
@@ -128,6 +132,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PasswordValidationCode isPasswordValidForUserAndPolicy(Password pswd, User user, Login lg, Policy policy) throws ObjectNotFoundException {
 
         Policy pswdPolicy = policy;
@@ -154,6 +159,7 @@ public class PasswordServiceImpl implements PasswordService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.pswd.service.PasswordService#daysToPasswordExpiration(java.lang.String, java.lang.String, java.lang.String)
       */
+    @Transactional(propagation = Propagation.REQUIRED)
 	public int daysToPasswordExpiration(String domainId, String principal,
 			String managedSysId) {
 		
@@ -190,6 +196,7 @@ public class PasswordServiceImpl implements PasswordService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordService#isPasswordChangeAllowed(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional(propagation = Propagation.REQUIRED)
 	public boolean isPasswordChangeAllowed(String domainId, String principal,
 			String managedSysId) {
 
@@ -227,6 +234,7 @@ public class PasswordServiceImpl implements PasswordService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordService#passwordChangeCountByDate(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional(propagation = Propagation.REQUIRED)
 	public int passwordChangeCount(String domainId, String principal,
 			String managedSysId) {
 
@@ -242,6 +250,7 @@ public class PasswordServiceImpl implements PasswordService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordService#getPasswordPolicy(org.openiam.idm.srvc.user.dto.User)
 	 */
+    @Transactional(propagation = Propagation.REQUIRED)
 	public Policy getPasswordPolicy(String domainId, String principal, String managedSysId)  {
 		// Find a password policy for this user
 		// order of search, type, classification, domain, global
@@ -255,6 +264,7 @@ public class PasswordServiceImpl implements PasswordService {
 	}
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Policy getPasswordPolicyByUser(String domainId, User user) {
         // Find a password policy for this user
         // order of search, type, classification, domain, global
@@ -297,6 +307,7 @@ public class PasswordServiceImpl implements PasswordService {
         return getPolicy(policyAssoc);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private Policy getPolicy(PolicyObjectAssoc policyAssoc) {
 		log.info("Retreiving policyId=" + policyAssoc.getPolicyId());
 		return policyDataService.getPolicy(policyAssoc.getPolicyId());
@@ -306,6 +317,7 @@ public class PasswordServiceImpl implements PasswordService {
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordService#passwordInHistory(org.openiam.idm.srvc.pswd.dto.Password, org.openiam.idm.srvc.policy.dto.Policy)
 	 * 1 - In History, 0 - Not in history, -1 No policy defined
 	 */
+    @Transactional(propagation = Propagation.REQUIRED)
 	public int passwordInHistory(Password pswd, Policy policy) {
 		// get the list of passwords for this user.
 		String decrypt = null;
@@ -343,6 +355,7 @@ public class PasswordServiceImpl implements PasswordService {
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PasswordResetTokenResponse generatePasswordResetToken(PasswordResetTokenRequest request) {
 
         PasswordResetTokenResponse resp = new PasswordResetTokenResponse(ResponseStatus.SUCCESS );
@@ -400,6 +413,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public ValidatePasswordResetTokenResponse validatePasswordResetToken(String token) {
 
         ValidatePasswordResetTokenResponse resp =

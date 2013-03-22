@@ -1,6 +1,7 @@
 package org.openiam.idm.srvc.cd.service;
 
 import org.openiam.idm.srvc.cd.dto.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -54,6 +55,7 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.cd.service.ReferenceDataService#getRefByGroup(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	  public List<ReferenceData> getRefByGroup(String codeGroup, String languageCd) {
 		  if (codeGroup == null) {
 			  return null;
@@ -67,6 +69,7 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	  /* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.cd.service.ReferenceDataService#addRefData(org.openiam.idm.srvc.cd.dto.ReferenceData)
 	 */
+    @Transactional
 	public void addRefData(ReferenceData val) {
 		  if (val == null) {
 			  return;
@@ -77,6 +80,7 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	  /* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.cd.service.ReferenceDataService#saveRefData(org.openiam.idm.srvc.cd.dto.ReferenceData)
 	 */
+    @Transactional
 	public void saveRefData(ReferenceData val) {
 		  if (val == null) {
 			  return;
@@ -86,6 +90,7 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	  /* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.cd.service.ReferenceDataService#removeRefData(org.openiam.idm.srvc.cd.dto.ReferenceData)
 	 */
+      @Transactional
 	public void removeRefData(ReferenceData val) {
 		  if (val == null) {
 			  return;
@@ -96,6 +101,7 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	  /* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.cd.service.ReferenceDataService#getRefDataById(org.openiam.idm.srvc.cd.dto.ReferenceDataId)
 	 */
+      @Transactional (readOnly = true)
 	public void getRefDataById(ReferenceDataId val) {
 		  if (val == null) {
 			  return;

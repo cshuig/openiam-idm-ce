@@ -26,6 +26,7 @@ import java.util.List;
 import javax.jws.WebService;
 
 import org.openiam.idm.srvc.batch.dto.BatchTask;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation for BatchDataService that will allow you to access and manage batch tasks.
@@ -43,6 +44,7 @@ public class BatchDataServiceImpl implements BatchDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.batch.service.BatchDataService#getAllTasks()
 	 */
+    @Transactional(readOnly = true)
 	public List<BatchTask> getAllTasks() {
 		return batchDao.findAllBatchTasks();
 	}
@@ -50,13 +52,15 @@ public class BatchDataServiceImpl implements BatchDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.batch.service.BatchDataService#getAllTasksByFrequency(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public List<BatchTask> getAllTasksByFrequency(String frequency) {
 		if (frequency == null) {
 			throw new IllegalArgumentException("Frequency is null");
 		}
 		return batchDao.findBatchTasksByFrequency(frequency);
 	}
-	
+
+    @Transactional
 	public void updateTask(BatchTask task) {
 		if (task == null) {
 			throw new IllegalArgumentException("task is null");
@@ -75,6 +79,7 @@ public class BatchDataServiceImpl implements BatchDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.batch.service.BatchDataService#addBatchTask(org.openiam.idm.srvc.batch.dto.BatchTask)
 	 */
+    @Transactional
 	public BatchTask addBatchTask(BatchTask task) {
 		batchDao.add(task);
 		
@@ -84,6 +89,7 @@ public class BatchDataServiceImpl implements BatchDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.batch.service.BatchDataService#getBatchTask(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public BatchTask getBatchTask(String taskId) {
 		
 		return batchDao.findById(taskId);
@@ -92,6 +98,7 @@ public class BatchDataServiceImpl implements BatchDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.batch.service.BatchDataService#removeBatchTask(java.lang.String)
 	 */
+    @Transactional
 	public void removeBatchTask(String taskId) {
 		BatchTask task = batchDao.findById(taskId);
 		batchDao.remove(task);
@@ -101,11 +108,12 @@ public class BatchDataServiceImpl implements BatchDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.batch.service.BatchDataService#upateBatchTask(org.openiam.idm.srvc.batch.dto.BatchTask)
 	 */
+    @Transactional
 	public BatchTask upateBatchTask(BatchTask task) {
 		batchDao.update(task);
 		return task;
 	}
-
+    @Transactional(readOnly = true)
 	public BatchTask getTaskByName(String taskName) {
 		return batchDao.findByName(taskName);
 	}
