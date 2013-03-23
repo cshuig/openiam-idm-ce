@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.meta.dto.MetadataElement;
 import org.openiam.idm.srvc.meta.dto.MetadataType;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Data service implementation for Metadata.
@@ -18,12 +19,12 @@ import org.openiam.idm.srvc.meta.dto.MetadataType;
 
 public class MetadataServiceImpl implements MetadataService {
 
-	MetadataTypeDAO metadataTypeDao;
-	MetadataElementDAO metadataElementDao;
+	private MetadataTypeDAO metadataTypeDao;
+	private MetadataElementDAO metadataElementDao;
 
     private static final Log log = LogFactory.getLog(MetadataServiceImpl.class);
-	
-	
+
+	@Transactional
 	public MetadataElement addMetadataElement(MetadataElement metadataElement) {
 		if (metadataElement == null) {
 			throw new NullPointerException("metadataElement is null");
@@ -32,6 +33,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return metadataElement;
 	}
 
+    @Transactional
 	public MetadataType addMetadataType(MetadataType type) {
 		if (type == null) {
 			throw new NullPointerException("Metadatatype is null");
@@ -41,6 +43,7 @@ public class MetadataServiceImpl implements MetadataService {
 
 	}
 
+    @Transactional
 	public void addTypeToCategory(String typeId, String categoryId) {
 		if (typeId == null)
 			throw new NullPointerException("typeId is null");
@@ -48,10 +51,9 @@ public class MetadataServiceImpl implements MetadataService {
 			throw new NullPointerException("category is null");
 
 		this.metadataTypeDao.addCategoryToType(typeId, categoryId);
-		
+    }
 
-	}
-
+    @Transactional(readOnly = true)
 	public MetadataElement getMetadataElementById(String elementId) {
 		if (elementId == null) {
 			throw new NullPointerException("elementId is null");
@@ -59,6 +61,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return metadataElementDao.findById(elementId);
 	}
 
+    @Transactional(readOnly = true)
 	public MetadataElement[] getMetadataElementByType(String typeId) {
 		if (typeId == null) {
 			throw new NullPointerException("typeId is null");
@@ -77,6 +80,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return elementAry;
 	}
 
+    @Transactional(readOnly = true)
 	public MetadataType getMetadataType(String typeId) {
 		if (typeId == null) {
 			throw new NullPointerException("typeId is null");
@@ -84,6 +88,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return metadataTypeDao.findById(typeId);
 	}
 
+    @Transactional(readOnly = true)
 	public MetadataType[] getMetadataTypes() {
 		List<MetadataType> typeList =  metadataTypeDao.findAll();
 		if (typeList == null || typeList.isEmpty()) {
@@ -97,6 +102,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return typeAry;
 	}
 
+    @Transactional(readOnly = true)
 	public MetadataType[] getTypesInCategory(String categoryId) {
 	
 		if (categoryId == null) {
@@ -113,6 +119,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return typeAry;
 	}
 
+    @Transactional
 	public void removeMetadataElement(String elementId) {
 		if (elementId == null) {
 			throw new NullPointerException("elementId is null");
@@ -121,6 +128,7 @@ public class MetadataServiceImpl implements MetadataService {
 		metadataElementDao.remove(element);
 	}
 
+    @Transactional
 	public void removeMetadataType(String typeId) {
 		if (typeId == null) {
 			throw new NullPointerException("typeId is null");
@@ -133,6 +141,7 @@ public class MetadataServiceImpl implements MetadataService {
 		metadataTypeDao.remove(type);
 	}
 
+    @Transactional
 	public void removeTypeFromCategory(String typeId, String categoryId) {
 		if (typeId == null)
 			throw new NullPointerException("typeId is null");
@@ -142,6 +151,7 @@ public class MetadataServiceImpl implements MetadataService {
 		metadataTypeDao.removeCategoryFromType(typeId, categoryId);
 	}
 
+    @Transactional
 	public MetadataElement updateMetadataElement(MetadataElement mv) {
 		if (mv == null) {
 			throw new NullPointerException("metadataElement is null");
@@ -150,6 +160,7 @@ public class MetadataServiceImpl implements MetadataService {
 		return mv;
 	}
 
+    @Transactional
 	public MetadataType updateMetdataType(MetadataType type) {
 		if (type == null) {
 			throw new NullPointerException("Metadatatype is null");
@@ -161,6 +172,8 @@ public class MetadataServiceImpl implements MetadataService {
 		return type;
 
 	}
+
+    @Transactional(readOnly = true)
 	public List<MetadataElement> getAllElementsForCategoryType(String categoryType) {
 		if (categoryType == null) {
 			throw new NullPointerException("categoryType is null");

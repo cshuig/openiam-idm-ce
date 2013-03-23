@@ -52,9 +52,9 @@ import org.openiam.idm.srvc.synch.ws.SynchConfigListResponse;
 		serviceName = "IdentitySynchWebService")
 public class IdentitySynchWebServiceImpl implements IdentitySynchWebService, MuleContextAware {
 
-	protected IdentitySynchService synchService;
-	protected static final Log log = LogFactory.getLog(IdentitySynchWebServiceImpl.class);
-    protected MuleContext muleContext;
+	private IdentitySynchService synchService;
+	private static final Log log = LogFactory.getLog(IdentitySynchWebServiceImpl.class);
+    private MuleContext muleContext;
 	
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.sync.ws.IdentitySynchWebService#getAllConfig()

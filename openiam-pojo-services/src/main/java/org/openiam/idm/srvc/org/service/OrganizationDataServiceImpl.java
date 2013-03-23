@@ -20,6 +20,7 @@ import org.openiam.idm.srvc.org.domain.UserAffiliationEntity;
 import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.service.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <code>OrganizationManager</code> provides a service level interface to the
@@ -38,13 +39,13 @@ import org.springframework.beans.factory.annotation.Autowired;
         serviceName = "OrganizationDataWebService")
 public class OrganizationDataServiceImpl implements OrganizationDataService {
 
-    protected OrganizationDAO orgDao;
+    private OrganizationDAO orgDao;
 
-    protected OrganizationAttributeDAO orgAttrDao;
-    protected UserAffiliationDAO orgAffiliationDao;
+    private OrganizationAttributeDAO orgAttrDao;
+    private UserAffiliationDAO orgAffiliationDao;
 
     @Autowired
-    protected UserDAO userDAO;
+    private UserDAO userDAO;
 
     @Autowired
     private OrganizationDozerConverter organizationDozerConverter;
@@ -66,6 +67,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#subOrganizations(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Organization> subOrganizations(String orgId) {
         if (orgId == null) {
             throw new NullPointerException("orgId is null");
@@ -78,6 +80,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#getTopLevelOrganizations()
       */
+    @Transactional(readOnly = true)
     public List<Organization> getTopLevelOrganizations() {
         List<OrganizationEntity> orgEntityList = orgDao.findRootOrganizations();
 
@@ -94,6 +97,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
      * @param parentId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Organization> getOrganizationByType(String typeId, String parentId) {
         if (typeId == null)
             throw new NullPointerException("typeId is null");
@@ -106,6 +110,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
         return organizationDozerConverter.convertToDTOList(orgEntityList, true);
     }
 
+    @Transactional(readOnly = true)
     public List<Organization> getOrganizationByClassification(String parentId, OrgClassificationEnum classification) {
         if (classification == null)
             throw new NullPointerException("classification is null");
@@ -118,10 +123,12 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
         return organizationDozerConverter.convertToDTOList(orgEntityList,true);
     }
 
+    @Transactional(readOnly = true)
     public List<Organization> allDepartments(String parentId) {
         return getOrganizationByClassification(parentId, OrgClassificationEnum.DEPARTMENT);
     }
 
+    @Transactional(readOnly = true)
     public List<Organization> allDivisions(String parentId) {
         return getOrganizationByClassification(parentId, OrgClassificationEnum.DIVISION);
     }
@@ -130,6 +137,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#addOrganization(org.openiam.idm.srvc.org.dto.Organization)
       */
+    @Transactional
     public Organization addOrganization(Organization org) {
         if (org == null)
             throw new NullPointerException("org object is null");
@@ -140,6 +148,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#updateOrganization(org.openiam.idm.srvc.org.dto.Organization)
       */
+    @Transactional
     public void updateOrganization(Organization org) {
         if (org == null)
             throw new NullPointerException("org object is null");
@@ -152,6 +161,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#removeOrganization(java.lang.String)
       */
+    @Transactional
     public void removeOrganization(String orgId) {
         if (orgId == null)
             throw new NullPointerException("orgId is null");
@@ -164,6 +174,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#isRootOrganization(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public boolean isRootOrganization(String orgId) {
         if (orgId == null)
             throw new NullPointerException("orgId object is null");
@@ -181,6 +192,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#containsChildren(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public boolean containsChildren(String orgId) {
         if (orgId == null)
             throw new NullPointerException("orgId object is null");
@@ -195,6 +207,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#getOrganization(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Organization getOrganization(String orgId) {
         if (orgId == null)
             throw new NullPointerException("orgId object is null");
@@ -216,6 +229,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#addAttribute(org.openiam.idm.srvc.org.dto.OrganizationAttribute)
       */
+    @Transactional
     public void addAttribute(OrganizationAttribute attribute) {
         if (attribute == null)
             throw new NullPointerException("Attribute can not be null");
@@ -232,6 +246,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#updateAttribute(org.openiam.idm.srvc.org.dto.OrganizationAttribute)
       */
+    @Transactional
     public void updateAttribute(OrganizationAttribute attribute) {
         if (attribute == null)
             throw new NullPointerException("Attribute can not be null");
@@ -249,6 +264,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#getAllAttributes(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public HashMap<String, OrganizationAttribute> getAllAttributes(String orgId) {
 
         if (orgId == null) {
@@ -274,6 +290,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#getAttribute(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public OrganizationAttribute getAttribute(String attrId) {
         if (attrId == null) {
             throw new NullPointerException("attrId is null");
@@ -286,6 +303,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#removeAttribute(org.openiam.idm.srvc.org.dto.OrganizationAttribute)
       */
+    @Transactional
     public void removeAttribute(OrganizationAttribute attr) {
         if (attr == null) {
             throw new NullPointerException("attr is null");
@@ -299,6 +317,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#removeAllAttributes(java.lang.String)
       */
+    @Transactional
     public void removeAllAttributes(String orgId) {
         if (orgId == null) {
             throw new NullPointerException("orgId is null");
@@ -313,6 +332,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /**
      * Adds a user to a org using the UserOrg object.
      */
+    @Transactional
     public void assocUserToOrg(UserAffiliation userorg) {
         if (userorg.getOrganizationId() == null)
             throw new IllegalArgumentException("organizationId  is null");
@@ -326,7 +346,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
 
     }
 
-
+    @Transactional
     public void updateUserOrgAssoc(UserAffiliation userorg) {
         if (userorg.getOrganizationId() == null)
             throw new IllegalArgumentException("organizationId  is null");
@@ -338,7 +358,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
 
     }
 
-
+    @Transactional(readOnly = true)
     public List<Organization> getOrganizationsForUser(String userId) {
         if (userId == null) {
             throw new IllegalArgumentException("userId is null");
@@ -349,7 +369,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
         return organizationDozerConverter.convertToDTOList(entities, false);
     }
 
-
+    @Transactional
     public void addUserToOrg(String orgId, String userId) {
 
         if (orgId == null)
@@ -363,6 +383,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
         orgAffiliationDao.add(ua);
     }
 
+    @Transactional(readOnly = true)
     public boolean isUserAffilatedWithOrg(String orgId, String userId) {
 
         if (orgId == null)
@@ -383,6 +404,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
         return false;
     }
 
+    @Transactional
     public void removeUserFromOrg(String orgId, String userId) {
         if (orgId == null)
             throw new IllegalArgumentException("organizationId  is null");
@@ -426,12 +448,14 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#search(java.lang.String, java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Organization> search(String name, String type, String classification, String internalOrgId) {
         List<OrganizationEntity> organizationEntities = orgDao.search(name, type, StringUtils.isNotEmpty(classification) ? OrgClassificationEnum.valueOf(classification) : null, internalOrgId);
 
         return organizationDozerConverter.convertToDTOList(organizationEntities, false);
     }
 
+    @Transactional(readOnly = true)
     public List<Organization> getAllOrganizations() {
         List<OrganizationEntity> organizationEntities = orgDao.findAllOrganization();
 
@@ -441,6 +465,7 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.org.service.OrganizationDataService#getOrganizationList(java.lang.String, java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Organization> getOrganizationList(String parentOrgId,
                                                   String status) {
         List<OrganizationEntity> organizationEntities = orgDao.findOrganizationByStatus(parentOrgId, status);

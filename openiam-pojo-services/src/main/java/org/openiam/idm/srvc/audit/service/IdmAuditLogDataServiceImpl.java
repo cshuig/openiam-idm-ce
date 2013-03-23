@@ -15,8 +15,7 @@ import org.openiam.idm.srvc.audit.export.ExportAuditEvent;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.util.encrypt.HashDigest;
 import org.openiam.idm.srvc.auth.dto.Login;
-
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -25,12 +24,12 @@ import org.openiam.idm.srvc.auth.dto.Login;
  */		
 public class IdmAuditLogDataServiceImpl implements IdmAuditLogDataService {
 
-	IdmAuditLogDAO auditDao;
-	HashDigest hash;
-    protected LoginDataService loginDS;
-    protected SysConfiguration sysConfiguration;
+	private IdmAuditLogDAO auditDao;
+	private HashDigest hash;
+    private LoginDataService loginDS;
+    private SysConfiguration sysConfiguration;
 
-     private static final Log sysLog = LogFactory.getLog(IdmAuditLogDataServiceImpl.class);
+    private static final Log sysLog = LogFactory.getLog(IdmAuditLogDataServiceImpl.class);
 
 
 	public IdmAuditLogDataServiceImpl() {
@@ -41,6 +40,7 @@ public class IdmAuditLogDataServiceImpl implements IdmAuditLogDataService {
 	 * 
 	 * @see org.openiam.idm.srvc.audit.service.IdmAuditLogDataService#addLog(org.openiam.idm.srvc.audit.dto.IdmAuditLog)
 	 */
+    @Transactional
 	public IdmAuditLog addLog(IdmAuditLog log) {
 
         sysLog.debug("Persisting new audit event in database.");
@@ -62,19 +62,20 @@ public class IdmAuditLogDataServiceImpl implements IdmAuditLogDataService {
         log.setCustomAttrvalue2("0");
 
         auditDao.add(log);
-
-
 		return log;
 	}
 
+    @Transactional
     public void updateLog(IdmAuditLog log) {
         auditDao.update(log);
     }
 
+    @Transactional(readOnly = true)
     public List<IdmAuditLog>  getCompleteLog() {
 		return auditDao.findAll();
 	}
-	
+
+    @Transactional(readOnly = true)
 	public List<IdmAuditLog>  getPasswordChangeLog() {
 		return auditDao.findPasswordEvents();
 	}
@@ -84,10 +85,12 @@ public class IdmAuditLogDataServiceImpl implements IdmAuditLogDataService {
 	 * @param search
 	 * @return
 	 */
+    @Transactional(readOnly = true)
 	public List<IdmAuditLog>  search(SearchAudit search) {
 		return auditDao.search(search);
 	}
 
+    @Transactional(readOnly = true)
     public List<IdmAuditLog> eventsAboutUser(String principal, Date startDate) {
 
         Login l =  loginDS.getLoginByManagedSys(sysConfiguration.getDefaultSecurityDomain(),

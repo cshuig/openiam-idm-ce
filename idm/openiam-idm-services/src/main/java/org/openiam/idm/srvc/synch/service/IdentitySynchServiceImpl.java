@@ -51,6 +51,7 @@ import org.openiam.provision.dto.PasswordSync;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.dto.UserResourceAssociation;
 import org.openiam.provision.service.ProvisionService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -87,6 +88,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.synch.service.IdentitySynchService#getAllConfig()
 	 */
+    @Transactional(readOnly = true)
 	public List<SynchConfig> getAllConfig() {
 		List<SynchConfig> configList = synchConfigDao.findAllConfig();
 		if ( configList != null && !configList.isEmpty()) {
@@ -95,7 +97,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 		return null;
 	}
 
-	
+    @Transactional(readOnly = true)
 	public SynchConfig findById(java.lang.String id)  {
 		if (id == null) {
 			throw new IllegalArgumentException("id parameter is null");
@@ -104,6 +106,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 		return synchConfigDao.findById(id);
 	}
 
+    @Transactional
 	public SynchConfig addConfig(SynchConfig synchConfig) {
 		if (synchConfig == null) {
 			throw new IllegalArgumentException("synchConfig parameter is null");
@@ -112,6 +115,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 		
 	}
 
+    @Transactional
 	public SynchConfig updateConfig(SynchConfig synchConfig) {
 		if (synchConfig == null) {
 			throw new IllegalArgumentException("synchConfig parameter is null");
@@ -120,6 +124,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 				
 	}
 
+    @Transactional
 	public void removeConfig(String configId ) {
 		if (configId == null) {
 			throw new IllegalArgumentException("id parameter is null");
@@ -129,6 +134,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 		
 	}
 
+    @Transactional
 	public SyncResponse startSynchronization(SynchConfig config) {
 
         SyncResponse syncResponse = new SyncResponse(ResponseStatus.SUCCESS);
@@ -197,6 +203,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
      * @param configId
      * @return
      */
+    @Transactional
     public SyncResponse addTask(String configId) {
 
         SyncResponse resp = new SyncResponse(ResponseStatus.SUCCESS);
@@ -212,12 +219,13 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
         }
 
     }
-
+    @Transactional
     public void endTask(String configID) {
         runningTask.remove(configID);
 
     }
 
+    @Transactional
     public Response testConnection(SynchConfig config) {
         try {
             SourceAdapter adapt = adaptorFactory.create(config);
@@ -242,6 +250,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
      * @param config
      * @return
      */
+    @Transactional(readOnly = true)
     public Response testBulkMigrationImpact(BulkMigrationConfig config) {
 
         Response resp = new Response(ResponseStatus.SUCCESS);
@@ -258,7 +267,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
         return resp;
     }
 
-
+    @Transactional
     public Response bulkUserMigration(BulkMigrationConfig config) {
 
         // fix the error handling so that errors are reported in the response object.
@@ -395,6 +404,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
         return r;
     }
 
+    @Transactional
     private void bulkResetPassword(List<User> searchResult, BulkMigrationConfig config) {
 
         String managedSysId = sysConfiguration.getDefaultManagedSysId();
@@ -438,6 +448,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 
 
     @Override
+    @Transactional
     public Response resynchRole(RoleId roleId) {
 
         Response resp = new Response(ResponseStatus.SUCCESS);

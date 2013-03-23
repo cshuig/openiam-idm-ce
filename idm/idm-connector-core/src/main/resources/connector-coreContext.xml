@@ -316,21 +316,6 @@
 
 	<!-- ensure that the above transactional advice runs for any execution of 
 		an operation defined by the FooService interface -->
-
-
-	<aop:config>
-		<aop:pointcut id="ldapConnectorOperation"
-			expression="execution(* org.openiam.spml2.spi.ldap.LdapConnectorImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="ldapConnectorOperation" />
-	</aop:config>
-
-	<!-- <aop:config> <aop:pointcut id="adConnectorOperation" expression="execution(* 
-		org.openiam.spml2.spi.ad.ActiveDirConnectorImpl.*(..))"/> <aop:advisor advice-ref="txAdvice" 
-		pointcut-ref="adConnectorOperation"/> </aop:config> <aop:config> <aop:pointcut 
-		id="scriptConnectorOperation" expression="execution(* org.openiam.spml2.spi.script.ScriptConnectorImpl.*(..))"/> 
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="scriptConnectorOperation"/> 
-		</aop:config> -->
-
 </beans>
 
 

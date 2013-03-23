@@ -34,6 +34,8 @@ import org.openiam.idm.srvc.user.dto.UserAttribute;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.role.dto.Role;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @WebService(endpointInterface = "org.openiam.idm.srvc.res.service.ResourceDataService", targetNamespace = "urn:idm.openiam.org/srvc/res/service", portName = "ResourceDataWebServicePort", serviceName = "ResourceDataWebService")
 public class ResourceDataServiceImpl implements ResourceDataService {
@@ -141,6 +143,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resource
      * @return
      */
+    @Transactional
     public Resource addResource(Resource resource) {
         if (resource == null)
             throw new IllegalArgumentException("Resource object is null");
@@ -188,6 +191,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId
      * @return resource
      */
+    @Transactional(readOnly = true)
     public Resource getResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -196,7 +200,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
         return resourceEntity != null ? resourceConverter.convertToDTO(resourceEntity, true) : null;
     }
 
-
+    @Transactional(readOnly = true)
     public Resource getResourceByName(String resourceName) {
         if (resourceName == null)
             throw new IllegalArgumentException("resourceName is null");
@@ -210,6 +214,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return list of resources
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesByName(String resourceName) {
         if (resourceName == null)
             throw new IllegalArgumentException("resourceName is null");
@@ -225,6 +230,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return list of resources
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesByExample(Resource resource) {
 
         List<ResourceEntity> entities = resourceDao.findByExample(resourceConverter.convertToEntity(resource,true));
@@ -240,6 +246,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param propValue
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesByProperty(String propName, String propValue) {
         if (propName == null)
             throw new IllegalArgumentException("propName is null");
@@ -256,6 +263,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param propList
      * @return
      */
+    @Transactional(readOnly = true)
     public Resource getResourceByProperties(List<ResourceProp> propList) {
         if (propList == null) {
             throw new IllegalArgumentException("propList is null");
@@ -272,6 +280,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resource
      * @return
      */
+    @Transactional
     public Resource updateResource(Resource resource) {
         if (resource == null)
             throw new IllegalArgumentException("resource object is null");
@@ -284,6 +293,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return list of resources
      */
+    @Transactional(readOnly = true)
     public List<Resource> getAllResources() {
         List<ResourceEntity> resourceEntities = resourceDao.findAllResources();
 
@@ -295,6 +305,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceId
      */
+    @Transactional(readOnly = true)
     public void removeResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -317,6 +328,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param val
      * @return
      */
+    @Transactional
     public ResourceType addResourceType(ResourceType val) {
         if (val == null)
             throw new IllegalArgumentException("ResourcType is null");
@@ -331,6 +343,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceTypeId
      * @return
      */
+    @Transactional(readOnly = true)
     public ResourceType getResourceType(String resourceTypeId) {
         if (resourceTypeId == null)
             throw new IllegalArgumentException("resourceTypeId is null");
@@ -345,6 +358,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceType
      * @return
      */
+    @Transactional
     public ResourceType updateResourceType(ResourceType resourceType) {
         if (resourceType == null)
             throw new IllegalArgumentException("resourceType object is null");
@@ -358,6 +372,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return
      */
+    @Transactional(readOnly = true)
     public List<ResourceType> getAllResourceTypes() {
         List<ResourceTypeEntity> resourceTypeList = resourceTypeDao
                 .findAllResourceTypes();
@@ -370,6 +385,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceTypeId
      */
+    @Transactional(readOnly = true)
     public void removeResourceType(String resourceTypeId) {
         if (resourceTypeId == null)
             throw new IllegalArgumentException("resourceTypeId is null");
@@ -382,6 +398,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return
      */
+    @Transactional
     public int removeAllResourceTypes() {
         return this.resourceTypeDao.removeAllResourceTypes();
     }
@@ -392,6 +409,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId
      * @return
      */
+    @Transactional(readOnly = true)
     public ResourceType findTypeOfResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -435,6 +453,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceProp
      * @return
      */
+    @Transactional
     public ResourceProp addResourceProp(ResourceProp resourceProp) {
         if (resourceProp == null)
             throw new IllegalArgumentException("ResourceProp object is null");
@@ -476,6 +495,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourcePropId
      * @return
      */
+    @Transactional(readOnly = true)
     public ResourceProp getResourceProp(String resourcePropId) {
         if (resourcePropId == null)
             throw new IllegalArgumentException("resourcePropId is null");
@@ -488,6 +508,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceProp
      */
+    @Transactional
     public ResourceProp updateResourceProp(ResourceProp resourceProp) {
         if (resourceProp == null)
             throw new IllegalArgumentException("resourceProp object is null");
@@ -501,6 +522,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return
      */
+    @Transactional(readOnly = true)
     public List<ResourceProp> getAllResourceProps() {
         List<ResourcePropEntity> resourcePropList = resourcePropDao
                 .findAllResourceProps();
@@ -512,6 +534,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourcePropId
      */
+    @Transactional(readOnly = true)
     public void removeResourceProp(String resourcePropId) {
         if (resourcePropId == null)
             throw new IllegalArgumentException("resourcePropId is null");
@@ -534,6 +557,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId
      * @return
      */
+    @Transactional
     public int removePropertiesByResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -547,6 +571,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<ResourceProp> findResourceProperties(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -609,6 +634,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getChildResources(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -654,6 +680,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @return list of nested lists of resource objects
      */
 
+    @Transactional(readOnly = true)
     public List<Resource> getResourceTree(String resourceId) {
 
         List<ResourceEntity> resourceTree = new LinkedList<ResourceEntity>();
@@ -679,6 +706,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId the resource id
      * @return the resource tree helper
      */
+    @Transactional(readOnly = true)
     private List<ResourceEntity> getResourceTreeHelper(String resourceId) {
 
         List<ResourceEntity> descendents = resourceDao.getChildResources(resourceId);
@@ -709,6 +737,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceId the resource id
      * @return xml string
      */
+    @Transactional(readOnly = true)
     public String getResourceTreeXML(String resourceId) {
         StringBuffer xml = new StringBuffer();
 
@@ -754,6 +783,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param xml        the xml
      * @return the resource tree xml helper
      */
+    @Transactional(readOnly = true)
     private StringBuffer getResourceTreeXmlHelper(String resourceId,
                                                   StringBuffer xml) {
 
@@ -785,6 +815,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @return resource list
      */
 
+    @Transactional(readOnly = true)
     public List<Resource> getResourceFamily(String resourceId) {
 
         List<ResourceEntity> resourceTree = new LinkedList<ResourceEntity>();
@@ -811,6 +842,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param descendents the descendents
      * @return the resource family helper
      */
+    @Transactional(readOnly = true)
     private List<ResourceEntity> getResourceFamilyHelper(String resourceId,
                                                          List<ResourceEntity> descendents) {
 
@@ -834,6 +866,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceTypeId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesByType(String resourceTypeId) {
         if (resourceTypeId == null)
             throw new IllegalArgumentException("resourceTypeId is null");
@@ -847,6 +880,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getRootResources() {
         List<ResourceEntity> resourcesEntities = this.resourceDao.getRootResources();
 
@@ -859,6 +893,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param categoryId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesByCategory(String categoryId) {
         if (categoryId == null)
             throw new IllegalArgumentException("categoryId is null");
@@ -873,6 +908,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param branchId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesByBranch(String branchId) {
         if (branchId == null)
             throw new IllegalArgumentException("branchId is null");
@@ -887,6 +923,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceTypeId
      * @return rows affected
      */
+    @Transactional
     public int removeResourcesByType(String resourceTypeId) {
         if (resourceTypeId == null)
             throw new IllegalArgumentException("resourceTypeId is null");
@@ -899,6 +936,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param categoryId
      * @return rows affected
      */
+    @Transactional
     public int removeResourcesByCategory(String categoryId) {
         if (categoryId == null)
             throw new IllegalArgumentException("categoryId is null");
@@ -911,6 +949,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param branchId
      * @return rows affected
      */
+    @Transactional
     public int removeResourcesByBranch(String branchId) {
         if (branchId == null)
             throw new IllegalArgumentException("branchId is null");
@@ -971,6 +1010,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceRole
      * @return
      */
+    @Transactional
     public ResourceRole addResourceRole(ResourceRole resourceRole) {
 
         if (resourceRole == null)
@@ -986,6 +1026,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceRoleId
      * @return
      */
+    @Transactional(readOnly = true)
     public ResourceRole getResourceRole(ResourceRoleId resourceRoleId) {
         if (resourceRoleId == null)
             throw new IllegalArgumentException("resourceRoleId is null");
@@ -995,6 +1036,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
         return resourceRoleConverter.convertToDTO(resourceRoleEntity, true);
     }
 
+    @Transactional(readOnly = true)
     public List<Role> getRolesForResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceRoleId is null");
@@ -1008,6 +1050,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param resourceRole
      * @return
      */
+    @Transactional
     public ResourceRole updateResourceRole(ResourceRole resourceRole) {
         if (resourceRole == null)
             throw new IllegalArgumentException("resourceRole object is null");
@@ -1021,6 +1064,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @return
      */
+    @Transactional(readOnly = true)
     public List<ResourceRole> getAllResourceRoles() {
         List<ResourceRoleEntity> resourceRoleList = resourceRoleDao.findAllResourceRoles();
         return resourceRoleConverter.convertToDTOList(resourceRoleList, false);
@@ -1031,6 +1075,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceRoleId
      */
+    @Transactional(readOnly = true)
     public void removeResourceRole(ResourceRoleId resourceRoleId) {
         if (resourceRoleId == null)
             throw new IllegalArgumentException("resourceRoleId is null");
@@ -1041,10 +1086,12 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     /**
      * Remove all resource roles
      */
+    @Transactional
     public void removeAllResourceRoles() {
         this.resourceRoleDao.removeAllResourceRoles();
     }
 
+    @Transactional(readOnly = true)
     public List<ResourceRole> getResourceRolesByResource(String resourceId) {
         if (resourceId == null) {
             throw new IllegalArgumentException("resourceId is null");
@@ -1060,6 +1107,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param roleId
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesForRole(String domainId, String roleId) {
         if (domainId == null) {
             throw new IllegalArgumentException("domainId is null");
@@ -1079,6 +1127,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param roleIdList
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Resource> getResourcesForRoles(String domainId,
                                                List<String> roleIdList) {
         if (domainId == null) {
@@ -1099,6 +1148,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param roleId      the role id
      * @param privilegeId the privilege id
      */
+    @Transactional
     public void addResourceRolePrivilege(String resourceId, String roleId,
                                          String privilegeId) {
         if (resourceId == null)
@@ -1119,6 +1169,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      * @param roleId      the role id
      * @param privilegeId the privilege id
      */
+    @Transactional
     void removeResourceRolePrivilege(String resourceId, String roleId,
                                      String privilegeId) {
         if (resourceId == null)
@@ -1137,6 +1188,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceId the resource id
      */
+    @Transactional
     void removeResourceRolePrivileges(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -1151,6 +1203,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
       * org.openiam.idm.srvc.res.service.ResourceDataService#addUserToResource
       * (org.openiam.idm.srvc.res.dto.ResourceUser)
       */
+    @Transactional
     public ResourceUser addUserToResource(ResourceUser resourceUser) {
         if (resourceUser == null) {
             throw new IllegalArgumentException("ResourceUser object is null");
@@ -1166,6 +1219,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
       * org.openiam.idm.srvc.res.service.ResourceDataService#getUserResources
       * (java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<ResourceUser> getUserResources(String userId) {
         if (userId == null) {
             throw new IllegalArgumentException("UserId object is null");
@@ -1175,6 +1229,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
         return resourceUserConverter.convertToDTOList(entities, true);
     }
 
+    @Transactional(readOnly = true)
     public List<Resource> getResourceObjForUser(String userId) {
         if (userId == null) {
             throw new IllegalArgumentException("UserId object is null");
@@ -1192,6 +1247,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
       * @seeorg.openiam.idm.srvc.res.service.ResourceDataService#
       * removeUserFromAllResources(java.lang.String)
       */
+    @Transactional
     public void removeUserFromAllResources(String userId) {
         if (userId == null) {
             throw new IllegalArgumentException("UserId object is null");
@@ -1206,7 +1262,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     public void setResourceUserDao(ResourceUserDAO resourceUserDao) {
         this.resourceUserDao = resourceUserDao;
     }
-
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public boolean isUserAuthorized(String userId, String resourceId) {
         log.info("isUserAuthorized called.");
         List<ResourceUser> resList = getUserResources(userId);
@@ -1225,7 +1281,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
 
     }
 
-
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public boolean isUserAuthorizedByProperty(String userId, String propertyName, String propertyValue) {
         log.info("isUserAuthorized called.");
 
@@ -1274,6 +1330,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
 
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public boolean isRoleAuthorized(String domainId, String roleId,
                                     String resourceId) {
         log.info("isUserAuthorized called.");
@@ -1295,7 +1352,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
 
 
     /* Temp hack ---------------------  -------------------------*/
-
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public String attributeString(String domainId, String principal) {
 
         List<String> oidList = new ArrayList<String>();
@@ -1499,6 +1556,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     }
 
     @Override
+    @Transactional
     public ResourcePrivilege addResourcePrivilege(ResourcePrivilege resourcePrivilege) {
         if (resourcePrivilege == null) {
             throw new IllegalArgumentException("ResourcePrivilege object is null");
@@ -1509,6 +1567,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     }
 
     @Override
+    @Transactional
     public void removeResourcePrivilege(String resourcePrivilegeId) {
         if (resourcePrivilegeId == null) {
             throw new IllegalArgumentException("resourcePrivilegeId object is null");
@@ -1517,6 +1576,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     }
 
     @Override
+    @Transactional
     public ResourcePrivilege updateResourcePrivilege(ResourcePrivilege resourcePrivilege) {
         if (resourcePrivilege == null) {
             throw new IllegalArgumentException("ResourcePrivilege object is null");
@@ -1527,6 +1587,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResourcePrivilege> getPrivilegesByResourceId(String resourceId) {
         if (resourceId == null) {
             throw new IllegalArgumentException("resourceId object is null");
@@ -1537,6 +1598,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResourcePrivilege> getPrivilegesByEntitlementType(String resourceId, String type) {
         if (resourceId == null) {
             throw new IllegalArgumentException("resourceId object is null");
@@ -1565,6 +1627,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
         this.resourcePrivilegeDao = resourcePrivilegeDao;
     }
 
+    @Transactional(readOnly = true)
     public List<Resource> getUserResourcesByType(String userId, String resourceTypeId) {
 
         if (userId == null) {

@@ -24,6 +24,7 @@ package org.openiam.idm.srvc.lang.service;
 import java.util.List;
 
 import org.openiam.idm.srvc.lang.dto.Language;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -37,6 +38,7 @@ public class LanguageDataServiceImpl implements LanguageDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.lang.service.LanguageDataService#addLanguage(org.openiam.idm.srvc.lang.dto.Language)
 	 */
+    @Transactional
 	public void addLanguage(Language lg) {
 		if (lg == null) {
 			throw new NullPointerException("lg is null");
@@ -48,6 +50,7 @@ public class LanguageDataServiceImpl implements LanguageDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.lang.service.LanguageDataService#allLanguages()
 	 */
+    @Transactional(readOnly = true)
 	public Language[] allLanguages() {
 		List<Language> lgList = languageDao.findAllLanguages();
 		if (lgList == null || lgList.isEmpty())
@@ -63,6 +66,7 @@ public class LanguageDataServiceImpl implements LanguageDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.lang.service.LanguageDataService#getLanguage(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public Language getLanguage(String languageCd) {
 
 		if (languageCd == null) {
@@ -74,6 +78,7 @@ public class LanguageDataServiceImpl implements LanguageDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.lang.service.LanguageDataService#removeLanguage(java.lang.String)
 	 */
+    @Transactional
 	public void removeLanguage(String langCd) {
 		if (langCd == null) {
 			throw new NullPointerException("languageCd is null");
@@ -86,6 +91,7 @@ public class LanguageDataServiceImpl implements LanguageDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.lang.service.LanguageDataService#updateLanguage(org.openiam.idm.srvc.lang.dto.Language)
 	 */
+    @Transactional
 	public void updateLanguage(Language lg) {
 		if (lg == null) {
 			throw new NullPointerException("lg is null");

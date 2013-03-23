@@ -28,6 +28,7 @@ import javax.jws.WebService;
 import org.openiam.idm.srvc.lang.dto.Language;
 import org.openiam.idm.srvc.loc.dto.Location;
 import org.openiam.idm.srvc.loc.dto.LocationSearch;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -40,6 +41,7 @@ public class LocationDataServiceImpl implements LocationDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.loc.service.LocationDataService#addLocation(org.openiam.idm.srvc.loc.dto.Location)
 	 */
+    @Transactional
 	public void addLocation(Location lg) {
 		if (lg == null) {
 			throw new NullPointerException("lg is null");
@@ -51,6 +53,7 @@ public class LocationDataServiceImpl implements LocationDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.loc.service.LocationDataService#allLocations()
 	 */
+    @Transactional(readOnly = true)
 	public Location[] allLocations() {
 		List<Location> lgList = locationDao.findAllLocations();
 		if (lgList == null || lgList.isEmpty())
@@ -64,6 +67,7 @@ public class LocationDataServiceImpl implements LocationDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.loc.service.LocationDataService#getLocation(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public Location getLocation(String locationCd) {
 		if (locationCd == null) {
 			throw new NullPointerException("locationCd is null");
@@ -74,6 +78,7 @@ public class LocationDataServiceImpl implements LocationDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.loc.service.LocationDataService#removeLocation(java.lang.String)
 	 */
+    @Transactional
 	public void removeLocation(String locCd) {
 		if (locCd == null) {
 			throw new NullPointerException("locCd is null");
@@ -86,6 +91,7 @@ public class LocationDataServiceImpl implements LocationDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.loc.service.LocationDataService#updateLocation(org.openiam.idm.srvc.loc.dto.Location)
 	 */
+    @Transactional
 	public void updateLocation(Location lg) {
 		if (lg == null) {
 			throw new NullPointerException("lg is null");
@@ -105,6 +111,7 @@ public class LocationDataServiceImpl implements LocationDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.loc.service.LocationDataService#searchLocation(org.openiam.idm.srvc.loc.dto.LocationSearch)
 	 */
+    @Transactional(readOnly = true)
 	public Location[] searchLocation(LocationSearch search) {
 		List<Location> lgList = locationDao.searchLocations(search);
 		if (lgList == null || lgList.isEmpty())

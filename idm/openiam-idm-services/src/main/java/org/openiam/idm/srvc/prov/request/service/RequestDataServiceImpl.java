@@ -11,6 +11,7 @@ import org.openiam.idm.srvc.prov.request.dto.RequestApprover;
 import org.openiam.idm.srvc.prov.request.dto.SearchRequest;
 import org.openiam.idm.srvc.user.dto.Supervisor;
 import org.openiam.idm.srvc.user.service.UserDataService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -24,16 +25,16 @@ public class RequestDataServiceImpl implements RequestDataService {
     private static final Log log = LogFactory.getLog(RequestDataServiceImpl.class);
 
 
-    protected ProvisionRequestDAO requestDao;
-    protected ManagedSystemDataService managedResource;
-    protected ApproverAssociationDAO approverAssociationDao;
-    protected UserDataService userManager;
-    protected MailService mailSender;
+    private ProvisionRequestDAO requestDao;
+    private ManagedSystemDataService managedResource;
+    private ApproverAssociationDAO approverAssociationDao;
+    private UserDataService userManager;
+    private MailService mailSender;
 
-    protected String defaultSender;
-    protected String subjectPrefix;
+    private String defaultSender;
+    private String subjectPrefix;
 
-
+    @Transactional
     public void addRequest(ProvisionRequest request) {
         if (request == null) {
             throw new NullPointerException("request is null");
@@ -42,6 +43,7 @@ public class RequestDataServiceImpl implements RequestDataService {
 
     }
 
+    @Transactional(readOnly = true)
     public ProvisionRequest getRequest(String requestId) {
         if (requestId == null) {
             throw new NullPointerException("requestId is null");
@@ -49,6 +51,7 @@ public class RequestDataServiceImpl implements RequestDataService {
         return requestDao.findById(requestId);
     }
 
+    @Transactional
     public void removeRequest(String requestId) {
         if (requestId == null) {
             throw new NullPointerException("requestId is null");
@@ -59,6 +62,7 @@ public class RequestDataServiceImpl implements RequestDataService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<ProvisionRequest> search(SearchRequest search) {
 
         log.info("Request:search operation called.");
@@ -72,6 +76,7 @@ public class RequestDataServiceImpl implements RequestDataService {
         return reqList;
     }
 
+    @Transactional(readOnly = true)
     public List<ProvisionRequest> requestByApprover(String approverId, String status) {
         List<ProvisionRequest> reqList = requestDao.findRequestByApprover(approverId, status);
         if (reqList == null || reqList.size() == 0) {
@@ -80,6 +85,7 @@ public class RequestDataServiceImpl implements RequestDataService {
         return reqList;
     }
 
+    @Transactional
     public void setRequestStatus(String requestId, String approverId, String status) {
         if (requestId == null) {
             throw new NullPointerException("requestId is null");
@@ -98,6 +104,7 @@ public class RequestDataServiceImpl implements RequestDataService {
         requestDao.update(request);
     }
 
+    @Transactional
     public void updateRequest(ProvisionRequest request) {
         if (request == null) {
             throw new NullPointerException("request is null");
@@ -117,6 +124,7 @@ public class RequestDataServiceImpl implements RequestDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.prov.request.service.RequestDataService#approve()
       */
+    @Transactional
     public void approve(String requestId) {
         ProvisionRequest req = getRequest(requestId);
         req.setStatus("APPROVED");
@@ -124,7 +132,7 @@ public class RequestDataServiceImpl implements RequestDataService {
 
     }
 
-
+    @Transactional(readOnly = true)
     private Set<RequestApprover> getApprover(List<ApproverAssociation> approverList, Supervisor supervisor) {
         Set<RequestApprover> reqApproverList = new HashSet<RequestApprover>();
 
@@ -172,6 +180,7 @@ public class RequestDataServiceImpl implements RequestDataService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.prov.request.service.RequestDataService#reject()
       */
+    @Transactional
     public void reject(String requestId) {
         ProvisionRequest req = getRequest(requestId);
         req.setStatus("REJECTED");

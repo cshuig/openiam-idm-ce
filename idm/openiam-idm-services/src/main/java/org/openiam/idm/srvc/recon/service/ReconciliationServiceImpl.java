@@ -62,6 +62,7 @@ import org.openiam.provision.resp.LookupUserResponse;
 import org.openiam.provision.service.ConnectorAdapter;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.service.RemoteConnectorAdapter;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -70,8 +71,8 @@ import org.openiam.provision.service.RemoteConnectorAdapter;
 public class ReconciliationServiceImpl implements ReconciliationService,
 		MuleContextAware {
 
-	protected ReconciliationSituationDAO reconSituationDao;
-	protected ReconciliationResultDAO reconResultDao;
+	private ReconciliationSituationDAO reconSituationDao;
+	private ReconciliationResultDAO reconResultDao;
 
 	/**
 	 * @param userCSVParser
@@ -81,19 +82,19 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 		this.userCSVParser = userCSVParser;
 	}
 
-	protected ReconciliationConfigDAO reconConfigDao;
-	protected ReconciliationResultDAO reconResultDetailDao;
-	protected MuleContext muleContext;
-	protected LoginDataService loginManager;
-	protected ProvisionService provisionService;
-	protected ResourceDataService resourceDataService;
-	protected UserDataService userMgr;
-	protected ManagedSystemDataService managedSysService;
-	protected ConnectorDataService connectorService;
-	protected ConnectorAdapter connectorAdapter;
-	protected RemoteConnectorAdapter remoteConnectorAdapter;
-	protected RoleDataService roleDataService;
-	protected CSVParser<ProvisionUser> userCSVParser;
+	private ReconciliationConfigDAO reconConfigDao;
+	private ReconciliationResultDAO reconResultDetailDao;
+	private MuleContext muleContext;
+	private LoginDataService loginManager;
+	private ProvisionService provisionService;
+	private ResourceDataService resourceDataService;
+	private UserDataService userMgr;
+	private ManagedSystemDataService managedSysService;
+	private ConnectorDataService connectorService;
+	private ConnectorAdapter connectorAdapter;
+	private RemoteConnectorAdapter remoteConnectorAdapter;
+	private RoleDataService roleDataService;
+	private CSVParser<ProvisionUser> userCSVParser;
 	private String pathToCSV;
 
 	/**
@@ -107,6 +108,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 	private static final Log log = LogFactory
 			.getLog(ReconciliationServiceImpl.class);
 
+    @Transactional
 	public ReconciliationConfig addConfig(ReconciliationConfig config) {
 		if (config == null) {
 			throw new IllegalArgumentException("config parameter is null");
@@ -115,6 +117,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
+    @Transactional
 	public ReconciliationConfig updateConfig(ReconciliationConfig config) {
 		if (config == null) {
 			throw new IllegalArgumentException("config parameter is null");
@@ -123,6 +126,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
+    @Transactional
 	public void removeConfigByResourceId(String resourceId) {
 		if (resourceId == null) {
 			throw new IllegalArgumentException("resourceId parameter is null");
@@ -131,6 +135,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
+    @Transactional
 	public void removeConfig(String configId) {
 		if (configId == null) {
 			throw new IllegalArgumentException("configId parameter is null");
@@ -140,6 +145,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
+    @Transactional(readOnly = true)
 	public ReconciliationConfig getConfigByResource(String resourceId) {
 		if (resourceId == null) {
 			throw new IllegalArgumentException("resourceId parameter is null");
@@ -182,6 +188,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 		this.reconResultDetailDao = reconResultDetailDao;
 	}
 
+    @Transactional(readOnly = true)
 	public ReconciliationConfig getConfigById(String configId) {
 		if (configId == null) {
 			throw new IllegalArgumentException("configId parameter is null");
@@ -195,6 +202,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 		muleContext = ctx;
 	}
 
+    @Transactional
 	public ReconciliationResponse startReconciliation(
 			ReconciliationConfig config) {
 		ReconciliationReport report = new ReconciliationReport();

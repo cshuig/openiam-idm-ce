@@ -11,6 +11,7 @@ import org.openiam.idm.srvc.synch.service.SourceAdapter;
 import org.openiam.idm.srvc.synch.service.SynchConfigDAO;
 import org.openiam.idm.srvc.synch.service.SynchConfigDataMappingDAO;
 import org.openiam.idm.srvc.synch.service.generic.SourceAdapterFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
@@ -28,6 +29,7 @@ public class GenericObjectSynchServiceImpl implements GenericObjectSynchService 
 
     private static final Log log = LogFactory.getLog(GenericObjectSynchServiceImpl.class);
 
+    @Transactional
     public SyncResponse startSynchronization(SynchConfig config) {
         log.debug("- Generic Object Synchronization started..^^^^^^^^");
         try {

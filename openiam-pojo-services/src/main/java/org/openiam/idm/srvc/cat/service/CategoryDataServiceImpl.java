@@ -8,6 +8,7 @@ import javax.jws.WebService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.cat.dto.Category;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @WebService(endpointInterface = "org.openiam.idm.srvc.cat.service.CategoryDataService", 
@@ -17,12 +18,12 @@ import org.openiam.idm.srvc.cat.dto.Category;
 public class CategoryDataServiceImpl implements CategoryDataService {
 
 	
-	CategoryDAO categoryDao;
-	CategoryLanguageDAO categoryLanguageDao;
+	private CategoryDAO categoryDao;
+	private CategoryLanguageDAO categoryLanguageDao;
 	
 	private static final Log log = LogFactory.getLog(CategoryDataServiceImpl.class);
 
-	
+    @Transactional
 	public void addCategory(Category cat) {
 		if (cat == null) {
 			throw (new NullPointerException("Category object is null") );
@@ -32,6 +33,7 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 
 	}
 
+    @Transactional(readOnly = true)
 	public Category[] getAllCategories(boolean nested) {
 		
 		Category[] categoryAry;
@@ -49,6 +51,8 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 		catList.toArray(categoryAry);
 		return categoryAry;
 	}
+
+    @Transactional(readOnly = true)
 	private List<Category> getRecursiveCategories(String parentCategoryId, List<Category> catList) {
 		
 		if (parentCategoryId == null) {
@@ -75,11 +79,7 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 		return catList;
 	}
 
-
-
-
-	
-	
+    @Transactional(readOnly = true)
 	public Category getCategory(String categoryId) {
 		if (categoryId == null) {
 			throw (new NullPointerException("CategoryId is null") );
@@ -89,6 +89,7 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 		
 	}
 
+    @Transactional(readOnly = true)
 	public Category[] getChildCategories(String categoryId, boolean nested) {
 		Category[] categoryAry;
 		List<Category> catList = null;
@@ -109,6 +110,7 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 	
 	}
 
+    @Transactional
 	public int removeCategory(String categoryId, boolean nested) {
 		if (categoryId == null) {
 			throw (new NullPointerException("CategoryId is null") );
@@ -161,10 +163,11 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 
 	/**
 	 * Recursively get that list of categories.
-	 * @param parentGroupId
-	 * @param groupList
+	 * @param parentCatId
+	 * @param categoryList
 	 * @return
 	 */
+    @Transactional(readOnly = true)
 	private String getRecursiveCatId(String parentCatId,List<Category> categoryList) {
 		StringBuffer catIdBuf = new StringBuffer();
 
@@ -193,8 +196,8 @@ public class CategoryDataServiceImpl implements CategoryDataService {
 		}
 		return catIdBuf.toString();
 	}
-	
-	
+
+    @Transactional
 	public void updateCategory(Category cat) {
 		if (cat == null) {
 			throw (new NullPointerException("Category object is null") );

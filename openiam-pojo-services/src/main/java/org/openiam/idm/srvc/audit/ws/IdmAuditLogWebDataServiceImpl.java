@@ -41,7 +41,7 @@ import org.openiam.idm.srvc.audit.service.IdmAuditLogDataService;
 		serviceName = "AuditService")
 public class IdmAuditLogWebDataServiceImpl implements IdmAuditLogWebDataService {
 
-	IdmAuditLogDataService auditDataService;
+	private IdmAuditLogDataService auditDataService;
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.audit.ws.IdmAuditLogWebDataService#addLog(org.openiam.idm.srvc.audit.dto.IdmAuditLog)
 	 */

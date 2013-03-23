@@ -42,7 +42,7 @@ import org.openiam.idm.srvc.meta.service.MetadataService;
 		serviceName = "MetadataWebService")
 public class MetadataWebServiceImpl implements MetadataWebService {
 	
-	MetadataService metadataService;
+	private MetadataService metadataService;
 
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.meta.ws.MetadataWebService#addMetadataElement(org.openiam.idm.srvc.meta.dto.MetadataElement)

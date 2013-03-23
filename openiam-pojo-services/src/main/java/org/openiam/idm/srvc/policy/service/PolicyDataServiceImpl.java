@@ -29,6 +29,7 @@ import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.policy.dto.PolicyDef;
 import org.openiam.idm.srvc.policy.dto.PolicyDefParam;
 import org.openiam.idm.srvc.policy.dto.PolicyObjectAssoc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * PolicyDataService is used create and manage policies. 
@@ -42,14 +43,15 @@ import org.openiam.idm.srvc.policy.dto.PolicyObjectAssoc;
 		serviceName = "PolicyWebService")
 public class PolicyDataServiceImpl implements PolicyDataService {
 
-	PolicyDefDAO policyDefDao;
-	PolicyDAO policyDao;
-	PolicyDefParamDAO policyDefParamDao;
-	PolicyObjectAssocDAO objectAssoc;
+	private PolicyDefDAO policyDefDao;
+	private PolicyDAO policyDao;
+	private PolicyDefParamDAO policyDefParamDao;
+	private PolicyObjectAssocDAO objectAssoc;
 	
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.policy.service.PolicyDataService#getPolicyTypes()
 	 */
+    @Transactional(readOnly = true)
 	public String[] getPolicyTypes() {
 		// TODO Auto-generated method stub
 		List<String> typeList = policyDefDao.findAllPolicyTypes();
@@ -61,6 +63,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		return strAry;
 	}
 
+    @Transactional
 	public void addPolicyDefinition(PolicyDef val) {
 		if (val == null) {
 			throw new NullPointerException("PolicyDef is null");
@@ -69,6 +72,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		
 	}
 
+    @Transactional(readOnly = true)
 	public PolicyDef getPolicyDefinition(String policyDefId) {
 		if (policyDefId == null) {
 			throw new NullPointerException("policyDefId is null");
@@ -77,6 +81,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 
 	}
 
+    @Transactional
 	public void removePolicyDefinition(String definitionId) {
 		if (definitionId == null) {
 			throw new NullPointerException("definitionId is null");
@@ -86,6 +91,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		
 	}
 
+    @Transactional
 	public void updatePolicyDefinition(PolicyDef val) {
 		if (val == null) {
 			throw new NullPointerException("PolicyDef is null");
@@ -97,6 +103,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 	 * Returns an array of all policy definitions
 	 * @return
 	 */
+    @Transactional(readOnly = true)
 	public PolicyDef[] getAllPolicyDef() {
 		List<PolicyDef> defList =  policyDefDao.findAllPolicyDef();
 		if (defList == null || defList.isEmpty())
@@ -124,6 +131,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		this.policyDao = policyDao;
 	}
 
+    @Transactional
 	public void addPolicy(Policy val) {
 		if (val == null) {
 			throw new NullPointerException("Policy is null");
@@ -132,6 +140,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		
 	}
 
+    @Transactional(readOnly = true)
 	public List<Policy> getAllPolicies(String policyDefId) {
 		if (policyDefId == null) {
 			throw new NullPointerException("policyDefId is null");
@@ -145,6 +154,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 	
 	}
 
+    @Transactional(readOnly = true)
 	public Policy getPolicy(String policyId) {
 		if (policyId == null) {
 			throw new NullPointerException("PolicyId is null");
@@ -157,6 +167,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 	 * @param paramGroup
 	 * @return
 	 */
+    @Transactional(readOnly = true)
 	public List<PolicyDefParam> getPolicyDefParamByGroup(String defId, String paramGroup) {
 		if (paramGroup == null) {
 			throw new NullPointerException("paramGroup is null");
@@ -164,6 +175,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		return policyDefParamDao.findPolicyDefParamByGroup(defId, paramGroup);
 	}
 
+    @Transactional
 	public void removePolicy(String policyId) {
 		if (policyId == null) {
 			throw new NullPointerException("PolicyId is null");
@@ -173,6 +185,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		
 	}
 
+    @Transactional
 	public void updatePolicy(Policy val) {
 		if (val == null) {
 			throw new NullPointerException("Policy is null");
@@ -181,6 +194,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 		
 	}
 
+    @Transactional(readOnly = true)
 	public boolean isPolicyExist(String policyType, String policyName) {
 		if (policyType == null) {
 			throw new NullPointerException("policyType is null");
@@ -205,6 +219,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.policy.service.PolicyDataService#associatePolicyToObject(org.openiam.idm.srvc.policy.dto.PolicyObjectAssoc)
 	 */
+    @Transactional
 	public void associatePolicyToObject(PolicyObjectAssoc assoc) {
 		objectAssoc.add(assoc);
 		
@@ -213,6 +228,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.policy.service.PolicyDataService#getAssociationsForPolicy(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public List<PolicyObjectAssoc> getAssociationsForPolicy(String policyId) {
 		return objectAssoc.findByPolicy(policyId);
 	}
@@ -220,6 +236,7 @@ public class PolicyDataServiceImpl implements PolicyDataService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.policy.service.PolicyDataService#updatePolicyAssociation(org.openiam.idm.srvc.policy.dto.PolicyObjectAssoc)
 	 */
+    @Transactional
 	public void updatePolicyAssociation(PolicyObjectAssoc assoc) {
 		objectAssoc.update(assoc);
 		

@@ -33,6 +33,7 @@ import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service interface that clients will access to gain information about users
@@ -91,6 +92,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getUser(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public User getUser(String id) {
         UserEntity entity = userDao.findById(id);
         return userDozerConverter.convertToDTO(entity, true);
@@ -102,6 +104,7 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#getUser(java.lang.String,
       *      boolean)
       */
+    @Transactional(readOnly = true)
     public User getUserWithDependent(String id, boolean dependants) {
 
         UserEntity usr = userDao.findById(id);
@@ -128,6 +131,7 @@ public class UserMgr implements UserDataService {
         return user;
     }
 
+    @Transactional(readOnly = true)
     public User getUserByPrincipal(String securityDomain, String principal,
                                    String managedSysId, boolean dependants) {
         // get the login
@@ -145,6 +149,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addUser(org.openiam.idm.srvc.user.dto.User)
       */
+    @Transactional
     public User addUser(User user) {
         if (user == null)
             throw new NullPointerException("user object is null");
@@ -169,6 +174,7 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#addUser(org.openiam.idm.srvc.user.dto.User,
       *      boolean)
       */
+    @Transactional
     public User addUserWithDependent(User user, boolean dependency) {
         if (user == null)
             throw new NullPointerException("user object is null");
@@ -244,6 +250,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateUser(org.openiam.idm.srvc.user.dto.User)
       */
+    @Transactional
     public void updateUser(User user) {
         if (user == null)
             throw new NullPointerException("user object is null");
@@ -262,6 +269,7 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateUser(org.openiam.idm.srvc.user.dto.User,
       *      boolean)
       */
+    @Transactional
     public void updateUserWithDependent(User user, boolean dependency) {
         if (user == null)
             throw new NullPointerException("user object is null");
@@ -308,6 +316,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeUser(java.lang.String)
       */
+    @Transactional
     public void removeUser(String id) {
         if (id == null)
             throw new NullPointerException("user id is null");
@@ -333,12 +342,14 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#findUsersByLastUpdateRange(java.util.Date,
       *      java.util.Date)
       */
+    @Transactional(readOnly = true)
     public List findUsersByLastUpdateRange(Date startDate, Date endDate) {
 
         return userDao.findByLastUpdateRange(startDate, endDate);
 
     }
 
+    @Transactional(readOnly = true)
     public User getUserByName(String firstName, String lastName) {
         UserEntity userEntity = userDao.findByName(firstName, lastName);
         return userDozerConverter.convertToDTO(userEntity, true);
@@ -350,6 +361,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#findUserByOrganization(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<User> findUserByOrganization(String orgId) {
         List<UserEntity> entityList = userDao.findByOrganization(orgId);
 
@@ -361,6 +373,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#findUsersByStatus(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List findUsersByStatus(UserStatusEnum status) {
         return userDao.findByStatus(status);
     }
@@ -370,7 +383,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#search(org.openiam.util.db.Search)
       */
-
+    @Transactional(readOnly = true)
     public List<User> search(UserSearch search) {
         List<UserEntity> entityList = userDao.search(search);
 
@@ -378,10 +391,12 @@ public class UserMgr implements UserDataService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer searchCount(UserSearch search) {
         return userDao.searchCount(search);
     }
 
+    @Transactional(readOnly = true)
     public List<User> searchByDelegationProperties(DelegationFilterSearch search) {
         List<UserEntity> entityList = userDao.findByDelegationProperties(search);
 
@@ -396,6 +411,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addAttribute(org.openiam.idm.srvc.user.dto.UserAttribute)
       */
+    @Transactional
     public UserAttribute addAttribute(UserAttribute attribute) {
         if (attribute == null)
             throw new NullPointerException("Attribute can not be null");
@@ -418,6 +434,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateAttribute(org.openiam.idm.srvc.user.dto.UserAttribute)
       */
+    @Transactional
     public void updateAttribute(UserAttribute attribute) {
         if (attribute == null)
             throw new NullPointerException("Attribute can not be null");
@@ -437,6 +454,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAllAttributes(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Map<String, UserAttribute> getAllAttributes(String userId) {
         Map<String, UserAttribute> attrMap = new HashMap<String, UserAttribute>();
 
@@ -473,6 +491,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAttribute(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public UserAttribute getAttribute(String attrId) {
         if (attrId == null) {
             throw new NullPointerException("attrId is null");
@@ -487,6 +506,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAttribute(org.openiam.idm.srvc.user.dto.UserAttribute)
       */
+    @Transactional
     public void removeAttribute(UserAttribute attr) {
         if (attr == null) {
             throw new NullPointerException("attr is null");
@@ -506,6 +526,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAllAttributes(java.lang.String)
       */
+    @Transactional
     public void removeAllAttributes(String userId) {
         if (userId == null) {
             throw new NullPointerException("userId is null");
@@ -521,6 +542,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getUserAsMap(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Map<String, UserAttribute> getUserAsMap(String userId) {
         User usr = getUser(userId);
         if (usr == null) {
@@ -601,6 +623,7 @@ public class UserMgr implements UserDataService {
         return attrMap;
     }
 
+    @Transactional(readOnly = true)
     public List<UserAttribute> getUserAsAttributeList(
             String principalName,
             List<String> attributeList) {
@@ -635,6 +658,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addNote(org.openiam.idm.srvc.user.dto.UserNote)
       */
+    @Transactional
     public UserNote addNote(UserNote note) {
         if (note == null)
             throw new NullPointerException("Note cannot be null");
@@ -654,6 +678,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateNote(org.openiam.idm.srvc.user.dto.UserNote)
       */
+    @Transactional
     public void updateNote(UserNote note) {
         if (note == null)
             throw new NullPointerException("Note cannot be null");
@@ -674,6 +699,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAllNotes(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<UserNote> getAllNotes(String userId) {
 
         if (userId == null) {
@@ -692,6 +718,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getNote(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public UserNote getNote(java.lang.String noteId) {
         if (noteId == null) {
             throw new NullPointerException("attrId is null");
@@ -706,6 +733,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeNote(org.openiam.idm.srvc.user.dto.UserNote)
       */
+    @Transactional
     public void removeNote(UserNote note) {
         if (note == null) {
             throw new NullPointerException("note is null");
@@ -723,6 +751,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAllNotes(java.lang.String)
       */
+    @Transactional
     public void removeAllNotes(String userId) {
         if (userId == null) {
             throw new NullPointerException("userId is null");
@@ -738,6 +767,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addAddress(org.openiam.idm.srvc.continfo.dto.Address)
       */
+    @Transactional
     public Address addAddress(Address val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -768,6 +798,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateAddress(org.openiam.idm.srvc.continfo.dto.Address)
       */
+    @Transactional
     public void updateAddress(Address val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -789,6 +820,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAddress(org.openiam.idm.srvc.continfo.dto.Address)
       */
+    @Transactional
     public void removeAddress(Address val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -802,6 +834,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAllAddresses(java.lang.String)
       */
+    @Transactional
     public void removeAllAddresses(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -814,6 +847,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAddressById(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Address getAddressById(String addressId) {
         if (addressId == null)
             throw new NullPointerException("addressId is null");
@@ -827,6 +861,7 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAddressByName(java.lang.String,
       *      java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Address getAddressByName(String userId, String addressName) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -843,6 +878,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getDefaultAddress(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Address getDefaultAddress(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -857,6 +893,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAddressList(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Address> getAddressList(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -872,7 +909,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getAddressMap(java.lang.String)
       */
-
+    @Transactional(readOnly = true)
     public Map<String, Address> getAddressMap(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -895,6 +932,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addPhone(org.openiam.idm.srvc.continfo.dto.Phone)
       */
+    @Transactional
     public Phone addPhone(Phone val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -925,6 +963,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updatePhone(org.openiam.idm.srvc.continfo.dto.Phone)
       */
+    @Transactional
     public void updatePhone(Phone val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -945,6 +984,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removePhone(org.openiam.idm.srvc.continfo.dto.Phone)
       */
+    @Transactional
     public void removePhone(Phone val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -959,6 +999,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAllPhones(java.lang.String)
       */
+    @Transactional
     public void removeAllPhones(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -971,6 +1012,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getPhoneById(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Phone getPhoneById(String addressId) {
         if (addressId == null)
             throw new NullPointerException("addressId is null");
@@ -985,6 +1027,7 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#getPhoneByName(java.lang.String,
       *      java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Phone getPhoneByName(String userId, String addressName) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1001,6 +1044,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getDefaultPhone(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Phone getDefaultPhone(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1014,6 +1058,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getPhoneList(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Phone> getPhoneList(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1029,6 +1074,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getPhoneMap(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Map<String, Phone> getPhoneMap(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1050,6 +1096,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addEmailAddress(org.openiam.idm.srvc.continfo.dto.EmailAddress)
       */
+    @Transactional
     public EmailAddress addEmailAddress(EmailAddress val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -1064,6 +1111,7 @@ public class UserMgr implements UserDataService {
 
     }
 
+    @Transactional
     public void addEmailAddressSet(Set<EmailAddress> adrSet) {
         if (adrSet == null || adrSet.size() == 0)
             return;
@@ -1081,6 +1129,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateEmailAddress(org.openiam.idm.srvc.continfo.dto.EmailAddress)
       */
+    @Transactional
     public void updateEmailAddress(EmailAddress val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -1102,6 +1151,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeEmailAddress(org.openiam.idm.srvc.continfo.dto.EmailAddress)
       */
+    @Transactional
     public void removeEmailAddress(EmailAddress val) {
         if (val == null)
             throw new NullPointerException("val is null");
@@ -1116,6 +1166,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeAllEmailAddresses(java.lang.String)
       */
+    @Transactional
     public void removeAllEmailAddresses(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1129,6 +1180,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getEmailAddressById(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public EmailAddress getEmailAddressById(String addressId) {
         if (addressId == null)
             throw new NullPointerException("addressId is null");
@@ -1142,6 +1194,7 @@ public class UserMgr implements UserDataService {
       * @see org.openiam.idm.srvc.user.service.UserDataService#getEmailAddressByName(java.lang.String,
       *      java.lang.String)
       */
+    @Transactional(readOnly = true)
     public EmailAddress getEmailAddressByName(String userId, String addressName) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1158,6 +1211,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getDefaultEmailAddress(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public EmailAddress getDefaultEmailAddress(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1172,6 +1226,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getEmailAddressList(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<EmailAddress> getEmailAddressList(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1187,6 +1242,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getEmailAddressMap(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Map<String, EmailAddress> getEmailAddressMap(String userId) {
         if (userId == null)
             throw new NullPointerException("userId is null");
@@ -1207,6 +1263,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#addSupervisor(org.openiam.idm.srvc.user.dto.Supervisor)
       */
+    @Transactional
     public Supervisor addSupervisor(Supervisor supervisor) {
         if (supervisor == null)
             throw new NullPointerException("supervisor is null");
@@ -1220,6 +1277,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#updateSupervisor(org.openiam.idm.srvc.user.dto.Supervisor)
       */
+    @Transactional
     public void updateSupervisor(Supervisor supervisor) {
         if (supervisor == null)
             throw new NullPointerException("supervisor is null");
@@ -1231,6 +1289,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#removeSupervisor(org.openiam.idm.srvc.user.dto.Supervisor)
       */
+    @Transactional
     public void removeSupervisor(Supervisor supervisor) {
         if (supervisor == null)
             throw new NullPointerException("supervisor is null");
@@ -1242,6 +1301,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getSupervisor(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Supervisor getSupervisor(String supervisorObjId) {
         if (supervisorObjId == null)
             throw new NullPointerException("supervisorObjId is null");
@@ -1253,6 +1313,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getSupervisors(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Supervisor> getSupervisors(String employeeId) {
         if (employeeId == null)
             throw new NullPointerException("employeeId is null");
@@ -1273,6 +1334,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getEmployees(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<Supervisor> getEmployees(String supervisorId) {
         if (supervisorId == null)
             throw new NullPointerException("employeeId is null");
@@ -1295,6 +1357,7 @@ public class UserMgr implements UserDataService {
       *
       * @see org.openiam.idm.srvc.user.service.UserDataService#getPrimarySupervisor(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Supervisor getPrimarySupervisor(String employeeId) {
         if (employeeId == null)
             throw new NullPointerException("employeeId is null");

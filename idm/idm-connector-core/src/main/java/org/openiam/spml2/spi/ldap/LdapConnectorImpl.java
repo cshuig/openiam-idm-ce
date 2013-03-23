@@ -101,6 +101,7 @@ import org.openiam.spml2.util.connect.ConnectionMgr;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Updates the OpenIAM repository with data received from external client.
@@ -115,27 +116,28 @@ import org.springframework.context.ApplicationContextAware;
 public class LdapConnectorImpl extends AbstractSpml2Complete implements ConnectorService, ApplicationContextAware {
 
     private static final Log log = LogFactory.getLog(LdapConnectorImpl.class);
-    protected ManagedSystemDataService managedSysService;
-    protected ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
-    protected ResourceDataService resourceDataService;
-    protected IdmAuditLogDataService auditDataService;
-    protected LoginDataService loginManager;
-    protected PolicyDAO policyDao;
-    protected SecurityDomainDataService secDomainService;
-    protected UserDataService userManager;
+    private ManagedSystemDataService managedSysService;
+    private ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
+    private ResourceDataService resourceDataService;
+    private IdmAuditLogDataService auditDataService;
+    private LoginDataService loginManager;
+    private PolicyDAO policyDao;
+    private SecurityDomainDataService secDomainService;
+    private UserDataService userManager;
 
-    protected LdapSuspend ldapSuspend;
-    protected LdapPassword ldapPassword;
-    protected LdapAddCommand addCommand;
-    protected LdapModifyCommand modifyCommand;
-    protected LdapLookupCommand lookupCommand;
-    protected LdapDeleteCommand deleteCommand;
+    private LdapSuspend ldapSuspend;
+    private LdapPassword ldapPassword;
+    private LdapAddCommand addCommand;
+    private LdapModifyCommand modifyCommand;
+    private LdapLookupCommand lookupCommand;
+    private LdapDeleteCommand deleteCommand;
 
-    public static ApplicationContext ac;
+    private static ApplicationContext ac;
 
 
-    static String keystore;
+    private static String keystore;
 
+    @Transactional
     public AuthenticationResponse login(AuthenticationContext authContext) {
 
         AuthenticationResponse resp = new AuthenticationResponse();
@@ -270,6 +272,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
 
     }
 
+    @Transactional
     public LdapContext connect(String userName, String password) {
 
         //LdapContext ctxLdap = null;
@@ -298,7 +301,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         return null;
     }
 
-
+    @Transactional
     public ResponseType reconcileResource(@WebParam(name = "config", targetNamespace = "") ReconciliationConfig config) {
         log.debug("reconcile resource called in LDAPConnector");
 
@@ -380,6 +383,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
      * @param managedSys
      * @return
      */
+    @Transactional
     public ResponseType testConnection(ManagedSys managedSys) {
         ResponseType response = new ResponseType();
         response.setStatus(StatusCodeType.SUCCESS);
@@ -418,6 +422,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     /* (non-Javadoc)
       * @see org.openiam.spml2.interf.SpmlCore#add(org.openiam.spml2.msg.AddRequestType)
       */
+    @Transactional
     public AddResponseType add(AddRequestType reqType) {
         return addCommand.add(reqType);
 
@@ -428,6 +433,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     /* (non-Javadoc)
     * @see org.openiam.spml2.interf.SpmlCore#delete(org.openiam.spml2.msg.DeleteRequestType)
     */
+    @Transactional
     public ResponseType delete(DeleteRequestType reqType) {
 
         return  deleteCommand.delete(reqType);
@@ -446,6 +452,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     /* (non-Javadoc)
       * @see org.openiam.spml2.interf.SpmlCore#lookup(org.openiam.spml2.msg.LookupRequestType)
       */
+    @Transactional
     public LookupResponseType lookup(LookupRequestType reqType) {
 
         return lookupCommand.lookup(reqType);
@@ -457,6 +464,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     /* (non-Javadoc)
       * @see org.openiam.spml2.interf.SpmlCore#modify(org.openiam.spml2.msg.ModifyRequestType)
       */
+    @Transactional
     public ModifyResponseType modify(ModifyRequestType reqType) {
 
         return modifyCommand.modify(reqType);
@@ -487,6 +495,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     /* (non-Javadoc)
       * @see org.openiam.spml2.interf.SpmlPassword#setPassword(org.openiam.spml2.msg.password.SetPasswordRequestType)
       */
+    @Transactional
     public ResponseType setPassword(SetPasswordRequestType reqType) {
         log.debug("setPassword request called..");
 
@@ -615,11 +624,12 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         return null;
     }
 
-
+    @Transactional
     public ResponseType suspend(SuspendRequestType request) {
         return ldapSuspend.suspend(request);
     }
 
+    @Transactional
     public ResponseType resume(ResumeRequestType request) {
         return ldapSuspend.resume(request);
     }
@@ -770,6 +780,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         ac = applicationContext;
     }
 
+    @Transactional
     protected boolean isInDirectory(String ldapName, ManagedSystemObjectMatch matchObj,
                                     LdapContext ldapctx) {
         int indx = ldapName.indexOf(",");
@@ -799,6 +810,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         }
     }
 
+    @Transactional
     protected NamingEnumeration lookupSearch(ManagedSystemObjectMatch matchObj,
                                              LdapContext ctx,
                                              String searchValue, String[] attrAry, String objectBaseDN) throws NamingException {

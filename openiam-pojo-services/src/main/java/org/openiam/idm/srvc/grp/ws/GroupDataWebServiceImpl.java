@@ -41,7 +41,7 @@ import org.openiam.exception.data.ObjectNotFoundException;
 		portName = "GroupDataWebServicePort", 
 		serviceName = "GroupDataWebService")
 public class GroupDataWebServiceImpl implements GroupDataWebService {
-	protected GroupDataService groupManager;
+	private GroupDataService groupManager;
 		
 	private static final Log log = LogFactory.getLog(GroupDataWebServiceImpl.class);
 

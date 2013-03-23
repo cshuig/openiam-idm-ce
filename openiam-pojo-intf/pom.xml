@@ -38,12 +38,6 @@
                     <exclude>**/*.properties</exclude>
                 </excludes>
             </resource>
-            <resource>
-                <directory>src/test/resources</directory>
-                <excludes>
-                    <exclude>**/*.properties</exclude>
-                </excludes>
-            </resource>
         </resources>
     </build>
     <dependencies>
