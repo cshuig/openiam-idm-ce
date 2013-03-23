@@ -63,6 +63,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Scan Ldap for any new records, changed users, or delete operations and then synchronizes them back into OpenIAM.
@@ -87,6 +88,7 @@ public class LdapAdapter implements SourceAdapter {
     private static final Log log = LogFactory.getLog(LdapAdapter.class);
 
     private static final ResourceBundle res = ResourceBundle.getBundle("datasource");
+    private final long SHUTDOWN_TIME = 5000;
 
     public SyncResponse startSynch(final SynchConfig config) {
 
@@ -148,7 +150,7 @@ public class LdapAdapter implements SourceAdapter {
             log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
 
             List<Future> threadResults = new LinkedList<Future>();
-            ExecutorService service = Executors.newCachedThreadPool();
+            final ExecutorService service = Executors.newCachedThreadPool();
             for (int i = 0; i < threadCoount; i++) {
                 final int startIndex = i * rowsInOneExecutors;
                 int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount -1 ? remains : rowsInOneExecutors;
@@ -174,7 +176,26 @@ public class LdapAdapter implements SourceAdapter {
                     }
                 }));
             }
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    service.shutdown();
+                    try {
+                        if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
+                            log.warn("Executor did not terminate in the specified time."); //optional *
+                            List<Runnable> droppedTasks = service.shutdownNow(); //optional **
+                            log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
+                        }
+                    } catch (InterruptedException e) {
+                        log.error(e);
 
+                        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
+                        auditHelper.logEvent(synchStartLog);
+
+                        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+                        resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
+                    }
+                }
+            });
             waitUntilWorkDone(threadResults);
 
 
