@@ -1886,11 +1886,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 }
                             }
                             if(connectorSuccess) {
-                              /*  Login tempPrincipal = loginManager
-                                        .getLoginByManagedSys(mLg.getId()
-                                                .getDomainId(), mLg.getId()
-                                                .getLogin(), mLg.getId()
-                                                .getManagedSysId());*/
+                                /*  Login tempPrincipal = loginManager
+                        .getLoginByManagedSys(mLg.getId()
+                                .getDomainId(), mLg.getId()
+                                .getLogin(), mLg.getId()
+                                .getManagedSysId());*/
 
                                 if (!isMngSysIdentityExistsInOpeniam) {
                                     loginManager.addLogin(mLg);
