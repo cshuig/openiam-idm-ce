@@ -29,7 +29,6 @@ import org.openiam.idm.srvc.recon.report.ReconciliationReport;
 import org.openiam.idm.srvc.recon.report.ReconciliationReportResults;
 import org.openiam.idm.srvc.recon.report.ReconciliationReportRow;
 import org.openiam.idm.srvc.recon.service.CSVImproveScript;
-import org.openiam.idm.srvc.recon.service.PopulationScript;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
@@ -200,8 +199,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					+ idmUsers.size() + " items", hList.size() + 1));
 			try {
 				log.debug("First cycle");
-				reconCicle(hList, report, "IDM: ", idmUsers, dbUsers,
-						attrMapList, mSys);
+				dbUsers.removeAll(reconCicle(hList, report, "IDM: ", idmUsers,
+						dbUsers, attrMapList, mSys));
 			} catch (Exception e) {
 				log.error(e.getMessage());
 				response.setStatus(StatusCodeType.FAILURE);
@@ -265,8 +264,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					Arrays.asList(config.getNotificationEmailAddress())
 							.toArray(new String[0]),
 					"Reconciliation report is ready!", message.toString(),
-					false, pathToCSV + "report_" 
-							+ mSys.getResourceId() + ".html");
+					false, pathToCSV + "report_" + mSys.getResourceId()
+							+ ".html");
 		}
 		return response;
 	}
@@ -335,11 +334,6 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 					continue;
 				}
 				if (!StringUtils.hasText(o.getPrincipal())) {
-					used.add(o);
-					continue;
-				}
-				if (o.getPrincipal().contains("*")
-						|| o.getPrincipal().contains("#")) {
 					used.add(o);
 					continue;
 				}

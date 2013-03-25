@@ -184,3 +184,69 @@
 2013-03-23 14:43:40,312 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_NOTE drop constraint FKBC1523E6EFDDBC3D
 2013-03-23 14:43:40,312 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_NOTE in statement [alter table USER_NOTE]
 2013-03-23 14:43:40,703 [main] WARN  [org.dozer.config.GlobalSettings] Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.
+2013-03-25 20:50:34,706 [main] WARN  [org.hibernate.id.UUIDHexGenerator] HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+2013-03-25 20:50:35,388 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table ADDRESS drop constraint FKE66327D474097EFE
+2013-03-25 20:50:35,389 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: ADDRESS in statement [alter table ADDRESS]
+2013-03-25 20:50:35,390 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table COMPANY_ATTRIBUTE drop constraint FK4DCE6D1A91C6A97A
+2013-03-25 20:50:35,390 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: COMPANY_ATTRIBUTE in statement [alter table COMPANY_ATTRIBUTE]
+2013-03-25 20:50:35,391 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table EMAIL_ADDRESS drop constraint FK8805E61174097EFE
+2013-03-25 20:50:35,391 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: EMAIL_ADDRESS in statement [alter table EMAIL_ADDRESS]
+2013-03-25 20:50:35,392 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table GRP_ATTRIBUTES drop constraint FKE7F49911533F59CF
+2013-03-25 20:50:35,392 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: GRP_ATTRIBUTES in statement [alter table GRP_ATTRIBUTES]
+2013-03-25 20:50:35,393 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table GRP_ROLE drop constraint FK4F174FB0533F59CF
+2013-03-25 20:50:35,393 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: GRP_ROLE in statement [alter table GRP_ROLE]
+2013-03-25 20:50:35,394 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table GRP_ROLE drop constraint FK4F174FB0FB409EED
+2013-03-25 20:50:35,394 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: GRP_ROLE in statement [alter table GRP_ROLE]
+2013-03-25 20:50:35,395 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table IDENTITY_QUESTION drop constraint FK20ACF2475EBB7356
+2013-03-25 20:50:35,395 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: IDENTITY_QUESTION in statement [alter table IDENTITY_QUESTION]
+2013-03-25 20:50:35,396 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table NOTIFICATION drop constraint FKAD9970EB68015ABD
+2013-03-25 20:50:35,398 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: NOTIFICATION in statement [alter table NOTIFICATION]
+2013-03-25 20:50:35,398 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table ORG_STRUCTURE drop constraint FKB2B9C59846701108
+2013-03-25 20:50:35,399 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: ORG_STRUCTURE in statement [alter table ORG_STRUCTURE]
+2013-03-25 20:50:35,399 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table ORG_STRUCTURE drop constraint FKB2B9C5988BF85380
+2013-03-25 20:50:35,400 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: ORG_STRUCTURE in statement [alter table ORG_STRUCTURE]
+2013-03-25 20:50:35,400 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table PHONE drop constraint FK489454E74097EFE
+2013-03-25 20:50:35,401 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: PHONE in statement [alter table PHONE]
+2013-03-25 20:50:35,401 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table REPORT_CRITERIA_PARAMETER drop constraint FK727B0B945CCBB8F
+2013-03-25 20:50:35,402 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: REPORT_CRITERIA_PARAMETER in statement [alter table REPORT_CRITERIA_PARAMETER]
+2013-03-25 20:50:35,402 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table REPORT_CRITERIA_PARAMETER drop constraint FK727B0B94C43FE8D2
+2013-03-25 20:50:35,403 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: REPORT_CRITERIA_PARAMETER in statement [alter table REPORT_CRITERIA_PARAMETER]
+2013-03-25 20:50:35,403 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table REPORT_SUB_CRITERIA_PARAM drop constraint FKF071A077FACCF662
+2013-03-25 20:50:35,404 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: REPORT_SUB_CRITERIA_PARAM in statement [alter table REPORT_SUB_CRITERIA_PARAM]
+2013-03-25 20:50:35,404 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table REQUEST_APPROVER drop constraint FK1D5BD6954632E6D9
+2013-03-25 20:50:35,405 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: REQUEST_APPROVER in statement [alter table REQUEST_APPROVER]
+2013-03-25 20:50:35,405 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table REQUEST_FORM drop constraint FKD989EC944632E6D9
+2013-03-25 20:50:35,406 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: REQUEST_FORM in statement [alter table REQUEST_FORM]
+2013-03-25 20:50:35,406 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RES drop constraint FK13C80CB9EBC9D
+2013-03-25 20:50:35,407 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RES in statement [alter table RES]
+2013-03-25 20:50:35,407 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RESOURCE_GROUP drop constraint FKC5FD52EE2D96D320
+2013-03-25 20:50:35,408 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RESOURCE_GROUP in statement [alter table RESOURCE_GROUP]
+2013-03-25 20:50:35,408 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RESOURCE_POLICY drop constraint FK8DCD6832D96D320
+2013-03-25 20:50:35,408 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RESOURCE_POLICY in statement [alter table RESOURCE_POLICY]
+2013-03-25 20:50:35,409 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RESOURCE_PRIVILEGE drop constraint FKA967BA02D96D320
+2013-03-25 20:50:35,409 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RESOURCE_PRIVILEGE in statement [alter table RESOURCE_PRIVILEGE]
+2013-03-25 20:50:35,410 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RESOURCE_PROP drop constraint FKF5E2F8F42D96D320
+2013-03-25 20:50:35,410 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RESOURCE_PROP in statement [alter table RESOURCE_PROP]
+2013-03-25 20:50:35,410 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RESOURCE_ROLE drop constraint FKF5E3D6072D96D320
+2013-03-25 20:50:35,411 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RESOURCE_ROLE in statement [alter table RESOURCE_ROLE]
+2013-03-25 20:50:35,411 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table RESOURCE_USER drop constraint FKF5E5415C2D96D320
+2013-03-25 20:50:35,411 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: RESOURCE_USER in statement [alter table RESOURCE_USER]
+2013-03-25 20:50:35,412 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table ROLE_ATTRIBUTE drop constraint FKABFB91F3FB409EED
+2013-03-25 20:50:35,412 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: ROLE_ATTRIBUTE in statement [alter table ROLE_ATTRIBUTE]
+2013-03-25 20:50:35,412 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table ROLE_POLICY drop constraint FK465DCD1BFB409EED
+2013-03-25 20:50:35,413 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: ROLE_POLICY in statement [alter table ROLE_POLICY]
+2013-03-25 20:50:35,413 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table SERVICE_CONFIG drop constraint FK8EC2002C4632E6D9
+2013-03-25 20:50:35,413 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: SERVICE_CONFIG in statement [alter table SERVICE_CONFIG]
+2013-03-25 20:50:35,414 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_AFFILIATION drop constraint FK21F7005C91C6A97A
+2013-03-25 20:50:35,414 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_AFFILIATION in statement [alter table USER_AFFILIATION]
+2013-03-25 20:50:35,415 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_AFFILIATION drop constraint FK21F7005CEFDDBC3D
+2013-03-25 20:50:35,415 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_AFFILIATION in statement [alter table USER_AFFILIATION]
+2013-03-25 20:50:35,416 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_ATTRIBUTES drop constraint FK46F04A4BEFDDBC3D
+2013-03-25 20:50:35,416 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_ATTRIBUTES in statement [alter table USER_ATTRIBUTES]
+2013-03-25 20:50:35,416 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_GRP drop constraint FK1ED74A51533F59CF
+2013-03-25 20:50:35,417 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_GRP in statement [alter table USER_GRP]
+2013-03-25 20:50:35,417 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_GRP drop constraint FK1ED74A51EFDDBC3D
+2013-03-25 20:50:35,418 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_GRP in statement [alter table USER_GRP]
+2013-03-25 20:50:35,418 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] HHH000389: Unsuccessful: alter table USER_NOTE drop constraint FKBC1523E6EFDDBC3D
+2013-03-25 20:50:35,419 [main] ERROR [org.hibernate.tool.hbm2ddl.SchemaExport] Table not found: USER_NOTE in statement [alter table USER_NOTE]
+2013-03-25 20:50:35,686 [main] WARN  [org.dozer.config.GlobalSettings] Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.

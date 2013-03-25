@@ -1,10 +1,7 @@
 package org.openiam.idm.srvc.csv;
 
-import java.sql.Date;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -605,8 +602,8 @@ public class UserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
 				continue;
 			}
 			if (one.get(field) != null && two.get(field) != null) {
-				String firstVal = one.get(field).replaceFirst("^0*", "");
-				String secondVal = two.get(field).replaceFirst("^0*", "");
+				String firstVal = one.get(field).replaceFirst("^0*", "").trim();
+				String secondVal = two.get(field).replaceFirst("^0*", "").trim();
 				res.put(field, firstVal.equalsIgnoreCase(secondVal) ? secondVal
 						: ("[" + firstVal + "][" + secondVal + "]"));
 				continue;
