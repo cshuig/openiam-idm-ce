@@ -43,7 +43,7 @@ import org.openiam.idm.srvc.synch.service.TransformScript;
 import org.openiam.idm.srvc.synch.service.ValidationScript;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
-import org.openiam.idm.srvc.user.service.UserDataService;
+import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.service.ProvisionService;
@@ -83,9 +83,10 @@ public class LdapAdapter implements SourceAdapter {
 
     private LdapContext ctx;
 
-    private UserDataService userMgr;
+    private UserDataWebService userMgr;
     private String systemAccount;
     private static final Log log = LogFactory.getLog(LdapAdapter.class);
+    protected MuleContext muleContext;
 
     private static final ResourceBundle res = ResourceBundle.getBundle("datasource");
     private final long SHUTDOWN_TIME = 5000;
@@ -336,7 +337,7 @@ public class LdapAdapter implements SourceAdapter {
 
                 if (usr != null) {
                     transformScript.setNewUser(false);
-                    transformScript.setUser(userMgr.getUserWithDependent(usr.getUserId(), true));
+                    transformScript.setUser(userMgr.getUserWithDependent(usr.getUserId(), true).getUser());
                     transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()));
                     transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()));
 
@@ -559,14 +560,7 @@ public class LdapAdapter implements SourceAdapter {
     }
 
 
-    public UserDataService getUserMgr() {
-        return userMgr;
-    }
 
-
-    public void setUserMgr(UserDataService userMgr) {
-        this.userMgr = userMgr;
-    }
 
 
     public AuditHelper getAuditHelper() {
@@ -584,9 +578,16 @@ public class LdapAdapter implements SourceAdapter {
     }
 
     public void setMuleContext(MuleContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        muleContext = ctx;
     }
 
+    public UserDataWebService getUserMgr() {
+        return userMgr;
+    }
+
+    public void setUserMgr(UserDataWebService userMgr) {
+        this.userMgr = userMgr;
+    }
 
     private class LastRecordTime {
         long mostRecentRecord;
