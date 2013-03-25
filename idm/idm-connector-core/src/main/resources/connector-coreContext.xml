@@ -4,10 +4,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jee="http://www.springframework.org/schema/jee"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-    					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-    					http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
-    					http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+    					http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+    					http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
     					http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<context:annotation-config />
@@ -316,21 +316,6 @@
 
 	<!-- ensure that the above transactional advice runs for any execution of 
 		an operation defined by the FooService interface -->
-
-
-	<aop:config>
-		<aop:pointcut id="ldapConnectorOperation"
-			expression="execution(* org.openiam.spml2.spi.ldap.LdapConnectorImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="ldapConnectorOperation" />
-	</aop:config>
-
-	<!-- <aop:config> <aop:pointcut id="adConnectorOperation" expression="execution(* 
-		org.openiam.spml2.spi.ad.ActiveDirConnectorImpl.*(..))"/> <aop:advisor advice-ref="txAdvice" 
-		pointcut-ref="adConnectorOperation"/> </aop:config> <aop:config> <aop:pointcut 
-		id="scriptConnectorOperation" expression="execution(* org.openiam.spml2.spi.script.ScriptConnectorImpl.*(..))"/> 
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="scriptConnectorOperation"/> 
-		</aop:config> -->
-
 </beans>
 
 

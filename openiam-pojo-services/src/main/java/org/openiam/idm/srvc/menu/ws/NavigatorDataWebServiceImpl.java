@@ -28,6 +28,7 @@ import org.openiam.idm.srvc.menu.dto.Permission;
 import org.openiam.idm.srvc.menu.service.NavigatorDataService;
 import org.openiam.idm.srvc.role.ws.RoleListResponse;
 import org.openiam.idm.srvc.role.dto.Role;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -43,13 +44,14 @@ import java.util.List;
 		serviceName = "NavigationWebService")
 public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 
-	NavigatorDataService navigatorDataService;
+	private NavigatorDataService navigatorDataService;
 	private static final Log log = LogFactory.getLog(NavigatorDataWebServiceImpl.class);
 	
 	
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#addMenu(org.openiam.idm.srvc.menu.dto.Menu)
 	 */
+    @Transactional
 	public MenuResponse addMenu(Menu data) {
 		MenuResponse resp = new MenuResponse(ResponseStatus.SUCCESS);
 		navigatorDataService.addMenu(data); 
@@ -65,6 +67,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#getAllMenuOptionIDs(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public Response getAllMenuOptionIDs(String parentMenuGroupId, String languageCd) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		String str = navigatorDataService.getAllMenuOptionIDs(parentMenuGroupId, languageCd);
@@ -81,6 +84,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#getMenu(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public MenuResponse getMenu(String menuId, String languageCd) {
 		MenuResponse resp = new MenuResponse(ResponseStatus.SUCCESS);
 		Menu menu = navigatorDataService.getMenu(menuId, languageCd); 
@@ -95,6 +99,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#menuGroup(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public MenuListResponse menuGroup(String menuGroupId, String langCd) {
 		MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
 		List<Menu> menuList = navigatorDataService.menuGroup(menuGroupId, langCd); 
@@ -109,6 +114,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#menuGroupByUser(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public MenuListResponse menuGroupByUser(String menuGroupId, String userId,	String languageCd) {
 		MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
 		List<Menu> menuList = navigatorDataService.menuGroupByUser(menuGroupId, userId, languageCd); 
@@ -123,6 +129,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#menuGroupSelectedByUser(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public MenuListResponse menuGroupSelectedByUser(String menuGroupId, String userId,String languageCd) {
 		MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
 		List<Menu> menuList = navigatorDataService.menuGroupSelectedByUser(menuGroupId, userId, languageCd); 
@@ -138,6 +145,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#removeMenu(java.lang.String, boolean)
 	 */
+    @Transactional
 	public Response removeMenu(String menuId, boolean deleteChildren) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		int retval = navigatorDataService.removeMenu(menuId, deleteChildren);
@@ -151,6 +159,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.menu.ws.NavigatorDataWebService#updateMenu(org.openiam.idm.srvc.menu.dto.Menu)
 	 */
+    @Transactional
 	public Response updateMenu(Menu data) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		navigatorDataService.updateMenu(data);
@@ -167,6 +176,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
 
 
     @Override
+    @Transactional
     public PermissionResponse addPermission(@WebParam(name = "menuId", targetNamespace = "") String menuId, @WebParam(name = "roleId", targetNamespace = "") String roleId, @WebParam(name = "serviceId", targetNamespace = "") String serviceId) {
         PermissionResponse resp = new PermissionResponse(ResponseStatus.SUCCESS);
 
@@ -181,6 +191,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional
     public PermissionResponse updatePermission(@WebParam(name = "permission", targetNamespace = "") Permission permission) {
         PermissionResponse resp = new PermissionResponse(ResponseStatus.SUCCESS);
 
@@ -196,6 +207,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PermissionResponse getPermission(@WebParam(name = "menuId", targetNamespace = "") String menuId, @WebParam(name = "roleId", targetNamespace = "") String roleId, @WebParam(name = "serviceId", targetNamespace = "") String serviceId) {
         PermissionResponse resp = new PermissionResponse(ResponseStatus.SUCCESS);
 
@@ -210,6 +222,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PermissionListResponse getAllPermissions() {
         PermissionListResponse resp = new PermissionListResponse(ResponseStatus.SUCCESS);
 
@@ -224,16 +237,19 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional
     public void removePermission(@WebParam(name = "menuId", targetNamespace = "") String menuId, @WebParam(name = "roleId", targetNamespace = "") String roleId, @WebParam(name = "serviceId", targetNamespace = "") String serviceId) {
        navigatorDataService.removePermission(menuId, roleId, serviceId);
     }
 
     @Override
+    @Transactional
     public int removeAllPermissions() {
         return navigatorDataService.removeAllPermissions();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RoleListResponse getRolesByMenu(@WebParam(name = "menuId", targetNamespace = "") String menuId) {
         RoleListResponse resp = new RoleListResponse(ResponseStatus.SUCCESS);
 
@@ -249,6 +265,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MenuListResponse getMenusByRole(@WebParam(name = "roleId", targetNamespace = "") String roleId, @WebParam(name = "serviceId", targetNamespace = "") String serviceId) {
 
         MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
@@ -264,6 +281,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MenuListResponse getMenusByUser(@WebParam(name = "menuGroup", targetNamespace = "") String menuGroup, @WebParam(name = "roleId", targetNamespace = "") String roleId, @WebParam(name = "userId", targetNamespace = "") String userId) {
         MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
 
@@ -278,6 +296,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MenuListResponse getMenuFamily(@WebParam(name = "menuId", targetNamespace = "") String menuId, @WebParam(name = "languageCd", targetNamespace = "") String languageCd) {
 
         MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
@@ -294,6 +313,7 @@ public class NavigatorDataWebServiceImpl implements NavigatorDataWebService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MenuListResponse getMenuTree(@WebParam(name = "menuId", targetNamespace = "") String menuId, @WebParam(name = "languageCd", targetNamespace = "") String languageCd) {
         MenuListResponse resp = new MenuListResponse(ResponseStatus.SUCCESS);
 

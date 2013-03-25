@@ -38,12 +38,6 @@
                     <exclude>**/*.properties</exclude>
                 </excludes>
             </resource>
-            <resource>
-                <directory>src/test/resources</directory>
-                <excludes>
-                    <exclude>**/*.properties</exclude>
-                </excludes>
-            </resource>
         </resources>
     </build>
     <dependencies>
@@ -137,7 +131,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
+            <version>${hibernatecore.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>cglib</artifactId>

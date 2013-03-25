@@ -31,12 +31,6 @@
           <exclude>**/*.properties</exclude>
         </excludes>
       </resource>
-      <resource>
-        <directory>src/test/resources</directory>
-        <excludes>
-          <exclude>**/*.properties</exclude>
-        </excludes>
-      </resource>
     </resources>
    </build>
 
@@ -97,7 +91,12 @@
       <version>1.6.8</version>
     </dependency>
 
-
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.1.9.Final</version>
+            <!-- will come with Hibernate core-->
+        </dependency>
 
     <dependency>
       <groupId>mysql</groupId>
@@ -117,7 +116,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
+      <version>${hibernatecore.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>cglib</artifactId>
@@ -133,7 +132,7 @@
     <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-ehcache</artifactId>
-        <version>${hibernate.version}</version>
+        <version>${hibernateehcache.version}</version>
     </dependency>
 
 

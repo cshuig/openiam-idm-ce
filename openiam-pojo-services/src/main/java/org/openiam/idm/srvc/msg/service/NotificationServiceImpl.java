@@ -27,6 +27,7 @@ import org.openiam.dozer.converter.NotificationDozerConverter;
 import org.openiam.idm.srvc.msg.domain.NotificationEntity;
 import org.openiam.idm.srvc.msg.dto.NotificationDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -41,6 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#addNotification(org.openiam.idm.srvc.msg.dto.SysMessageDelivery)
 	 */
+    @Transactional
 	public NotificationDto addNotification(NotificationDto msg) {
 		if (msg == null) {
 			throw new NullPointerException("Config object is null");
@@ -51,6 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
     @Override
+    @Transactional (readOnly = true)
     public NotificationDto getNotificationByName(String name) {
         if (name == null) {
             throw new NullPointerException("Name is null");
@@ -61,6 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     /* (non-Javadoc)
       * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#getNotificationById(java.lang.String)
       */
+    @Transactional (readOnly = true)
 	public NotificationDto getNotificationById(String id) {
 		if (id == null) {
 			throw new NullPointerException("id is null");
@@ -72,6 +76,7 @@ public class NotificationServiceImpl implements NotificationService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#removeNotification(org.openiam.idm.srvc.msg.dto.SysMessageDelivery)
 	 */
+    @Transactional
 	public void removeNotification(String id) {
 		if (id == null) {
 			throw new NullPointerException("id is null");
@@ -84,6 +89,7 @@ public class NotificationServiceImpl implements NotificationService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageDeliveryService#updateNotification(org.openiam.idm.srvc.msg.dto.SysMessageDelivery)
 	 */
+    @Transactional
 	public NotificationDto updateNotification(NotificationDto msg) {
 		if (msg == null) {
 			throw new NullPointerException("policy is null");
@@ -97,6 +103,7 @@ public class NotificationServiceImpl implements NotificationService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.msg.service.SysMessageService#getAllNotifications()
 	 */
+    @Transactional (readOnly = true)
 	public List<NotificationDto> getAllNotifications() {
         return notificationDozerConvertor.convertToDTOList(msgDao.findAll(), true);
 	}
@@ -114,11 +121,13 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
     @Override
+    @Transactional (readOnly = true)
     public List<NotificationDto> getConfigurableNotifications() {
         return notificationDozerConvertor.convertToDTOList(msgDao.findConfigurableList(), true);
     }
 
     @Override
+    @Transactional (readOnly = true)
     public List<NotificationDto> getSystemNotifications() {
         return notificationDozerConvertor.convertToDTOList(msgDao.findSystemList(), true);
     }

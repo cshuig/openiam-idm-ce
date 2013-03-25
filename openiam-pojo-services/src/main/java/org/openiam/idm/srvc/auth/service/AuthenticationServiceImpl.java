@@ -71,6 +71,7 @@ import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.util.encrypt.Cryptor;
+import org.springframework.transaction.annotation.Transactional;
 
 //import edu.emory.mathcs.backport.java.util.Arrays;
 
@@ -113,6 +114,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	 * @see org.openiam.idm.srvc.auth.service.AuthenticationService#authenticate(org.openiam.idm.srvc.auth.context.AuthenticationContext)
 	 */
 	//public Subject authenticate(AuthenticationContext ctx)	throws AuthenticationException {
+    @Transactional
 	public AuthenticationResponse authenticate(AuthenticationContext ctx) {
 		AuthenticationResponse authResp = new AuthenticationResponse(ResponseStatus.FAILURE);
 		
@@ -215,6 +217,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	 * @see org.openiam.idm.srvc.auth.service.AuthenticationService#authenticateByToken(java.lang.String, java.lang.String, java.lang.String)
 	 */
     @ManagedAttribute
+    @Transactional
 	public Subject authenticateByToken(String token,
                                        String tokenType,
                                        String ip) throws AuthenticationException {
@@ -275,6 +278,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	 * @see org.openiam.idm.srvc.auth.service.AuthenticationService#globalLogout(java.lang.String)
 	 */
     @ManagedAttribute
+    @Transactional
 	public void globalLogout(String userId) throws LogoutException {
 		if (userId == null) {
 			throw new NullPointerException("UserId is null");
@@ -291,7 +295,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
 	}
-
+    @Transactional
     public void localLogout(String userId, String ip) throws LogoutException {
         if (userId == null) {
             throw new NullPointerException("UserId is null");
@@ -316,6 +320,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public BooleanResponse isUserLoggedin (String userId, String ip) {
         BooleanResponse resp = new BooleanResponse(false);
 
@@ -353,7 +358,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     }
-
+    @Transactional
     public AuthenticationResponse login( AuthenticationRequest request) {
         log.debug("*** login called...");
 
@@ -617,6 +622,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       */
 	//public AuthenticationResponse passwordAuth(String secDomainId, String principal, String password) throws AuthenticationException {
 	@ManagedAttribute
+    @Transactional
     public AuthenticationResponse passwordAuth(String secDomainId, String principal, String password) {
 
         log.debug("*** PasswordAuth called...");
@@ -853,7 +859,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return authResp;
 
 	}
-	
+    @Transactional
 	private void populateSubject(String userId, Subject sub) {
 		log.debug("populateSubject: userId=" + userId);
 		
@@ -872,6 +878,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.auth.service.AuthenticationService#validateToken(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional
 	public BooleanResponse validateToken(String loginId,
                                          String token,
                                          String tokenType) {
@@ -909,6 +916,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 	
 	@WebMethod
+    @Transactional
 	public Response renewToken(
 			String principal,
             String token,
@@ -1007,7 +1015,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		
 		
 	}
-    
+    @Transactional
     private boolean isUserStatusValid(String userId) {
         
 
@@ -1055,6 +1063,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.auth.service.AuthenticationService#validateTokenByUser(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional
 	public BooleanResponse validateTokenByUser(String userId, String token, 	String tokenType) {
 		if (userId == null) {
 			throw new IllegalArgumentException("userId is null");
@@ -1095,7 +1104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return resp;
 
 	}
-	
+    @Transactional
 	private void updateAuthState(Subject sub, String clientIP) {
 		
 		AuthState state = new AuthState(sub.getDomainId(), new BigDecimal(1),  sub.getSsoToken().getExpirationTime().getTime(),

@@ -16,6 +16,8 @@ import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.service.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,10 +35,10 @@ import java.util.Map;
  */
 
 public class GroupDataServiceImpl implements GroupDataService {
-    protected GroupDAO groupDao;
-    protected GroupAttributeDAO groupAttrDao;
-    protected UserGroupDAO userGroupDao;
-    protected UserDAO userDao;
+    private GroupDAO groupDao;
+    private GroupAttributeDAO groupAttrDao;
+    private UserGroupDAO userGroupDao;
+    private UserDAO userDao;
 
     private static final Log log = LogFactory.getLog(GroupDataServiceImpl.class);
 
@@ -61,6 +63,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getAllGroups(boolean)
       */
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<Group> getAllGroupsWithDependents(boolean subgroups) {
         List<GroupEntity> groupEntityList = new LinkedList<GroupEntity>();
         if (!subgroups) {
@@ -80,6 +83,7 @@ public class GroupDataServiceImpl implements GroupDataService {
      *
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Group> getAllGroups() {
         List<GroupEntity> groupEntityList = groupDao.findAllGroups();
 
@@ -91,6 +95,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#addGroup(org.openiam.idm.srvc.grp.dto.Group)
       */
+    @Transactional
     public Group addGroup(Group grp) {
         if (grp == null) {
             log.debug("Group object is null. Unable to add a new group.");
@@ -115,6 +120,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getGroup(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Group getGroup(String grpId) {
         if (grpId == null)
             throw new NullPointerException("grp id is null");
@@ -129,6 +135,7 @@ public class GroupDataServiceImpl implements GroupDataService {
      * @param grpId
      * @return
      */
+    @Transactional(readOnly = true)
     public Group getGroupWithDependants(String grpId) {
         if (grpId == null)
             throw new NullPointerException("grp id is null");
@@ -141,6 +148,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#updateGroup(org.openiam.idm.srvc.grp.dto.Group)
       */
+    @Transactional
     public Group updateGroup(Group grp) {
         if (grp == null) {
             log.debug("Group object is null. Unable to add a new group.");
@@ -161,6 +169,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#removeGroup(java.lang.String)
       */
+    @Transactional
     public void removeGroup(String grpId) {
 
         if (grpId == null) {
@@ -184,6 +193,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getChildGroups(java.lang.String,
       *      boolean)
       */
+    @Transactional(readOnly = true)
     public List<Group> getChildGroups(String parentGroupId, boolean subgroups) {
         List<GroupEntity> groupEntityList = new LinkedList<GroupEntity>();
 
@@ -199,6 +209,7 @@ public class GroupDataServiceImpl implements GroupDataService {
 
     }
 
+    @Transactional(readOnly = true)
     private List<GroupEntity> getRecursiveChildGroup(String parentGroupId, List<GroupEntity> groupList) {
 
         if (parentGroupId == null) {
@@ -218,6 +229,7 @@ public class GroupDataServiceImpl implements GroupDataService {
         return groupList;
     }
 
+    @Transactional(readOnly = true)
     private String getRecursiveGroupId(String parentGroupId,
                                        List<GroupEntity> groupList) {
         StringBuffer groupIdBuf = new StringBuffer();
@@ -253,6 +265,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#removeChildGroups(java.lang.String)
       */
+    @Transactional
     public int removeChildGroups(String parentGroupId) {
 
         if (parentGroupId == null) {
@@ -299,6 +312,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getParentGroup(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Group getParentGroup(String groupId, boolean dependants) {
         if (groupId == null)
             throw new NullPointerException("parentGroupId id is null");
@@ -317,6 +331,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#isUserInGroup(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public boolean isUserInGroup(String groupId, String userId) {
         if (groupId == null)
             throw new NullPointerException("parentGroupId id is null");
@@ -353,6 +368,7 @@ public class GroupDataServiceImpl implements GroupDataService {
             return groupList;
         }
     */
+    @Transactional(readOnly = true)
     private GroupEntity getParentGroup(GroupEntity grp) {
         GroupEntity pGroup = groupDao.findById(grp.getParentGrpId());
         log.info("Got parent group = " + pGroup);
@@ -367,6 +383,7 @@ public class GroupDataServiceImpl implements GroupDataService {
         return pGroup;
     }
 
+    @Transactional(readOnly = true)
     public List<Group> getUserInGroups(String userId) {
         if (userId == null)
             throw new NullPointerException("userId id is null");
@@ -389,6 +406,7 @@ public class GroupDataServiceImpl implements GroupDataService {
         return groupDozerConverter.convertToDTOList(newGroupList, false);
     }
 
+    @Transactional(readOnly = true)
     private List<GroupEntity> getParentGroupFlat(GroupEntity grp) {
         List<GroupEntity> groupList = new LinkedList<GroupEntity>();
         GroupEntity pGroup = groupDao.findById(grp.getParentGrpId());
@@ -404,6 +422,7 @@ public class GroupDataServiceImpl implements GroupDataService {
         return groupList;
     }
 
+    @Transactional(readOnly = true)
     public List<Group> getUserInGroupsAsFlatList(String userId) {
         if (userId == null)
             throw new NullPointerException("userId id is null");
@@ -436,6 +455,7 @@ public class GroupDataServiceImpl implements GroupDataService {
      * @param parentGroupId - Group where the traversing will start
      * @return
      */
+    @Transactional(readOnly = true)
     public List<Group> getGroupsNotLinkedToUser(String userId, String parentGroupId, boolean nested) {
 
         if (userId == null)
@@ -458,6 +478,7 @@ public class GroupDataServiceImpl implements GroupDataService {
      * @param userId  User to be added to group.
      * @param groupId Group to which user will be added .
      */
+    @Transactional
     public void addUserToGroup(String groupId, String userId) {
         if (groupId == null)
             throw new NullPointerException("grpId id is null");
@@ -478,6 +499,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getUsersByGroupId(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public List<User> getUsersByGroup(String grpId) {
         if (grpId == null)
             throw new NullPointerException("grpId id is null");
@@ -494,6 +516,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#removeUserFromGroup(java.lang.String,
       *      java.lang.String)
       */
+    @Transactional
     public void removeUserFromGroup(String groupId, String userId) {
         if (groupId == null)
             throw new NullPointerException("grpId id is null");
@@ -512,6 +535,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#addAttribute(org.openiam.idm.srvc.grp.dto.GroupAttribute)
       */
+    @Transactional
     public void addAttribute(GroupAttribute attribute) {
         if (attribute == null)
             throw new NullPointerException("Attribute can not be null");
@@ -525,6 +549,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#updateAttribute(org.openiam.idm.srvc.grp.dto.GroupAttribute)
       */
+    @Transactional
     public void updateAttribute(GroupAttribute attribute) {
         if (attribute == null)
             throw new NullPointerException("Attribute can not be null");
@@ -544,6 +569,7 @@ public class GroupDataServiceImpl implements GroupDataService {
      * Saves a collection of attributes. The method will determine if the add or update methods should be
      * called internally.
      */
+    @Transactional
     public void saveAttributes(GroupAttribute[] groupAttr) {
         if (groupAttr == null) {
             throw new NullPointerException("Attr array is null");
@@ -566,6 +592,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getAllAttributes(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public Map<String, GroupAttribute> getAllAttributes(String groupId) {
 
         Map<String, GroupAttribute> attrMap = null;
@@ -591,6 +618,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#getAttribute(java.lang.String)
       */
+    @Transactional(readOnly = true)
     public GroupAttribute getAttribute(String attrId) {
         if (attrId == null) {
             throw new NullPointerException("attrId is null");
@@ -604,6 +632,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#removeAttribute(org.openiam.idm.srvc.grp.dto.GroupAttribute)
       */
+    @Transactional
     public void removeAttribute(GroupAttribute attr) {
         if (attr == null) {
             throw new NullPointerException("attr is null");
@@ -620,6 +649,7 @@ public class GroupDataServiceImpl implements GroupDataService {
       *
       * @see org.openiam.idm.srvc.grp.service.GroupDataService#removeAllAttributes(java.lang.String)
       */
+    @Transactional
     public void removeAllAttributes(String groupId) {
         if (groupId == null) {
             throw new NullPointerException("groupId is null");
@@ -627,6 +657,7 @@ public class GroupDataServiceImpl implements GroupDataService {
         this.groupAttrDao.removeAttributesByParent(groupId);
     }
 
+    @Transactional(readOnly = true)
     public List<Group> search(GroupSearch search) {
         if (search == null) {
             throw new NullPointerException("search object is null");

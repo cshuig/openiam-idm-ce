@@ -26,9 +26,9 @@ import java.util.List;
 public class AuthorizationWebServiceImpl implements AuthorizationWebService
 {
     private static final Log log = LogFactory.getLog(AuthorizationWebServiceImpl.class);
-    protected LoginDataService loginManager;
-    protected ResourceDataService resourceDataService;
-    protected UserDataService userManager;
+    private LoginDataService loginManager;
+    private ResourceDataService resourceDataService;
+    private UserDataService userManager;
 
 
     public AuthzResponse isAuthorized( AuthzRequest request) {

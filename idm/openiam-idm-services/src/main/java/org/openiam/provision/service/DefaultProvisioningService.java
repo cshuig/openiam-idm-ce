@@ -77,6 +77,7 @@ import org.openiam.spml2.msg.suspend.ResumeRequestType;
 import org.openiam.spml2.msg.suspend.SuspendRequestType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -89,6 +90,7 @@ import java.util.*;
  * @author suneet
  */
 @WebService(endpointInterface = "org.openiam.provision.service.ProvisionService", targetNamespace = "http://www.openiam.org/service/provision", portName = "DefaultProvisionControllerServicePort", serviceName = "ProvisioningService")
+@Transactional
 public class DefaultProvisioningService extends AbstractProvisioningService
 		implements MuleContextAware, ProvisionService, ApplicationContextAware {
 

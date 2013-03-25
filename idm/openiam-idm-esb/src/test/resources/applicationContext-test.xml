@@ -4,11 +4,11 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
        http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/context/spring-context-3.2.xsd
        http://www.springframework.org/schema/aop
-       http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+       http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
 
@@ -26,9 +26,15 @@
         <property name="ignoreResourceNotFound" value="true"/>
     </bean>
 
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <constructor-arg name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+        <constructor-arg name="url" value="jdbc:hsqldb:mem:testdb;ignorecase=true;get_column_name=true"/>
+        <constructor-arg name="username" value="SA"/>
+        <constructor-arg name="password" value=""/>
+    </bean>
 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref ="dataSource" />
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
@@ -45,6 +51,7 @@
                 <prop key="hibernate.connection.url">jdbc:hsqldb:mem:testdb;ignorecase=true;get_column_name=true</prop>
                 <prop key="hibernate.connection.username">SA</prop>
                 <prop key="hibernate.connection.password"/>
+
             </props>
         </property>
         <property name="mappingResources">
@@ -74,11 +81,11 @@
     </bean>
 
     <!--tx begin-->
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+<!--    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>-->
 
     <bean id="userDAO" class="org.openiam.idm.srvc.user.service.UserDAOImpl">
         <property name="sessionFactory" ref="sessionFactory"/>

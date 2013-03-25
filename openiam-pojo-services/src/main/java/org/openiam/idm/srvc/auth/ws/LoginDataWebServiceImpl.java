@@ -23,7 +23,7 @@ import javax.jws.WebService;
 		portName = "LoginDataWebServicePort")
 public class LoginDataWebServiceImpl implements LoginDataWebService {
 
-	protected LoginDataService loginDS;
+	private LoginDataService loginDS;
 	private static final Log log = LogFactory.getLog(LoginDataWebServiceImpl.class);
 	
 	/* (non-Javadoc)

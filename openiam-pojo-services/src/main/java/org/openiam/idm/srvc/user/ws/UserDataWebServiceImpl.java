@@ -45,6 +45,7 @@ import org.openiam.idm.srvc.continfo.ws.PhoneMapResponse;
 import org.openiam.idm.srvc.continfo.ws.PhoneResponse;
 import org.openiam.idm.srvc.user.dto.*;
 import org.openiam.idm.srvc.user.service.UserDataService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -57,10 +58,12 @@ import org.openiam.idm.srvc.user.service.UserDataService;
 
 public class UserDataWebServiceImpl implements UserDataWebService {
 
-	UserDataService userManager;
+	private UserDataService userManager;
+
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addAddress(org.openiam.idm.srvc.continfo.dto.Address)
 	 */
+    @Transactional
 	public AddressResponse addAddress(Address val) {
 		AddressResponse resp = new AddressResponse(ResponseStatus.SUCCESS);
 		userManager.addAddress(val);
@@ -75,6 +78,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addAddressSet(java.util.Set)
 	 */
+    @Transactional
 	public Response addAddressSet(Set<Address> adrList) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.addAddressSet(adrList);
@@ -84,6 +88,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addAttribute(org.openiam.idm.srvc.user.dto.UserAttribute)
 	 */
+    @Transactional
 	public UserAttributeResponse addAttribute(UserAttribute attribute) {
 		UserAttributeResponse resp = new UserAttributeResponse(ResponseStatus.SUCCESS);
 		userManager.addAttribute(attribute);
@@ -98,6 +103,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addEmailAddress(org.openiam.idm.srvc.continfo.dto.EmailAddress)
 	 */
+    @Transactional
 	public EmailAddressResponse addEmailAddress(EmailAddress val) {
 		EmailAddressResponse resp = new EmailAddressResponse(ResponseStatus.SUCCESS);
 		userManager.addEmailAddress(val);
@@ -112,6 +118,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addEmailAddressSet(java.util.Set)
 	 */
+    @Transactional
 	public Response addEmailAddressSet(Set<EmailAddress> adrList) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.addEmailAddressSet(adrList);
@@ -121,6 +128,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addNote(org.openiam.idm.srvc.user.dto.UserNote)
 	 */
+    @Transactional
 	public UserNoteResponse addNote(UserNote note) {
 		UserNoteResponse resp = new UserNoteResponse(ResponseStatus.SUCCESS);
 		userManager.addNote(note);
@@ -135,6 +143,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addPhone(org.openiam.idm.srvc.continfo.dto.Phone)
 	 */
+    @Transactional
 	public PhoneResponse addPhone(Phone val) {
 		PhoneResponse resp = new PhoneResponse(ResponseStatus.SUCCESS);
 		userManager.addPhone(val);
@@ -149,6 +158,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addPhoneSet(java.util.Set)
 	 */
+    @Transactional
 	public Response addPhoneSet(Set<Phone> phoneList) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.addPhoneSet(phoneList);
@@ -158,6 +168,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addSupervisor(org.openiam.idm.srvc.user.dto.Supervisor)
 	 */
+    @Transactional
 	public SupervisorResponse addSupervisor(Supervisor supervisor) {
 		SupervisorResponse resp = new SupervisorResponse(ResponseStatus.SUCCESS);
 		userManager.addSupervisor(supervisor);
@@ -172,6 +183,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addUser(org.openiam.idm.srvc.user.dto.User)
 	 */
+    @Transactional
 	public UserResponse addUser(User user) {
 		UserResponse resp = new UserResponse(ResponseStatus.SUCCESS);
 		userManager.addUser(user);
@@ -186,6 +198,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#addUserWithDependent(org.openiam.idm.srvc.user.dto.User, boolean)
 	 */
+    @Transactional
 	public UserResponse addUserWithDependent(User user, boolean dependency) {
 		UserResponse resp = new UserResponse(ResponseStatus.SUCCESS);
 		userManager.addUserWithDependent(user, dependency);
@@ -200,6 +213,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#findUserByOrganization(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public UserListResponse findUserByOrganization(String orgId) {
 		UserListResponse resp = new UserListResponse(ResponseStatus.SUCCESS);
 		List<User> userList = userManager.findUserByOrganization(orgId);
@@ -214,6 +228,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#findUsersByLastUpdateRange(java.util.Date, java.util.Date)
 	 */
+    @Transactional(readOnly = true)
 	public UserListResponse findUsersByLastUpdateRange(Date startDate,
 			Date endDate) {
 		UserListResponse resp = new UserListResponse(ResponseStatus.SUCCESS);
@@ -229,6 +244,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#findUsersByStatus(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public UserListResponse findUsersByStatus(String status) {
 		UserListResponse resp = new UserListResponse(ResponseStatus.SUCCESS);
 		List<User> userList = userManager.findUsersByStatus(UserStatusEnum.valueOf(status));
@@ -243,6 +259,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getAddressById(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public AddressResponse getAddressById(String addressId) {
 		AddressResponse resp = new AddressResponse(ResponseStatus.SUCCESS);
 		Address adr = userManager.getAddressById(addressId);
@@ -257,6 +274,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getAddressByName(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public AddressResponse getAddressByName(String userId, String addressName) {
 		AddressResponse resp = new AddressResponse(ResponseStatus.SUCCESS);
 		Address adr = userManager.getAddressByName(userId, addressName);
@@ -271,6 +289,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getAddressList(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public AddressListResponse getAddressList(String userId) {
 		AddressListResponse resp = new AddressListResponse(ResponseStatus.SUCCESS);
 		List<Address> adrList = userManager.getAddressList(userId);
@@ -285,6 +304,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getAddressMap(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public AddressMapResponse getAddressMap(String userId) {
 		AddressMapResponse resp = new AddressMapResponse(ResponseStatus.SUCCESS);
 		Map<String, Address> adrMap = userManager.getAddressMap(userId);
@@ -299,6 +319,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getAllNotes(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public UserNoteListResponse getAllNotes(String userId) {
 		UserNoteListResponse resp = new UserNoteListResponse(ResponseStatus.SUCCESS);
 		List<UserNote> note = userManager.getAllNotes(userId);
@@ -313,6 +334,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getAttribute(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public UserAttributeResponse getAttribute(String attrId) {
 		UserAttributeResponse resp = new UserAttributeResponse(ResponseStatus.SUCCESS);
 		UserAttribute userAttr = userManager.getAttribute(attrId);
@@ -327,6 +349,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getDefaultAddress(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public AddressResponse getDefaultAddress(String userId) {
 		AddressResponse resp = new AddressResponse(ResponseStatus.SUCCESS);
 		Address adr = userManager.getDefaultAddress(userId);
@@ -341,6 +364,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getDefaultEmailAddress(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public EmailAddressResponse getDefaultEmailAddress(String userId) {
 		EmailAddressResponse resp = new EmailAddressResponse(ResponseStatus.SUCCESS);
 		EmailAddress adr = userManager.getDefaultEmailAddress(userId);
@@ -355,6 +379,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getDefaultPhone(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public PhoneResponse getDefaultPhone(String userId) {
 		PhoneResponse resp = new PhoneResponse(ResponseStatus.SUCCESS);
 		Phone ph = userManager.getDefaultPhone(userId);
@@ -369,6 +394,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getEmailAddressById(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public EmailAddressResponse getEmailAddressById(String addressId) {
 		EmailAddressResponse resp = new EmailAddressResponse(ResponseStatus.SUCCESS);
 		EmailAddress adr = userManager.getEmailAddressById(addressId);
@@ -383,6 +409,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getEmailAddressByName(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public EmailAddressResponse getEmailAddressByName(String userId,
 			String addressName) {
 		EmailAddressResponse resp = new EmailAddressResponse(ResponseStatus.SUCCESS);
@@ -398,6 +425,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getEmailAddressList(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public EmailAddressListResponse getEmailAddressList(String userId) {
 		EmailAddressListResponse resp = new EmailAddressListResponse(ResponseStatus.SUCCESS);
 		List<EmailAddress> adr = userManager.getEmailAddressList(userId);
@@ -412,6 +440,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getEmailAddressMap(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public EmailAddressMapResponse getEmailAddressMap(String userId) {
 		EmailAddressMapResponse resp = new EmailAddressMapResponse(ResponseStatus.SUCCESS);
 		Map<String, EmailAddress> adrMap = userManager.getEmailAddressMap(userId);
@@ -426,6 +455,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getEmployees(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public SupervisorListResponse getEmployees(String supervisorId) {
 		SupervisorListResponse resp = new SupervisorListResponse(ResponseStatus.SUCCESS);
 		List<Supervisor> sup = userManager.getEmployees(supervisorId);
@@ -440,6 +470,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getNote(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public UserNoteResponse getNote(String noteId) {
 		UserNoteResponse resp = new UserNoteResponse(ResponseStatus.SUCCESS);
 		UserNote note = userManager.getNote(noteId);
@@ -454,6 +485,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getPhoneById(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public PhoneResponse getPhoneById(String addressId) {
 		PhoneResponse resp = new PhoneResponse(ResponseStatus.SUCCESS);
 		Phone ph = userManager.getPhoneById(addressId);
@@ -468,6 +500,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getPhoneByName(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public PhoneResponse getPhoneByName(String userId, String addressName) {
 		PhoneResponse resp = new PhoneResponse(ResponseStatus.SUCCESS);
 		Phone ph = userManager.getPhoneByName(userId, addressName);
@@ -482,6 +515,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getPhoneList(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public PhoneListResponse getPhoneList(String userId) {
 		PhoneListResponse resp = new PhoneListResponse(ResponseStatus.SUCCESS);
 		List<Phone> ph = userManager.getPhoneList(userId);
@@ -496,6 +530,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getPhoneMap(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public PhoneMapResponse getPhoneMap(String userId) {
 		PhoneMapResponse resp = new PhoneMapResponse(ResponseStatus.SUCCESS);
 		Map<String, Phone> phoneMap = userManager.getPhoneMap(userId);
@@ -510,6 +545,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getPrimarySupervisor(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public SupervisorResponse getPrimarySupervisor(String employeeId) {
 		SupervisorResponse resp = new SupervisorResponse(ResponseStatus.SUCCESS);
 		Supervisor sup = userManager.getPrimarySupervisor(employeeId);
@@ -524,6 +560,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getSupervisor(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public SupervisorResponse getSupervisor(String supervisorObjId) {
 		SupervisorResponse resp = new SupervisorResponse(ResponseStatus.SUCCESS);
 		Supervisor sup = userManager.getSupervisor(supervisorObjId);
@@ -538,6 +575,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getSupervisors(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public SupervisorListResponse getSupervisors(String employeeId) {
 		SupervisorListResponse resp = new SupervisorListResponse(ResponseStatus.SUCCESS);
 		List<Supervisor> sup = userManager.getSupervisors(employeeId);
@@ -552,6 +590,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getUserByName(java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public UserResponse getUserByName(String firstName, String lastName) {
 		UserResponse resp = new UserResponse(ResponseStatus.SUCCESS);
 		User user = userManager.getUserByName(firstName, lastName);
@@ -567,6 +606,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#getUserWithDependent(java.lang.String, boolean)
 	 */
+    @Transactional(readOnly = true)
 	public UserResponse getUserWithDependent(String id, boolean dependants) {
 		UserResponse resp = new UserResponse(ResponseStatus.SUCCESS);
 		User user = userManager.getUserWithDependent(id, dependants);
@@ -579,6 +619,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	}
 	
 	@WebMethod
+    @Transactional(readOnly = true)
 	public UserResponse getUserByPrincipal(
 			String securityDomain, 
 			String principal, 
@@ -597,6 +638,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAddress(org.openiam.idm.srvc.continfo.dto.Address)
 	 */
+    @Transactional
 	public Response removeAddress(Address val) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAddress(val);
@@ -606,6 +648,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAllAddresses(java.lang.String)
 	 */
+    @Transactional
 	public Response removeAllAddresses(String userId) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAllAddresses(userId);
@@ -615,6 +658,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAllAttributes(java.lang.String)
 	 */
+    @Transactional
 	public Response removeAllAttributes(String userId) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAllAttributes(userId);
@@ -624,6 +668,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAllEmailAddresses(java.lang.String)
 	 */
+    @Transactional
 	public Response removeAllEmailAddresses(String userId) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAllEmailAddresses(userId);
@@ -633,6 +678,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAllNotes(java.lang.String)
 	 */
+    @Transactional
 	public Response removeAllNotes(String userId) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAllNotes(userId);
@@ -642,6 +688,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAllPhones(java.lang.String)
 	 */
+    @Transactional
 	public Response removeAllPhones(String userId) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAllPhones(userId);
@@ -651,6 +698,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeAttribute(org.openiam.idm.srvc.user.dto.UserAttribute)
 	 */
+    @Transactional
 	public Response removeAttribute(UserAttribute attr) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeAttribute(attr);
@@ -660,6 +708,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeEmailAddress(org.openiam.idm.srvc.continfo.dto.EmailAddress)
 	 */
+    @Transactional
 	public Response removeEmailAddress(EmailAddress val) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeEmailAddress(val);
@@ -669,6 +718,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeNote(org.openiam.idm.srvc.user.dto.UserNote)
 	 */
+    @Transactional
 	public Response removeNote(UserNote note) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeNote(note);
@@ -678,6 +728,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removePhone(org.openiam.idm.srvc.continfo.dto.Phone)
 	 */
+    @Transactional
 	public Response removePhone(Phone val) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removePhone(val);
@@ -687,6 +738,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeSupervisor(org.openiam.idm.srvc.user.dto.Supervisor)
 	 */
+    @Transactional
 	public Response removeSupervisor(Supervisor supervisor) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeSupervisor(supervisor);
@@ -696,6 +748,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#removeUser(java.lang.String)
 	 */
+    @Transactional
 	public Response removeUser(String id) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.removeUser(id);
@@ -705,6 +758,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#search(org.openiam.idm.srvc.user.dto.UserSearch)
 	 */
+    @Transactional
 	public UserListResponse search(UserSearch search) {
 		UserListResponse resp = new UserListResponse(ResponseStatus.SUCCESS);
 		List<User> userList = userManager.search(search);
@@ -716,6 +770,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 		return resp;
 	}
 
+    @Transactional(readOnly = true)
     public UserListResponse searchByDelegationProperties(
                                                          DelegationFilterSearch search) {
         UserListResponse resp = new UserListResponse(ResponseStatus.SUCCESS);
@@ -734,6 +789,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateAddress(org.openiam.idm.srvc.continfo.dto.Address)
 	 */
+    @Transactional
 	public Response updateAddress(Address val) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateAddress(val);
@@ -743,6 +799,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateAttribute(org.openiam.idm.srvc.user.dto.UserAttribute)
 	 */
+    @Transactional
 	public Response updateAttribute(UserAttribute attribute) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateAttribute(attribute);
@@ -752,6 +809,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateEmailAddress(org.openiam.idm.srvc.continfo.dto.EmailAddress)
 	 */
+    @Transactional
 	public Response updateEmailAddress(EmailAddress val) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateEmailAddress(val);
@@ -761,6 +819,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateNote(org.openiam.idm.srvc.user.dto.UserNote)
 	 */
+    @Transactional
 	public Response updateNote(UserNote note) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateNote(note);
@@ -770,6 +829,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updatePhone(org.openiam.idm.srvc.continfo.dto.Phone)
 	 */
+    @Transactional
 	public Response updatePhone(Phone val) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updatePhone(val);
@@ -779,6 +839,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateSupervisor(org.openiam.idm.srvc.user.dto.Supervisor)
 	 */
+    @Transactional
 	public Response updateSupervisor(Supervisor supervisor) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateSupervisor(supervisor);
@@ -788,6 +849,7 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateUser(org.openiam.idm.srvc.user.dto.User)
 	 */
+    @Transactional
 	public Response updateUser(User user) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateUser(user);
@@ -797,12 +859,14 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#updateUserWithDependent(org.openiam.idm.srvc.user.dto.User, boolean)
 	 */
+    @Transactional
 	public Response updateUserWithDependent(User user, boolean dependency) {
 		Response resp = new Response(ResponseStatus.SUCCESS);
 		userManager.updateUserWithDependent(user, dependency);
 		return resp;
 	}
 
+    @Transactional(readOnly = true)
     public AttributeListResponse getUserAsAttributeList (
             String principalName,
             List<String> attributeList) {

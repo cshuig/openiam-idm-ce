@@ -46,6 +46,7 @@ public class WebResourceAttributeServiceImpl implements WebResourceAttributeServ
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AttributeMap getAttributeMap(String attributeId) throws Exception {
         if (!StringUtils.hasText(attributeId)) throw new NullPointerException("attributeId is null or empty");
         WebResourceAttribute webResourceAttribute = webResourceAttributeDao.findById(attributeId);
@@ -57,6 +58,7 @@ public class WebResourceAttributeServiceImpl implements WebResourceAttributeServ
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AttributeMap> getAttributeMapCollection(String resourceId) throws Exception {
         if (!StringUtils.hasText(resourceId)) throw new NullPointerException("resourceId is null or empty");
         log.debug("try to get attribute list by resource id:" + resourceId);
@@ -99,6 +101,7 @@ public class WebResourceAttributeServiceImpl implements WebResourceAttributeServ
     }
 
     @Override
+    @Transactional
     public AttributeMap updateAttributeMap(AttributeMap attribute) throws Exception {
         if (attribute == null) throw new NullPointerException("Attribute is null");
         if (attribute.getAttributeMapId() == null) throw new NullPointerException("AttributeMapId is null");
@@ -106,18 +109,21 @@ public class WebResourceAttributeServiceImpl implements WebResourceAttributeServ
     }
 
     @Override
+    @Transactional
     public void removeAttributeMap(String attributeId) throws Exception {
         if (!StringUtils.hasText(attributeId)) throw new NullPointerException("attributeId is null or empty");
         webResourceAttributeDao.delete(attributeId);
     }
 
     @Override
+    @Transactional
     public int removeResourceAttributeMaps(String resourceId) throws Exception {
         if (!StringUtils.hasText(resourceId)) throw new NullPointerException("resourceId is null or empty");
         return webResourceAttributeDao.deleteByResourceId(resourceId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Attribute> getSSOAttributes(String resourceId, String principalName, String securityDomain,
                                             String managedSysId) {
         List<Attribute> resultList = new ArrayList<Attribute>();
@@ -192,6 +198,7 @@ public class WebResourceAttributeServiceImpl implements WebResourceAttributeServ
         return attribute;
     }
 
+    @Transactional
     private String getAttributeValue(Object obj, String fieldName, int currentMapIndex, String[] map) throws Exception{
         String result = "";
         if(currentMapIndex==map.length-1){

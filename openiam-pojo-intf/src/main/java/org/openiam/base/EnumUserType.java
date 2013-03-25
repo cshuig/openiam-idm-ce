@@ -22,6 +22,7 @@
 package org.openiam.base;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
@@ -56,7 +57,8 @@ public class EnumUserType<E extends Enum<E>> implements UserType {
         return clazz;
     }
 
-    public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
+    @Override
+    public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
         String name = resultSet.getString(names[0]);
         E result = null;
         if (!resultSet.wasNull()) {
@@ -65,7 +67,8 @@ public class EnumUserType<E extends Enum<E>> implements UserType {
         return result;
     }
 
-    public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index) throws HibernateException, SQLException {
+    @Override
+    public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
         if (null == value) {
             preparedStatement.setNull(index, Types.VARCHAR);
         } else {

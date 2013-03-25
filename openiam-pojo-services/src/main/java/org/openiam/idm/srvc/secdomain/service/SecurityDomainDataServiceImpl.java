@@ -9,6 +9,8 @@ import javax.jws.WebService;
 
 
 import org.openiam.idm.srvc.secdomain.dto.*;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Interface to manager the SecurityDomain that clients will access to gain information about SecurityDomain.
  * @author Suneet Shah
@@ -20,7 +22,7 @@ import org.openiam.idm.srvc.secdomain.dto.*;
 		portName = "SecurityDomainWebServicePort")
 public class SecurityDomainDataServiceImpl implements SecurityDomainDataService {
 
-	protected SecurityDomainDAO secDomainDao;
+	private SecurityDomainDAO secDomainDao;
 	
 	public SecurityDomainDataServiceImpl() {
 		
@@ -42,6 +44,7 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.secdomain.service.SecurityDomainDataService#getSecurityDomain(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public SecurityDomain getSecurityDomain(String domainId) {
 		return secDomainDao.findById(domainId);
 	}
@@ -49,7 +52,7 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
 /* (non-Javadoc)
  * @see org.openiam.idm.srvc.secdomain.service.SecurityDomainDataService#addSecurityDomain(org.openiam.idm.srvc.secdomain.dto.SecurityDomain)
  */
-
+  @Transactional
   public void addSecurityDomain(SecurityDomain secDom)  {
 	  if (secDom == null)
 		   throw new NullPointerException("SecurityDomain object is null");
@@ -60,6 +63,7 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
   /* (non-Javadoc)
  * @see org.openiam.idm.srvc.secdomain.service.SecurityDomainDataService#updateSecurityDomain(org.openiam.idm.srvc.secdomain.dto.SecurityDomain)
  */
+  @Transactional
   public void updateSecurityDomain(SecurityDomain secDom) {
 	  if (secDom == null)
 		   throw new NullPointerException("SecurityDomain object is null");
@@ -73,6 +77,7 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
   /* (non-Javadoc)
  * @see org.openiam.idm.srvc.secdomain.service.SecurityDomainDataService#removeSecurityDomain(java.lang.String)
  */
+  @Transactional
   public void removeSecurityDomainById(String id) {
 	  if (id == null)
 		  throw new NullPointerException("Service id is null");
@@ -84,6 +89,7 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
   /* (non-Javadoc)
  * @see org.openiam.idm.srvc.secdomain.service.SecurityDomainDataService#removeSecurityDomain(org.openiam.idm.srvc.secdomain.dto.SecurityDomain)
  */
+  @Transactional
   public void removeSecurityDomain(SecurityDomain secDom) {
 	  if (secDom == null)
 		   throw new NullPointerException("SecurityDomain object is null");
@@ -96,6 +102,7 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
   /* (non-Javadoc)
  * @see org.openiam.idm.srvc.secdomain.service.SecurityDomainDataService#getAllSecurityDomains()
  */
+  @Transactional(readOnly = true)
   public SecurityDomain[] getAllSecurityDomains() {
 	  List<SecurityDomain> domainList = secDomainDao.findAll();
 	  if (domainList == null || domainList.isEmpty())
@@ -106,7 +113,8 @@ public class SecurityDomainDataServiceImpl implements SecurityDomainDataService 
 	  return domainList.toArray(domainAry);
 	  
   }
-  
+
+  @Transactional(readOnly = true)
   public SecurityDomain[] getAllDomainsWithExclude(String excludeDomain) {
 	  List<SecurityDomain> domainList = secDomainDao.findAll();
 	  if (domainList == null || domainList.isEmpty())

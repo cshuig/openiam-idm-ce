@@ -50,7 +50,7 @@ import org.openiam.idm.srvc.user.ws.UserArrayResponse;
 		serviceName = "RoleDataWebService")
 public class RoleDataWebServiceImpl implements RoleDataWebService {
 
-	RoleDataService roleDataService;
+	private RoleDataService roleDataService;
 
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.role.ws.RoleDataWebService#addAttribute(org.openiam.idm.srvc.role.dto.RoleAttribute)

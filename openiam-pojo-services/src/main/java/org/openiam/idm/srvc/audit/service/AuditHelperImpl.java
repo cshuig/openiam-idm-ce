@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class AuditHelperImpl implements AuditHelper {
 	
-	IdmAuditLogDataService auditDataService;
+	private IdmAuditLogDataService auditDataService;
 	
 	/**
 	 * Logs the event through the audit log service. Returns the logId.

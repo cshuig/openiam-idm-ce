@@ -15,7 +15,7 @@
     <description>OpenIAM IAM-Scripts used to extend and customize IDM</description>
     <url>http://www.openiam.org</url>
     <properties>
-        <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+        <org.springframework.version>3.2.2.RELEASE</org.springframework.version>
         <org.slf4j.version>1.6.1</org.slf4j.version>
     </properties>
     <dependencies>

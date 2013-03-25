@@ -12,6 +12,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openiam.idm.srvc.batch.dto.BatchTask;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -19,6 +20,7 @@ import org.openiam.idm.srvc.batch.dto.BatchTask;
  * @see org.openiam.idm.srvc.batch.dto.BatchTask
 
  */
+
 public class BatchConfigDAOImpl implements BatchConfigDAO {
 
 	private static final Log log = LogFactory.getLog(BatchConfigDAOImpl.class);

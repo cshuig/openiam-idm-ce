@@ -467,62 +467,6 @@
 		an operation defined by the FooService interface -->
 
 
-
-	<aop:config>
-		<aop:pointcut id="defaultProvisionOperation"
-			expression="execution(* org.openiam.provision.service.DefaultProvisioningService.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="defaultProvisionOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="synchServiceDaoOperation"
-			expression="execution(* org.openiam.idm.srvc.synch.service.SynchConfigDAOImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="synchServiceDaoOperation" />
-	</aop:config>
-
-
-	<aop:config>
-		<aop:pointcut id="synchServiceWSOperation"
-			expression="execution(* org.openiam.idm.srvc.synch.ws.IdentitySynchWebServiceImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="synchServiceWSOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="synchServiceOperation"
-			expression="execution(* org.openiam.idm.srvc.synch.service.IdentitySynchServiceImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="synchServiceOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="reconServiceWSOperation"
-			expression="execution(* org.openiam.idm.srvc.recon.ws.ReconciliationWebServiceImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="reconServiceWSOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="provRequestOperation"
-			expression="execution(* org.openiam.idm.srvc.prov.request.service.RequestDataService.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="provRequestOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="connectorDataOperation"
-			expression="execution(* org.openiam.idm.srvc.mngsys.service.ConnectorDataService.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="connectorDataOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="managedSysDataOperation"
-			expression="execution(* org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="managedSysDataOperation" />
-	</aop:config>
-
-	<aop:config>
-		<aop:pointcut id="authzOperation"
-			expression="execution(* org.openiam.idm.srvc.authz.ws.AuthorizationWebService.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="authzOperation" />
-	</aop:config>
-
 </beans>
 
 
