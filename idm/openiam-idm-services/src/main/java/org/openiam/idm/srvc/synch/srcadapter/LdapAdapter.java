@@ -32,7 +32,9 @@ import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
 import org.openiam.idm.srvc.audit.service.AuditHelper;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
+import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.role.service.RoleDataService;
+import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.synch.dto.Attribute;
 import org.openiam.idm.srvc.synch.dto.LineObject;
 import org.openiam.idm.srvc.synch.dto.SyncResponse;
@@ -74,8 +76,6 @@ public class LdapAdapter implements SourceAdapter {
 
     public ApplicationContext ac;
 
-    private LoginDataService loginManager;
-    private RoleDataService roleDataService;
     private AuditHelper auditHelper;
     private MatchRuleFactory matchRuleFactory;
 
@@ -83,7 +83,10 @@ public class LdapAdapter implements SourceAdapter {
 
     private LdapContext ctx;
 
-    private UserDataWebService userMgr;
+    protected UserDataWebService userMgr;
+
+    protected LoginDataWebService loginManager;
+    protected RoleDataWebService roleDataService;
     private String systemAccount;
     private static final Log log = LogFactory.getLog(LdapAdapter.class);
     protected MuleContext muleContext;
@@ -338,9 +341,8 @@ public class LdapAdapter implements SourceAdapter {
                 if (usr != null) {
                     transformScript.setNewUser(false);
                     transformScript.setUser(userMgr.getUserWithDependent(usr.getUserId(), true).getUser());
-                    transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()));
-                    transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()));
-
+                    transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()).getPrincipalList());
+                    transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()).getRoleList());
                 } else {
                     transformScript.setNewUser(true);
                 }
@@ -539,29 +541,21 @@ public class LdapAdapter implements SourceAdapter {
         this.systemAccount = systemAccount;
     }
 
-
-    public LoginDataService getLoginManager() {
+    public LoginDataWebService getLoginManager() {
         return loginManager;
     }
 
-
-    public void setLoginManager(LoginDataService loginManager) {
+    public void setLoginManager(LoginDataWebService loginManager) {
         this.loginManager = loginManager;
     }
 
-
-    public RoleDataService getRoleDataService() {
+    public RoleDataWebService getRoleDataService() {
         return roleDataService;
     }
 
-
-    public void setRoleDataService(RoleDataService roleDataService) {
+    public void setRoleDataService(RoleDataWebService roleDataService) {
         this.roleDataService = roleDataService;
     }
-
-
-
-
 
     public AuditHelper getAuditHelper() {
         return auditHelper;

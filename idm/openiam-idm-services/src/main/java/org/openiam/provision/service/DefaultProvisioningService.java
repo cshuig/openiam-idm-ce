@@ -1769,11 +1769,16 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     + primaryIdentity);
 
                             bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
-                                    IDENTITY_NEW);
-                            bindingMap.put(TARGET_SYSTEM_IDENTITY, null);
+                                    isMngSysIdentityExistsInOpeniam ? IDENTITY_EXIST : IDENTITY_NEW);
+                            bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
+                                    currentValueMap.size() == 0 ? null : currentValueMap);
 
 
-                            bindingMap.put(TARGET_SYSTEM_ATTRIBUTES, null);
+                            bindingMap
+                                    .put(TARGET_SYSTEM_IDENTITY, isMngSysIdentityExistsInOpeniam ? mLg.getId().getLogin() : null);
+
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
+                                    isMngSysIdentityExistsInOpeniam ? mLg.getId().getDomainId() : null);
 
                             bindingMap
                                     .put(TARGET_SYS_SECURITY_DOMAIN,

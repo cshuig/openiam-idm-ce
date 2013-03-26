@@ -39,12 +39,12 @@ public abstract class AbstractSrcAdapter implements SourceAdapter {
     protected UserDataWebService userMgr;
 
     protected LoginDataWebService loginManager;
-	protected RoleDataWebService roleDataService;
+    protected RoleDataWebService roleDataService;
 
     static protected ResourceBundle res = ResourceBundle.getBundle("datasource");
 
     static String serviceHost = res.getString("openiam.service_base");
-	static String serviceContext = res.getString("openiam.idm.ws.path");
+    static String serviceContext = res.getString("openiam.idm.ws.path");
 
 
 
@@ -115,13 +115,13 @@ public abstract class AbstractSrcAdapter implements SourceAdapter {
     }
 
     public AuditHelper getAuditHelper() {
-		return auditHelper;
-	}
+        return auditHelper;
+    }
 
 
-	public void setAuditHelper(AuditHelper auditHelper) {
-		this.auditHelper = auditHelper;
-	}
+    public void setAuditHelper(AuditHelper auditHelper) {
+        this.auditHelper = auditHelper;
+    }
 
     public LoginDataWebService getLoginManager() {
         return loginManager;
