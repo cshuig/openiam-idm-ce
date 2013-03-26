@@ -1779,11 +1779,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
                                     isMngSysIdentityExistsInOpeniam ? mLg.getId().getDomainId() : null);
-
+/*
                             bindingMap
                                     .put(TARGET_SYS_SECURITY_DOMAIN,
                                             sysConfiguration
-                                                    .getDefaultSecurityDomain());
+                                                    .getDefaultSecurityDomain());*/
 
                             // pre-processing
                             String preProcessScript = getResProperty(
