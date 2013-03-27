@@ -454,14 +454,24 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 curValueMap);
 
                         if (!userExistedInTargetSystem) {
+                            if (curValueMap == null
+                                    || curValueMap.size() == 0) {
                                 // we may have identity for a user, but it my have
                                 // been deleted from the target system
                                 // we dont need re-generate the identity in this c
+                                bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
+                                        IDENTITY_NEW);
+                                bindingMap.put(TARGET_SYSTEM_ATTRIBUTES, null);
+                            } else {
+                                bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
+                                        IDENTITY_EXIST);
+                                bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
+                                        curValueMap);
+                            }
 
-                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
-                                       mngSysIdentityExists ? IDENTITY_EXIST : IDENTITY_NEW);
-                            bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
-                                       curValueMap.size() == 0 ? null : curValueMap);
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY, resLogin.getId().getLogin());
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, resLogin.getId().getDomainId());
+
 
 
                             bindingMap
@@ -1768,10 +1778,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             log.debug("Adding new identity to target system. Primary Identity is:"
                                     + primaryIdentity);
 
-                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
-                                    isMngSysIdentityExistsInOpeniam ? IDENTITY_EXIST : IDENTITY_NEW);
-                            bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
-                                    currentValueMap.size() == 0 ? null : currentValueMap);
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_NEW);
+                            bindingMap.put(TARGET_SYSTEM_ATTRIBUTES, null);
 
 
                             bindingMap
@@ -1779,11 +1787,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
                                     isMngSysIdentityExistsInOpeniam ? mLg.getId().getDomainId() : null);
-/*
-                            bindingMap
-                                    .put(TARGET_SYS_SECURITY_DOMAIN,
-                                            sysConfiguration
-                                                    .getDefaultSecurityDomain());*/
 
                             // pre-processing
                             String preProcessScript = getResProperty(
@@ -1793,7 +1796,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 PreProcessor ppScript = createPreProcessScript(preProcessScript);
                                 if (ppScript != null) {
                                     if (executePreProcess(ppScript, bindingMap,
-                                            pUser, "MODIFY") == ProvisioningConstants.FAIL) {
+                                            pUser, "ADD") == ProvisioningConstants.FAIL) {
                                         continue;
                                     }
                                 }
