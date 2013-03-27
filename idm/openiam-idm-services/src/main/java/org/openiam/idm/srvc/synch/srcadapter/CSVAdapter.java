@@ -318,6 +318,12 @@ public class CSVAdapter extends AbstractSrcAdapter {
             }
             // show the user object
             ctr++;
+            //ADD the sleep pause to give other threads possibility to be alive
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                log.error("The thread was interrupted when sleep paused after row [" + row + "] execution.", e);
+            }
         }
 
     }
