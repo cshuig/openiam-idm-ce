@@ -806,6 +806,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     .managedSysObjectParam(
                                             mSys.getManagedSysId(), "USER");
 
+                            if (matchObjAry != null
+                                    && matchObjAry.length > 0) {
+                                matchObj = matchObjAry[0];
+                            }
+
                             log.debug("Deleting id=" + l.getId().getLogin());
                             log.debug("- delete using managed sys id="
                                     + mSys.getManagedSysId());
