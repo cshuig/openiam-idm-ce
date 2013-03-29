@@ -90,7 +90,6 @@ import java.util.*;
  * @author suneet
  */
 @WebService(endpointInterface = "org.openiam.provision.service.ProvisionService", targetNamespace = "http://www.openiam.org/service/provision", portName = "DefaultProvisionControllerServicePort", serviceName = "ProvisioningService")
-@Transactional
 public class DefaultProvisioningService extends AbstractProvisioningService
         implements MuleContextAware, ProvisionService, ApplicationContextAware {
 

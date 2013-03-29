@@ -84,7 +84,6 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected UserDataService userMgr;
     protected LoginDataService loginManager;
-    protected LoginDAO loginDao;
 
     protected IdmAuditLogDataService auditDataService;
     protected ManagedSystemDataService managedSysService;
@@ -2601,14 +2600,6 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     public void setLoginManager(LoginDataService loginManager) {
         this.loginManager = loginManager;
-    }
-
-    public LoginDAO getLoginDao() {
-        return loginDao;
-    }
-
-    public void setLoginDao(LoginDAO loginDao) {
-        this.loginDao = loginDao;
     }
 
     public IdmAuditLogDataService getAuditDataService() {

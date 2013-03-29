@@ -81,7 +81,6 @@
     <bean id="defaultProvision"
           class="org.openiam.provision.service.DefaultProvisioningService">
         <property name="loginManager" ref="loginManager" />
-        <property name="loginDao" ref="loginDAO" />
         <property name="userMgr" ref="userManager" />
         <property name="auditDataService" ref="auditDataService" />
         <property name="managedSysService" ref="managedSysService" />
