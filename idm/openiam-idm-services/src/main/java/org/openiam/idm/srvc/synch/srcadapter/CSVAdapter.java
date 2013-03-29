@@ -75,7 +75,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
 
     public SyncResponse startSynch(final SynchConfig config) {
         int THREAD_COUNT = Integer.parseInt(res.getString("csvadapter.thread.count"));
-
+        int THREAD_DELAY_BEFORE_START = Integer.parseInt(res.getString("csvadapter.thread.delay.beforestart"));
         log.debug("CSV startSynch CALLED.^^^^^^^^");
 
 
@@ -129,6 +129,8 @@ public class CSVAdapter extends AbstractSrcAdapter {
                         proccess(config, provService, synchStartLog, part, validationScript, transformScript, matchRule, rowHeader, startIndex);
                     }
                 }));
+                //Give 30sec time for thread to be UP (load all cache and begin the work)
+                Thread.sleep(THREAD_DELAY_BEFORE_START);
             }
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
