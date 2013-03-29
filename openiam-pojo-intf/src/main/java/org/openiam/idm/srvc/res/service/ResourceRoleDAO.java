@@ -2,6 +2,7 @@ package org.openiam.idm.srvc.res.service;
 
 import org.openiam.idm.srvc.res.domain.ResourceRoleEmbeddableId;
 import org.openiam.idm.srvc.res.domain.ResourceRoleEntity;
+import org.openiam.idm.srvc.role.domain.RoleEntity;
 import org.openiam.idm.srvc.role.dto.Role;
 
 import java.util.List;
@@ -44,6 +45,6 @@ public interface ResourceRoleDAO {
       */
     void removeAllResourceRoles();
 
-    public List<Role> findRolesForResource(String resourceId);
+    public List<RoleEntity> findRolesForResource(String resourceId);
 
 }

@@ -8,14 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 //import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 //import org.openiam.idm.srvc.mngsys.service.AttributeMapDAO;
-import org.openiam.dozer.converter.ResourceDozerConverter;
+import org.openiam.dozer.converter.*;
 
-import org.openiam.dozer.converter.ResourcePrivilegeDozerConverter;
-import org.openiam.dozer.converter.ResourcePropDozerConverter;
-import org.openiam.dozer.converter.ResourceRoleDozerConverter;
-import org.openiam.dozer.converter.ResourceTypeDozerConverter;
-
-import org.openiam.dozer.converter.ResourceUserDozerConverter;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.res.domain.ResourceEntity;
 import org.openiam.idm.srvc.res.domain.ResourcePrivilegeEntity;
@@ -25,6 +19,7 @@ import org.openiam.idm.srvc.res.domain.ResourceRoleEntity;
 import org.openiam.idm.srvc.res.domain.ResourceTypeEntity;
 import org.openiam.idm.srvc.res.domain.ResourceUserEntity;
 import org.openiam.idm.srvc.res.dto.*;
+import org.openiam.idm.srvc.role.domain.RoleEntity;
 import org.openiam.idm.srvc.role.service.RoleDataService;
 import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
@@ -54,6 +49,9 @@ public class ResourceDataServiceImpl implements ResourceDataService {
 
 	@Autowired
 	private ResourceDozerConverter resourceConverter;
+
+    @Autowired
+    private RoleDozerConverter roleConverter;
 
 	@Autowired
 	private ResourceRoleDozerConverter resourceRoleConverter;
@@ -305,7 +303,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceId
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public void removeResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceId is null");
@@ -316,6 +314,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     /**
      * Remove all resources
      */
+    @Transactional
     public int removeAllResources() {
         return this.resourceDao.removeAllResources();
     }
@@ -1037,11 +1036,16 @@ public class ResourceDataServiceImpl implements ResourceDataService {
     }
 
     @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
     public List<Role> getRolesForResource(String resourceId) {
         if (resourceId == null)
             throw new IllegalArgumentException("resourceRoleId is null");
-
-        return resourceRoleDao.findRolesForResource(resourceId);
+        List<Role> roles = Collections.EMPTY_LIST;
+        List<RoleEntity> roleEntities =  resourceRoleDao.findRolesForResource(resourceId);
+        if(roleEntities != null) {
+            roles = roleConverter.convertToDTOList(roleEntities, false);
+        }
+        return roles;
     }
 
     /**
@@ -1075,7 +1079,7 @@ public class ResourceDataServiceImpl implements ResourceDataService {
      *
      * @param resourceRoleId
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public void removeResourceRole(ResourceRoleId resourceRoleId) {
         if (resourceRoleId == null)
             throw new IllegalArgumentException("resourceRoleId is null");

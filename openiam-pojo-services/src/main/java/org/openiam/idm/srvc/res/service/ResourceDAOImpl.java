@@ -591,8 +591,8 @@ public class ResourceDAOImpl implements ResourceDAO {
                  .addOrder(Order.asc("managedSysId"))
                  .addOrder(Order.asc("name"));
 
-            criteria.setCacheable(true);
-            criteria.setCacheRegion("query.resource.findResourcesForRole");
+          //  criteria.setCacheable(true);
+          //  criteria.setCacheRegion("query.resource.findResourcesForRole");
             List<ResourceEntity> result = (List<ResourceEntity>) criteria.list();
             if (result == null || result.isEmpty()) {
                 log.debug("get successful, no instance found");
@@ -660,8 +660,8 @@ public class ResourceDAOImpl implements ResourceDAO {
             qry.setString("domainId", domainId);
             qry.setParameterList("roleIdList", roleIdList);
 
-            qry.setCacheable(true);
-            qry.setCacheRegion("query.resource.findResourcesForRole");
+           // qry.setCacheable(true);
+            //qry.setCacheRegion("query.resource.findResourcesForRole");
             List<ResourceEntity> result = (List<ResourceEntity>) qry.list();
             if (result == null || result.isEmpty()) {
                 log.debug("get successful, no instance found");

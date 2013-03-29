@@ -16,6 +16,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openiam.idm.srvc.res.domain.ResourceRoleEmbeddableId;
 import org.openiam.idm.srvc.res.domain.ResourceRoleEntity;
+import org.openiam.idm.srvc.role.domain.RoleEntity;
 import org.openiam.idm.srvc.role.dto.Role;
 
 
@@ -201,7 +202,7 @@ public class ResourceRoleDAOImpl implements ResourceRoleDAO {
 
 	}
 
-    public List<Role> findRolesForResource(String resourceId) {
+    public List<RoleEntity> findRolesForResource(String resourceId) {
         try {
             Session session = sessionFactory.getCurrentSession();
 
@@ -215,7 +216,7 @@ public class ResourceRoleDAOImpl implements ResourceRoleDAO {
             qry.setString("resourceId", resourceId);
 
 
-            List<Role> result = (List<Role>)qry.list();
+            List<RoleEntity> result = (List<RoleEntity>)qry.list();
             return result;
         } catch (HibernateException re) {
             log.error("persist failed", re);
