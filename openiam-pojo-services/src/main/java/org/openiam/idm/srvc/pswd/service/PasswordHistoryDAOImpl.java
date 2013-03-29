@@ -16,11 +16,13 @@ import org.openiam.idm.srvc.pswd.domain.PasswordHistoryEntity;
 import org.openiam.idm.srvc.pswd.dto.PasswordHistory;
 import org.openiam.idm.srvc.pswd.dto.UserIdentityAnswer;
 import org.openiam.idm.srvc.pswd.service.PasswordHistoryDAO;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.hibernate.criterion.Example.create;
 
 /**
  * Home object for domain model class PwdHistory.
- * @see org.openiam.idm.srvc.pswd.service.PwdHistory
+ * @see org.openiam.idm.srvc.pswd.service.PasswordHistoryEntity
  * @author Hibernate Tools
  */
 public class PasswordHistoryDAOImpl implements PasswordHistoryDAO {
@@ -50,6 +52,7 @@ public class PasswordHistoryDAOImpl implements PasswordHistoryDAO {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordHistoryDAO#add(org.openiam.idm.srvc.pswd.dto.PasswordHistoryEntity)
 	 */
+    @Transactional
 	public void add(PasswordHistoryEntity transientInstance) {
 		log.debug("persisting PwdHistory instance");
 		try {
@@ -69,6 +72,7 @@ public class PasswordHistoryDAOImpl implements PasswordHistoryDAO {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordHistoryEntityDAO#remove(org.openiam.idm.srvc.pswd.dto.PasswordHistoryEntity)
 	 */
+    @Transactional
 	public void remove(PasswordHistoryEntity persistentInstance) {
 		log.debug("deleting PwdHistory instance");
 		try {
@@ -83,6 +87,7 @@ public class PasswordHistoryDAOImpl implements PasswordHistoryDAO {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordHistoryEntityDAO#update(org.openiam.idm.srvc.pswd.dto.PasswordHistoryEntity)
 	 */
+    @Transactional
 	public PasswordHistoryEntity update(PasswordHistoryEntity detachedInstance) {
 		log.debug("merging PwdHistory instance");
 		try {
@@ -99,6 +104,7 @@ public class PasswordHistoryDAOImpl implements PasswordHistoryDAO {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordHistoryEntityDAO#findById(java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public PasswordHistoryEntity findById(java.lang.String id) {
 		log.debug("getting PwdHistory instance with id: " + id);
 		try {
@@ -120,6 +126,7 @@ public class PasswordHistoryDAOImpl implements PasswordHistoryDAO {
 	/* (non-Javadoc)
 	 * @see org.openiam.idm.srvc.pswd.service.PasswordHistoryEntityDAO#findPasswordHistoryEntityByPrincipal(java.lang.String, java.lang.String, java.lang.String)
 	 */
+    @Transactional(readOnly = true)
 	public List<PasswordHistoryEntity> findPasswordHistoryByPrincipal(
 			String domainId, String principal, String managedSys, int versions) {
 		log.debug("getting PwdHistoryByPrinciPal instance with id: " + principal);

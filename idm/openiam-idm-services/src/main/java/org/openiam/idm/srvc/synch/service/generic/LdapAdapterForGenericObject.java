@@ -31,7 +31,9 @@ import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
 import org.openiam.idm.srvc.audit.service.AuditHelper;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
+import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.role.service.RoleDataService;
+import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.synch.dto.Attribute;
 import org.openiam.idm.srvc.synch.dto.LineObject;
 import org.openiam.idm.srvc.synch.dto.SyncResponse;
@@ -45,6 +47,7 @@ import org.openiam.idm.srvc.synch.srcadapter.SynchScriptFactory;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
+import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.service.ProvisionService;
@@ -75,8 +78,8 @@ public class LdapAdapterForGenericObject implements SourceAdapter {
 
     public static ApplicationContext ac;
 
-    protected LoginDataService loginManager;
-    protected RoleDataService roleDataService;
+    protected LoginDataWebService loginManager;
+    protected RoleDataWebService roleDataService;
     protected AuditHelper auditHelper;
     protected MatchRuleFactory matchRuleFactory;
 
@@ -84,7 +87,7 @@ public class LdapAdapterForGenericObject implements SourceAdapter {
 
     LdapContext ctx = null;
 
-    protected UserDataService userMgr;
+    protected UserDataWebService userMgr;
     ProvisionService provService = null;
     String systemAccount;
     private static final Log log = LogFactory.getLog(LdapAdapterForGenericObject.class);
@@ -194,35 +197,6 @@ public class LdapAdapterForGenericObject implements SourceAdapter {
     }
 
 
-    public LoginDataService getLoginManager() {
-        return loginManager;
-    }
-
-
-    public void setLoginManager(LoginDataService loginManager) {
-        this.loginManager = loginManager;
-    }
-
-
-    public RoleDataService getRoleDataService() {
-        return roleDataService;
-    }
-
-
-    public void setRoleDataService(RoleDataService roleDataService) {
-        this.roleDataService = roleDataService;
-    }
-
-
-    public UserDataService getUserMgr() {
-        return userMgr;
-    }
-
-
-    public void setUserMgr(UserDataService userMgr) {
-        this.userMgr = userMgr;
-    }
-
 
     public AuditHelper getAuditHelper() {
         return auditHelper;
@@ -240,6 +214,30 @@ public class LdapAdapterForGenericObject implements SourceAdapter {
 
     public void setMuleContext(MuleContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public UserDataWebService getUserMgr() {
+        return userMgr;
+    }
+
+    public void setUserMgr(UserDataWebService userMgr) {
+        this.userMgr = userMgr;
+    }
+
+    public LoginDataWebService getLoginManager() {
+        return loginManager;
+    }
+
+    public void setLoginManager(LoginDataWebService loginManager) {
+        this.loginManager = loginManager;
+    }
+
+    public RoleDataWebService getRoleDataService() {
+        return roleDataService;
+    }
+
+    public void setRoleDataService(RoleDataWebService roleDataService) {
+        this.roleDataService = roleDataService;
     }
 
     private class LastRecordTime {

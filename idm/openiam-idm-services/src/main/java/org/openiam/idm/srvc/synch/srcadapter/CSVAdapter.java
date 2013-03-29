@@ -32,8 +32,6 @@ import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
 import org.openiam.idm.srvc.audit.service.AuditHelper;
-import org.openiam.idm.srvc.auth.login.LoginDataService;
-import org.openiam.idm.srvc.role.service.RoleDataService;
 import org.openiam.idm.srvc.synch.dto.Attribute;
 import org.openiam.idm.srvc.synch.dto.LineObject;
 import org.openiam.idm.srvc.synch.dto.SyncResponse;
@@ -43,7 +41,7 @@ import org.openiam.idm.srvc.synch.service.TransformScript;
 import org.openiam.idm.srvc.synch.service.ValidationScript;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
-import org.openiam.idm.srvc.user.service.UserDataService;
+import org.openiam.idm.srvc.user.ws.UserResponse;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
 import org.springframework.context.ApplicationContext;
@@ -77,7 +75,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
 
     public SyncResponse startSynch(final SynchConfig config) {
         int THREAD_COUNT = Integer.parseInt(res.getString("csvadapter.thread.count"));
-
+        int THREAD_DELAY_BEFORE_START = Integer.parseInt(res.getString("csvadapter.thread.delay.beforestart"));
         log.debug("CSV startSynch CALLED.^^^^^^^^");
 
 
@@ -131,6 +129,8 @@ public class CSVAdapter extends AbstractSrcAdapter {
                         proccess(config, provService, synchStartLog, part, validationScript, transformScript, matchRule, rowHeader, startIndex);
                     }
                 }));
+                //Give 30sec time for thread to be UP (load all cache and begin the work)
+                Thread.sleep(THREAD_DELAY_BEFORE_START);
             }
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
@@ -269,10 +269,14 @@ public class CSVAdapter extends AbstractSrcAdapter {
 
                 // initialize the transform script
                 if (usr != null) {
-                    transformScript.setNewUser(false);
-                    transformScript.setUser(userMgr.getUserWithDependent(usr.getUserId(), true));
-                    transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()));
-                    transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()));
+                    UserResponse userResponse = userMgr.getUserWithDependent(usr.getUserId(), true);
+                    if ( userResponse.getStatus() == ResponseStatus.SUCCESS) {
+
+                        transformScript.setNewUser(false);
+                        transformScript.setUser(userResponse.getUser());
+                        transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()).getPrincipalList());
+                        transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()).getRoleList());
+                    }
 
                 } else {
                     transformScript.setNewUser(true);
@@ -295,19 +299,33 @@ public class CSVAdapter extends AbstractSrcAdapter {
                         if (usr != null) {
                             log.debug(" - Updating existing user");
                             pUser.setUserId(usr.getUserId());
-                            provService.modifyUser(pUser);
+                            try {
+                                provService.modifyUser(pUser);
+                            } catch (Exception e) {
+                                log.error(e);
+                            }
 
                         } else {
                             log.debug(" - New user being provisioned");
 
                             pUser.setUserId(null);
-                            provService.addUser(pUser);
+                            try {
+                                provService.addUser(pUser);
+                            } catch (Exception e) {
+                                log.error(e);
+                            }
                         }
                     }
                 }
             }
             // show the user object
             ctr++;
+            //ADD the sleep pause to give other threads possibility to be alive
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                log.error("The thread was interrupted when sleep paused after row [" + row + "] execution.", e);
+            }
         }
 
     }
@@ -380,29 +398,10 @@ public class CSVAdapter extends AbstractSrcAdapter {
         CSVAdapter.ac = ac;
     }
 
-    public LoginDataService getLoginManager() {
-        return loginManager;
-    }
 
-    public void setLoginManager(LoginDataService loginManager) {
-        this.loginManager = loginManager;
-    }
 
-    public RoleDataService getRoleDataService() {
-        return roleDataService;
-    }
 
-    public void setRoleDataService(RoleDataService roleDataService) {
-        this.roleDataService = roleDataService;
-    }
 
-    public UserDataService getUserMgr() {
-        return userMgr;
-    }
-
-    public void setUserMgr(UserDataService userMgr) {
-        this.userMgr = userMgr;
-    }
 
     public String getSystemAccount() {
         return systemAccount;
