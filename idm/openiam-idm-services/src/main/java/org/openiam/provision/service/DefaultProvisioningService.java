@@ -2325,10 +2325,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     passwordSync.getSecurityDomain());
 
             //check if password should be sent to the user.
-            //   if (passwordSync.isSendPasswordToUser()) {
-            //        //
-            //       sendPasswordToUser(usr, password);
-            //   }
+               if (passwordSync.isSendPasswordToUser()) {
+                    //
+                   sendPasswordToUser(usr, password);
+               }
 
         } else {
             auditHelper.addLog("RESET PASSWORD",
