@@ -5,12 +5,12 @@ package org.openiam.idm.srvc.user.dto;
 
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseObject;
+import org.openiam.dozer.DozerDTOCorrespondence;
+import org.openiam.idm.srvc.user.domain.UserAttributeEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.user.domain.UserAttributeEntity;
 
 /**
  * UserAttribute represents an individual attribute that is associated with a user. A user may
@@ -26,7 +26,6 @@ import org.openiam.idm.srvc.user.domain.UserAttributeEntity;
         "name",
         "userId",
         "value",
-        "attrGroup",
         "operation",
         "required"
 })
@@ -41,8 +40,6 @@ public class UserAttribute extends BaseObject {
     protected String name;
 
     protected String value;
-
-    protected String attrGroup;
 
     protected AttributeOperationEnum operation = AttributeOperationEnum.NO_CHANGE;
 
@@ -89,7 +86,6 @@ public class UserAttribute extends BaseObject {
 
 
     public void updateUserAttribute(UserAttribute attr) {
-        this.attrGroup = attr.getAttrGroup();
         this.metadataElementId = attr.getMetadataElementId();
         this.name = attr.getName();
         this.value = attr.getValue();
@@ -130,14 +126,6 @@ public class UserAttribute extends BaseObject {
         this.metadataElementId = metadataElementId;
     }
 
-    public String getAttrGroup() {
-        return attrGroup;
-    }
-
-    public void setAttrGroup(String attrGroup) {
-        this.attrGroup = attrGroup;
-    }
-
     public AttributeOperationEnum getOperation() {
         return operation;
     }
@@ -172,7 +160,6 @@ public class UserAttribute extends BaseObject {
                 ", name='" + name + '\'' +
                 ", userId='" + userId +
                 ", value='" + value + '\'' +
-                ", attrGroup='" + attrGroup + '\'' +
                 ", operation=" + operation +
                 '}';
     }
@@ -184,7 +171,6 @@ public class UserAttribute extends BaseObject {
 
         UserAttribute that = (UserAttribute) o;
 
-        if (attrGroup != null ? !attrGroup.equals(that.attrGroup) : that.attrGroup != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (metadataElementId != null ? !metadataElementId.equals(that.metadataElementId) : that.metadataElementId != null)
             return false;
@@ -203,7 +189,6 @@ public class UserAttribute extends BaseObject {
         result = 31 * result + (metadataElementId != null ? metadataElementId.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (value != null ? value.hashCode() : 0);
-        result = 31 * result + (attrGroup != null ? attrGroup.hashCode() : 0);
         result = 31 * result + (operation != null ? operation.hashCode() : 0);
         result = 31 * result + (required != null ? required.hashCode() : 0);
         result = 31 * result + (userId != null ? userId.hashCode() : 0);

@@ -1,41 +1,16 @@
 package org.openiam.webadmin.user;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.text.SimpleDateFormat;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.CancellableFormController;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.ws.ResponseStatus;
-import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.menu.dto.Menu;
 import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
 import org.openiam.idm.srvc.meta.dto.MetadataElement;
 import org.openiam.idm.srvc.meta.ws.MetadataElementArrayResponse;
 import org.openiam.idm.srvc.meta.ws.MetadataWebService;
-import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserAttribute;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
@@ -43,6 +18,18 @@ import org.openiam.idm.srvc.user.ws.UserResponse;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.webadmin.admin.AppConfiguration;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class UserAttributeController extends CancellableFormController {
@@ -297,10 +284,12 @@ public class UserAttributeController extends CancellableFormController {
 		if (operation == 2) {
 			// modify
 			UserAttribute atr = user.getUserAttributes().get(ua.getName());
-			if (atr.getValue() != null && atr.getValue().equals(ua.getValue())) {
-				ua.setOperation(AttributeOperationEnum.NO_CHANGE);
-			}else {
-				System.out.println("updating attribute");
+			if     (atr.getValue() != null && atr.getValue().equals(ua.getValue()))   {
+
+					ua.setOperation(AttributeOperationEnum.NO_CHANGE);
+
+            }else {
+
 				atr.setValue( ua.getValue());
 				atr.setOperation(AttributeOperationEnum.REPLACE);
 				user.getUserAttributes().put(atr.getName(), atr);
