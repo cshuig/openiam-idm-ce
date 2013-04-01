@@ -137,8 +137,13 @@ public class LoginDAOImpl implements LoginDAO {
             if (dbType != null && dbType.equalsIgnoreCase("ORACLE_INSENSITIVE")) {
                 return findByIdOracleInsensitive(id);
             }
-
-            Login instance = (Login) sessionFactory.getCurrentSession()
+            Session session;
+            try {
+                session = sessionFactory.getCurrentSession();
+            } catch (HibernateException e) {
+                session = sessionFactory.openSession();
+            }
+            Login instance = (Login) session
                     .createCriteria(Login.class)
                     .add(Restrictions.eq("id.domainId",id.getDomainId()))
                     .add(Restrictions.eq("id.managedSysId",id.getManagedSysId()))
