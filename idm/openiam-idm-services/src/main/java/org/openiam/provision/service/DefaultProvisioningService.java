@@ -723,15 +723,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         }
         ProvisionUser pUser = new ProvisionUser(usr);
 
-        ProvisionServicePreProcessor deletePreProcessScript = createProvPreProcessScript(preProcessor);
-        if (deletePreProcessScript != null && !user.isSkipPreprocessor()) {
-            deletePreProcessScript.setMuleContext(muleContext);
-            if (executeProvisionPreProcess(deletePreProcessScript, bindingMap,
-                    pUser, null, "DELETE") != ProvisioningConstants.SUCCESS) {
-                response.setStatus(ResponseStatus.FAILURE);
-                response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
-                return response;
-            }
+        if (callPreProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+            response.setStatus(ResponseStatus.FAILURE);
+            response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
+            return response;
         }
 
         if (usr.getStatus() == UserStatusEnum.DELETED
@@ -839,15 +834,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             }
         }
 
-        ProvisionServicePostProcessor deletePostProcessScript = createProvPostProcessScript(postProcessor);
-        if (deletePostProcessScript != null && !user.isSkipPostProcessor()) {
-            deletePostProcessScript.setMuleContext(muleContext);
-            if (executeProvisionPostProcess(deletePostProcessScript,
-                    bindingMap, pUser, null, "DELETE") != ProvisioningConstants.SUCCESS) {
-                response.setStatus(ResponseStatus.FAILURE);
-                response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
-                return response;
-            }
+        if (callPostProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+            response.setStatus(ResponseStatus.FAILURE);
+            response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
+            return response;
         }
 
         response.setStatus(ResponseStatus.SUCCESS);
@@ -907,15 +897,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         }
         ProvisionUser pUser = new ProvisionUser(usr);
 
-        ProvisionServicePreProcessor deletePreProcessScript = createProvPreProcessScript(preProcessor);
-        if (deletePreProcessScript != null && !pUser.isSkipPreprocessor()) {
-            deletePreProcessScript.setMuleContext(muleContext);
-            if (executeProvisionPreProcess(deletePreProcessScript, bindingMap,
-                    pUser, null, "DELETE") != ProvisioningConstants.SUCCESS) {
-                response.setStatus(ResponseStatus.FAILURE);
-                response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
-                return response;
-            }
+        if (callPreProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+            response.setStatus(ResponseStatus.FAILURE);
+            response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
+            return response;
         }
 
         if (usr.getStatus() == UserStatusEnum.DELETED
@@ -1128,15 +1113,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         }
 
-        ProvisionServicePostProcessor deletePostProcessScript = createProvPostProcessScript(postProcessor);
-        if (deletePostProcessScript != null && !pUser.isSkipPostProcessor()) {
-            deletePostProcessScript.setMuleContext(muleContext);
-            if (executeProvisionPostProcess(deletePostProcessScript,
-                    bindingMap, pUser, null, "DELETE") != ProvisioningConstants.SUCCESS) {
-                response.setStatus(ResponseStatus.FAILURE);
-                response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
-                return response;
-            }
+        if (callPostProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+            response.setStatus(ResponseStatus.FAILURE);
+            response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
+            return response;
         }
 
         response.setStatus(ResponseStatus.SUCCESS);
@@ -1489,16 +1469,12 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         // scripts
         bindingMap.put("userBeforeModify", new ProvisionUser(origUser));
 
-        ProvisionServicePreProcessor modifyPreProcessScript = createProvPreProcessScript(preProcessor);
-        if (modifyPreProcessScript != null && !pUser.isSkipPreprocessor()) {
-            modifyPreProcessScript.setMuleContext(muleContext);
-            if (executeProvisionPreProcess(modifyPreProcessScript, bindingMap,
-                    pUser, null, "MODIFY") != ProvisioningConstants.SUCCESS) {
-                resp.setStatus(ResponseStatus.FAILURE);
-                resp.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
-                return resp;
-            }
+        if (callPreProcessor("MODIFY", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+           resp.setStatus(ResponseStatus.FAILURE);
+           resp.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
+           return resp;
         }
+
 
         // make sure that our object as the attribute set that will be used for
         // audit logging
@@ -2093,15 +2069,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         bindingMap.put("userAfterModify", pUser);
 
-        ProvisionServicePostProcessor modifyPostProcessScript = createProvPostProcessScript(postProcessor);
-        if (modifyPostProcessScript != null && !pUser.isSkipPostProcessor()) {
-            modifyPostProcessScript.setMuleContext(muleContext);
-            if (executeProvisionPostProcess(modifyPostProcessScript,
-                    bindingMap, pUser, null, "MODIFY") != ProvisioningConstants.SUCCESS) {
-                resp.setStatus(ResponseStatus.FAILURE);
-                resp.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
-                return resp;
-            }
+        if (callPostProcessor("MODIFY", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+            resp.setStatus(ResponseStatus.FAILURE);
+            resp.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
+            return resp;
         }
 
         /* Response object */
@@ -2563,15 +2534,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         Response response = new Response(ResponseStatus.SUCCESS);
         Map<String, Object> bindingMap = new HashMap<String, Object>();
 
-        ProvisionServicePreProcessor passwordPreScript = createProvPreProcessScript(preProcessor);
-        if (passwordPreScript != null) {
-            passwordPreScript.setMuleContext(muleContext);
-            if (executeProvisionPreProcess(passwordPreScript, bindingMap, null,
-                    passwordSync, "SET_PASSWORD") != ProvisioningConstants.SUCCESS) {
-                response.setStatus(ResponseStatus.FAILURE);
-                response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
-                return response;
-            }
+        if (callPreProcessor("SET_PASSWORD", null, bindingMap) != ProvisioningConstants.SUCCESS) {
+            response.setStatus(ResponseStatus.FAILURE);
+            response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
+            return response;
         }
 
         String requestId = "R" + UUIDGen.getUUID();
@@ -2905,15 +2871,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         }
 
-        ProvisionServicePostProcessor passwordPostScript = createProvPostProcessScript(postProcessor);
-        if (passwordPreScript != null) {
-            passwordPostScript.setMuleContext(muleContext);
-            if (executeProvisionPostProcess(passwordPostScript, bindingMap,
-                    null, passwordSync, "SET_PASSWORD") != ProvisioningConstants.SUCCESS) {
-                response.setStatus(ResponseStatus.FAILURE);
-                response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
-                return response;
-            }
+
+        if (callPostProcessor("SET_PASSWORD", null, bindingMap) != ProvisioningConstants.SUCCESS) {
+            response.setStatus(ResponseStatus.FAILURE);
+            response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
+            return response;
         }
 
         response.setStatus(ResponseStatus.SUCCESS);

@@ -2,6 +2,7 @@ package org.openiam.webadmin.user;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.openiam.idm.srvc.cd.dto.ReferenceData;
@@ -100,7 +101,7 @@ public class NewUserCommand implements Serializable {
 	protected List<Role> roleAry; // list of roles a user belongs to
 	protected Location[] locationAry;
 	
-	protected List<UserAttribute> attributeList;
+	protected List<UserAttribute> attributeList = new LinkedList<UserAttribute>();
 	
 	//protected List<Resource> resourceList;
 	

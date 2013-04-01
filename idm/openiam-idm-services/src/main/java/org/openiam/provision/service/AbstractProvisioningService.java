@@ -848,8 +848,8 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected int callPreProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
 
-        ProvisionServicePreProcessor addPreProcessScript = createProvPreProcessScript(preProcessor);
-        if (addPreProcessScript != null && !pUser.isSkipPreprocessor()) {
+        ProvisionServicePreProcessor addPreProcessScript;
+        if (!pUser.isSkipPreprocessor() && (addPreProcessScript = createProvPreProcessScript(preProcessor)) != null) {
             addPreProcessScript.setMuleContext(muleContext);
             return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
 
@@ -861,11 +861,11 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected int callPostProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
 
-        ProvisionServicePostProcessor addPostProcessScript = createProvPostProcessScript(postProcessor);
+        ProvisionServicePostProcessor addPostProcessScript;
 
-        if (addPostProcessScript != null && !pUser.isSkipPostProcessor()) {
+        if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(preProcessor)) != null) {
             addPostProcessScript.setMuleContext(muleContext);
-            return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, "ADD");
+            return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
 
         }
         // pre-processor was skipped
@@ -902,8 +902,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected ProvisionServicePreProcessor createProvPreProcessScript(String scriptName) {
         try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             return (ProvisionServicePreProcessor) se.instantiateClass(null, scriptName);
         } catch (Exception ce) {
             log.error(ce);
@@ -915,8 +914,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected ProvisionServicePostProcessor createProvPostProcessScript(String scriptName) {
         try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             return (ProvisionServicePostProcessor) se.instantiateClass(null, scriptName);
         } catch (Exception ce) {
             log.error(ce);

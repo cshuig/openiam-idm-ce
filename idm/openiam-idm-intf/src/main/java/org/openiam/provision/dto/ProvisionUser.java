@@ -173,7 +173,6 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		phones = user.getPhones();
 		addresses = user.getAddresses();
 		// set the email address in a hibernate friendly manner
-
 	}
 
 	public ProvisionUser(UserWrapperEntity user) {
