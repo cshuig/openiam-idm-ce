@@ -1,15 +1,15 @@
 package org.openiam.idm.srvc.org.domain;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.persistence.*;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.org.dto.OrgClassificationEnum;
 import org.openiam.idm.srvc.org.dto.Organization;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "COMPANY")
@@ -56,6 +56,9 @@ public class OrganizationEntity {
     private String organizationName;
 
     @Column(name="INTERNAL_COMPANY_ID")
+    private String internalOrgName;
+
+    @Column(name="INTERNAL_COMPANY_NAME")
     private String internalOrgId;
 
     @Column(name="PARENT_ID", length=32)
@@ -241,6 +244,14 @@ public class OrganizationEntity {
 
     public void setSelected(Boolean selected) {
         this.selected = selected;
+    }
+
+    public String getInternalOrgName() {
+        return internalOrgName;
+    }
+
+    public void setInternalOrgName(String internalOrgName) {
+        this.internalOrgName = internalOrgName;
     }
 
     @Override
