@@ -134,7 +134,7 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 		
 	}
 
-    @Transactional
+
 	public SyncResponse startSynchronization(SynchConfig config) {
 
         SyncResponse syncResponse = new SyncResponse(ResponseStatus.SUCCESS);
@@ -154,19 +154,9 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
 			long newLastExecTime = System.currentTimeMillis();
 
             syncResponse = adapt.startSynch(config);
-			
 
-			if (syncResponse.getLastRecordTime() == null) {
-			
-				synchConfigDao.updateExecTime(config.getSynchConfigId(), new Timestamp( newLastExecTime ));
-			}else {
-				synchConfigDao.updateExecTime(config.getSynchConfigId(), new Timestamp( syncResponse.getLastRecordTime().getTime() ));
-			}
 
-            if (syncResponse.getLastRecProcessed() != null) {
-
-				synchConfigDao.updateLastRecProcessed(config.getSynchConfigId(),syncResponse.getLastRecProcessed() );
-			}
+            updateExecTime(config, syncResponse, newLastExecTime);
 
 
 		    log.debug("-SYNCHRONIZATION SERVICE: startSynchronization COMPLETE.^^^^^^^^");
@@ -195,6 +185,21 @@ public class IdentitySynchServiceImpl implements IdentitySynchService {
         }
 
 	}
+
+    @Transactional
+    private void updateExecTime(SynchConfig config, SyncResponse syncResponse, long newLastExecTime) {
+        if (syncResponse.getLastRecordTime() == null) {
+
+            synchConfigDao.updateExecTime(config.getSynchConfigId(), new Timestamp( newLastExecTime ));
+        }else {
+            synchConfigDao.updateExecTime(config.getSynchConfigId(), new Timestamp( syncResponse.getLastRecordTime().getTime() ));
+        }
+
+        if (syncResponse.getLastRecProcessed() != null) {
+
+            synchConfigDao.updateLastRecProcessed(config.getSynchConfigId(),syncResponse.getLastRecProcessed() );
+        }
+    }
 
     // manage if the task is running
 

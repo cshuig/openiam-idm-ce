@@ -223,25 +223,24 @@ public class CSVAdapter extends AbstractSrcAdapter {
 
     private void proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, String[][] rows, final ValidationScript validationScript, final TransformScript transformScript, MatchObjectRule matchRule, LineObject rowHeader, int ctr) {
         for (String[] row : rows) {
-            log.debug("*** Record counter: " + ctr++);
-            System.out.println("*** Record counter: " + ctr++);
+            log.info("*** Record counter: " + ctr++);
+
             //populate the data object
             ProvisionUser pUser = new ProvisionUser();
-            //TODO please check this
+            //Disable PRE and POST processors/performance optimizations
             pUser.setSkipPreprocessor(true);
             pUser.setSkipPostProcessor(true);
 
             LineObject rowObj = rowHeader.copy();
             populateRowObject(rowObj, row);
-            log.debug(" - Validation being called");
+            log.info(" - Validation being called");
 
             // validate
             if (validationScript != null) {
                 synchronized (validationScript) {
                     int retval = validationScript.isValid(rowObj);
                     if (retval == ValidationScript.NOT_VALID) {
-                        log.debug(" - Validation failed...transformation will not be called.");
-                        System.out.println(" - Validation failed...transformation will not be called.");
+                        log.info(" - Validation failed...transformation will not be called.");
                         continue;
                     }
                     if (retval == ValidationScript.SKIP) {
@@ -250,13 +249,12 @@ public class CSVAdapter extends AbstractSrcAdapter {
                 }
             }
 
-            log.debug(" - Getting column map...");
-            System.out.println(" - Getting column map...");
+            log.info(" - Getting column map...");
+
             // check if the user exists or not
             Map<String, Attribute> rowAttr = rowObj.getColumnMap();
 
-            log.debug(" - Row Attr..." + rowAttr);
-            System.out.println(" - Row Attr..." + rowAttr);
+            log.info(" - Row Attr..." + rowAttr);
             //
 
             User usr = matchRule.lookup(config, rowAttr);
@@ -264,7 +262,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
             //@todo - Update lookup so that an exception is thrown
             // when lookup fails due to bad matching.
 
-            log.debug(" - Preparing transform script");
+            log.info(" - Preparing transform script");
 
             // transform
             int retval = -1;
@@ -287,11 +285,11 @@ public class CSVAdapter extends AbstractSrcAdapter {
                         transformScript.setNewUser(true);
                     }
 
-                    log.debug(" - Execute transform script");
+                    log.info(" - Execute transform script");
 
                     retval = transformScript.execute(rowObj, pUser);
                 }
-                log.debug(" - Execute complete transform script");
+                log.info(" - Execute complete transform script");
 
 
                 pUser.setSessionId(synchStartLog.getSessionId());
@@ -302,8 +300,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
                         // call synch
                         if (retval != TransformScript.DELETE) {
                             if (usr != null) {
-                                log.debug(" - Updating existing user");
-                                System.out.println(" - Updating existing user" + usr.getUserId());
+                                log.info(" - Updating existing user");
                                 pUser.setUserId(usr.getUserId());
                                 try {
                                     provService.modifyUser(pUser);
@@ -312,8 +309,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
                                 }
 
                             } else {
-                                log.debug(" - New user being provisioned");
-                                System.out.println(" - New user being provisioned userEmployeeId=" + pUser.getUser().getEmployeeId());
+                                log.info(" - New user being provisioned");
                                 pUser.setUserId(null);
                                 try {
                                     provService.addUser(pUser);
@@ -329,7 +325,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
             ctr++;
             //ADD the sleep pause to give other threads possibility to be alive
             try {
-                Thread.sleep(200);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 log.error("The thread was interrupted when sleep paused after row [" + row + "] execution.", e);
             }

@@ -99,6 +99,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
     @Autowired
     private PasswordHistoryDozerConverter passwordHistoryDozerConverter;
 
+
     public Response testConnectionConfig(String managedSysId) {
         return validateConnection.testConnection(managedSysId, muleContext);
     }
@@ -134,7 +135,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         }
 
         try {
-            se = ScriptFactory.createModule(this.scriptEngine);
+            se = getScriptIntegration();
         } catch (Exception e) {
             log.error(e);
             resp.setStatus(ResponseStatus.FAILURE);
@@ -1441,7 +1442,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         List<Login> newPrincipalList = pUser.getPrincipalList();
 
         try {
-            se = ScriptFactory.createModule(this.scriptEngine);
+            se = getScriptIntegration();
         } catch (Exception e) {
             log.error(e);
             resp.setStatus(ResponseStatus.FAILURE);

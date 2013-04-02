@@ -31,12 +31,14 @@ import org.openiam.exception.EncryptionException;
 public class DESedeCryptor implements Cryptor {
 
 	private byte[] key = null;
+
 	private BufferedBlockCipher cipher = null;
 	static protected ResourceBundle res = ResourceBundle.getBundle("securityconf");
 	
 	private static final Log log = LogFactory.getLog(DESedeCryptor.class);
-	   
-	public void readKey() {
+	private final Object immutable = new Object();
+
+    private void readKey() {
 		String path = res.getString("MS_KEY_LOC");
 		String filename = "cayo.dat";
 		try {
@@ -58,7 +60,11 @@ public class DESedeCryptor implements Cryptor {
 	 * @see org.openiam.util.encrypt.Cryptor#encrypt(java.lang.String)
 	 */
 	public String encrypt(String input) throws EncryptionException {
-		if (key == null) {
+        byte[] result = null;
+        byte[] inputByteArry = null;
+        int len = 0;
+        synchronized (immutable) {
+        if (key == null) {
 			readKey();
 		}
 
@@ -66,9 +72,9 @@ public class DESedeCryptor implements Cryptor {
 		cipher = new PaddedBufferedBlockCipher(	new CBCBlockCipher(new DESedeEngine()));
 		cipher.init(true, kp);
 		
-		byte[] inputByteAry = input.getBytes();
-		byte[] result = new byte[cipher.getOutputSize(inputByteAry.length)];
-		int len = cipher.processBytes(inputByteAry, 0, inputByteAry.length, result, 0);
+		inputByteArry = input.getBytes();
+		result = new byte[cipher.getOutputSize(inputByteArry.length)];
+		len = cipher.processBytes(inputByteArry, 0, inputByteArry.length, result, 0);
 
 		try {
 		 len += cipher.doFinal(result, len);
@@ -76,66 +82,64 @@ public class DESedeCryptor implements Cryptor {
 			log.error(e.getMessage());
 			throw new EncryptionException(e);
 		}
-		
+        }
 		String encValue = new String(Hex.encode(result, 0, len));
-		return encValue;
+		return result != null && len > 0 ? encValue : null;
 	
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.openiam.util.encrypt.Cryptor#encryptTobyte(java.lang.String)
 	 */
-	public byte[] encryptTobyte(String input) {
-		if (key == null) {
-			readKey();
-		}
+    public byte[] encryptTobyte(String input) {
+        synchronized (immutable) {
+            if (key == null) {
+                readKey();
+            }
 
-		KeyParameter kp = new KeyParameter(key);
-		cipher = new PaddedBufferedBlockCipher(	new CBCBlockCipher(new DESedeEngine()));
-		cipher.init(true, kp);
-		
-		byte[] inputByteAry = input.getBytes();
-		byte[] result = new byte[cipher.getOutputSize(inputByteAry.length)];
-		int len = cipher.processBytes(inputByteAry, 0, inputByteAry.length, result, 0);
+            KeyParameter kp = new KeyParameter(key);
+            cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new DESedeEngine()));
+            cipher.init(true, kp);
 
-		try {
-		 len += cipher.doFinal(result, len);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-		
+            byte[] inputByteAry = input.getBytes();
+            byte[] result = new byte[cipher.getOutputSize(inputByteAry.length)];
+            int len = cipher.processBytes(inputByteAry, 0, inputByteAry.length, result, 0);
 
-		
-	}
-	
-	/* (non-Javadoc)
+            try {
+                len += cipher.doFinal(result, len);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+    }
+
+    /* (non-Javadoc)
 	 * @see org.openiam.util.encrypt.Cryptor#decrypt(java.lang.String)
 	 */
-	public String decrypt(String input) throws EncryptionException {
-		byte[] result = null;
-		byte[] inputByteAry = null;
-		 int len = 0;
-		 
-		if (key == null) {
-			readKey();
-		}
-		KeyParameter kp = new KeyParameter(key);
-		cipher = new PaddedBufferedBlockCipher(	new CBCBlockCipher(new DESedeEngine()));
-		cipher.init(false, kp);
-		try {
-			inputByteAry =  Hex.decode(input);
-			result = new byte[cipher.getOutputSize(inputByteAry.length)];
-	        len = cipher.processBytes(inputByteAry, 0, inputByteAry.length, result, 0);
-        	len += cipher.doFinal(result,len);        	
-        }catch(Exception e) {
-			log.error(e.getMessage());
-			throw new EncryptionException(e);
-        }      
- 		return new String(result,0,len);
-	}
-	
+    public String decrypt(String input) throws EncryptionException {
+        byte[] result = null;
+        byte[] inputByteAry = null;
+        int len = 0;
+        synchronized (immutable) {
+            if (key == null) {
+                readKey();
+            }
+            KeyParameter kp = new KeyParameter(key);
+            cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new DESedeEngine()));
+            cipher.init(false, kp);
+            try {
+                inputByteAry = Hex.decode(input);
+                result = new byte[cipher.getOutputSize(inputByteAry.length)];
+                len = cipher.processBytes(inputByteAry, 0, inputByteAry.length, result, 0);
+                len += cipher.doFinal(result, len);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                throw new EncryptionException(e);
+            }
+        }
+        return result != null && len > 0 ? new String(result, 0, len) : null;
+    }
 
-	
 
 }
