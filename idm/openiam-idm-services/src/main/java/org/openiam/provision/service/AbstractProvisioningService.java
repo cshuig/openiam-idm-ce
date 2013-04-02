@@ -874,7 +874,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
         ProvisionServicePostProcessor addPostProcessScript;
 
-        if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(preProcessor)) != null) {
+        if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(postProcessor)) != null) {
             addPostProcessScript.setMuleContext(muleContext);
             return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
 

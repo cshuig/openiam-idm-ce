@@ -543,6 +543,154 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                             "ADD", connectorSuccess);
                                 }
                             }
+                        } else {
+                            // existing identity in target system
+
+                            log.debug("Building attributes for managedSysId ="
+                                    + managedSysId);
+
+                            log.debug("identity for managedSys is not null "
+                                    + resLogin.getId().getLogin());
+
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
+                                    IDENTITY_EXIST);
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY, resLogin.getId()
+                                    .getLogin());
+                            bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
+                                    curValueMap);
+
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, resLogin
+                                    .getId().getDomainId());
+
+                            String preProcessScript = getResProperty(
+                                    res.getResourceProps(), "PRE_PROCESS");
+                            if (preProcessScript != null
+                                    && !preProcessScript.isEmpty()) {
+                                PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                if (ppScript != null) {
+                                    if (executePreProcess(ppScript, bindingMap,
+                                            user, "MODIFY") == ProvisioningConstants.FAIL) {
+                                        continue;
+                                    }
+                                }
+                            }
+
+                            // what the new object will look like
+                            ExtensibleUser extUser = buildModifyFromRules(
+                                    user, resLogin, attrMap, se, managedSysId, resLogin
+                                    .getId().getDomainId(), bindingMap,
+                                    user.getCreatedBy());
+
+                            // updates the attributes with the correct operation
+                            // codes
+                            extUser = updateAttributeList(extUser,
+                                    curValueMap);
+
+                            // test to see if the updates were carried for
+                            // forward
+                            List<ExtensibleAttribute> extAttList = extUser
+                                    .getAttributes();
+                            //
+
+                            connectorSuccess = false;
+                            if (connector.getConnectorInterface() != null
+                                    && connector.getConnectorInterface()
+                                    .equalsIgnoreCase("REMOTE")) {
+
+                                if (resLogin.getOperation() == AttributeOperationEnum.REPLACE
+                                        && resLogin.getOrigPrincipalName() != null) {
+                                    extAttList.add(new ExtensibleAttribute(
+                                            "ORIG_IDENTITY", resLogin
+                                            .getOrigPrincipalName(), 2,
+                                            "String"));
+                                }
+
+                                RemoteUserRequest userReq = new RemoteUserRequest();
+                                userReq.setUserIdentity(resLogin.getId().getLogin());
+                                userReq.setRequestID(requestId);
+                                userReq.setTargetID(resLogin.getId()
+                                        .getManagedSysId());
+                                userReq.setHostLoginId(mSys.getUserId());
+                                userReq.setHostLoginPassword(mSys
+                                        .getDecryptPassword());
+                                userReq.setHostUrl(mSys.getHostUrl());
+                                userReq.setBaseDN(matchObj.getBaseDn());
+                                userReq.setOperation("EDIT");
+                                userReq.setUser(extUser);
+
+                                userReq.setScriptHandler(mSys
+                                        .getModifyHandler());
+
+                                UserResponse respType = remoteConnectorAdapter
+                                        .modifyRequest(mSys, userReq,
+                                                connector, muleContext);
+                                if (respType.getStatus() == StatusCodeType.SUCCESS) {
+                                    connectorSuccess = true;
+                                }
+
+                            } else {
+                                ModifyRequestType modReqType = new ModifyRequestType();
+
+                                PSOIdentifierType idType = new PSOIdentifierType(
+                                        resLogin.getId().getLogin(), null, "target");
+                                idType.setTargetID(resLogin.getId()
+                                        .getManagedSysId());
+                                modReqType.setPsoID(idType);
+                                modReqType.setRequestID(requestId);
+                                modReqType.setpUser(user);
+
+                                // check if this request calls for the identity
+                                // being renamed
+                                log.debug("Send request to connector - Original Principal Name = "
+                                        + resLogin.getOrigPrincipalName());
+
+                                if (resLogin.getOrigPrincipalName() != null) {
+                                    extAttList.add(new ExtensibleAttribute(
+                                            "ORIG_IDENTITY", resLogin
+                                            .getOrigPrincipalName(), 2,
+                                            "String"));
+
+                                    // if
+                                    // (mLg.getOrigPrincipalName().equalsIgnoreCase(mLg.getId().getLogin()))
+                                    // {
+                                    // extAttList.add(new
+                                    // ExtensibleAttribute("ORIG_IDENTITY",
+                                    // mLg.getOrigPrincipalName(), 2,
+                                    // "String"));
+                                    // }
+
+                                }
+
+                                ModificationType mod = new ModificationType();
+
+                                mod.getData().getAny().add(extUser);
+
+                                List<ModificationType> modTypeList = modReqType
+                                        .getModification();
+                                modTypeList.add(mod);
+
+                                log.debug("Creating identity in target system:"
+                                        + resLogin.getId());
+                                ModifyResponseType respType = connectorAdapter
+                                        .modifyRequest(mSys, modReqType,
+                                                muleContext);
+
+                                if (respType.getStatus() == StatusCodeType.SUCCESS) {
+                                    connectorSuccess = true;
+                                }
+
+                            }
+                            // post processing
+                            String postProcessScript = getResProperty(
+                                    res.getResourceProps(), "POST_PROCESS");
+                            if (postProcessScript != null
+                                    && !postProcessScript.isEmpty()) {
+                                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                if (ppScript != null) {
+                                    executePostProcess(ppScript, bindingMap,
+                                            user, "MODIFY", connectorSuccess);
+                                }
+                            }
                         }
                         bindingMap.remove(MATCH_PARAM);
                     }
