@@ -20,7 +20,6 @@ import org.openiam.idm.srvc.audit.service.AuditHelper;
 import org.openiam.idm.srvc.audit.service.IdmAuditLogDataService;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.dto.LoginId;
-import org.openiam.idm.srvc.auth.login.LoginDAO;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.ContactConstants;
@@ -2297,7 +2296,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                 "IDM SERVICE", user.getCreatedBy(), mLg.getId().getManagedSysId(),
                 "USER", user.getUserId(),
                 idmAuditLog.getLogId(), resp.getStatus().toString(), idmAuditLog.getLogId(), "IDENTITY_STATUS",
-                mLg.getStatus().toString(),
+                "SUCCESS",
                 requestId, resp.getErrorCodeAsStr(), user.getSessionId(), resp.getErrorMessage(),
                 user.getRequestorLogin(), mLg.getId().getLogin(), mLg.getId().getDomainId());
         return resp.getStatus() != StatusCodeType.FAILURE;
