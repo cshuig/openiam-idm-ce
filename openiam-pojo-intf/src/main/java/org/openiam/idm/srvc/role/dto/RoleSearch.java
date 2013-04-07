@@ -21,10 +21,14 @@
  */
 package org.openiam.idm.srvc.role.dto;
 
+import org.openiam.base.ObjectSearchAttribute;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author suneet
@@ -36,7 +40,8 @@ import java.io.Serializable;
         "roleName",
         "ownerId",
         "typeId",
-        "internalRoleId"
+        "internalRoleId",
+        "searchAttributeList"
 
 })
 public class RoleSearch implements Serializable {
@@ -50,6 +55,7 @@ public class RoleSearch implements Serializable {
     protected String typeId;
     protected String ownerId;
     protected String internalRoleId;
+    protected List<ObjectSearchAttribute> searchAttributeList = new LinkedList<ObjectSearchAttribute>();
 
     public RoleSearch() {
 
@@ -103,5 +109,11 @@ public class RoleSearch implements Serializable {
         this.internalRoleId = internalRoleId;
     }
 
+    public List<ObjectSearchAttribute> getSearchAttributeList() {
+        return searchAttributeList;
+    }
 
+    public void setSearchAttributeList(List<ObjectSearchAttribute> searchAttributeList) {
+        this.searchAttributeList = searchAttributeList;
+    }
 }
