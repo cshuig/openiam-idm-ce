@@ -859,10 +859,12 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     protected int callPreProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
 
         ProvisionServicePreProcessor addPreProcessScript;
-        if (!pUser.isSkipPreprocessor() && (addPreProcessScript = createProvPreProcessScript(preProcessor)) != null) {
-            addPreProcessScript.setMuleContext(muleContext);
-            return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
+        if ( pUser != null) {
+            if (!pUser.isSkipPreprocessor() && (addPreProcessScript = createProvPreProcessScript(preProcessor)) != null) {
+                addPreProcessScript.setMuleContext(muleContext);
+                return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
 
+            }
         }
         // pre-processor was skipped
         return ProvisioningConstants.SUCCESS;
@@ -873,10 +875,12 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
         ProvisionServicePostProcessor addPostProcessScript;
 
-        if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(postProcessor)) != null) {
-            addPostProcessScript.setMuleContext(muleContext);
-            return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
+        if ( pUser != null) {
+            if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(postProcessor)) != null) {
+                addPostProcessScript.setMuleContext(muleContext);
+                return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
 
+            }
         }
         // pre-processor was skipped
         return ProvisioningConstants.SUCCESS;
