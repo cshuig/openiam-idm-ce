@@ -31,9 +31,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class RoleListController extends CancellableFormController {
 
@@ -88,7 +90,12 @@ public class RoleListController extends CancellableFormController {
 		org.openiam.webadmin.role.RoleListCommand roleListCommand = (org.openiam.webadmin.role.RoleListCommand)command;
 		
 		List<Role> roleList = roleDataService.getRolesInDomain( roleListCommand.getDomainId() ).getRoleList();
-	
+
+        // encode the role id
+        for (Role r : roleList) {
+           r.getId().setRoleId(  URLEncoder.encode( r.getId().getRoleId(),   "UTF-8") );
+
+        }
 	
 
 		ModelAndView mav = new ModelAndView(getSuccessView());
