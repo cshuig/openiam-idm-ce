@@ -1914,6 +1914,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             bindingMap
                                     .put(TARGET_SYSTEM_IDENTITY, isMngSysIdentityExistsInOpeniam ? mLg.getId().getLogin() : null);
 
+                            bindingMap.put(TARGET_SYSTEM_OPERATION, mLg.getOperation());
+
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
                                     isMngSysIdentityExistsInOpeniam ? mLg.getId().getDomainId() : null);
 
@@ -2069,6 +2071,9 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     IDENTITY_EXIST);
                             bindingMap.put(TARGET_SYSTEM_IDENTITY, mLg.getId()
                                     .getLogin());
+
+                            bindingMap.put(TARGET_SYSTEM_OPERATION, mLg.getOperation());
+
                             bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
                                     currentValueMap);
 
@@ -2087,7 +2092,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     }
                                 }
                             }
-
                             // what the new object will look like
                             ExtensibleUser extUser = buildModifyFromRules(
                                     pUser, mLg, attrMap, se, managedSysId, mLg

@@ -111,6 +111,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     public static final String TARGET_SYSTEM_IDENTITY_STATUS = "targetSystemIdentityStatus";
     public static final String TARGET_SYSTEM_IDENTITY = "targetSystemIdentity";
     public static final String TARGET_SYSTEM_ATTRIBUTES = "targetSystemAttributes";
+    public static final String TARGET_SYSTEM_OPERATION = "targetSystemOperation";
 
     public static final String TARGET_SYS_RES_ID = "resourceId";
     public static final String TARGET_SYS_MANAGED_SYS_ID = "managedSysId";
