@@ -178,7 +178,11 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
 
         String identity = mLg.getId().getLogin();
-
+        if (mLg != null
+                && mLg.getOperation() == AttributeOperationEnum.REPLACE
+                && StringUtils.isNotEmpty(mLg.getOrigPrincipalName())) {
+            identity = mLg.getOrigPrincipalName();
+        }
         log.debug("Getting the current attributes in the target system for =" + identity);
 
         log.debug("- IsRename: " + mLg.getOrigPrincipalName());
