@@ -20,7 +20,6 @@ import org.openiam.idm.srvc.audit.service.AuditHelper;
 import org.openiam.idm.srvc.audit.service.IdmAuditLogDataService;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.dto.LoginId;
-import org.openiam.idm.srvc.auth.login.LoginDAO;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.ContactConstants;
@@ -105,12 +104,14 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     protected String postProcessor;
     protected DeprovisionSelectedResourceHelper deprovisionSelectedResource;
 
+
     MuleContext muleContext;
 
     public static final String MATCH_PARAM = "matchParam";
     public static final String TARGET_SYSTEM_IDENTITY_STATUS = "targetSystemIdentityStatus";
     public static final String TARGET_SYSTEM_IDENTITY = "targetSystemIdentity";
     public static final String TARGET_SYSTEM_ATTRIBUTES = "targetSystemAttributes";
+    public static final String TARGET_SYSTEM_OPERATION = "targetSystemOperation";
 
     public static final String TARGET_SYS_RES_ID = "resourceId";
     public static final String TARGET_SYS_MANAGED_SYS_ID = "managedSysId";
@@ -122,6 +123,15 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     final static protected ResourceBundle res = ResourceBundle.getBundle("datasource");
     final static protected String serviceHost = res.getString("openiam.service_base");
     final static protected String serviceContext = res.getString("openiam.idm.ws.path");
+
+    private ScriptIntegration scriptIntegrationCache;
+
+    protected ScriptIntegration getScriptIntegration() throws ClassNotFoundException {
+        if(scriptIntegrationCache == null) {
+            scriptIntegrationCache = ScriptFactory.createModule(this.scriptEngine);
+        }
+        return scriptIntegrationCache;
+    }
 
     public void setMuleContext(MuleContext ctx) {
         log.debug("Provisioning - setMuleContext called.");
@@ -168,7 +178,11 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
 
         String identity = mLg.getId().getLogin();
-
+        if (mLg != null
+                && mLg.getOperation() == AttributeOperationEnum.REPLACE
+                && StringUtils.isNotEmpty(mLg.getOrigPrincipalName())) {
+            identity = mLg.getOrigPrincipalName();
+        }
         log.debug("Getting the current attributes in the target system for =" + identity);
 
         log.debug("- IsRename: " + mLg.getOrigPrincipalName());
@@ -703,21 +717,24 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                     Policy policy = attr.getAttributePolicy();
                     String url = policy.getRuleSrcUrl();
                     if (url != null) {
-                        String output = (String)se.execute(bindingMap, url);
                         String objectType = attr.getMapForObjectType();
                         if (objectType != null) {
                             if (objectType.equalsIgnoreCase("PRINCIPAL")) {
                                 if (attr.getAttributeName().equalsIgnoreCase("PRINCIPAL")) {
+                                    String output = (String)se.execute(bindingMap, url);
                                     primaryID.setLogin(output);
                                 }
                                 if (attr.getAttributeName().equalsIgnoreCase("PASSWORD")) {
+                                    String output = (String)se.execute(bindingMap, url);
                                     primaryIdentity.setPassword(output);
                                 }
                                 if (attr.getAttributeName().equalsIgnoreCase("DOMAIN")) {
+                                    String output = (String)se.execute(bindingMap, url);
                                     primaryID.setDomainId(output);
                                 }
                             }
                             if (objectType.equals("EMAIL")) {
+                                String output = (String)se.execute(bindingMap, url);
                                 primaryEmail.setEmailAddress(output);
                                 primaryEmail.setIsDefault(1);
                             }
@@ -773,15 +790,13 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                     Policy policy = attr.getAttributePolicy();
                     String url = policy.getRuleSrcUrl();
                     if (url != null) {
-                        String output = (String)se.execute(bindingMap, url);
                         String objectType = attr.getMapForObjectType();
                         if (objectType != null) {
                             if (objectType.equalsIgnoreCase("PRINCIPAL")) {
-
                                 if (attr.getAttributeName().equalsIgnoreCase("PASSWORD")) {
+                                    String output = (String)se.execute(bindingMap, url);
                                     primaryIdentity.setPassword(output);
                                 }
-
                             }
 
                         }
@@ -848,11 +863,13 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected int callPreProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
 
-        ProvisionServicePreProcessor addPreProcessScript = createProvPreProcessScript(preProcessor);
-        if (addPreProcessScript != null && !pUser.isSkipPreprocessor()) {
-            addPreProcessScript.setMuleContext(muleContext);
-            return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
+        ProvisionServicePreProcessor addPreProcessScript;
+        if ( pUser != null) {
+            if (!pUser.isSkipPreprocessor() && (addPreProcessScript = createProvPreProcessScript(preProcessor)) != null) {
+                addPreProcessScript.setMuleContext(muleContext);
+                return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
 
+            }
         }
         // pre-processor was skipped
         return ProvisioningConstants.SUCCESS;
@@ -861,12 +878,14 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected int callPostProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
 
-        ProvisionServicePostProcessor addPostProcessScript = createProvPostProcessScript(postProcessor);
+        ProvisionServicePostProcessor addPostProcessScript;
 
-        if (addPostProcessScript != null && !pUser.isSkipPostProcessor()) {
-            addPostProcessScript.setMuleContext(muleContext);
-            return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, "ADD");
+        if ( pUser != null) {
+            if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(postProcessor)) != null) {
+                addPostProcessScript.setMuleContext(muleContext);
+                return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
 
+            }
         }
         // pre-processor was skipped
         return ProvisioningConstants.SUCCESS;
@@ -876,8 +895,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected PreProcessor createPreProcessScript(String scriptName) {
         try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             return (PreProcessor) se.instantiateClass(null, scriptName);
         } catch (Exception ce) {
             log.error(ce);
@@ -889,8 +907,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected PostProcessor createPostProcessScript(String scriptName) {
         try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             return (PostProcessor) se.instantiateClass(null, scriptName);
         } catch (Exception ce) {
             log.error(ce);
@@ -902,8 +919,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected ProvisionServicePreProcessor createProvPreProcessScript(String scriptName) {
         try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             return (ProvisionServicePreProcessor) se.instantiateClass(null, scriptName);
         } catch (Exception ce) {
             log.error(ce);
@@ -915,8 +931,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected ProvisionServicePostProcessor createProvPostProcessScript(String scriptName) {
         try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             return (ProvisionServicePostProcessor) se.instantiateClass(null, scriptName);
         } catch (Exception ce) {
             log.error(ce);
@@ -1007,13 +1022,9 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected String updateUser(ProvisionUser user, User origUser) {
 
-
-
         String requestId = UUIDGen.getUUID();
 
         log.debug("ModifyUser: updateUser called." );
-
-
 
         User newUser = user.getUser();
         updateUserObject(origUser, newUser);
@@ -2294,7 +2305,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                 "IDM SERVICE", user.getCreatedBy(), mLg.getId().getManagedSysId(),
                 "USER", user.getUserId(),
                 idmAuditLog.getLogId(), resp.getStatus().toString(), idmAuditLog.getLogId(), "IDENTITY_STATUS",
-                mLg.getStatus().toString(),
+                "SUCCESS",
                 requestId, resp.getErrorCodeAsStr(), user.getSessionId(), resp.getErrorMessage(),
                 user.getRequestorLogin(), mLg.getId().getLogin(), mLg.getId().getDomainId());
         return resp.getStatus() != StatusCodeType.FAILURE;

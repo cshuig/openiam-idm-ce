@@ -1,41 +1,22 @@
 package org.openiam.idm.srvc.user.dto;
 
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.ParamDef;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseConstants;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.auth.dto.Login;
-import org.openiam.idm.srvc.continfo.domain.AddressEntity;
-import org.openiam.idm.srvc.continfo.domain.EmailAddressEntity;
-import org.openiam.idm.srvc.continfo.domain.PhoneEntity;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 import org.openiam.idm.srvc.continfo.dto.Phone;
+import org.openiam.idm.srvc.user.domain.UserEntity;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
-import org.openiam.idm.srvc.user.domain.UserAttributeEntity;
-import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserNoteEntity;
 
 /**
  * User domain object.  This object is used to transfer data between the service layer
@@ -573,6 +554,7 @@ public class User extends org.openiam.base.BaseObject {
     }
 
 
+
     /**
      * Updates the underlying collection with the UserAttribute object that is being passed in.
      * The attribute is added if its does not exist and updated if its does exist.
@@ -603,6 +585,8 @@ public class User extends org.openiam.base.BaseObject {
         return userAttributes.get(name);
 
     }
+
+
 
     /**
      * Returns a Set of addresses. Map is keyed on the Address.description value. This
@@ -866,24 +850,7 @@ public class User extends org.openiam.base.BaseObject {
         this.phoneExt = phoneExt;
     }
 
-    /*
-     public Set<Phone> getPhones() {
-         return phones;
-     }
 
-     public void setPhones(Set<Phone> phones) {
-         this.phones = phones;
-     }
-     */
-
-    /*public Set<EmailAddress> getEmailAddresses() {
-            return emailAddresses;
-        }
-
-        public void setEmailAddresses(Set<EmailAddress> emailAddresses) {
-            this.emailAddresses = emailAddresses;
-        }
-    */
 
     public String getEmail() {
         return email;
@@ -1459,6 +1426,8 @@ public class User extends org.openiam.base.BaseObject {
         this.dateChallengeRespChanged = dateChallengeRespChanged;
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -1473,7 +1442,6 @@ public class User extends org.openiam.base.BaseObject {
         if (address5 != null ? !address5.equals(user.address5) : user.address5 != null) return false;
         if (address6 != null ? !address6.equals(user.address6) : user.address6 != null) return false;
         if (address7 != null ? !address7.equals(user.address7) : user.address7 != null) return false;
-        if (addresses != null ? !addresses.equals(user.addresses) : user.addresses != null) return false;
         if (alternateContactId != null ? !alternateContactId.equals(user.alternateContactId) : user.alternateContactId != null)
             return false;
         if (areaCd != null ? !areaCd.equals(user.areaCd) : user.areaCd != null) return false;
@@ -1499,8 +1467,6 @@ public class User extends org.openiam.base.BaseObject {
         if (deptName != null ? !deptName.equals(user.deptName) : user.deptName != null) return false;
         if (division != null ? !division.equals(user.division) : user.division != null) return false;
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        if (emailAddresses != null ? !emailAddresses.equals(user.emailAddresses) : user.emailAddresses != null)
-            return false;
         if (employeeId != null ? !employeeId.equals(user.employeeId) : user.employeeId != null) return false;
         if (employeeType != null ? !employeeType.equals(user.employeeType) : user.employeeType != null) return false;
         if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
@@ -1523,7 +1489,6 @@ public class User extends org.openiam.base.BaseObject {
             return false;
         if (phoneExt != null ? !phoneExt.equals(user.phoneExt) : user.phoneExt != null) return false;
         if (phoneNbr != null ? !phoneNbr.equals(user.phoneNbr) : user.phoneNbr != null) return false;
-        if (phones != null ? !phones.equals(user.phones) : user.phones != null) return false;
         if (postalCd != null ? !postalCd.equals(user.postalCd) : user.postalCd != null) return false;
         if (prefix != null ? !prefix.equals(user.prefix) : user.prefix != null) return false;
         if (principalList != null ? !principalList.equals(user.principalList) : user.principalList != null)
@@ -1542,10 +1507,7 @@ public class User extends org.openiam.base.BaseObject {
         if (suite != null ? !suite.equals(user.suite) : user.suite != null) return false;
         if (supervisor != null ? !supervisor.equals(user.supervisor) : user.supervisor != null) return false;
         if (title != null ? !title.equals(user.title) : user.title != null) return false;
-        if (userAttributes != null ? !userAttributes.equals(user.userAttributes) : user.userAttributes != null)
-            return false;
-        if (userId != null ? !userId.equals(user.userId) : user.userId != null) return false;
-        if (userNotes != null ? !userNotes.equals(user.userNotes) : user.userNotes != null) return false;
+        if (!userId.equals(user.userId)) return false;
         if (userOwnerId != null ? !userOwnerId.equals(user.userOwnerId) : user.userOwnerId != null) return false;
         if (userTypeInd != null ? !userTypeInd.equals(user.userTypeInd) : user.userTypeInd != null) return false;
 
@@ -1554,13 +1516,78 @@ public class User extends org.openiam.base.BaseObject {
 
     @Override
     public int hashCode() {
-        return userId != null ? userId.hashCode() : 0;
+        int result = userId.hashCode();
+        result = 31 * result + (birthdate != null ? birthdate.hashCode() : 0);
+        result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
+        result = 31 * result + (companyOwnerId != null ? companyOwnerId.hashCode() : 0);
+        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
+        result = 31 * result + (createdBy != null ? createdBy.hashCode() : 0);
+        result = 31 * result + (deptCd != null ? deptCd.hashCode() : 0);
+        result = 31 * result + (deptName != null ? deptName.hashCode() : 0);
+        result = 31 * result + (employeeId != null ? employeeId.hashCode() : 0);
+        result = 31 * result + (employeeType != null ? employeeType.hashCode() : 0);
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (jobCode != null ? jobCode.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (lastUpdate != null ? lastUpdate.hashCode() : 0);
+        result = 31 * result + (lastUpdatedBy != null ? lastUpdatedBy.hashCode() : 0);
+        result = 31 * result + (locationCd != null ? locationCd.hashCode() : 0);
+        result = 31 * result + (locationName != null ? locationName.hashCode() : 0);
+        result = 31 * result + (managerId != null ? managerId.hashCode() : 0);
+        result = 31 * result + (metadataTypeId != null ? metadataTypeId.hashCode() : 0);
+        result = 31 * result + (classification != null ? classification.hashCode() : 0);
+        result = 31 * result + (middleInit != null ? middleInit.hashCode() : 0);
+        result = 31 * result + (prefix != null ? prefix.hashCode() : 0);
+        result = 31 * result + (sex != null ? sex.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (secondaryStatus != null ? secondaryStatus.hashCode() : 0);
+        result = 31 * result + (suffix != null ? suffix.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (userTypeInd != null ? userTypeInd.hashCode() : 0);
+        result = 31 * result + (division != null ? division.hashCode() : 0);
+        result = 31 * result + (mailCode != null ? mailCode.hashCode() : 0);
+        result = 31 * result + (costCenter != null ? costCenter.hashCode() : 0);
+        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
+        result = 31 * result + (lastDate != null ? lastDate.hashCode() : 0);
+        result = 31 * result + (nickname != null ? nickname.hashCode() : 0);
+        result = 31 * result + (maidenName != null ? maidenName.hashCode() : 0);
+        result = 31 * result + (passwordTheme != null ? passwordTheme.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (bldgNum != null ? bldgNum.hashCode() : 0);
+        result = 31 * result + (streetDirection != null ? streetDirection.hashCode() : 0);
+        result = 31 * result + (suite != null ? suite.hashCode() : 0);
+        result = 31 * result + (address1 != null ? address1.hashCode() : 0);
+        result = 31 * result + (address2 != null ? address2.hashCode() : 0);
+        result = 31 * result + (address3 != null ? address3.hashCode() : 0);
+        result = 31 * result + (address4 != null ? address4.hashCode() : 0);
+        result = 31 * result + (address5 != null ? address5.hashCode() : 0);
+        result = 31 * result + (address6 != null ? address6.hashCode() : 0);
+        result = 31 * result + (address7 != null ? address7.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        result = 31 * result + (postalCd != null ? postalCd.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (areaCd != null ? areaCd.hashCode() : 0);
+        result = 31 * result + (countryCd != null ? countryCd.hashCode() : 0);
+        result = 31 * result + (phoneNbr != null ? phoneNbr.hashCode() : 0);
+        result = 31 * result + (phoneExt != null ? phoneExt.hashCode() : 0);
+        result = 31 * result + (showInSearch != null ? showInSearch.hashCode() : 0);
+        result = 31 * result + (delAdmin != null ? delAdmin.hashCode() : 0);
+        result = 31 * result + (principalList != null ? principalList.hashCode() : 0);
+        result = 31 * result + (supervisor != null ? supervisor.hashCode() : 0);
+        result = 31 * result + (alternateContactId != null ? alternateContactId.hashCode() : 0);
+        result = 31 * result + (securityDomain != null ? securityDomain.hashCode() : 0);
+        result = 31 * result + (userOwnerId != null ? userOwnerId.hashCode() : 0);
+        result = 31 * result + (datePasswordChanged != null ? datePasswordChanged.hashCode() : 0);
+        result = 31 * result + (dateChallengeRespChanged != null ? dateChallengeRespChanged.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "birthdate=" + birthdate +
+                "userId='" + userId + '\'' +
+                ", birthdate=" + birthdate +
                 ", companyId='" + companyId + '\'' +
                 ", companyOwnerId='" + companyOwnerId + '\'' +
                 ", createDate=" + createDate +
@@ -1586,7 +1613,6 @@ public class User extends org.openiam.base.BaseObject {
                 ", secondaryStatus=" + secondaryStatus +
                 ", suffix='" + suffix + '\'' +
                 ", title='" + title + '\'' +
-                ", userId='" + userId + '\'' +
                 ", userTypeInd='" + userTypeInd + '\'' +
                 ", division='" + division + '\'' +
                 ", mailCode='" + mailCode + '\'' +
@@ -1631,6 +1657,4 @@ public class User extends org.openiam.base.BaseObject {
                 ", emailAddresses=" + emailAddresses +
                 '}';
     }
-
-
 }

@@ -308,7 +308,7 @@ function selectChange(ctrl) {
                 <form:option value="${role.id.serviceId}*${role.id.roleId}" label="${role.id.serviceId}-${role.roleName}" />
               </c:forEach>
           </form:select> 
-          <br><form:errors path="role" cssClass="error" />  
+          <br><form:errors path="role" cssClass="error" />
          
 		</td>
     </tr>
@@ -336,8 +336,7 @@ function selectChange(ctrl) {
 					<td class="tableEntry">${newUserCmd.attributeList[attr.index].name}
 						<form:hidden path="attributeList[${attr.index}].id" />
 						<form:hidden path="attributeList[${attr.index}].userId" />
-						<form:hidden path="attributeList[${attr.index}].name" />						
-						<form:hidden path="attributeList[${attr.index}].attrGroup"  />
+						<form:hidden path="attributeList[${attr.index}].name" />
 					 	<form:hidden path="attributeList[${attr.index}].metadataElementId"  />
 					</td>
 					<td class="tableEntry"><form:input path="attributeList[${attr.index}].value" size="35" maxlength="50" />

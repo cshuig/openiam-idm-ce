@@ -1,15 +1,10 @@
 package org.openiam.idm.srvc.user.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.user.dto.UserAttribute;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "USER_ATTRIBUTES")
@@ -31,8 +26,9 @@ public class UserAttributeEntity {
     @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
-    @Column(name = "VALUE", length = 50)
+    @Column(name = "VALUE", length = 1000)
     private String value;
+
 
     public UserAttributeEntity() {
     }
@@ -77,10 +73,12 @@ public class UserAttributeEntity {
         this.value = value;
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof UserAttributeEntity)) return false;
 
         UserAttributeEntity that = (UserAttributeEntity) o;
 
@@ -103,4 +101,7 @@ public class UserAttributeEntity {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
+
+
+
 }

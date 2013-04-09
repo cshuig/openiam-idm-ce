@@ -801,83 +801,77 @@ public class UserEntity {
         UserEntity that = (UserEntity) o;
 
         if (address1 != null ? !address1.equals(that.address1) : that.address1 != null) return false;
-        if (address2 != null ? !address2.equals(that.address2) : that.address2 != null) return false;
-        if (address3 != null ? !address3.equals(that.address3) : that.address3 != null) return false;
-        if (address4 != null ? !address4.equals(that.address4) : that.address4 != null) return false;
-        if (address5 != null ? !address5.equals(that.address5) : that.address5 != null) return false;
-        if (address6 != null ? !address6.equals(that.address6) : that.address6 != null) return false;
-        if (address7 != null ? !address7.equals(that.address7) : that.address7 != null) return false;
-        if (addresses != null ? !addresses.equals(that.addresses) : that.addresses != null) return false;
         if (alternateContactId != null ? !alternateContactId.equals(that.alternateContactId) : that.alternateContactId != null)
             return false;
         if (areaCd != null ? !areaCd.equals(that.areaCd) : that.areaCd != null) return false;
-        if (birthdate != null ? !birthdate.equals(that.birthdate) : that.birthdate != null) return false;
-        if (bldgNum != null ? !bldgNum.equals(that.bldgNum) : that.bldgNum != null) return false;
         if (city != null ? !city.equals(that.city) : that.city != null) return false;
-        if (classification != null ? !classification.equals(that.classification) : that.classification != null)
-            return false;
         if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
-        if (companyOwnerId != null ? !companyOwnerId.equals(that.companyOwnerId) : that.companyOwnerId != null)
-            return false;
-        if (costCenter != null ? !costCenter.equals(that.costCenter) : that.costCenter != null) return false;
         if (country != null ? !country.equals(that.country) : that.country != null) return false;
         if (countryCd != null ? !countryCd.equals(that.countryCd) : that.countryCd != null) return false;
-        if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
-        if (createdBy != null ? !createdBy.equals(that.createdBy) : that.createdBy != null) return false;
-        if (dateChallengeRespChanged != null ? !dateChallengeRespChanged.equals(that.dateChallengeRespChanged) : that.dateChallengeRespChanged != null)
-            return false;
-        if (datePasswordChanged != null ? !datePasswordChanged.equals(that.datePasswordChanged) : that.datePasswordChanged != null)
-            return false;
-        if (delAdmin != null ? !delAdmin.equals(that.delAdmin) : that.delAdmin != null) return false;
         if (deptCd != null ? !deptCd.equals(that.deptCd) : that.deptCd != null) return false;
         if (deptName != null ? !deptName.equals(that.deptName) : that.deptName != null) return false;
         if (division != null ? !division.equals(that.division) : that.division != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
-        if (emailAddresses != null ? !emailAddresses.equals(that.emailAddresses) : that.emailAddresses != null)
-            return false;
         if (employeeId != null ? !employeeId.equals(that.employeeId) : that.employeeId != null) return false;
-        if (employeeType != null ? !employeeType.equals(that.employeeType) : that.employeeType != null) return false;
         if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
-        if (jobCode != null ? !jobCode.equals(that.jobCode) : that.jobCode != null) return false;
-        if (lastDate != null ? !lastDate.equals(that.lastDate) : that.lastDate != null) return false;
         if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
-        if (lastUpdate != null ? !lastUpdate.equals(that.lastUpdate) : that.lastUpdate != null) return false;
-        if (lastUpdatedBy != null ? !lastUpdatedBy.equals(that.lastUpdatedBy) : that.lastUpdatedBy != null)
-            return false;
         if (locationCd != null ? !locationCd.equals(that.locationCd) : that.locationCd != null) return false;
         if (locationName != null ? !locationName.equals(that.locationName) : that.locationName != null) return false;
         if (maidenName != null ? !maidenName.equals(that.maidenName) : that.maidenName != null) return false;
         if (mailCode != null ? !mailCode.equals(that.mailCode) : that.mailCode != null) return false;
         if (managerId != null ? !managerId.equals(that.managerId) : that.managerId != null) return false;
-        if (metadataTypeId != null ? !metadataTypeId.equals(that.metadataTypeId) : that.metadataTypeId != null)
-            return false;
         if (middleInit != null ? !middleInit.equals(that.middleInit) : that.middleInit != null) return false;
         if (nickname != null ? !nickname.equals(that.nickname) : that.nickname != null) return false;
-        if (passwordTheme != null ? !passwordTheme.equals(that.passwordTheme) : that.passwordTheme != null)
-            return false;
         if (phoneExt != null ? !phoneExt.equals(that.phoneExt) : that.phoneExt != null) return false;
         if (phoneNbr != null ? !phoneNbr.equals(that.phoneNbr) : that.phoneNbr != null) return false;
-        if (phones != null ? !phones.equals(that.phones) : that.phones != null) return false;
         if (postalCd != null ? !postalCd.equals(that.postalCd) : that.postalCd != null) return false;
         if (prefix != null ? !prefix.equals(that.prefix) : that.prefix != null) return false;
-        if (secondaryStatus != that.secondaryStatus) return false;
         if (sex != null ? !sex.equals(that.sex) : that.sex != null) return false;
-        if (showInSearch != null ? !showInSearch.equals(that.showInSearch) : that.showInSearch != null) return false;
-        if (startDate != null ? !startDate.equals(that.startDate) : that.startDate != null) return false;
         if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (status != that.status) return false;
         if (streetDirection != null ? !streetDirection.equals(that.streetDirection) : that.streetDirection != null)
             return false;
         if (suffix != null ? !suffix.equals(that.suffix) : that.suffix != null) return false;
         if (suite != null ? !suite.equals(that.suite) : that.suite != null) return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
-        if (userAttributes != null ? !userAttributes.equals(that.userAttributes) : that.userAttributes != null)
-            return false;
-        if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
-        if (userNotes != null ? !userNotes.equals(that.userNotes) : that.userNotes != null) return false;
         if (userOwnerId != null ? !userOwnerId.equals(that.userOwnerId) : that.userOwnerId != null) return false;
-        if (userTypeInd != null ? !userTypeInd.equals(that.userTypeInd) : that.userTypeInd != null) return false;
 
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = companyId != null ? companyId.hashCode() : 0;
+        result = 31 * result + (deptCd != null ? deptCd.hashCode() : 0);
+        result = 31 * result + (deptName != null ? deptName.hashCode() : 0);
+        result = 31 * result + (employeeId != null ? employeeId.hashCode() : 0);
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (locationCd != null ? locationCd.hashCode() : 0);
+        result = 31 * result + (locationName != null ? locationName.hashCode() : 0);
+        result = 31 * result + (managerId != null ? managerId.hashCode() : 0);
+        result = 31 * result + (middleInit != null ? middleInit.hashCode() : 0);
+        result = 31 * result + (prefix != null ? prefix.hashCode() : 0);
+        result = 31 * result + (sex != null ? sex.hashCode() : 0);
+        result = 31 * result + (suffix != null ? suffix.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (division != null ? division.hashCode() : 0);
+        result = 31 * result + (mailCode != null ? mailCode.hashCode() : 0);
+        result = 31 * result + (nickname != null ? nickname.hashCode() : 0);
+        result = 31 * result + (maidenName != null ? maidenName.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (streetDirection != null ? streetDirection.hashCode() : 0);
+        result = 31 * result + (suite != null ? suite.hashCode() : 0);
+        result = 31 * result + (address1 != null ? address1.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        result = 31 * result + (postalCd != null ? postalCd.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (areaCd != null ? areaCd.hashCode() : 0);
+        result = 31 * result + (countryCd != null ? countryCd.hashCode() : 0);
+        result = 31 * result + (phoneNbr != null ? phoneNbr.hashCode() : 0);
+        result = 31 * result + (phoneExt != null ? phoneExt.hashCode() : 0);
+        result = 31 * result + (alternateContactId != null ? alternateContactId.hashCode() : 0);
+        result = 31 * result + (userOwnerId != null ? userOwnerId.hashCode() : 0);
+        return result;
     }
 }

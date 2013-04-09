@@ -96,7 +96,12 @@
               <td>Internal Organization ID</td>
 			  <td><form:input path="org.internalOrgId" size="40" maxlength="100" />
 			  </td>
-		  </tr> 		  
+		  </tr>
+                        <tr>
+                            <td>Internal Organization Name</td>
+                            <td><form:input path="org.internalOrgName" size="40" maxlength="100" />
+                            </td>
+                        </tr>
           <tr>
               <td>DomainName</td>
 			  <td><form:input path="org.domainName" size="40" maxlength="40" />

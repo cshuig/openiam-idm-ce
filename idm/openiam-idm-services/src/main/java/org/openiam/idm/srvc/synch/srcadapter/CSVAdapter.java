@@ -77,7 +77,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
         int THREAD_COUNT = Integer.parseInt(res.getString("csvadapter.thread.count"));
         int THREAD_DELAY_BEFORE_START = Integer.parseInt(res.getString("csvadapter.thread.delay.beforestart"));
         log.debug("CSV startSynch CALLED.^^^^^^^^");
-
+        System.out.println("CSV startSynch CALLED.^^^^^^^^");
 
         Reader reader = null;
 
@@ -93,7 +93,6 @@ public class CSVAdapter extends AbstractSrcAdapter {
             File file = new File(config.getFileName());
             reader = new FileReader(file);
             CSVParser parser = new CSVParser(reader, CSVStrategy.EXCEL_STRATEGY);
-
 
             String[][] rows = parser.getAllValues();
 
@@ -115,7 +114,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
                 threadCoount++;
             }
             log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-
+            System.out.println("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
             List<Future> results = new LinkedList<Future>();
             final ExecutorService service = Executors.newCachedThreadPool();
             for(int i = 0; i < threadCoount; i++) {
@@ -152,7 +151,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
                     }
                 }
             });
-            waitUntilWorkDone(results);
+           waitUntilWorkDone(results);
 
         } catch (FileNotFoundException fe) {
             fe.printStackTrace();
@@ -210,49 +209,52 @@ public class CSVAdapter extends AbstractSrcAdapter {
     }
 
     private void waitUntilWorkDone(List<Future> results) throws InterruptedException {
-        boolean success = false;
-        while(!success) {
+        int successCounter = 0;
+        while(successCounter != results.size()) {
+            successCounter = 0;
             for(Future future : results) {
-                if(!future.isDone()) {
-                    success = false;
-                    break;
-                } else {
-                    success = true;
+                if(future.isDone()) {
+                    successCounter ++;
                 }
             }
             Thread.sleep(500);
         }
     }
 
-    private void proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, String[][] rows, ValidationScript validationScript, TransformScript transformScript, MatchObjectRule matchRule, LineObject rowHeader, int ctr) {
+    private void proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, String[][] rows, final ValidationScript validationScript, final TransformScript transformScript, MatchObjectRule matchRule, LineObject rowHeader, int ctr) {
         for (String[] row : rows) {
-            log.debug("*** Record counter: " + ctr);
+            log.info("*** Record counter: " + ctr++);
+
             //populate the data object
             ProvisionUser pUser = new ProvisionUser();
+            //Disable PRE and POST processors/performance optimizations
+            pUser.setSkipPreprocessor(true);
+            pUser.setSkipPostProcessor(true);
 
             LineObject rowObj = rowHeader.copy();
             populateRowObject(rowObj, row);
-            log.debug(" - Validation being called");
+            log.info(" - Validation being called");
 
             // validate
             if (validationScript != null) {
-                int retval = validationScript.isValid(rowObj);
-                if (retval == ValidationScript.NOT_VALID) {
-                    log.debug(" - Validation failed...transformation will not be called.");
-
-                    continue;
-                }
-                if (retval == ValidationScript.SKIP) {
-                    continue;
+                synchronized (validationScript) {
+                    int retval = validationScript.isValid(rowObj);
+                    if (retval == ValidationScript.NOT_VALID) {
+                        log.info(" - Validation failed...transformation will not be called.");
+                        continue;
+                    }
+                    if (retval == ValidationScript.SKIP) {
+                        continue;
+                    }
                 }
             }
 
-            log.debug(" - Getting column map...");
+            log.info(" - Getting column map...");
 
             // check if the user exists or not
             Map<String, Attribute> rowAttr = rowObj.getColumnMap();
 
-            log.debug(" - Row Attr..." + rowAttr);
+            log.info(" - Row Attr..." + rowAttr);
             //
 
             User usr = matchRule.lookup(config, rowAttr);
@@ -260,59 +262,60 @@ public class CSVAdapter extends AbstractSrcAdapter {
             //@todo - Update lookup so that an exception is thrown
             // when lookup fails due to bad matching.
 
-            log.debug(" - Preparing transform script");
+            log.info(" - Preparing transform script");
 
             // transform
+            int retval = -1;
             if (transformScript != null) {
+                synchronized (transformScript) {
+                    transformScript.init();
 
-                transformScript.init();
+                    // initialize the transform script
+                    if (usr != null) {
+                        UserResponse userResponse = userMgr.getUserWithDependent(usr.getUserId(), true);
+                        if (userResponse.getStatus() == ResponseStatus.SUCCESS) {
 
-                // initialize the transform script
-                if (usr != null) {
-                    UserResponse userResponse = userMgr.getUserWithDependent(usr.getUserId(), true);
-                    if ( userResponse.getStatus() == ResponseStatus.SUCCESS) {
+                            transformScript.setNewUser(false);
+                            transformScript.setUser(userResponse.getUser());
+                            transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()).getPrincipalList());
+                            transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()).getRoleList());
+                        }
 
-                        transformScript.setNewUser(false);
-                        transformScript.setUser(userResponse.getUser());
-                        transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()).getPrincipalList());
-                        transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()).getRoleList());
+                    } else {
+                        transformScript.setNewUser(true);
                     }
 
-                } else {
-                    transformScript.setNewUser(true);
+                    log.info(" - Execute transform script");
+
+                    retval = transformScript.execute(rowObj, pUser);
                 }
-
-                log.debug(" - Execute transform script");
-
-                int retval = transformScript.execute(rowObj, pUser);
-
-                log.debug(" - Execute complete transform script");
+                log.info(" - Execute complete transform script");
 
 
                 pUser.setSessionId(synchStartLog.getSessionId());
+                if (retval != -1) {
+                    if (retval == TransformScript.DELETE && pUser.getUser() != null) {
+                        provService.deleteByUserId(pUser, UserStatusEnum.DELETED, systemAccount);
+                    } else {
+                        // call synch
+                        if (retval != TransformScript.DELETE) {
+                            if (usr != null) {
+                                log.info(" - Updating existing user");
+                                pUser.setUserId(usr.getUserId());
+                                try {
+                                    provService.modifyUser(pUser);
+                                } catch (Exception e) {
+                                    log.error(e);
+                                }
 
-                if (retval == TransformScript.DELETE && pUser.getUser() != null) {
-                    provService.deleteByUserId(pUser, UserStatusEnum.DELETED, systemAccount);
-                } else {
-                    // call synch
-                    if (retval != TransformScript.DELETE) {
-                        if (usr != null) {
-                            log.debug(" - Updating existing user");
-                            pUser.setUserId(usr.getUserId());
-                            try {
-                                provService.modifyUser(pUser);
-                            } catch (Exception e) {
-                                log.error(e);
-                            }
-
-                        } else {
-                            log.debug(" - New user being provisioned");
-
-                            pUser.setUserId(null);
-                            try {
-                                provService.addUser(pUser);
-                            } catch (Exception e) {
-                                log.error(e);
+                            } else {
+                                log.info(" - New user being provisioned");
+                                pUser.setUserId(null);
+                                try {
+                                    provService.addUser(pUser);
+                                } catch (Exception e) {
+                                    log.error(e);
+                                }
                             }
                         }
                     }
@@ -322,7 +325,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
             ctr++;
             //ADD the sleep pause to give other threads possibility to be alive
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 log.error("The thread was interrupted when sleep paused after row [" + row + "] execution.", e);
             }

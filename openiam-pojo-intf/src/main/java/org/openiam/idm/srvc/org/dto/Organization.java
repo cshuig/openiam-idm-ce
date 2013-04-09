@@ -1,7 +1,8 @@
 package org.openiam.idm.srvc.org.dto;
 
-import java.util.HashMap;
 import org.openiam.base.AttributeOperationEnum;
+import org.openiam.dozer.DozerDTOCorrespondence;
+import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,9 +10,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
-import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 
 /**
  * <p/>
@@ -40,6 +40,7 @@ import org.openiam.idm.srvc.org.domain.OrganizationEntity;
         "parentId",
         "classification",
         "internalOrgId",
+        "internalOrgName",
         "status",
         "abbreviation",
         "symbol",
@@ -82,6 +83,8 @@ public class Organization implements java.io.Serializable, Comparable<Organizati
     protected String organizationName;
 
     protected String internalOrgId;
+
+    protected String internalOrgName;
 
     protected String parentId;
 
@@ -438,12 +441,21 @@ public class Organization implements java.io.Serializable, Comparable<Organizati
         this.operation = operation;
     }
 
+    public String getInternalOrgName() {
+        return internalOrgName;
+    }
+
+    public void setInternalOrgName(String internalOrgName) {
+        this.internalOrgName = internalOrgName;
+    }
+
     public int compareTo(Organization o) {
         if (getOrganizationName() == null || o == null) {
             return Integer.MIN_VALUE;
         }
         return getOrganizationName().compareTo(o.getOrganizationName());
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -483,4 +495,6 @@ public class Organization implements java.io.Serializable, Comparable<Organizati
     public int hashCode() {
         return orgId != null ? orgId.hashCode() : 0;
     }
+
+
 }

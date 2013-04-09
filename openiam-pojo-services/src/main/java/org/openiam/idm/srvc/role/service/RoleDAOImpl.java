@@ -2,38 +2,27 @@ package org.openiam.idm.srvc.role.service;
 
 // Generated Mar 4, 2008 1:12:08 AM by Hibernate Tools 3.2.0.b11
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.naming.InitialContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.LockMode;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-
-import static org.hibernate.criterion.Example.create;
-
+import org.hibernate.sql.JoinType;
+import org.openiam.base.ObjectSearchAttribute;
 import org.openiam.exception.data.ObjectNotFoundException;
 import org.openiam.idm.srvc.grp.domain.GroupEntity;
+import org.openiam.idm.srvc.grp.service.GroupDAO;
 import org.openiam.idm.srvc.role.domain.RoleEmbeddableId;
 import org.openiam.idm.srvc.role.domain.RoleEntity;
-import org.openiam.idm.srvc.role.dto.Role;
-import org.openiam.idm.srvc.role.dto.RoleId;
 import org.openiam.idm.srvc.role.dto.RoleSearch;
 import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.service.UserDAO;
-import org.openiam.idm.srvc.grp.dto.Group;
-import org.openiam.idm.srvc.grp.service.GroupDAO;
+
+import javax.naming.InitialContext;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Data access interface for domain model class Role.
@@ -391,38 +380,79 @@ public class RoleDAOImpl implements RoleDAO {
 	
     public List<RoleEntity> search(RoleSearch search) {
 		Session session = sessionFactory.getCurrentSession();
-		Criteria crit = session.createCriteria(RoleEntity.class);
+		Criteria crit = session.createCriteria(RoleEntity.class, "re");
+        crit.createCriteria("roleAttributes", "ra");
+
+
 		
 		if (search.getRoleId() != null && search.getRoleId().length() > 0 ) {
 			log.debug("search: roleId=" + search.getRoleId() );
-			crit.add(Restrictions.eq("id.roleId",search.getRoleId()));
+			crit.add(Restrictions.eq("re.id.roleId",search.getRoleId()));
 		}
 		if (search.getDomainId() != null && search.getDomainId().length() > 0 ) {
 			log.debug("search: domainId=" + search.getDomainId() );
-			crit.add(Restrictions.eq("id.serviceId",search.getDomainId()));
+			crit.add(Restrictions.eq("re.id.serviceId",search.getDomainId()));
 		}
 		if (search.getRoleName() != null && search.getRoleName().length() > 0 ) {
 			log.debug("search: roleName=" + search.getRoleName() );
-			crit.add(Restrictions.like("roleName",search.getRoleName()));
+			crit.add(Restrictions.like("re.roleName",search.getRoleName()));
 		}
 		if (search.getOwnerId() != null && search.getOwnerId().length() > 0 ) {
 			log.debug("search: ownerId=" + search.getOwnerId() );
-			crit.add(Restrictions.eq("ownerId",search.getOwnerId()));
+			crit.add(Restrictions.eq("re.ownerId",search.getOwnerId()));
 		}
 		if (search.getTypeId() != null && search.getTypeId().length() > 0 ) {
 			log.debug("search: typeId=" + search.getTypeId() );
-			crit.add(Restrictions.eq("metadataTypeId",search.getTypeId()));
+			crit.add(Restrictions.eq("re.metadataTypeId",search.getTypeId()));
 		}
 		if (search.getInternalRoleId() != null && search.getInternalRoleId().length() > 0 ) {
 			log.debug("search: internalRoleId=" + search.getInternalRoleId() );
-			crit.add(Restrictions.eq("internalRoleId",search.getInternalRoleId()));
+			crit.add(Restrictions.eq("re.internalRoleId",search.getInternalRoleId()));
 		}
+
+        if ( search.getSearchAttributeList() != null &&  !search.getSearchAttributeList().isEmpty()) {
+            crit.add(Restrictions.in("ra.name", getAttributeNames(search.getSearchAttributeList(), "NAME")));
+            crit.add(Restrictions.in("ra.value", getAttributeNames(search.getSearchAttributeList(), "VALUE")));
+
+        }
+
 		crit.addOrder(Order.asc("roleName"));
 		
 		List<RoleEntity> results = (List<RoleEntity>)crit.list();
 		return results;		
     	
     }
+
+    private List<String> getAttributeNames(List<ObjectSearchAttribute> attrList, String field) {
+
+        List<String> convertedList = new LinkedList<String>();
+        for (ObjectSearchAttribute atr : attrList) {
+
+            if ("NAME".equalsIgnoreCase(field)) {
+                convertedList.add(atr.getAttributeName());
+            }else {
+                convertedList.add(atr.getAttributeValue());
+            }
+
+        }
+        return convertedList;
+
+    }
+
+    /**
+     *
+     * public List<Permission> findByUser(User user) {
+     Criteria crit = session.createCriteria(Permission.class);
+     crit = crit.createCriteria("roles");
+     crit = crit.createCriteria("users");
+     crit = crit.add(Restrictions.eq("userId", user.getUserId()));
+     return crit.list();
+     }
+
+     *
+     * @param id
+     * @return
+     */
 
     @Override
     public RoleEntity findByParentId(String id) {

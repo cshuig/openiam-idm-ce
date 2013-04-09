@@ -6,8 +6,10 @@ import org.openiam.idm.srvc.msg.service.MailTemplateParameters
 import org.openiam.idm.srvc.msg.service.MailSenderUtils
 
 
-public class UsePasswordNotification implements NotificationMessageProvider {
-    private static final String tmplBody = "Dear [firstName] [lastName]: \n\nYour password is: [password]";
+public class UserPasswordNotification implements NotificationMessageProvider {
+    private static final String tmplBody = "Dear [firstName] [lastName]: \n\n" +
+            " Your password has been reset. \n" +
+            " Your new password is: [password]";
 
     @Override
     public List<Message> build(Map<String, String> args) {
