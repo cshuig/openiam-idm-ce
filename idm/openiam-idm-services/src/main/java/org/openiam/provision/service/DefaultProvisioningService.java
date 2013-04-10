@@ -2130,7 +2130,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     userReq.setUserIdentity(mLg.getId().getLogin());
                                 }
 
-                                userReq.setUserIdentity(mLg.getId().getLogin());
+//                                userReq.setUserIdentity(mLg.getId().getLogin());
 
                                 userReq.setRequestID(requestId);
                                 userReq.setTargetID(mLg.getId()
