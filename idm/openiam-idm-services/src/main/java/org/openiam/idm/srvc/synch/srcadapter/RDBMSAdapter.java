@@ -389,7 +389,13 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
                     }
                 }
             }
-
+            ctr++;
+            //ADD the sleep pause to give other threads possibility to be alive
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                log.error("The thread was interrupted when sleep paused after row [" + ctr + "] execution.", e);
+            }
 
         }
         return mostRecentRecord;
