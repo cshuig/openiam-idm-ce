@@ -330,6 +330,7 @@
 <xs:element minOccurs="0" name="parentId" type="xs:string"/>
 <xs:element minOccurs="0" name="classification" type="tns:OrgClassification"/>
 <xs:element minOccurs="0" name="internalOrgId" type="xs:string"/>
+<xs:element minOccurs="0" name="internalOrgName" type="xs:string"/>
 <xs:element minOccurs="0" name="status" type="xs:string"/>
 <xs:element minOccurs="0" name="abbreviation" type="xs:string"/>
 <xs:element minOccurs="0" name="symbol" type="xs:string"/>

@@ -161,7 +161,6 @@
 <xs:element minOccurs="0" name="name" type="xs:string"/>
 <xs:element minOccurs="0" name="userId" type="xs:string"/>
 <xs:element minOccurs="0" name="value" type="xs:string"/>
-<xs:element minOccurs="0" name="attrGroup" type="xs:string"/>
 <xs:element minOccurs="0" name="operation" type="ns2:AttributeOperationEnum"/>
 <xs:element minOccurs="0" name="required" type="xs:boolean"/>
 </xs:sequence>
@@ -331,6 +330,7 @@
 <xs:element minOccurs="0" name="parentId" type="xs:string"/>
 <xs:element minOccurs="0" name="classification" type="tns:OrgClassification"/>
 <xs:element minOccurs="0" name="internalOrgId" type="xs:string"/>
+<xs:element minOccurs="0" name="internalOrgName" type="xs:string"/>
 <xs:element minOccurs="0" name="status" type="xs:string"/>
 <xs:element minOccurs="0" name="abbreviation" type="xs:string"/>
 <xs:element minOccurs="0" name="symbol" type="xs:string"/>
@@ -1164,6 +1164,7 @@
 <xs:element minOccurs="0" name="separator" type="xs:string"/>
 <xs:element minOccurs="0" name="endOfLine" type="xs:string"/>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="userList" nillable="true" type="tns:userWrapperEntity"/>
+<xs:element minOccurs="0" name="notificationEmailAddress" type="xs:string"/>
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="ReconciliationSituation">

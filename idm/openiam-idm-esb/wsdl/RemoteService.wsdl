@@ -4,19 +4,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:idm.openiam.org/srvc/continfo/dto" xmlns:ns2="http://www.openiam.org/service/connector" xmlns:tns="urn:idm.openiam.org/srvc/user/dto" elementFormDefault="qualified" targetNamespace="urn:idm.openiam.org/srvc/user/dto" version="1.0">
 <xs:import namespace="urn:idm.openiam.org/srvc/continfo/dto"/>
 <xs:import namespace="http://www.openiam.org/service/connector"/>
-<xs:complexType name="supervisor">
-<xs:sequence>
-<xs:element minOccurs="0" name="comments" type="xs:string"/>
-<xs:element minOccurs="0" name="employee" type="tns:user"/>
-<xs:element minOccurs="0" name="endDate" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="isPrimarySuper" type="xs:int"/>
-<xs:element minOccurs="0" name="orgStructureId" type="xs:string"/>
-<xs:element minOccurs="0" name="startDate" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="status" type="xs:string"/>
-<xs:element minOccurs="0" name="supervisor" type="tns:user"/>
-<xs:element minOccurs="0" name="supervisorType" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
 <xs:complexType name="user">
 <xs:complexContent>
 <xs:extension base="ns2:BaseObject">
@@ -115,7 +102,6 @@
 <xs:element minOccurs="0" name="name" type="xs:string"/>
 <xs:element minOccurs="0" name="userId" type="xs:string"/>
 <xs:element minOccurs="0" name="value" type="xs:string"/>
-<xs:element minOccurs="0" name="attrGroup" type="xs:string"/>
 <xs:element minOccurs="0" name="operation" type="ns2:AttributeOperationEnum"/>
 <xs:element minOccurs="0" name="required" type="xs:boolean"/>
 </xs:sequence>
@@ -141,6 +127,19 @@
 <xs:element minOccurs="0" name="noteType" type="xs:string"/>
 <xs:element minOccurs="0" name="userId" type="xs:string"/>
 <xs:element minOccurs="0" name="userNoteId" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="supervisor">
+<xs:sequence>
+<xs:element minOccurs="0" name="comments" type="xs:string"/>
+<xs:element minOccurs="0" name="employee" type="tns:user"/>
+<xs:element minOccurs="0" name="endDate" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="isPrimarySuper" type="xs:int"/>
+<xs:element minOccurs="0" name="orgStructureId" type="xs:string"/>
+<xs:element minOccurs="0" name="startDate" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="status" type="xs:string"/>
+<xs:element minOccurs="0" name="supervisor" type="tns:user"/>
+<xs:element minOccurs="0" name="supervisorType" type="xs:string"/>
 </xs:sequence>
 </xs:complexType>
 <xs:simpleType name="UserStatus">
@@ -272,6 +271,7 @@
 <xs:element minOccurs="0" name="parentId" type="xs:string"/>
 <xs:element minOccurs="0" name="classification" type="tns:OrgClassification"/>
 <xs:element minOccurs="0" name="internalOrgId" type="xs:string"/>
+<xs:element minOccurs="0" name="internalOrgName" type="xs:string"/>
 <xs:element minOccurs="0" name="status" type="xs:string"/>
 <xs:element minOccurs="0" name="abbreviation" type="xs:string"/>
 <xs:element minOccurs="0" name="symbol" type="xs:string"/>
@@ -784,6 +784,7 @@
 <xs:element minOccurs="0" name="separator" type="xs:string"/>
 <xs:element minOccurs="0" name="endOfLine" type="xs:string"/>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="userList" nillable="true" type="tns:userWrapperEntity"/>
+<xs:element minOccurs="0" name="notificationEmailAddress" type="xs:string"/>
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="ReconciliationSituation">
@@ -1043,89 +1044,6 @@
 <xs:element minOccurs="0" name="return" type="tns:BaseResponseType"/>
 </xs:sequence>
 </xs:complexType>
-<xs:complexType name="Login">
-<xs:sequence>
-<xs:element minOccurs="0" name="id" type="tns:LoginId"/>
-<xs:element minOccurs="0" name="userId" type="xs:string"/>
-<xs:element minOccurs="0" name="password" type="xs:string"/>
-<xs:element minOccurs="0" name="pwdEquivalentToken" type="xs:string"/>
-<xs:element minOccurs="0" name="pwdChanged" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="pwdExp" type="xs:dateTime"/>
-<xs:element name="firstTimeLogin" type="xs:int"/>
-<xs:element name="resetPassword" type="xs:int"/>
-<xs:element name="isLocked" type="xs:int"/>
-<xs:element minOccurs="0" name="status" type="xs:string"/>
-<xs:element minOccurs="0" name="gracePeriod" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="createDate" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="createdBy" type="xs:string"/>
-<xs:element minOccurs="0" name="currentLoginHost" type="xs:string"/>
-<xs:element minOccurs="0" name="authFailCount" type="xs:int"/>
-<xs:element minOccurs="0" name="lastAuthAttempt" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="canonicalName" type="xs:string"/>
-<xs:element minOccurs="0" name="lastLogin" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="isDefault" type="xs:int"/>
-<xs:element name="selected" type="xs:boolean"/>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="loginAttributes" nillable="true" type="tns:LoginAttribute"/>
-<xs:element minOccurs="0" name="passwordChangeCount" type="xs:int"/>
-<xs:element minOccurs="0" name="operation" type="tns:AttributeOperationEnum"/>
-<xs:element minOccurs="0" name="origPrincipalName" type="xs:string"/>
-<xs:element minOccurs="0" name="managedSysName" type="xs:string"/>
-<xs:element minOccurs="0" name="lastLoginIP" type="xs:string"/>
-<xs:element minOccurs="0" name="prevLoginIP" type="xs:string"/>
-<xs:element minOccurs="0" name="prevLogin" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="pswdResetToken" type="xs:string"/>
-<xs:element minOccurs="0" name="pswdResetTokenExp" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="loginAttrInTargetSystem" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="LoginId">
-<xs:sequence>
-<xs:element minOccurs="0" name="domainId" type="xs:string"/>
-<xs:element minOccurs="0" name="login" type="xs:string"/>
-<xs:element minOccurs="0" name="managedSysId" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="LoginAttribute">
-<xs:sequence>
-<xs:element minOccurs="0" name="loginAttrId" type="xs:string"/>
-<xs:element minOccurs="0" name="domainId" type="xs:string"/>
-<xs:element minOccurs="0" name="login" type="xs:string"/>
-<xs:element minOccurs="0" name="name" type="xs:string"/>
-<xs:element minOccurs="0" name="value" type="xs:string"/>
-<xs:element minOccurs="0" name="metadataId" type="xs:string"/>
-<xs:element minOccurs="0" name="attrGroup" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="Subject">
-<xs:sequence>
-<xs:element name="readOnly" type="xs:boolean"/>
-<xs:element name="expirationTime" type="xs:long"/>
-<xs:element name="resultCode" type="xs:int"/>
-<xs:element minOccurs="0" name="saml" type="xs:string"/>
-<xs:element minOccurs="0" name="samlType" type="xs:string"/>
-<xs:element name="daysToPwdExp" type="xs:int"/>
-<xs:element minOccurs="0" name="domainId" type="xs:string"/>
-<xs:element minOccurs="0" name="ssoToken" type="tns:SSOToken"/>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="xs:anyType"/>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="roles" nillable="true" type="xs:anyType"/>
-<xs:element minOccurs="0" name="userId" type="xs:string"/>
-<xs:element minOccurs="0" name="principal" type="xs:string"/>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="principals" nillable="true" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="SSOToken">
-<xs:sequence>
-<xs:element minOccurs="0" name="tokenType" type="xs:string"/>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="authLevel" type="xs:string"/>
-<xs:element minOccurs="0" name="provider" type="xs:string"/>
-<xs:element minOccurs="0" name="clientIP" type="xs:string"/>
-<xs:element minOccurs="0" name="principal" type="xs:string"/>
-<xs:element name="maxIdleTime" type="xs:int"/>
-<xs:element minOccurs="0" name="expirationTime" type="xs:dateTime"/>
-<xs:element minOccurs="0" name="createTime" type="xs:dateTime"/>
-</xs:sequence>
-</xs:complexType>
 <xs:complexType name="AddRequestType">
 <xs:complexContent>
 <xs:extension base="tns:RequestType">
@@ -1380,6 +1298,89 @@
 <xs:element minOccurs="0" name="value1" type="xs:string"/>
 <xs:element minOccurs="0" name="value2" type="xs:string"/>
 <xs:element minOccurs="0" name="rule" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="Login">
+<xs:sequence>
+<xs:element minOccurs="0" name="id" type="tns:LoginId"/>
+<xs:element minOccurs="0" name="userId" type="xs:string"/>
+<xs:element minOccurs="0" name="password" type="xs:string"/>
+<xs:element minOccurs="0" name="pwdEquivalentToken" type="xs:string"/>
+<xs:element minOccurs="0" name="pwdChanged" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="pwdExp" type="xs:dateTime"/>
+<xs:element name="firstTimeLogin" type="xs:int"/>
+<xs:element name="resetPassword" type="xs:int"/>
+<xs:element name="isLocked" type="xs:int"/>
+<xs:element minOccurs="0" name="status" type="xs:string"/>
+<xs:element minOccurs="0" name="gracePeriod" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="createDate" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="createdBy" type="xs:string"/>
+<xs:element minOccurs="0" name="currentLoginHost" type="xs:string"/>
+<xs:element minOccurs="0" name="authFailCount" type="xs:int"/>
+<xs:element minOccurs="0" name="lastAuthAttempt" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="canonicalName" type="xs:string"/>
+<xs:element minOccurs="0" name="lastLogin" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="isDefault" type="xs:int"/>
+<xs:element name="selected" type="xs:boolean"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="loginAttributes" nillable="true" type="tns:LoginAttribute"/>
+<xs:element minOccurs="0" name="passwordChangeCount" type="xs:int"/>
+<xs:element minOccurs="0" name="operation" type="tns:AttributeOperationEnum"/>
+<xs:element minOccurs="0" name="origPrincipalName" type="xs:string"/>
+<xs:element minOccurs="0" name="managedSysName" type="xs:string"/>
+<xs:element minOccurs="0" name="lastLoginIP" type="xs:string"/>
+<xs:element minOccurs="0" name="prevLoginIP" type="xs:string"/>
+<xs:element minOccurs="0" name="prevLogin" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="pswdResetToken" type="xs:string"/>
+<xs:element minOccurs="0" name="pswdResetTokenExp" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="loginAttrInTargetSystem" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="LoginId">
+<xs:sequence>
+<xs:element minOccurs="0" name="domainId" type="xs:string"/>
+<xs:element minOccurs="0" name="login" type="xs:string"/>
+<xs:element minOccurs="0" name="managedSysId" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="LoginAttribute">
+<xs:sequence>
+<xs:element minOccurs="0" name="loginAttrId" type="xs:string"/>
+<xs:element minOccurs="0" name="domainId" type="xs:string"/>
+<xs:element minOccurs="0" name="login" type="xs:string"/>
+<xs:element minOccurs="0" name="name" type="xs:string"/>
+<xs:element minOccurs="0" name="value" type="xs:string"/>
+<xs:element minOccurs="0" name="metadataId" type="xs:string"/>
+<xs:element minOccurs="0" name="attrGroup" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="Subject">
+<xs:sequence>
+<xs:element name="readOnly" type="xs:boolean"/>
+<xs:element name="expirationTime" type="xs:long"/>
+<xs:element name="resultCode" type="xs:int"/>
+<xs:element minOccurs="0" name="saml" type="xs:string"/>
+<xs:element minOccurs="0" name="samlType" type="xs:string"/>
+<xs:element name="daysToPwdExp" type="xs:int"/>
+<xs:element minOccurs="0" name="domainId" type="xs:string"/>
+<xs:element minOccurs="0" name="ssoToken" type="tns:SSOToken"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="xs:anyType"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="roles" nillable="true" type="xs:anyType"/>
+<xs:element minOccurs="0" name="userId" type="xs:string"/>
+<xs:element minOccurs="0" name="principal" type="xs:string"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="principals" nillable="true" type="xs:anyType"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="SSOToken">
+<xs:sequence>
+<xs:element minOccurs="0" name="tokenType" type="xs:string"/>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="authLevel" type="xs:string"/>
+<xs:element minOccurs="0" name="provider" type="xs:string"/>
+<xs:element minOccurs="0" name="clientIP" type="xs:string"/>
+<xs:element minOccurs="0" name="principal" type="xs:string"/>
+<xs:element name="maxIdleTime" type="xs:int"/>
+<xs:element minOccurs="0" name="expirationTime" type="xs:dateTime"/>
+<xs:element minOccurs="0" name="createTime" type="xs:dateTime"/>
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="LookupRequestType">

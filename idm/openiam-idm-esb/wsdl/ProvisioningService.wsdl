@@ -102,7 +102,6 @@
 <xs:element minOccurs="0" name="name" type="xs:string"/>
 <xs:element minOccurs="0" name="userId" type="xs:string"/>
 <xs:element minOccurs="0" name="value" type="xs:string"/>
-<xs:element minOccurs="0" name="attrGroup" type="xs:string"/>
 <xs:element minOccurs="0" name="operation" type="ns2:AttributeOperationEnum"/>
 <xs:element minOccurs="0" name="required" type="xs:boolean"/>
 </xs:sequence>
@@ -272,6 +271,7 @@
 <xs:element minOccurs="0" name="parentId" type="xs:string"/>
 <xs:element minOccurs="0" name="classification" type="tns:OrgClassification"/>
 <xs:element minOccurs="0" name="internalOrgId" type="xs:string"/>
+<xs:element minOccurs="0" name="internalOrgName" type="xs:string"/>
 <xs:element minOccurs="0" name="status" type="xs:string"/>
 <xs:element minOccurs="0" name="abbreviation" type="xs:string"/>
 <xs:element minOccurs="0" name="symbol" type="xs:string"/>
@@ -539,6 +539,7 @@
 <xs:element minOccurs="0" name="action" type="xs:string"/>
 <xs:element name="passThruAttributes" type="xs:boolean"/>
 <xs:element maxOccurs="unbounded" minOccurs="0" name="attributeList" nillable="true" type="ns1:ExtensibleAttribute"/>
+<xs:element name="sendPasswordToUser" type="xs:boolean"/>
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -950,6 +951,7 @@
 <xs:enumeration value="FAIL_CONNECTOR"/>
 <xs:enumeration value="INVALID_ARGUMENTS"/>
 <xs:enumeration value="IO_EXCEPTION"/>
+<xs:enumeration value="INTERRUPTED_EXCEPTION"/>
 <xs:enumeration value="FILE_EXCEPTION"/>
 <xs:enumeration value="SQL_EXCEPTION"/>
 <xs:enumeration value="WS_SERVICE_EXCEPTION"/>
