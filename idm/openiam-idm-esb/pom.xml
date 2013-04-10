@@ -195,7 +195,7 @@
 
 	<build>
 		<finalName>openiam-idm-esb</finalName>
-				<plugins>
+<!--				<plugins>
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-java2ws-plugin</artifactId>
@@ -569,7 +569,7 @@
 
 				</executions>
 			</plugin>
-		</plugins>
+		</plugins>-->
 		
 	</build>
 </project>
