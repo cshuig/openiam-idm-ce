@@ -71,7 +71,9 @@ public class CSVAdapter extends AbstractSrcAdapter {
     private static final Log log = LogFactory.getLog(CSVAdapter.class);
 
     private static final ResourceBundle res = ResourceBundle.getBundle("datasource");
-    private final long SHUTDOWN_TIME = 5000;
+
+    // synchronization monitor
+    private final Object mutex = new Object();
 
     public SyncResponse startSynch(final SynchConfig config) {
         int THREAD_COUNT = Integer.parseInt(res.getString("csvadapter.thread.count"));
@@ -208,19 +210,6 @@ public class CSVAdapter extends AbstractSrcAdapter {
         return new SyncResponse(ResponseStatus.SUCCESS);
     }
 
-    private void waitUntilWorkDone(List<Future> results) throws InterruptedException {
-        int successCounter = 0;
-        while(successCounter != results.size()) {
-            successCounter = 0;
-            for(Future future : results) {
-                if(future.isDone()) {
-                    successCounter ++;
-                }
-            }
-            Thread.sleep(500);
-        }
-    }
-
     private void proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, String[][] rows, final ValidationScript validationScript, final TransformScript transformScript, MatchObjectRule matchRule, LineObject rowHeader, int ctr) {
         for (String[] row : rows) {
             log.info("*** Record counter: " + ctr++);
@@ -237,7 +226,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
 
             // validate
             if (validationScript != null) {
-                synchronized (validationScript) {
+                synchronized (mutex) {
                     int retval = validationScript.isValid(rowObj);
                     if (retval == ValidationScript.NOT_VALID) {
                         log.info(" - Validation failed...transformation will not be called.");
@@ -267,7 +256,7 @@ public class CSVAdapter extends AbstractSrcAdapter {
             // transform
             int retval = -1;
             if (transformScript != null) {
-                synchronized (transformScript) {
+                synchronized (mutex) {
                     transformScript.init();
 
                     // initialize the transform script
