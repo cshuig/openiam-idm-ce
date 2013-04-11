@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.openiam.idm.srvc.role.domain.UserRoleEntity;
 import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 
 /**
  * DAO Interface for UserRole. Manages the relationship between user and role.
@@ -63,6 +63,6 @@ public interface UserRoleDAO {
 	 */
 	List<UserEntity> findUserByRole(String domainId, String roleId);
 
-	List<UserWrapperEntity> findUserWByRole(String domainId, String roleId);
+	List<ReconcileUserEntity> findUserWByRole(String domainId, String roleId);
 
 }

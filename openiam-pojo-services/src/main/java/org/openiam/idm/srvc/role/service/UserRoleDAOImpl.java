@@ -15,7 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openiam.idm.srvc.role.domain.UserRoleEntity;
 import org.openiam.idm.srvc.role.dto.UserRole;
 import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 
 import static org.hibernate.criterion.Example.create;
@@ -168,7 +168,7 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 	}
 
 	@Override
-	public List<UserWrapperEntity> findUserWByRole(String domainId, String roleId) {
+	public List<ReconcileUserEntity> findUserWByRole(String domainId, String roleId) {
 
 		log.debug("findUserByRole: domainId=" + domainId);
 		log.debug("findUserByRole: roleId=" + roleId);
@@ -181,7 +181,7 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 		
 		qry.setString("domainId",domainId);
 		qry.setString("roleId",roleId);
-		List<UserWrapperEntity> result = (List<UserWrapperEntity>)qry.list();
+		List<ReconcileUserEntity> result = (List<ReconcileUserEntity>)qry.list();
 		if (result == null || result.size() == 0)
 			return null;
 		return result;			

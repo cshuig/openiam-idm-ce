@@ -4,7 +4,7 @@ import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 import org.openiam.idm.srvc.continfo.dto.Phone;
 import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.*;
 
 import javax.jws.WebMethod;
@@ -62,7 +62,7 @@ public interface UserDataService {
 	public List<UserAttribute> getUserAsAttributeList(String principalName,
 			List<String> attributeList);
 
-	public List<UserWrapperEntity> getAllUsers();
+	public List<User> getAllUsers();
 
 	/*
 	 * (non-Javadoc)

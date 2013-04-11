@@ -27,7 +27,7 @@ import org.openiam.idm.srvc.role.dto.RoleSearch;
 import org.openiam.idm.srvc.role.dto.UserRole;
 import org.openiam.idm.srvc.service.service.ServiceDAO;
 import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 
 import org.openiam.idm.srvc.user.dto.UserConstant;
@@ -936,14 +936,14 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	@Override
     @Transactional(readOnly = true)
-	public List<UserWrapperEntity> findUserWByRole(String domainId,
+	public List<ReconcileUserEntity> findUserWByRole(String domainId,
 			String roleId) {
 		if (domainId == null)
 			throw new IllegalArgumentException("domainId is null");
 		if (roleId == null)
 			throw new IllegalArgumentException("roleId is null");
 
-		List<UserWrapperEntity> ids = userRoleDao.findUserWByRole(domainId,
+		List<ReconcileUserEntity> ids = userRoleDao.findUserWByRole(domainId,
 				roleId);
 		return ids;
 	}

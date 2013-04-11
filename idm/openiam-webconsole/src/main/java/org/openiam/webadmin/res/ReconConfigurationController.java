@@ -195,7 +195,7 @@ public class ReconConfigurationController extends CancellableFormController {
 		}
 
 		if (btn != null && btn.equalsIgnoreCase("Export report")) {
-			mavDownload = download(response, mSys, "");
+			mavDownload = download(response, mSys, "report_");
 			if (mavDownload != null)
 				return mavDownload;
 		}

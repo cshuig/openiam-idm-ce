@@ -7,15 +7,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 
 // Generated May 29, 2010 8:20:09 PM by Hibernate Tools 3.2.2.GA
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ReconciliationConfig", propOrder = { "reconConfigId",
 		"resourceId", "frequency", "status", "situationSet", "reportPath",
-		"separator", "endOfLine", "userList",
-		"notificationEmailAddress" })
+		"separator", "endOfLine", "notificationEmailAddress" })
 public class ReconciliationConfig implements java.io.Serializable {
 
 	private static final long serialVersionUID = 431603790346613674L;
@@ -29,8 +28,6 @@ public class ReconciliationConfig implements java.io.Serializable {
 
 	// Not saved in DB
 	private String reportPath;
-
-	private List<UserWrapperEntity> userList;
 
 	public String getSeparator() {
 		return separator;
@@ -113,14 +110,6 @@ public class ReconciliationConfig implements java.io.Serializable {
 
 	public void setReportPath(String reportPath) {
 		this.reportPath = reportPath;
-	}
-
-	public List<UserWrapperEntity> getUserList() {
-		return userList;
-	}
-
-	public void setUserList(List<UserWrapperEntity> userList) {
-		this.userList = userList;
 	}
 
 	/**

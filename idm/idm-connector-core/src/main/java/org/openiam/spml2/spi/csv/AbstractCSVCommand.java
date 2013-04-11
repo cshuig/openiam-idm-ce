@@ -13,7 +13,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.csv.CSVParser;
 import org.openiam.idm.srvc.csv.ReconciliationObject;
 import org.openiam.idm.srvc.csv.constant.CSVSource;
@@ -32,9 +31,9 @@ import org.openiam.idm.srvc.recon.service.CSVImproveScript;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
-import org.openiam.provision.dto.ProvisionUser;
+import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
 import org.openiam.script.ScriptFactory;
@@ -53,10 +52,10 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected ManagedSystemDataService managedSysService;
 	protected ResourceDataService resourceDataService;
 	protected ManagedSystemObjectMatchDAO managedSysObjectMatchDao;
-	protected LoginDataService loginManager;
-	protected CSVParser<ProvisionUser> userCSVParser;
+	protected CSVParser<User> userCSVParser;
 	protected String scriptEngine;
 	private MailService mailService;
+	private UserDataService userManager;
 
 	/**
 	 * @param mailService
@@ -88,16 +87,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	 * @param userCSVParser
 	 *            the userCSVParser to set
 	 */
-	public void setUserCSVParser(CSVParser<ProvisionUser> userCSVParser) {
+	public void setUserCSVParser(CSVParser<User> userCSVParser) {
 		this.userCSVParser = userCSVParser;
-	}
-
-	/**
-	 * @param loginManager
-	 *            the loginManager to set
-	 */
-	public void setLoginManager(LoginDataService loginManager) {
-		this.loginManager = loginManager;
 	}
 
 	public void setPathToCSV(String pathToCSV) {
@@ -162,7 +153,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 							managedSysId));
 			log.debug("Created Command for: " + situation.getSituation());
 		}
-		if (config.getUserList() == null) {
+		List<User> users = userManager.getAllUsers();
+		if (users == null) {
 			log.error("user list from DB is empty");
 			response.setStatus(StatusCodeType.FAILURE);
 			response.setErrorMessage("user list from DB is empty");
@@ -176,12 +168,11 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			response.setErrorMessage("attrMapList is empty");
 			return response;
 		}
-		List<ReconciliationObject<ProvisionUser>> idmUsers = null;
-		List<ReconciliationObject<ProvisionUser>> sourceUsers = null;
-		List<ReconciliationObject<ProvisionUser>> dbUsers = new ArrayList<ReconciliationObject<ProvisionUser>>();
-		for (UserWrapperEntity u : config.getUserList()) {
-			ProvisionUser pu_ = new ProvisionUser(u);
-			dbUsers.add(userCSVParser.toReconciliationObject(pu_, attrMapList));
+		List<ReconciliationObject<User>> idmUsers = null;
+		List<ReconciliationObject<User>> sourceUsers = null;
+		List<ReconciliationObject<User>> dbUsers = new ArrayList<ReconciliationObject<User>>();
+		for (User u : users) {
+			dbUsers.add(userCSVParser.toReconciliationObject(u, attrMapList));
 		}
 
 		try {
@@ -221,7 +212,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			}
 			report.add(new ReconciliationReportRow("Records from DB: "
 					+ dbUsers.size() + " items", hList.size() + 1));
-			for (ReconciliationObject<ProvisionUser> obj : dbUsers) {
+			for (ReconciliationObject<User> obj : dbUsers) {
 				report.add(new ReconciliationReportRow("DB: ",
 						ReconciliationReportResults.NOT_EXIST_IN_RESOURCE, this
 								.objectToString(hList, attrMapList, obj)));
@@ -275,14 +266,12 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	private String objectToString(List<String> head,
-			List<AttributeMap> attrMapList,
-			ReconciliationObject<ProvisionUser> u) {
+			List<AttributeMap> attrMapList, ReconciliationObject<User> u) {
 		return userCSVParser.objectToString(head, attrMapList, u);
 	}
 
 	private Map<String, String> matchFields(List<AttributeMap> attrMap,
-			ReconciliationObject<ProvisionUser> u,
-			ReconciliationObject<ProvisionUser> o) {
+			ReconciliationObject<User> u, ReconciliationObject<User> o) {
 		return userCSVParser.matchFields(attrMap, u, o);
 	}
 
@@ -298,15 +287,14 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	 * @return
 	 * @throws Exception
 	 */
-	private Set<ReconciliationObject<ProvisionUser>> reconCicle(
-			List<String> hList, List<ReconciliationReportRow> report,
-			String preffix,
-			List<ReconciliationObject<ProvisionUser>> reconUserList,
-			List<ReconciliationObject<ProvisionUser>> dbUsers,
+	private Set<ReconciliationObject<User>> reconCicle(List<String> hList,
+			List<ReconciliationReportRow> report, String preffix,
+			List<ReconciliationObject<User>> reconUserList,
+			List<ReconciliationObject<User>> dbUsers,
 			List<AttributeMap> attrMapList, ManagedSys mSys) throws Exception {
-		Set<ReconciliationObject<ProvisionUser>> used = new HashSet<ReconciliationObject<ProvisionUser>>(
+		Set<ReconciliationObject<User>> used = new HashSet<ReconciliationObject<User>>(
 				0);
-		for (ReconciliationObject<ProvisionUser> u : reconUserList) {
+		for (ReconciliationObject<User> u : reconUserList) {
 			log.info("User " + u.toString());
 			if (u.getObject() == null || u.getPrincipal() == null) {
 				log.warn("Skip USER" + u.toString() + " key or objecy is NULL");
@@ -327,8 +315,8 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			// }
 			boolean isFind = false;
 			boolean isMultiple = false;
-			ReconciliationObject<ProvisionUser> finded = null;
-			for (ReconciliationObject<ProvisionUser> o : dbUsers) {
+			ReconciliationObject<User> finded = null;
+			for (ReconciliationObject<User> o : dbUsers) {
 				if (used.contains(o)) {
 					log.debug("already used");
 					continue;
@@ -359,16 +347,27 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 						ReconciliationReportResults.NOT_EXIST_IN_IDM_DB, this
 								.objectToString(hList, attrMapList, u)));
 			} else if (!isMultiple && finded != null) {
-				if (UserStatusEnum.DELETED.equals(finded.getObject()
-						.getStatus())) {
+				if (finded.getObject().getPrincipalList().get(0) == null) {
+					if (UserStatusEnum.DELETED.equals(finded.getObject()
+							.getStatus())) {
+						report.add(new ReconciliationReportRow(preffix,
+								ReconciliationReportResults.IDM_DELETED, this
+										.objectToString(hList, userCSVParser
+												.convertToMap(attrMapList, u))));
+						continue;
+					}
 					report.add(new ReconciliationReportRow(preffix,
-							ReconciliationReportResults.IDM_DELETED, this
-									.objectToString(hList, attrMapList, u)));
+							ReconciliationReportResults.LOGIN_NOT_FOUND, this
+									.objectToString(hList, userCSVParser
+											.convertToMap(attrMapList, u))));
+					continue;
 				} else {
-					report.add(new ReconciliationReportRow(preffix,
-							ReconciliationReportResults.MATCH_FOUND,
+					report.add(new ReconciliationReportRow(finded.getObject()
+							.getPrincipalList().get(0).getId().getLogin(),
+							preffix, ReconciliationReportResults.MATCH_FOUND,
 							this.objectToString(hList,
 									matchFields(attrMapList, u, finded))));
+					continue;
 				}
 				// TODO fix login cheking
 				// Login l = null;
@@ -414,7 +413,23 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		return used;
 	}
 
-	protected List<ReconciliationObject<ProvisionUser>> getUsersFromCSV(
+	/**
+	 * @param userManager
+	 *            the userManager to set
+	 */
+	public void setUserManager(UserDataService userManager) {
+		this.userManager = userManager;
+	}
+
+	/**
+	 * @param ac
+	 *            the ac to set
+	 */
+	public static void setAc(ApplicationContext ac) {
+		AbstractCSVCommand.ac = ac;
+	}
+
+	protected List<ReconciliationObject<User>> getUsersFromCSV(
 			ManagedSys managedSys) throws Exception {
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
@@ -422,29 +437,29 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	}
 
 	protected Map<String, String> getUserProvisionMap(
-			ReconciliationObject<ProvisionUser> obj, ManagedSys managedSys)
+			ReconciliationObject<User> obj, ManagedSys managedSys)
 			throws Exception {
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		return userCSVParser.convertToMap(attrMapList, obj);
 	}
 
-	protected void addUsersToCSV(String principal, ProvisionUser newUser,
+	protected void addUsersToCSV(String principal, User newUser,
 			ManagedSys managedSys) throws Exception {
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
-		userCSVParser.add(new ReconciliationObject<ProvisionUser>(principal,
-				newUser), managedSys, attrMapList, CSVSource.IDM);
+		userCSVParser.add(new ReconciliationObject<User>(principal, newUser),
+				managedSys, attrMapList, CSVSource.IDM);
 	}
 
-	protected void deleteUser(String principal, ProvisionUser newUser,
+	protected void deleteUser(String principal, User newUser,
 			ManagedSys managedSys) throws Exception {
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
 		userCSVParser.delete(principal, managedSys, attrMapList, CSVSource.IDM);
 	}
 
-	protected void updateUser(ReconciliationObject<ProvisionUser> newUser,
+	protected void updateUser(ReconciliationObject<User> newUser,
 			ManagedSys managedSys) throws Exception {
 		List<AttributeMap> attrMapList = managedSysService
 				.getResourceAttributeMaps(managedSys.getResourceId());
@@ -454,11 +469,11 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected boolean lookupObjectInCSV(String findValue,
 			ManagedSys managedSys, List<ExtensibleObject> extOnjectList)
 			throws Exception {
-		List<ReconciliationObject<ProvisionUser>> users = this
+		List<ReconciliationObject<User>> users = this
 				.getUsersFromCSV(managedSys);
 		List<ExtensibleAttribute> eAttr = new ArrayList<ExtensibleAttribute>(0);
 
-		for (ReconciliationObject<ProvisionUser> user : users) {
+		for (ReconciliationObject<User> user : users) {
 			ExtensibleObject extOnject = new ExtensibleObject();
 			if (match(findValue, user, extOnject)) {
 				Map<String, String> res = this.getUserProvisionMap(user,
@@ -475,8 +490,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		return false;
 	}
 
-	protected boolean match(String findValue,
-			ReconciliationObject<ProvisionUser> user2,
+	protected boolean match(String findValue, ReconciliationObject<User> user2,
 			ExtensibleObject extOnject) {
 		if (!StringUtils.hasText(findValue) || user2 == null) {
 			return false;

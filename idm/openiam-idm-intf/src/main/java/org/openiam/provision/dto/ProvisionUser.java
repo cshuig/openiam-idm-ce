@@ -28,7 +28,7 @@ import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.role.dto.Role;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.res.dto.Resource;
 
@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -46,11 +47,10 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ProvisionUser", propOrder = { "memberOfGroups", "requestId",
 		"sessionId", "memberOfRoles", "userResourceList", "userAffiliations",
-		"srcSystemId", "provisionModel", 
-		"notifyTargetSystems", "emailCredentialsToNewUsers",
-		"emailCredentialsToSupervisor", "provisionOnStartDate",
-		"addInitialPasswordToHistory", "passwordPolicy", "password",
-		"skipPreprocessor", "skipPostProcessor" })
+		"srcSystemId", "provisionModel", "notifyTargetSystems",
+		"emailCredentialsToNewUsers", "emailCredentialsToSupervisor",
+		"provisionOnStartDate", "addInitialPasswordToHistory",
+		"passwordPolicy", "password", "skipPreprocessor", "skipPostProcessor" })
 public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 	/**
      *
@@ -110,7 +110,7 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		deptName = user.getDeptName();
 		employeeId = user.getEmployeeId();
 		employeeType = user.getEmployeeType();
-
+		this.principalList = user.getPrincipalList();
 		firstName = user.getFirstName();
 		jobCode = user.getJobCode();
 		lastName = user.getLastName();
@@ -175,17 +175,20 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		// set the email address in a hibernate friendly manner
 	}
 
-	public ProvisionUser(UserWrapperEntity user) {
+	public ProvisionUser(ReconcileUserEntity user) {
 		birthdate = user.getBirthdate();
 		companyId = user.getCompanyId();
 		companyOwnerId = user.getCompanyOwnerId();
 		createDate = user.getCreateDate();
 		createdBy = user.getCreatedBy();
-		deptCd = user.getDeptCd();
+		deptCd = user.getDeptCd().getInternalOrgName();
 		deptName = user.getDeptName();
 		employeeId = user.getEmployeeId();
 		employeeType = user.getEmployeeType();
-
+		if (user.getLogins() == null)
+			this.principalList = new LinkedList<Login>();
+		else
+			this.principalList = new LinkedList(user.getLoginsDTO());
 		firstName = user.getFirstName();
 		jobCode = user.getJobCode();
 		lastName = user.getLastName();
@@ -590,7 +593,6 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		this.provisionModel = provisionModel;
 	}
 
-
 	public String getSessionId() {
 		return sessionId;
 	}
@@ -612,8 +614,8 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		return "ProvisionUser{" + "memberOfGroups=" + memberOfGroups
 				+ ", memberOfRoles=" + memberOfRoles + ", userAffiliations="
 				+ userAffiliations + ", userResourceList=" + userResourceList
-				+ ", provisionModel=" + provisionModel + ", emailCredentialsToNewUsers="
-				+ emailCredentialsToNewUsers
+				+ ", provisionModel=" + provisionModel
+				+ ", emailCredentialsToNewUsers=" + emailCredentialsToNewUsers
 				+ ", emailCredentialsToSupervisor="
 				+ emailCredentialsToSupervisor
 				+ ", addInitialPasswordToHistory="

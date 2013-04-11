@@ -1,9 +1,10 @@
 package org.openiam.idm.srvc.user.domain;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,20 +15,21 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.ParamDef;
+import org.openiam.idm.srvc.auth.domain.LoginEntity;
 import org.openiam.idm.srvc.auth.dto.Login;
+import org.openiam.idm.srvc.auth.dto.LoginId;
+import org.openiam.idm.srvc.org.domain.OrganizationEntity;
+import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 
 @Entity
-@FilterDef(name = "parentTypeFilter", parameters = @ParamDef(name = "parentFilter", type = "string"))
 @Table(name = "USERS")
-public class UserWrapperEntity {
+public class ReconcileUserEntity {
 	@Id
 	@GeneratedValue(generator = "system-uuid")
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -49,8 +51,9 @@ public class UserWrapperEntity {
 	@Column(name = "CREATED_BY", length = 32)
 	private String createdBy;
 
-	@Column(name = "DEPT_CD", length = 50)
-	private String deptCd;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "DEPT_CD", nullable = false, updatable = false)
+	private OrganizationEntity deptCd;
 
 	@Column(name = "DEPT_NAME", length = 100)
 	private String deptName;
@@ -216,7 +219,11 @@ public class UserWrapperEntity {
 	@Column(name = "DATE_CHALLENGE_RESP_CHANGED", length = 10)
 	private Date dateChallengeRespChanged;
 
-	public UserWrapperEntity() {
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "USER_ID")
+	private Set<LoginEntity> logins = new HashSet<LoginEntity>(0);
+
+	public ReconcileUserEntity() {
 	}
 
 	public String getUserId() {
@@ -267,11 +274,11 @@ public class UserWrapperEntity {
 		this.createdBy = createdBy;
 	}
 
-	public String getDeptCd() {
+	public OrganizationEntity getDeptCd() {
 		return deptCd;
 	}
 
-	public void setDeptCd(String deptCd) {
+	public void setDeptCd(OrganizationEntity deptCd) {
 		this.deptCd = deptCd;
 	}
 
@@ -705,6 +712,37 @@ public class UserWrapperEntity {
 
 	public void setDateChallengeRespChanged(Date dateChallengeRespChanged) {
 		this.dateChallengeRespChanged = dateChallengeRespChanged;
+	}
+
+	/**
+	 * @return the logins
+	 */
+	public Set<LoginEntity> getLogins() {
+		return logins;
+	}
+
+	public List<Login> getLoginsDTO() {
+		List<Login> res = new LinkedList<Login>();
+		if (logins == null)
+			return res;
+		for (LoginEntity entity : this.logins) {
+			Login newLogin = new Login();
+			LoginId id = new LoginId();
+			id.setDomainId(entity.getDomainId());
+			id.setLogin(entity.getLogin());
+			id.setManagedSysId(entity.getManagedSysId());
+			newLogin.setId(id);
+			res.add(newLogin);
+		}
+		return res;
+	}
+
+	/**
+	 * @param logins
+	 *            the logins to set
+	 */
+	public void setLogins(Set<LoginEntity> logins) {
+		this.logins = logins;
 	}
 
 }

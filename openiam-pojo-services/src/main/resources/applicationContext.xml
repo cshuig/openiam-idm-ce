@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
     					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
     					http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
     					http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
@@ -150,7 +148,8 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<bean id="reportDataService" class="org.openiam.idm.srvc.report.service.ReportDataServiceImpl">
+	<bean id="reportDataService"
+		class="org.openiam.idm.srvc.report.service.ReportDataServiceImpl">
 	</bean>
 
 	<!-- User Beans -->
@@ -680,11 +679,11 @@
 	<bean id="batchDataService" class="org.openiam.idm.srvc.batch.service.BatchDataServiceImpl">
 		<property name="batchDao" ref="batchConfigDAO" />
 	</bean>
-	<bean id="batchConfigDAO" class="org.openiam.idm.srvc.batch.service.BatchConfigDAOImpl" >
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="batchConfigDAO" class="org.openiam.idm.srvc.batch.service.BatchConfigDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-    <bean class="org.springframework.orm.hibernate4.HibernateExceptionTranslator"/>
+	<bean class="org.springframework.orm.hibernate4.HibernateExceptionTranslator" />
 
 	<!-- Messaging Beans -->
 
@@ -694,8 +693,9 @@
 		</property> </bean> -->
 
 	<!-- Hibernate SessionFactory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"/>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
 		<property name="mappingResources">
 			<list>
 				<value>org/openiam/idm/srvc/service/service/Service.hbm.xml</value>
@@ -812,12 +812,13 @@
 				<prop key="hibernate.dialect">${openiam.hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${logSQL}</prop>
 				<prop key="hibernate.generate_statistics">true</prop>
-                <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
-                <prop key="hibernate.cache.use_second_level_cache">true</prop>
-                <prop key="hibernate.cache.use_query_cache">true</prop>
-                <prop key="hibernate.use_sql_comments">true</prop>
-                <prop key="hibernate.connection.autoReconnect">true</prop>
-   				<prop key="hibernate.validationQuery">${openiam.hibernate.validationQuery}</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory
+				</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.use_sql_comments">true</prop>
+				<prop key="hibernate.connection.autoReconnect">true</prop>
+				<prop key="hibernate.validationQuery">${openiam.hibernate.validationQuery}</prop>
 			</props>
 		</property>
 		<property name="packagesToScan"
@@ -830,6 +831,7 @@
 											   org.openiam.idm.srvc.org.dto*,
 											   org.openiam.idm.srvc.org.domain*,
 											   org.openiam.idm.srvc.user.domain*,
+											   org.openiam.idm.srvc.auth.domain*,
 											   org.openiam.idm.srvc.continfo.domain*,
 											   org.openiam.idm.srvc.pswd.domain*,
                                                org.openiam.idm.srvc.res.domain*,
@@ -841,7 +843,7 @@
 
 
 	<!-- Local DataSource that works in any environment -->
-	<!-- Note that DriverManagerDataSource does not pool; it is not intended
+	<!-- Note that DriverManagerDataSource does not pool; it is not intended 
 		for production -->
 	<!-- See JPetStore for an example of using Commons DBCP BasicDataSource 
 		as alternative -->
@@ -864,33 +866,32 @@
 		<property name="testWhileIdle" value="true" />
 		<property name="validationQuery" value="${openiam.hibernate.validationQuery}" />
 		<property name="maxWait" value="${openiam.hibernate.timeout}" />
-<!--		<property name="removeAbandoned" value="true" />
-		<property name="removeAbandonedTimeout" value="60" />
-		<property name="logAbandoned" value="true" />-->
+		<!-- <property name="removeAbandoned" value="true" /> <property name="removeAbandonedTimeout" 
+			value="60" /> <property name="logAbandoned" value="true" /> -->
 	</bean>
 
-    <bean id="exporter"
-              class="org.springframework.jmx.export.MBeanExporter"
-              lazy-init="false">
-            <property name="autodetect" value="true" />
-            <property name="namingStrategy" ref="namingStrategy" />
-            <property name="assembler" ref="assembler" />
-    </bean>
-    <bean id="attributeSource"
-            class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
-    <bean id="assembler"
-            class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
-        <property name="attributeSource" ref="attributeSource"/>
-    </bean>
-    <bean id="namingStrategy"
-        class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
-        <property name="attributeSource" ref="attributeSource"/>
-    </bean>
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter"
+		lazy-init="false">
+		<property name="autodetect" value="true" />
+		<property name="namingStrategy" ref="namingStrategy" />
+		<property name="assembler" ref="assembler" />
+	</bean>
+	<bean id="attributeSource"
+		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+	<bean id="assembler"
+		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="attributeSource" />
+	</bean>
+	<bean id="namingStrategy"
+		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="attributeSource" />
+	</bean>
 
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-    	<property name="sessionFactory" ref="sessionFactory"/>
-  	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
 
 	<!-- enable the configuration of transactional behavior based on annotations -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
