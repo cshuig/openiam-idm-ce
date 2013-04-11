@@ -83,6 +83,8 @@
 							  </c:if>
 			  			</td>
 		  </tr>
+
+
           <tr>
               <td>Organization</td>
 			 				<td>
@@ -94,21 +96,23 @@
 			  </td>
 		  </tr>
           <tr>
-              <td>Group Owner</td>
+              <td>External Group ID</td>
 			  <td>
-			  		<form:input path="group.ownerId" size="40" maxlength="40" />
+			  		<form:input path="group.internalGroupId" size="32" maxlength="32" />
 			  </td>
 		  </tr>
-          <tr>
-              <td>Inherit From Parent</td>
-			  <td>
-			  		<form:select path="group.inheritFromParent">
-			  			<form:option value=""  label="-Select a value" />
-			  			<form:option value="0"  label="NO" />
-			  			<form:option value="1"  label="YES" />
-		            </form:select>
-			  </td>
-		  </tr>
+
+            <tr>
+                <td>External Group Name / DN / sAMAccoutName</td>
+                <td>
+                    <form:input path="group.externalGroupName" size="40" maxlength="150" />
+                </td>
+            </tr>
+
+
+
+
+
 
                         <tr>
                             <td colspan="2">

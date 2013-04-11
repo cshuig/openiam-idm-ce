@@ -1,28 +1,16 @@
 package org.openiam.idm.srvc.grp.domain;
 
-import java.util.*;
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-
 import org.openiam.base.AttributeOperationEnum;
-
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.role.dto.Role;
+
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "GRP")
@@ -85,6 +73,9 @@ public class GroupEntity {
 
     @Column(name="INTERNAL_GROUP_ID",length=32)
     private String internalGroupId = null;
+
+    @Column(name="EXTERNAL_GRP_NAME",length=200)
+    private String externalGroupName = null;
 
     @OneToMany(cascade= CascadeType.ALL,fetch= FetchType.EAGER)
     @JoinColumn(name="GRP_ID", referencedColumnName="GRP_ID")
@@ -269,19 +260,30 @@ public class GroupEntity {
         this.roles = roles;
     }
 
+    public String getExternalGroupName() {
+        return externalGroupName;
+    }
+
+    public void setExternalGroupName(String externalGroupName) {
+        this.externalGroupName = externalGroupName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof GroupEntity)) return false;
 
         GroupEntity that = (GroupEntity) o;
 
+        if (attributes != null ? !attributes.equals(that.attributes) : that.attributes != null) return false;
         if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
         if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
         if (createdBy != null ? !createdBy.equals(that.createdBy) : that.createdBy != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (externalGroupName != null ? !externalGroupName.equals(that.externalGroupName) : that.externalGroupName != null)
+            return false;
         if (groupClass != null ? !groupClass.equals(that.groupClass) : that.groupClass != null) return false;
-        if (grpId != null ? !grpId.equals(that.grpId) : that.grpId != null) return false;
+        if (!grpId.equals(that.grpId)) return false;
         if (grpName != null ? !grpName.equals(that.grpName) : that.grpName != null) return false;
         if (inheritFromParent != null ? !inheritFromParent.equals(that.inheritFromParent) : that.inheritFromParent != null)
             return false;
@@ -292,6 +294,7 @@ public class GroupEntity {
             return false;
         if (metadataTypeId != null ? !metadataTypeId.equals(that.metadataTypeId) : that.metadataTypeId != null)
             return false;
+        if (operation != that.operation) return false;
         if (ownerId != null ? !ownerId.equals(that.ownerId) : that.ownerId != null) return false;
         if (parentGrpId != null ? !parentGrpId.equals(that.parentGrpId) : that.parentGrpId != null) return false;
         if (provisionMethod != null ? !provisionMethod.equals(that.provisionMethod) : that.provisionMethod != null)
@@ -305,7 +308,7 @@ public class GroupEntity {
 
     @Override
     public int hashCode() {
-        int result = grpId != null ? grpId.hashCode() : 0;
+        int result = grpId.hashCode();
         result = 31 * result + (metadataTypeId != null ? metadataTypeId.hashCode() : 0);
         result = 31 * result + (grpName != null ? grpName.hashCode() : 0);
         result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
@@ -322,6 +325,9 @@ public class GroupEntity {
         result = 31 * result + (lastUpdate != null ? lastUpdate.hashCode() : 0);
         result = 31 * result + (lastUpdatedBy != null ? lastUpdatedBy.hashCode() : 0);
         result = 31 * result + (internalGroupId != null ? internalGroupId.hashCode() : 0);
+        result = 31 * result + (externalGroupName != null ? externalGroupName.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        result = 31 * result + (operation != null ? operation.hashCode() : 0);
         return result;
     }
 }
