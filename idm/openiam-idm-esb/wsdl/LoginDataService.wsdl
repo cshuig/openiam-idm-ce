@@ -102,7 +102,6 @@
 <xs:element minOccurs="0" name="name" type="xs:string"/>
 <xs:element minOccurs="0" name="userId" type="xs:string"/>
 <xs:element minOccurs="0" name="value" type="xs:string"/>
-<xs:element minOccurs="0" name="attrGroup" type="xs:string"/>
 <xs:element minOccurs="0" name="operation" type="ns2:AttributeOperationEnum"/>
 <xs:element minOccurs="0" name="required" type="xs:boolean"/>
 </xs:sequence>
@@ -786,6 +785,7 @@
 <xs:enumeration value="FAIL_CONNECTOR"/>
 <xs:enumeration value="INVALID_ARGUMENTS"/>
 <xs:enumeration value="IO_EXCEPTION"/>
+<xs:enumeration value="INTERRUPTED_EXCEPTION"/>
 <xs:enumeration value="FILE_EXCEPTION"/>
 <xs:enumeration value="SQL_EXCEPTION"/>
 <xs:enumeration value="WS_SERVICE_EXCEPTION"/>

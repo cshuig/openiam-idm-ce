@@ -111,7 +111,6 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     public static final String TARGET_SYSTEM_IDENTITY_STATUS = "targetSystemIdentityStatus";
     public static final String TARGET_SYSTEM_IDENTITY = "targetSystemIdentity";
     public static final String TARGET_SYSTEM_ATTRIBUTES = "targetSystemAttributes";
-    public static final String TARGET_SYSTEM_OPERATION = "targetSystemOperation";
 
     public static final String TARGET_SYS_RES_ID = "resourceId";
     public static final String TARGET_SYS_MANAGED_SYS_ID = "managedSysId";
@@ -155,14 +154,14 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     }
 
     protected boolean callConnector(Login mLg, String requestId, ManagedSys mSys,
-                                 ManagedSystemObjectMatch matchObj, ExtensibleUser extUser,
-                                 ProvisionConnector connector,
-                                 ProvisionUser user, IdmAuditLog idmAuditLog) {
+                                    ManagedSystemObjectMatch matchObj, ExtensibleUser extUser,
+                                    ProvisionConnector connector,
+                                    ProvisionUser user, IdmAuditLog idmAuditLog) {
 
         if (connector.getConnectorInterface() != null &&
                 connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
 
-           return remoteAdd(mLg, requestId, mSys, matchObj, extUser, connector, user, idmAuditLog);
+            return remoteAdd(mLg, requestId, mSys, matchObj, extUser, connector, user, idmAuditLog);
 
         }
 
@@ -178,11 +177,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
 
         String identity = mLg.getId().getLogin();
-        if (mLg != null
-                && mLg.getOperation() == AttributeOperationEnum.REPLACE
-                && StringUtils.isNotEmpty(mLg.getOrigPrincipalName())) {
-            identity = mLg.getOrigPrincipalName();
-        }
+
         log.debug("Getting the current attributes in the target system for =" + identity);
 
         log.debug("- IsRename: " + mLg.getOrigPrincipalName());

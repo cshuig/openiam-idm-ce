@@ -1914,8 +1914,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             bindingMap
                                     .put(TARGET_SYSTEM_IDENTITY, isMngSysIdentityExistsInOpeniam ? mLg.getId().getLogin() : null);
 
-                            bindingMap.put(TARGET_SYSTEM_OPERATION, mLg.getOperation());
-
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
                                     isMngSysIdentityExistsInOpeniam ? mLg.getId().getDomainId() : null);
 
@@ -2069,15 +2067,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                             bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS,
                                     IDENTITY_EXIST);
-                            //When Replace we should to send Original Identity, otherwise new Mnaged Sys Identity
-                            if(AttributeOperationEnum.REPLACE.equals(mLg.getOperation())) {
-                                bindingMap.put(TARGET_SYSTEM_IDENTITY, mLg.getOrigPrincipalName());
-                            } else {
-                                bindingMap.put(TARGET_SYSTEM_IDENTITY, mLg.getId()
-                                        .getLogin());
-                            }
-                            bindingMap.put(TARGET_SYSTEM_OPERATION, mLg.getOperation());
-
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY, mLg.getId()
+                                    .getLogin());
                             bindingMap.put(TARGET_SYSTEM_ATTRIBUTES,
                                     currentValueMap);
 
@@ -2118,20 +2109,16 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     && connector.getConnectorInterface()
                                     .equalsIgnoreCase("REMOTE")) {
 
-                                RemoteUserRequest userReq = new RemoteUserRequest();
                                 if (mLg.getOperation() == AttributeOperationEnum.REPLACE
                                         && mLg.getOrigPrincipalName() != null) {
                                     extAttList.add(new ExtensibleAttribute(
                                             "ORIG_IDENTITY", mLg
                                             .getOrigPrincipalName(), 2,
                                             "String"));
-                                    userReq.setUserIdentity(mLg.getOrigPrincipalName());
-                                } else {
-                                    userReq.setUserIdentity(mLg.getId().getLogin());
                                 }
 
-//                                userReq.setUserIdentity(mLg.getId().getLogin());
-
+                                RemoteUserRequest userReq = new RemoteUserRequest();
+                                userReq.setUserIdentity(mLg.getId().getLogin());
                                 userReq.setRequestID(requestId);
                                 userReq.setTargetID(mLg.getId()
                                         .getManagedSysId());

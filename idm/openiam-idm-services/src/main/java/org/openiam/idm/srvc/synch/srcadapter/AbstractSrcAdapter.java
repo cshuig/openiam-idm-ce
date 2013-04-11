@@ -17,8 +17,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Future;
 
 /**
  * Abstract class which all Source System adapters must extend
@@ -29,7 +31,8 @@ import java.util.ResourceBundle;
  */
 public abstract class AbstractSrcAdapter implements SourceAdapter {
 
-
+    // Time for threads to be closed when Interrupted. Used in multithreading
+    protected final long SHUTDOWN_TIME = 5000;
 
     public static ApplicationContext ac;
     private static final Log log = LogFactory.getLog(AbstractSrcAdapter.class);
@@ -99,8 +102,25 @@ public abstract class AbstractSrcAdapter implements SourceAdapter {
         log.debug("--ModifyUser:SynchAdapter execution time=" + (endTime-startTime));
     }
 
-
-
+    /**
+     * This method used for awaiting while all threads will be finished.
+     * Used in multithreading
+     *
+     * @param results
+     * @throws InterruptedException
+     */
+    protected void waitUntilWorkDone(List<Future> results) throws InterruptedException {
+        int successCounter = 0;
+        while(successCounter != results.size()) {
+            successCounter = 0;
+            for(Future future : results) {
+                if(future.isDone()) {
+                    successCounter ++;
+                }
+            }
+            Thread.sleep(500);
+        }
+    }
 
     public void setMuleContext(MuleContext ctx) {
         muleContext = ctx;
