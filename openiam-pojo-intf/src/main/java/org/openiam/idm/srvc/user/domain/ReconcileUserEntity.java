@@ -51,9 +51,8 @@ public class ReconcileUserEntity {
 	@Column(name = "CREATED_BY", length = 32)
 	private String createdBy;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "DEPT_CD", nullable = false, updatable = false)
-	private OrganizationEntity deptCd;
+	@Column(name = "DEPT_CD")
+	private String deptCd;
 
 	@Column(name = "DEPT_NAME", length = 100)
 	private String deptName;
@@ -274,11 +273,11 @@ public class ReconcileUserEntity {
 		this.createdBy = createdBy;
 	}
 
-	public OrganizationEntity getDeptCd() {
+	public String getDeptCd() {
 		return deptCd;
 	}
 
-	public void setDeptCd(OrganizationEntity deptCd) {
+	public void setDeptCd(String deptCd) {
 		this.deptCd = deptCd;
 	}
 

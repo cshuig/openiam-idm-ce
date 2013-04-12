@@ -144,6 +144,7 @@
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
+		<property name="orgManager" ref="orgManager" />
 		<property name="userManager" ref="userManager" />
 		<property name="pathToCSV" value="${csv.path}" />
 	</bean>

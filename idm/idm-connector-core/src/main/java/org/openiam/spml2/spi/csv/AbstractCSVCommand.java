@@ -21,6 +21,7 @@ import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAO;
 import org.openiam.idm.srvc.msg.service.MailService;
+import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.recon.command.ReconciliationCommandFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
@@ -40,10 +41,13 @@ import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.msg.ResponseType;
 import org.openiam.spml2.msg.StatusCodeType;
+import org.opensaml.saml2.metadata.validator.OrganizationSchemaValidator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
+
+import com.google.gdata.model.gd.Organization;
 
 public class AbstractCSVCommand implements ApplicationContextAware {
 	protected static final Log log = LogFactory
@@ -56,6 +60,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 	protected String scriptEngine;
 	private MailService mailService;
 	private UserDataService userManager;
+	private OrganizationDataService orgManager;
 
 	/**
 	 * @param mailService
@@ -80,7 +85,7 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 		ScriptIntegration se = ScriptFactory.createModule(this.scriptEngine);
 		CSVImproveScript script = (CSVImproveScript) se.instantiateClass(null,
 				"/recon/ImproveScript.groovy");
-		script.execute(pathToFile);
+		script.execute(pathToFile, orgManager.getAllOrganizations());
 	}
 
 	/**
@@ -213,7 +218,13 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			report.add(new ReconciliationReportRow("Records from DB: "
 					+ dbUsers.size() + " items", hList.size() + 1));
 			for (ReconciliationObject<User> obj : dbUsers) {
-				report.add(new ReconciliationReportRow("DB: ",
+				String login = "";
+				if (!CollectionUtils
+						.isEmpty(obj.getObject().getPrincipalList())) {
+					login = obj.getObject().getPrincipalList().get(0).getId()
+							.getLogin();
+				}
+				report.add(new ReconciliationReportRow(login, "DB: ",
 						ReconciliationReportResults.NOT_EXIST_IN_RESOURCE, this
 								.objectToString(hList, attrMapList, obj)));
 			}
@@ -500,5 +511,20 @@ public class AbstractCSVCommand implements ApplicationContextAware {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @return the orgManager
+	 */
+	public OrganizationDataService getOrgManager() {
+		return orgManager;
+	}
+
+	/**
+	 * @param orgManager
+	 *            the orgManager to set
+	 */
+	public void setOrgManager(OrganizationDataService orgManager) {
+		this.orgManager = orgManager;
 	}
 }

@@ -218,7 +218,7 @@ public class User extends org.openiam.base.BaseObject {
 		createDate = user.getCreateDate();
 		createdBy = user.getCreatedBy();
 		if (user.getDeptCd() != null)
-			deptCd = user.getDeptCd().getInternalOrgName();
+			deptCd = user.getDeptCd();
 		deptName = user.getDeptName();
 		employeeId = user.getEmployeeId();
 		employeeType = user.getEmployeeType();

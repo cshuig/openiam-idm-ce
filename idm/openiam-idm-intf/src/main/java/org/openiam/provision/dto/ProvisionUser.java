@@ -181,14 +181,14 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		companyOwnerId = user.getCompanyOwnerId();
 		createDate = user.getCreateDate();
 		createdBy = user.getCreatedBy();
-		deptCd = user.getDeptCd().getInternalOrgName();
+		deptCd = user.getDeptCd();
 		deptName = user.getDeptName();
 		employeeId = user.getEmployeeId();
 		employeeType = user.getEmployeeType();
 		if (user.getLogins() == null)
 			this.principalList = new LinkedList<Login>();
 		else
-			this.principalList = new LinkedList(user.getLoginsDTO());
+			this.principalList = new LinkedList<Login>(user.getLoginsDTO());
 		firstName = user.getFirstName();
 		jobCode = user.getJobCode();
 		lastName = user.getLastName();

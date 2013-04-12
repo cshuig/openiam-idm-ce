@@ -144,6 +144,8 @@ public class ReconciliationReportRow {
 		build.append(result.getValue());
 		if (ReconciliationReportResults.MATCH_FOUND.equals(result)
 				|| ReconciliationReportResults.MATCH_FOUND_DIFFERENT
+						.equals(result)
+				|| ReconciliationReportResults.NOT_EXIST_IN_RESOURCE
 						.equals(result)) {
 			build.append("\n<b>Login: " + login + "</b>");
 		}

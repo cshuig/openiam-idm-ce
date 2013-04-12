@@ -62,10 +62,10 @@ public class OrganizationEntity {
 	@Column(name = "COMPANY_NAME", length = 200)
 	private String organizationName;
 
-	@Column(name = "INTERNAL_COMPANY_ID")
+	@Column(name = "INTERNAL_COMPANY_NAME")
 	private String internalOrgName;
 
-	@Column(name = "INTERNAL_COMPANY_NAME")
+	@Column(name = "INTERNAL_COMPANY_ID")
 	private String internalOrgId;
 
 	@Column(name = "PARENT_ID", length = 32)

@@ -156,7 +156,8 @@ public class UserDAOImpl implements UserDAO {
 	public List<ReconcileUserEntity> findAllUsers() {
 		try {
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(ReconcileUserEntity.class)
+			Criteria criteria = session
+					.createCriteria(ReconcileUserEntity.class)
 					.createAlias("logins", "l")
 					.add(Restrictions.eq("l.managedSysId", "0"))
 					.setFetchMode("logins", FetchMode.JOIN);
