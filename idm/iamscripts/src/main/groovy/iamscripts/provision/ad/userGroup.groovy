@@ -11,9 +11,7 @@ import org.openiam.base.BaseAttributeContainer;
 def GroupDataWebService groupService = ServiceHelper.groupService();
 def Group grp;
 
-String groupBaseDN = ",OU=idm-test,DC=ad,DC=openiamdemo,DC=info";
 
-//List<String> roleStrList = new ArrayList<String>();
 def List<Group> groupList = user.getMemberOfGroups();
 
 BaseAttributeContainer attributeContainer = new BaseAttributeContainer();
@@ -26,18 +24,14 @@ if (groupList != null) {
 			if (groupName == null) {
 			
 				grp =  groupService.getGroup(r.grpId).getGroup();
-        		groupName = grp.grpName;
-        
-			}
-			println("Adding group id  " + r.grpId + " --> " + (groupName + groupBaseDN));
 
-			String qualifiedGroupName = "cn=" + groupName +  groupBaseDN
-			
-			attributeContainer.getAttributeList().add(new BaseAttribute(qualifiedGroupName, qualifiedGroupName, r.operation));
+			}
+
+			attributeContainer.getAttributeList().add(new BaseAttribute(grp.externalGroupName, grp.externalGroupName, r.operation));
 			
 			
 		}
-		//output = roleStrList;
+
 		output = attributeContainer;
 	}else {
 		output = null;
