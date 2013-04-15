@@ -71,6 +71,7 @@
 											   org.openiam.idm.srvc.org.dto*,
 											   org.openiam.idm.srvc.org.domain*,
 											   org.openiam.idm.srvc.user.domain*,
+											   org.openiam.idm.srvc.auth.domain*,
 											   org.openiam.idm.srvc.continfo.domain*,
 											   org.openiam.idm.srvc.pswd.domain*,
 											   org.openiam.idm.srvc.res.domain*,
