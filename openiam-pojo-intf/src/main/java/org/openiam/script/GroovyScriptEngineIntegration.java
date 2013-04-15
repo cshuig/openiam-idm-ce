@@ -43,7 +43,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
     static String[] roots = null;
     static GroovyScriptEngine gse = null;
 
-    Binding binding = new Binding();
+
 
     public GroovyScriptEngineIntegration() {
     }
@@ -65,6 +65,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
         init();
 
         try {
+            Binding binding = new Binding();
             if (bindingMap != null) {
                 for (String key : bindingMap.keySet()) {
                     binding.setVariable(key, bindingMap.get(key));

@@ -59,16 +59,6 @@ public class RoleAttribute implements java.io.Serializable {
         this.roleAttrId = roleAttrId;
     }
 
-    public RoleAttribute(RoleAttributeEntity roleAttributeEntity) {
-        this.roleAttrId = roleAttributeEntity.getRoleAttrId();
-        this.serviceId = roleAttributeEntity.getServiceId();
-        this.roleId = roleAttributeEntity.getRoleId();
-        this.metadataElementId = roleAttributeEntity.getMetadataElementId();
-        this.name = roleAttributeEntity.getName();
-        this.value = roleAttributeEntity.getValue();
-        this.attrGroup = roleAttributeEntity.getAttrGroup();
-    }
-
     public RoleAttribute(String roleAttrId, String name, String value, String metadataTypeId) {
         this.roleAttrId = roleAttrId;
         this.name = name;
