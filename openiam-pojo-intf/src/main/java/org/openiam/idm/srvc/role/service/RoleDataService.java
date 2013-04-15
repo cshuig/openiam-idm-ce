@@ -1,7 +1,7 @@
 package org.openiam.idm.srvc.role.service;
 
 import org.openiam.idm.srvc.role.dto.*;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 
 import java.util.List;
@@ -340,7 +340,7 @@ public interface RoleDataService {
     List<Role> search(RoleSearch search);
 
 
-	List<UserWrapperEntity> findUserWByRole(String domainId, String roleId);
+	List<ReconcileUserEntity> findUserWByRole(String domainId, String roleId);
 
 
 }

@@ -3,7 +3,6 @@ package org.openiam.idm.srvc.grp.dto;
 
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.grp.domain.GroupAttributeEntity;
 import org.openiam.idm.srvc.grp.domain.GroupEntity;
 import org.openiam.idm.srvc.role.dto.Role;
 
@@ -40,6 +39,7 @@ import java.util.*;
         "selected",
         "ownerId",
         "internalGroupId",
+        "externalGroupName",
         "operation"
 })
 @XmlRootElement(name = "Group")
@@ -78,7 +78,9 @@ public class Group implements java.io.Serializable {
     protected Date lastUpdate;
     protected String lastUpdatedBy;
     protected String metadataTypeId;
-    protected String internalGroupId = null;
+    protected String internalGroupId;
+    protected String externalGroupName;
+
     private Boolean selected = new Boolean(false);
 
 
@@ -379,8 +381,10 @@ public class Group implements java.io.Serializable {
         if (createDate != null ? !createDate.equals(group.createDate) : group.createDate != null) return false;
         if (createdBy != null ? !createdBy.equals(group.createdBy) : group.createdBy != null) return false;
         if (description != null ? !description.equals(group.description) : group.description != null) return false;
+        if (externalGroupName != null ? !externalGroupName.equals(group.externalGroupName) : group.externalGroupName != null)
+            return false;
         if (groupClass != null ? !groupClass.equals(group.groupClass) : group.groupClass != null) return false;
-        if (grpId != null ? !grpId.equals(group.grpId) : group.grpId != null) return false;
+        if (!grpId.equals(group.grpId)) return false;
         if (grpName != null ? !grpName.equals(group.grpName) : group.grpName != null) return false;
         if (inheritFromParent != null ? !inheritFromParent.equals(group.inheritFromParent) : group.inheritFromParent != null)
             return false;
@@ -398,17 +402,47 @@ public class Group implements java.io.Serializable {
             return false;
         if (provisionObjName != null ? !provisionObjName.equals(group.provisionObjName) : group.provisionObjName != null)
             return false;
-        if (roles != null ? !roles.equals(group.roles) : group.roles != null) return false;
         if (selected != null ? !selected.equals(group.selected) : group.selected != null) return false;
         if (status != null ? !status.equals(group.status) : group.status != null) return false;
-        if (subGroup != null ? !subGroup.equals(group.subGroup) : group.subGroup != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return grpId != null ? grpId.hashCode() : 0;
+        int result = operation != null ? operation.hashCode() : 0;
+        result = 31 * result + grpId.hashCode();
+        result = 31 * result + (grpName != null ? grpName.hashCode() : 0);
+        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
+        result = 31 * result + (createdBy != null ? createdBy.hashCode() : 0);
+        result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
+        result = 31 * result + (ownerId != null ? ownerId.hashCode() : 0);
+        result = 31 * result + (parentGrpId != null ? parentGrpId.hashCode() : 0);
+        result = 31 * result + (inheritFromParent != null ? inheritFromParent.hashCode() : 0);
+        result = 31 * result + (provisionMethod != null ? provisionMethod.hashCode() : 0);
+        result = 31 * result + (provisionObjName != null ? provisionObjName.hashCode() : 0);
+        result = 31 * result + (groupClass != null ? groupClass.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (lastUpdate != null ? lastUpdate.hashCode() : 0);
+        result = 31 * result + (lastUpdatedBy != null ? lastUpdatedBy.hashCode() : 0);
+        result = 31 * result + (metadataTypeId != null ? metadataTypeId.hashCode() : 0);
+        result = 31 * result + (internalGroupId != null ? internalGroupId.hashCode() : 0);
+        result = 31 * result + (externalGroupName != null ? externalGroupName.hashCode() : 0);
+        result = 31 * result + (selected != null ? selected.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        return result;
+    }
+
+    public String getExternalGroupName() {
+        return externalGroupName;
+    }
+
+    public void setExternalGroupName(String externalGroupName) {
+        this.externalGroupName = externalGroupName;
     }
 }
+
+
+
 

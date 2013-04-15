@@ -144,12 +144,13 @@
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />
-		<property name="loginManager" ref="loginManager" />
+		<property name="orgManager" ref="orgManager" />
+		<property name="userManager" ref="userManager" />
 		<property name="pathToCSV" value="${csv.path}" />
 	</bean>
 
 	<bean id="csvModifyCommmand" class="org.openiam.spml2.spi.csv.ModifyCSVCommand">
-		<property name="userCSVParser" ref="userCSVParser" />
+		<property name="provisionUserCSVParser" ref="provisionUserCSVParser" />
 		<property name="managedSysService" ref="managedSysService" />
 		<property name="managedSysObjectMatchDao" ref="managedSysObjectMatchDAO" />
 		<property name="resourceDataService" ref="resourceDataService" />

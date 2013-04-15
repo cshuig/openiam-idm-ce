@@ -53,7 +53,7 @@ import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.role.service.RoleDataService;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
@@ -108,7 +108,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 	private static final Log log = LogFactory
 			.getLog(ReconciliationServiceImpl.class);
 
-    @Transactional
+	@Transactional
 	public ReconciliationConfig addConfig(ReconciliationConfig config) {
 		if (config == null) {
 			throw new IllegalArgumentException("config parameter is null");
@@ -117,7 +117,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
-    @Transactional
+	@Transactional
 	public ReconciliationConfig updateConfig(ReconciliationConfig config) {
 		if (config == null) {
 			throw new IllegalArgumentException("config parameter is null");
@@ -126,7 +126,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
-    @Transactional
+	@Transactional
 	public void removeConfigByResourceId(String resourceId) {
 		if (resourceId == null) {
 			throw new IllegalArgumentException("resourceId parameter is null");
@@ -135,7 +135,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
-    @Transactional
+	@Transactional
 	public void removeConfig(String configId) {
 		if (configId == null) {
 			throw new IllegalArgumentException("configId parameter is null");
@@ -145,7 +145,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public ReconciliationConfig getConfigByResource(String resourceId) {
 		if (resourceId == null) {
 			throw new IllegalArgumentException("resourceId parameter is null");
@@ -188,7 +188,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 		this.reconResultDetailDao = reconResultDetailDao;
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public ReconciliationConfig getConfigById(String configId) {
 		if (configId == null) {
 			throw new IllegalArgumentException("configId parameter is null");
@@ -202,7 +202,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 		muleContext = ctx;
 	}
 
-    @Transactional
+	@Transactional
 	public ReconciliationResponse startReconciliation(
 			ReconciliationConfig config) {
 		ReconciliationReport report = new ReconciliationReport();
@@ -219,14 +219,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 					.getConnectorId());
 			// IF managed system is CSV
 			if (connector.getServiceUrl().contains("CSV")) {
-				List<UserWrapperEntity> users = userMgr.getAllUsers();
-				if (users == null) {
-					resp = new ReconciliationResponse(ResponseStatus.FAILURE);
-					resp.setErrorText("USERS table is empty");
-					return resp;
-				}
 				// Get user without fetches
-				config.setUserList(users);
 				log.debug("Start recon");
 				connectorAdapter.reconcileResource(mSys, config, muleContext);
 				log.debug("end recon");
@@ -241,9 +234,9 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 			log.debug("ManagedSysId = " + managedSysId);
 			log.debug("Getting identities for managedSys");
 
-			List<UserWrapperEntity> users = new ArrayList<UserWrapperEntity>();
+			List<ReconcileUserEntity> users = new ArrayList<ReconcileUserEntity>();
 			for (ResourceRole rRole : res.getResourceRoles()) {
-				List<UserWrapperEntity> ids = roleDataService.findUserWByRole(
+				List<ReconcileUserEntity> ids = roleDataService.findUserWByRole(
 						mSys.getDomainId(), rRole.getId().getRoleId());
 				users.addAll(ids);
 			}
@@ -269,7 +262,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 				report.save(pathToCSV, mSys);
 				return resp;
 			}
-			for (UserWrapperEntity u : users) {
+			for (ReconcileUserEntity u : users) {
 				Login l = null;
 				User user = userMgr.getUserWithDependent(u.getUserId(), true);
 				List<Login> logins = user.getPrincipalList();
@@ -375,7 +368,7 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 												ReconciliationReport
 														.getHeader(attrMap),
 												matchFields(attrMap, u,
-														new UserWrapperEntity()))));
+														new ReconcileUserEntity()))));
 						if (command != null) {
 							log.debug("Call command for Match Found");
 							command.execute(l, user, null);
@@ -428,19 +421,19 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 	}
 
 	private ReconciliationObject<ProvisionUser> toReconUser(
-			List<AttributeMap> attrMapList, UserWrapperEntity u) {
+			List<AttributeMap> attrMapList, ReconcileUserEntity u) {
 		return userCSVParser.toReconciliationObject(new ProvisionUser(u),
 				attrMapList);
 	}
 
 	private String objectToString(List<String> head,
-			List<AttributeMap> attrMapList, UserWrapperEntity u) {
+			List<AttributeMap> attrMapList, ReconcileUserEntity u) {
 		return userCSVParser.objectToString(head, attrMapList,
 				toReconUser(attrMapList, u));
 	}
 
 	private Map<String, String> matchFields(List<AttributeMap> attrMap,
-			UserWrapperEntity u, UserWrapperEntity o) {
+			ReconcileUserEntity u, ReconcileUserEntity o) {
 		return userCSVParser.matchFields(attrMap, toReconUser(attrMap, u),
 				toReconUser(attrMap, o));
 	}

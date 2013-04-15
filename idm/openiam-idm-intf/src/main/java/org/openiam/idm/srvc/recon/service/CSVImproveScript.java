@@ -1,7 +1,9 @@
 package org.openiam.idm.srvc.recon.service;
 
+import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.provision.dto.ProvisionUser;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,5 +11,5 @@ import java.util.Map;
  * this template use File | Settings | File Templates.
  */
 public interface CSVImproveScript {
-	public int execute(String pathToFile);
+	public int execute(String pathToFile, List<Organization> orgList);
 }

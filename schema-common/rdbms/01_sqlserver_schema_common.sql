@@ -393,6 +393,7 @@ CREATE TABLE GRP (
 	   LAST_UPDATED_BY		nvarchar(32) NULL,
 	   POLICY_ID			nvarchar(20) NULL,
 	   INTERNAL_GROUP_ID	nvarchar(32) NULL,
+	   /* could be the DN */
 	   EXTERNAL_GRP_NAME	nvarchar(200) NULL,
 	   GROUP_APPROVER_ID	nvarchar(32) NULL,
        PRIMARY KEY (GRP_ID),

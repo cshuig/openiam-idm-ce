@@ -21,14 +21,13 @@ import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDAO;
-import org.openiam.util.encrypt.*;
+import org.openiam.util.encrypt.Cryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-
 import javax.jws.WebService;
+import java.util.*;
 
 @WebService(endpointInterface = "org.openiam.idm.srvc.auth.login.LoginDataService", 
 		targetNamespace = "urn:idm.openiam.org/srvc/auth/service", 
@@ -268,7 +267,20 @@ public class LoginDataServiceImpl implements LoginDataService {
 
 		Login lg = getLoginByManagedSys(domainId, login, sysId);
 		UserEntity user = userDao.findById(lg.getUserId());
-		user.setSecondaryStatus(null);
+
+        // reset any locks that may be in place
+        // user should not be able to unlock the account with a reset if the admin has either
+        // DISABLED them or ADMIN_LOCKED the account
+        if (user.getSecondaryStatus() == UserStatusEnum.LOCKED) {
+            user.setSecondaryStatus(null);
+        }
+
+        // if the user status was inactive, then make it active
+        if (user.getStatus() == UserStatusEnum.INACTIVE) {
+            user.setStatus(UserStatusEnum.ACTIVE);
+
+        }
+
 		userDao.update(user);
 
 		lg.setPassword(password);

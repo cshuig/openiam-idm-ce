@@ -1,26 +1,30 @@
 package org.openiam.idm.srvc.user.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.*;
-import org.hibernate.criterion.Order;
-
-import org.hibernate.criterion.Restrictions;
-import org.openiam.base.id.SequenceGenDAO;
-
-import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserWrapperEntity;
-import org.openiam.idm.srvc.user.dto.DateSearchAttribute;
-import org.openiam.idm.srvc.user.dto.DelegationFilterSearch;
-import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.user.dto.UserSearch;
-import org.openiam.idm.srvc.user.dto.SearchAttribute;
-
-import javax.naming.InitialContext;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+
+import javax.naming.InitialContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Filter;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.openiam.idm.srvc.user.domain.UserEntity;
+import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
+import org.openiam.idm.srvc.user.dto.DateSearchAttribute;
+import org.openiam.idm.srvc.user.dto.DelegationFilterSearch;
+import org.openiam.idm.srvc.user.dto.SearchAttribute;
+import org.openiam.idm.srvc.user.dto.UserSearch;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 
 /**
@@ -149,12 +153,16 @@ public class UserDAOImpl implements UserDAO {
 		}
 	}
 
-	public List<UserWrapperEntity> findAllUsers() {
+	public List<ReconcileUserEntity> findAllUsers() {
 		try {
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(UserWrapperEntity.class);
+			Criteria criteria = session
+					.createCriteria(ReconcileUserEntity.class)
+					.createAlias("logins", "l")
+					.add(Restrictions.eq("l.managedSysId", "0"))
+					.setFetchMode("logins", FetchMode.JOIN);
 
-			return (List<UserWrapperEntity>) criteria.list();
+			return (List<ReconcileUserEntity>) criteria.list();
 		} catch (HibernateException re) {
 			log.error("get failed", re);
 			throw re;

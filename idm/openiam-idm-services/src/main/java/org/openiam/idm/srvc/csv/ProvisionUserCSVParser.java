@@ -11,20 +11,21 @@ import org.openiam.idm.srvc.csv.constant.CSVSource;
 import org.openiam.idm.srvc.csv.constant.UserFields;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
+import org.openiam.provision.dto.ProvisionUser;
 
-public class UserCSVParser extends AbstractCSVParser<User, UserFields>
-		implements CSVParser<User> {
+public class ProvisionUserCSVParser extends AbstractCSVParser<ProvisionUser, UserFields>
+		implements CSVParser<ProvisionUser> {
 
 	@Override
-	public ReconciliationObject<User> toReconciliationObject(User pu,
-			List<AttributeMap> attrMap) {
+	public ReconciliationObject<ProvisionUser> toReconciliationObject(
+			ProvisionUser pu, List<AttributeMap> attrMap) {
 		return this.toReconciliationObject(pu, attrMap, UserFields.class);
 	}
 
 	@Override
-	protected void putValueInDTO(User user, UserFields field, String objValue) {
+	protected void putValueInDTO(ProvisionUser user, UserFields field,
+			String objValue) {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		switch (field) {
 		case birthdate:
@@ -276,7 +277,7 @@ public class UserCSVParser extends AbstractCSVParser<User, UserFields>
 	}
 
 	@Override
-	protected String putValueIntoString(User user, UserFields field) {
+	protected String putValueIntoString(ProvisionUser user, UserFields field) {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		String objValue = "";
 		switch (field) {
@@ -497,60 +498,62 @@ public class UserCSVParser extends AbstractCSVParser<User, UserFields>
 	}
 
 	@Override
-	public void add(ReconciliationObject<User> newObject,
+	public void add(ReconciliationObject<ProvisionUser> newObject,
 			ManagedSys managedSys, List<AttributeMap> attrMapList,
 			CSVSource source) throws Exception {
-		appendObjectToCSV(newObject, managedSys, attrMapList, User.class,
-				UserFields.class, true, source);
+		appendObjectToCSV(newObject, managedSys, attrMapList,
+				ProvisionUser.class, UserFields.class, true, source);
 	}
 
 	@Override
 	public void delete(String principal, ManagedSys managedSys,
 			List<AttributeMap> attrMapList, CSVSource source) throws Exception {
-		List<ReconciliationObject<User>> users = this.getObjects(managedSys,
-				attrMapList, source);
-		Iterator<ReconciliationObject<User>> userIter = users.iterator();
+		List<ReconciliationObject<ProvisionUser>> users = this.getObjects(
+				managedSys, attrMapList, source);
+		Iterator<ReconciliationObject<ProvisionUser>> userIter = users
+				.iterator();
 		while (userIter.hasNext()) {
-			ReconciliationObject<User> user = userIter.next();
+			ReconciliationObject<ProvisionUser> user = userIter.next();
 			if (principal != null) {
 				if (principal.equals(user.getPrincipal())) {
 					userIter.remove();
 				}
 			}
 		}
-		updateCSV(users, managedSys, attrMapList, User.class, UserFields.class,
-				false, source);
+		updateCSV(users, managedSys, attrMapList, ProvisionUser.class,
+				UserFields.class, false, source);
 	}
 
 	@Override
-	public void update(ReconciliationObject<User> newUser,
+	public void update(ReconciliationObject<ProvisionUser> newUser,
 			ManagedSys managedSys, List<AttributeMap> attrMapList,
 			CSVSource source) throws Exception {
-		List<ReconciliationObject<User>> users = this.getObjects(managedSys,
-				attrMapList, source);
-		List<ReconciliationObject<User>> newUsers = new ArrayList<ReconciliationObject<User>>(
+		List<ReconciliationObject<ProvisionUser>> users = this.getObjects(
+				managedSys, attrMapList, source);
+		List<ReconciliationObject<ProvisionUser>> newUsers = new ArrayList<ReconciliationObject<ProvisionUser>>(
 				0);
-		for (ReconciliationObject<User> user : users) {
+		for (ReconciliationObject<ProvisionUser> user : users) {
 			if (newUser.getPrincipal().equals(user.getPrincipal())) {
 				newUsers.add(newUser);
 			} else {
 				newUsers.add(user);
 			}
 		}
-		updateCSV(users, managedSys, attrMapList, User.class, UserFields.class,
-				false, source);
+		updateCSV(users, managedSys, attrMapList, ProvisionUser.class,
+				UserFields.class, false, source);
 	}
 
 	@Override
 	public Map<String, String> convertToMap(List<AttributeMap> attrMap,
-			ReconciliationObject<User> obj) {
+			ReconciliationObject<ProvisionUser> obj) {
 		return super.convertToMap(attrMap, obj, UserFields.class);
 	}
 
 	@Override
-	public List<ReconciliationObject<User>> getObjects(ManagedSys managedSys,
-			List<AttributeMap> attrMapList, CSVSource source) throws Exception {
-		return getObjectList(managedSys, attrMapList, User.class,
+	public List<ReconciliationObject<ProvisionUser>> getObjects(
+			ManagedSys managedSys, List<AttributeMap> attrMapList,
+			CSVSource source) throws Exception {
+		return getObjectList(managedSys, attrMapList, ProvisionUser.class,
 				UserFields.class, source);
 	}
 
@@ -572,13 +575,15 @@ public class UserCSVParser extends AbstractCSVParser<User, UserFields>
 
 	@Override
 	public String objectToString(List<String> head,
-			List<AttributeMap> attrMapList, ReconciliationObject<User> u) {
+			List<AttributeMap> attrMapList,
+			ReconciliationObject<ProvisionUser> u) {
 		return this.objectToString(head, this.convertToMap(attrMapList, u));
 	}
 
 	@Override
 	public Map<String, String> matchFields(List<AttributeMap> attrMap,
-			ReconciliationObject<User> u, ReconciliationObject<User> o) {
+			ReconciliationObject<ProvisionUser> u,
+			ReconciliationObject<ProvisionUser> o) {
 		Map<String, String> res = new HashMap<String, String>(0);
 		Map<String, String> one = this.convertToMap(attrMap, u);
 		Map<String, String> two = this.convertToMap(attrMap, o);
@@ -598,8 +603,7 @@ public class UserCSVParser extends AbstractCSVParser<User, UserFields>
 			}
 			if (one.get(field) != null && two.get(field) != null) {
 				String firstVal = one.get(field).replaceFirst("^0*", "").trim();
-				String secondVal = two.get(field).replaceFirst("^0*", "")
-						.trim();
+				String secondVal = two.get(field).replaceFirst("^0*", "").trim();
 				res.put(field, firstVal.equalsIgnoreCase(secondVal) ? secondVal
 						: ("[" + firstVal + "][" + secondVal + "]"));
 				continue;

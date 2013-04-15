@@ -6,7 +6,6 @@ import java.util.Map;
 import org.openiam.idm.srvc.csv.constant.CSVSource;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
-import org.openiam.provision.dto.ProvisionUser;
 
 public interface CSVParser<T> {
 	ReconciliationObject<T> toReconciliationObject(T pu,
@@ -15,14 +14,14 @@ public interface CSVParser<T> {
 	List<ReconciliationObject<T>> getObjects(ManagedSys managedSys,
 			List<AttributeMap> attrMapList, CSVSource source) throws Exception;
 
-	void update(ReconciliationObject<ProvisionUser> newUser,
+	void update(ReconciliationObject<T> newUser,
 			ManagedSys managedSys, List<AttributeMap> attrMapList,
 			CSVSource source) throws Exception;
 
 	void delete(String principal, ManagedSys managedSys,
 			List<AttributeMap> attrMapList, CSVSource source) throws Exception;
 
-	void add(ReconciliationObject<ProvisionUser> newObject,
+	void add(ReconciliationObject<T> newObject,
 			ManagedSys managedSys, List<AttributeMap> attrMapList,
 			CSVSource source) throws Exception;
 
@@ -34,9 +33,9 @@ public interface CSVParser<T> {
 	String objectToString(List<String> head, Map<String, String> obj);
 
 	String objectToString(List<String> head, List<AttributeMap> attrMapList,
-			ReconciliationObject<ProvisionUser> u);
+			ReconciliationObject<T> u);
 
 	Map<String, String> matchFields(List<AttributeMap> attrMap,
-			ReconciliationObject<ProvisionUser> u,
-			ReconciliationObject<ProvisionUser> o);
+			ReconciliationObject<T> u,
+			ReconciliationObject<T> o);
 }

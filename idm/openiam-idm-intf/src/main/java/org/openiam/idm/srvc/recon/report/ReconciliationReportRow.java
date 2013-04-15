@@ -84,16 +84,26 @@ public class ReconciliationReportRow {
 	public ReconciliationReportRow(String preffix,
 			ReconciliationReportResults result, String values) throws Exception {
 		super();
-		htmlRow = generateHTMLRow(preffix, result, values);
-		csvRow = generateCSVRow(preffix, result, values);
+		htmlRow = generateHTMLRow("", preffix, result, values);
+		csvRow = generateCSVRow("", preffix, result, values);
 	}
 
-	private String generateCSVRow(String preffix,
+	public ReconciliationReportRow(String login, String preffix,
+			ReconciliationReportResults result, String values) throws Exception {
+		super();
+		htmlRow = generateHTMLRow(login, preffix, result, values);
+		csvRow = generateCSVRow(login, preffix, result, values);
+	}
+
+	private String generateCSVRow(String login, String preffix,
 			ReconciliationReportResults result, String values) throws Exception {
 		StringBuilder build = new StringBuilder();
 		build.append("\"");
 		build.append(preffix);
 		build.append(result.getValue());
+		if (!StringUtils.isEmpty(login)) {
+			build.append(" Login: " + login);
+		}
 		build.append("\"");
 		build.append(',');
 		build.append("\"");
@@ -103,7 +113,7 @@ public class ReconciliationReportRow {
 		return build.toString();
 	}
 
-	private String generateHTMLRow(String preffix,
+	private String generateHTMLRow(String login, String preffix,
 			ReconciliationReportResults result, String values) throws Exception {
 		StringBuilder build = new StringBuilder();
 		List<String> vals = new ArrayList<String>(Arrays.asList(values
@@ -132,6 +142,13 @@ public class ReconciliationReportRow {
 				+ result.getColor() + ";'>");
 		build.append(preffix);
 		build.append(result.getValue());
+		if (ReconciliationReportResults.MATCH_FOUND.equals(result)
+				|| ReconciliationReportResults.MATCH_FOUND_DIFFERENT
+						.equals(result)
+				|| ReconciliationReportResults.NOT_EXIST_IN_RESOURCE
+						.equals(result)) {
+			build.append("\n<b>Login: " + login + "</b>");
+		}
 		build.append("</td>");
 		build.append(td);
 		build.append("</tr>");
