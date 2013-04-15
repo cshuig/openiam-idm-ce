@@ -14,8 +14,6 @@ RoleDataWebService roleDataService = (RoleDataWebService)ac.getBean("roleWS");
 println("user roles =" + roleList);
 
 //reset output from old value
-output == null;
-
 if (roleList != null) {
     // process only the first role otherwise we may end up with multiple OUs
     Role r = roleList.get(0);

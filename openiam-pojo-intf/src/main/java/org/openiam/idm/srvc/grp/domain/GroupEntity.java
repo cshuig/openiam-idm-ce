@@ -271,11 +271,10 @@ public class GroupEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GroupEntity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         GroupEntity that = (GroupEntity) o;
 
-        if (attributes != null ? !attributes.equals(that.attributes) : that.attributes != null) return false;
         if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
         if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
         if (createdBy != null ? !createdBy.equals(that.createdBy) : that.createdBy != null) return false;
@@ -283,7 +282,6 @@ public class GroupEntity {
         if (externalGroupName != null ? !externalGroupName.equals(that.externalGroupName) : that.externalGroupName != null)
             return false;
         if (groupClass != null ? !groupClass.equals(that.groupClass) : that.groupClass != null) return false;
-        if (!grpId.equals(that.grpId)) return false;
         if (grpName != null ? !grpName.equals(that.grpName) : that.grpName != null) return false;
         if (inheritFromParent != null ? !inheritFromParent.equals(that.inheritFromParent) : that.inheritFromParent != null)
             return false;
@@ -308,8 +306,7 @@ public class GroupEntity {
 
     @Override
     public int hashCode() {
-        int result = grpId.hashCode();
-        result = 31 * result + (metadataTypeId != null ? metadataTypeId.hashCode() : 0);
+        int result = metadataTypeId != null ? metadataTypeId.hashCode() : 0;
         result = 31 * result + (grpName != null ? grpName.hashCode() : 0);
         result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
         result = 31 * result + (createdBy != null ? createdBy.hashCode() : 0);
@@ -326,7 +323,6 @@ public class GroupEntity {
         result = 31 * result + (lastUpdatedBy != null ? lastUpdatedBy.hashCode() : 0);
         result = 31 * result + (internalGroupId != null ? internalGroupId.hashCode() : 0);
         result = 31 * result + (externalGroupName != null ? externalGroupName.hashCode() : 0);
-        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         result = 31 * result + (operation != null ? operation.hashCode() : 0);
         return result;
     }

@@ -42,7 +42,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
     static protected ResourceBundle res = ResourceBundle.getBundle("securityconf");
     static String[] roots = null;
     static GroovyScriptEngine gse = null;
-
+    public static final String OUTPUT = "output";
 
 
     public GroovyScriptEngineIntegration() {
@@ -72,7 +72,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
                 }
             }
             gse.run(scriptName, binding);
-            return binding.getVariable("output");
+            return binding.hasVariable(OUTPUT) ? binding.getVariable(OUTPUT) : null;
         } catch (ScriptException se) {
             log.error("Could not run script " + scriptName, se);
         } catch (ResourceException re) {
