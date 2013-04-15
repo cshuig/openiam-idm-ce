@@ -70,14 +70,12 @@ import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
 import org.openiam.provision.type.ExtensibleUser;
-import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.msg.*;
 import org.openiam.spml2.msg.suspend.ResumeRequestType;
 import org.openiam.spml2.msg.suspend.SuspendRequestType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -435,6 +433,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             log.debug(" - Building principal Name for: "
                                     + managedSysId);
                             // build the primary identity for resource by resource mapping
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, primaryLogin.getId().getDomainId());
+
                             String newPrincipalName = buildPrincipalName(attrMap,
                                     se, bindingMap);
                             log.debug(" - New principalName = " + newPrincipalName);
@@ -473,7 +473,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, resLogin.getId().getDomainId());
 
 
-
                             bindingMap
                                     .put(TARGET_SYSTEM_IDENTITY, resLogin.getId().getLogin());
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
@@ -507,7 +506,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             } else {
                                 log.debug("priList is null");
                             }
-
 
 
                             log.debug("Creating identity in openiam repository:"
@@ -1619,9 +1617,9 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("userBeforeModify", new ProvisionUser(origUser));
 
         if (callPreProcessor("MODIFY", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
-           resp.setStatus(ResponseStatus.FAILURE);
-           resp.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
-           return resp;
+            resp.setStatus(ResponseStatus.FAILURE);
+            resp.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
+            return resp;
         }
 
 
@@ -2009,7 +2007,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     connectorSuccess = true;
                                 }
                             }
-                            if(connectorSuccess) {
+                            if (connectorSuccess) {
                                 /*  Login tempPrincipal = loginManager
                         .getLoginByManagedSys(mLg.getId()
                                 .getDomainId(), mLg.getId()
@@ -2443,10 +2441,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     passwordSync.getSecurityDomain());
 
             //check if password should be sent to the user.
-               if (passwordSync.isSendPasswordToUser()) {
-                    //
-                   sendPasswordToUser(usr, password);
-               }
+            if (passwordSync.isSendPasswordToUser()) {
+                //
+                sendPasswordToUser(usr, password);
+            }
 
         } else {
             auditHelper.addLog("RESET PASSWORD",
@@ -2779,6 +2777,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         // List<Login> identityList =
         // loginManager.getLoginByUser(usr.getUserId()) ;
         for (Login l : principalList) {
+
+            // find the openiam identity and update it in openiam DB
             if (l.getId().getManagedSysId()
                     .equalsIgnoreCase(passwordSync.getManagedSystemId())) {
 
@@ -2799,25 +2799,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             l.getId().getLogin(), l.getId().getDomainId());
 
                     // update the user object that the password was changed
-                    usr.setDatePasswordChanged(new Date(System
-                            .currentTimeMillis()));
-                    // reset any locks that may be in place
-                    if (usr.getSecondaryStatus() == UserStatusEnum.LOCKED) {
-                        usr.setSecondaryStatus(null);
-                    }
-                    // if the user status was inactive, then make it active
-                    if (usr.getStatus() == UserStatusEnum.INACTIVE) {
-                        usr.setStatus(UserStatusEnum.ACTIVE);
-
-                    }
+                    usr.setDatePasswordChanged(new Date(System.currentTimeMillis()));
 
                     this.userMgr.updateUserWithDependent(usr, false);
 
-                    //check if password should be sent to the user.
-                    //   if (passwordSync.isSendPasswordToUser()) {
-                    //
-                    //      sendPasswordToUser(usr, passwordSync.getPassword());
-                    //  }
 
                 } else {
                     auditHelper.addLog("SET PASSWORD", passwordSync
@@ -2844,7 +2829,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             // List<Login> principalList =
             // loginManager.getLoginByUser(login.getUserId());
             // if (principalList != null) {
-            log.debug("PrincipalList size =" + principalList.size());
+
+            // sync the non-openiam identities
             for (Login lg : principalList) {
                 // get the managed system for the identity - ignore the managed
                 // system id that is linked to openiam's repository
@@ -2900,8 +2886,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                         ManagedSys mSys = managedSysService
                                 .getManagedSys(managedSysId);
 
-                        if (mSys.getConnectorId() == null
-                                || mSys.getConnectorId().isEmpty()) {
+                        if (mSys.getConnectorId() != null && !mSys.getConnectorId().isEmpty()) {
+
                             ProvisionConnector connector = connectorService
                                     .getConnector(mSys.getConnectorId());
 

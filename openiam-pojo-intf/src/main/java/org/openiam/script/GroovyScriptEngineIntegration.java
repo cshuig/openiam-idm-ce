@@ -42,8 +42,8 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
     static protected ResourceBundle res = ResourceBundle.getBundle("securityconf");
     static String[] roots = null;
     static GroovyScriptEngine gse = null;
+    public static final String OUTPUT = "output";
 
-    Binding binding = new Binding();
 
     public GroovyScriptEngineIntegration() {
     }
@@ -65,13 +65,14 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
         init();
 
         try {
+            Binding binding = new Binding();
             if (bindingMap != null) {
                 for (String key : bindingMap.keySet()) {
                     binding.setVariable(key, bindingMap.get(key));
                 }
             }
             gse.run(scriptName, binding);
-            return binding.getVariable("output");
+            return binding.hasVariable(OUTPUT) ? binding.getVariable(OUTPUT) : null;
         } catch (ScriptException se) {
             log.error("Could not run script " + scriptName, se);
         } catch (ResourceException re) {

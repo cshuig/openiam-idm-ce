@@ -192,7 +192,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 		RoleEntity role = roleDao.findById(new RoleEmbeddableId(serviceId,
 				roleId));
-		Set attrSet = role.getRoleAttributes();
+		Set<RoleAttributeEntity> attrSet = role.getRoleAttributes();
 		if (attrSet != null && attrSet.isEmpty())
 			return null;
 		return this.roleAttrSetToArray(attrSet);
@@ -206,7 +206,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		RoleAttributeEntity roleAttributeEntity = roleAttributeDAO
 				.findById(attrId);
 
-		return new RoleAttribute(roleAttributeEntity);
+		return roleAttributeDozerConverter.convertToDTO(roleAttributeEntity, true);
 	}
 
     @Transactional
@@ -759,14 +759,14 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	/** **************** Helper Methods ***************************** */
 
-	private RoleAttribute[] roleAttrSetToArray(Set<RoleAttribute> attrSet) {
+	private RoleAttribute[] roleAttrSetToArray(Set<RoleAttributeEntity> attrSet) {
 
 		int size = attrSet.size();
 		RoleAttribute[] roleAttrAry = new RoleAttribute[size];
-		Iterator<RoleAttribute> it = attrSet.iterator();
+		Iterator<RoleAttributeEntity> it = attrSet.iterator();
 		int ctr = 0;
 		while (it.hasNext()) {
-			RoleAttribute ra = it.next();
+			RoleAttribute ra = roleAttributeDozerConverter.convertToDTO(it.next(), true);
 			roleAttrAry[ctr++] = ra;
 		}
 		return roleAttrAry;
