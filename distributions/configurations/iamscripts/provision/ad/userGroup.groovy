@@ -23,8 +23,6 @@ if (groupList != null) {
                 grp =  groupService.getGroup(r.grpId).getGroup();
                 if(StringUtils.isNotEmpty(grp.externalGroupName)){
                     attributeContainer.getAttributeList().add(new BaseAttribute(grp.externalGroupName, grp.externalGroupName, r.operation));
-                } else if(StringUtils.isNotEmpty(grp.grpName)) {
-                    attributeContainer.getAttributeList().add(new BaseAttribute(grp.grpName, grp.grpName, r.operation));
                 }
         }
 
