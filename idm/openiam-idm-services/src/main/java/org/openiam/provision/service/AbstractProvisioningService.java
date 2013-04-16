@@ -602,6 +602,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                         return ResponseCode.GROUP_ID_NULL;
                     }
                 }
+                g.setOperation(AttributeOperationEnum.ADD);
                 groupManager.addUserToGroup(g.getGrpId(), newUserId);
                 // add to audit log
                 logList.add( auditHelper.createLogObject("ADD GROUP", user.getRequestorDomain(), user.getRequestorLogin(),

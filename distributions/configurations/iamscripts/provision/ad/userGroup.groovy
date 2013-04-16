@@ -24,7 +24,7 @@ if (groupList != null) {
                 if(StringUtils.isNotEmpty(grp.externalGroupName)){
                     attributeContainer.getAttributeList().add(new BaseAttribute(grp.externalGroupName, grp.externalGroupName, r.operation));
                 } else if(StringUtils.isNotEmpty(grp.grpName)) {
-                    attributeContainer.getAttributeList().add(new BaseAttribute(grp.grpName, grp.grpName, grp.operation));
+                    attributeContainer.getAttributeList().add(new BaseAttribute(grp.grpName, grp.grpName, r.operation));
                 }
         }
 
