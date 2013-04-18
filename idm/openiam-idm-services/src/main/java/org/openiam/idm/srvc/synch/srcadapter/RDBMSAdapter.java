@@ -159,65 +159,66 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
 
             // Multithreading
             int allRowsCount = results.size();
-            int threadCoount = THREAD_COUNT;
-            int rowsInOneExecutors = allRowsCount / threadCoount;
-            int remains = allRowsCount % (rowsInOneExecutors * threadCoount);
-            if (remains != 0) {
-                threadCoount++;
-            }
-            log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-            System.out.println("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-            List<Future> threadResults = new LinkedList<Future>();
-            // store the latest processed record by thread indx
-            final Map<String, Timestamp> recentRecordByThreadInx = new HashMap<String, Timestamp>();
-            final ExecutorService service = Executors.newCachedThreadPool();
-            for (int i = 0; i < threadCoount; i++) {
-                final int threadIndx = i;
-                final int startIndex = i * rowsInOneExecutors;
-                // Start index for current thread
-                int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount - 1 ? remains : rowsInOneExecutors;
-                // Part of the rowas that should be processing with this thread
-                final List<LineObject> part = results.subList(startIndex, startIndex + shiftIndex);
-                threadResults.add(service.submit(new Runnable() {
-                    @Override
+            if (allRowsCount > 0) {
+                int threadCoount = THREAD_COUNT;
+                int rowsInOneExecutors = allRowsCount / threadCoount;
+                int remains = rowsInOneExecutors > 0 ? allRowsCount % (rowsInOneExecutors * threadCoount) : 0;
+                if (remains != 0) {
+                    threadCoount++;
+                }
+                log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+                System.out.println("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+                List<Future> threadResults = new LinkedList<Future>();
+                // store the latest processed record by thread indx
+                final Map<String, Timestamp> recentRecordByThreadInx = new HashMap<String, Timestamp>();
+                final ExecutorService service = Executors.newCachedThreadPool();
+                for (int i = 0; i < threadCoount; i++) {
+                    final int threadIndx = i;
+                    final int startIndex = i * rowsInOneExecutors;
+                    // Start index for current thread
+                    int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount - 1 ? remains : rowsInOneExecutors;
+                    // Part of the rowas that should be processing with this thread
+                    final List<LineObject> part = results.subList(startIndex, startIndex + shiftIndex);
+                    threadResults.add(service.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Timestamp mostRecentRecord = proccess(config, provService, synchStartLog, part, validationScript, transformScript, startIndex);
+                                recentRecordByThreadInx.put("Thread_" + threadIndx, mostRecentRecord);
+                            } catch (ClassNotFoundException e) {
+                                log.error(e);
+
+                                synchStartLog.updateSynchAttributes("FAIL", ResponseCode.CLASS_NOT_FOUND.toString(), e.toString());
+                                auditHelper.logEvent(synchStartLog);
+                            }
+                        }
+                    }));
+                    //Give THREAD_DELAY_BEFORE_START seconds time for thread to be UP (load all cache and begin the work)
+                    Thread.sleep(THREAD_DELAY_BEFORE_START);
+                }
+                Runtime.getRuntime().addShutdownHook(new Thread() {
                     public void run() {
+                        service.shutdown();
                         try {
-                            Timestamp mostRecentRecord = proccess(config, provService, synchStartLog, part, validationScript, transformScript, startIndex);
-                            recentRecordByThreadInx.put("Thread_" + threadIndx, mostRecentRecord);
-                        } catch (ClassNotFoundException e) {
+                            if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
+                                log.warn("Executor did not terminate in the specified time."); //optional *
+                                List<Runnable> droppedTasks = service.shutdownNow(); //optional **
+                                log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
+                            }
+                        } catch (InterruptedException e) {
                             log.error(e);
 
-                            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.CLASS_NOT_FOUND.toString(), e.toString());
+                            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
                             auditHelper.logEvent(synchStartLog);
+
+                            SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+                            resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
                         }
                     }
-                }));
-                //Give THREAD_DELAY_BEFORE_START seconds time for thread to be UP (load all cache and begin the work)
-                Thread.sleep(THREAD_DELAY_BEFORE_START);
+                });
+                waitUntilWorkDone(threadResults);
+
             }
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    service.shutdown();
-                    try {
-                        if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
-                            log.warn("Executor did not terminate in the specified time."); //optional *
-                            List<Runnable> droppedTasks = service.shutdownNow(); //optional **
-                            log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
-                        }
-                    } catch (InterruptedException e) {
-                        log.error(e);
-
-                        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
-                        auditHelper.logEvent(synchStartLog);
-
-                        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                        resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
-                    }
-                }
-            });
-            waitUntilWorkDone(threadResults);
-
-
         } catch (ClassNotFoundException cnfe) {
 
             log.error(cnfe);
@@ -281,7 +282,7 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
 
     private Timestamp proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, List<LineObject> part, final ValidationScript validationScript, final TransformScript transformScript, int ctr) throws ClassNotFoundException {
         Timestamp mostRecentRecord = null;
-        for(LineObject rowObj : part) {
+        for (LineObject rowObj : part) {
             log.debug("-RDBMS ADAPTER: SYNCHRONIZING  RECORD # ---" + ctr++);
             // make sure we have a new object for each row
             ProvisionUser pUser = new ProvisionUser();
@@ -333,30 +334,30 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
             int retval = -1;
             if (transformScript != null) {
                 synchronized (mutex) {
-                // initialize the transform script
-                transformScript.init();
+                    // initialize the transform script
+                    transformScript.init();
 
-                if (usr != null) {
-                    transformScript.setNewUser(false);
-                    transformScript.setUser(userMgr.getUserWithDependent(usr.getUserId(), true).getUser());
-                    transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()).getPrincipalList());
-                    transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()).getRoleList());
+                    if (usr != null) {
+                        transformScript.setNewUser(false);
+                        transformScript.setUser(userMgr.getUserWithDependent(usr.getUserId(), true).getUser());
+                        transformScript.setPrincipalList(loginManager.getLoginByUser(usr.getUserId()).getPrincipalList());
+                        transformScript.setUserRoleList(roleDataService.getUserRolesAsFlatList(usr.getUserId()).getRoleList());
 
-                } else {
-                    transformScript.setNewUser(true);
-                    transformScript.setUser(null);
-                    transformScript.setPrincipalList(null);
-                    transformScript.setUserRoleList(null);
-                }
+                    } else {
+                        transformScript.setNewUser(true);
+                        transformScript.setUser(null);
+                        transformScript.setPrincipalList(null);
+                        transformScript.setUserRoleList(null);
+                    }
 
-                retval = transformScript.execute(rowObj, pUser);
+                    retval = transformScript.execute(rowObj, pUser);
 
-                log.debug("- Transform result=" + retval);
+                    log.debug("- Transform result=" + retval);
 
-                // show the user object
-                log.debug("- User After Transformation =" + pUser);
-                log.debug("- User = " + pUser.getUserId() + "-" + pUser.getFirstName() + " " + pUser.getLastName());
-                log.debug("- User Attributes = " + pUser.getUserAttributes());
+                    // show the user object
+                    log.debug("- User After Transformation =" + pUser);
+                    log.debug("- User = " + pUser.getUserId() + "-" + pUser.getFirstName() + " " + pUser.getLastName());
+                    log.debug("- User Attributes = " + pUser.getUserAttributes());
                 }
                 pUser.setSessionId(synchStartLog.getSessionId());
 
