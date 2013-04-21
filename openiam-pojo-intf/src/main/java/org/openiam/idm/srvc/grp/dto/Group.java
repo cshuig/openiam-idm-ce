@@ -312,16 +312,27 @@ public class Group implements java.io.Serializable {
     }
 
 
+    @Override
     public String toString() {
-        String str = "grpId=" + grpId +
-                " grpName=" + grpName +
-                " status=" + status +
-                " description=" + description +
-                " parentId=" + parentGrpId +
-                " subGroup=" + subGroup +
-                " attributes=" + attributes;
-
-        return str;
+        return "Group{" +
+                "operation=" + operation +
+                ", grpId='" + grpId + '\'' +
+                ", grpName='" + grpName + '\'' +
+                ", createDate=" + createDate +
+                ", createdBy='" + createdBy + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", parentGrpId='" + parentGrpId + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", metadataTypeId='" + metadataTypeId + '\'' +
+                ", internalGroupId='" + internalGroupId + '\'' +
+                ", externalGroupName='" + externalGroupName + '\'' +
+                ", selected=" + selected +
+                ", roles=" + roles +
+                ", attributes=" + attributes +
+                ", subGroup=" + subGroup +
+                '}';
     }
 
     public String getOwnerId() {
