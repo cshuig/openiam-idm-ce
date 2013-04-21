@@ -174,12 +174,7 @@
                 </td>
                 <td algn="right"><label for="username" class="attribute">Job-Code</label></td>
                 <td class="userformInput" for="username" class="labelValue">
-                    <form:select path="user.jobCode">
-                        <form:option value="" label="-Please Select-"/>
-                        <c:forEach items="${jobCodeList}" var="jobCode">
-                            <form:option value="${jobCode.id.statusCd}" label="${jobCode.description}"/>
-                        </c:forEach>
-                    </form:select>
+                    <form:input path="user.jobCode" size="10" maxlength="10"/>
                 </td>
                 <td><label for="username" class="attribute">Classification</label></td>
                 <td class="userformInput" for="username" class="labelValue"><form:input path="user.classification"

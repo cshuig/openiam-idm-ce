@@ -95,8 +95,8 @@
                                         </form:select>
                                     </td>
 
-                                    <td></td>
-                                    <td></td>
+                                    <td>Employee ID</td>
+                                    <td><form:input path="employeeId" size="20" maxlength="20"  /></td>
                                 </tr>
 
                                 <tr>

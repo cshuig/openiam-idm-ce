@@ -2,7 +2,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext
 
 def loginManager = context.getBean("loginManager")
 
-loginID=user.firstName + "." + user.lastName;
+loginID=lg.id.login;
 
 
 ctr = 1;

@@ -32,6 +32,8 @@ public class UserSearchCommand implements Serializable {
     private UserStatusEnum secondaryStatus;
     private String email;
     private String principalName;
+    private String employeeId;
+
 
     /* role is used to select the users for this operation */
     private String role;
@@ -204,6 +206,11 @@ public class UserSearchCommand implements Serializable {
             search.setDivision(division);
         }
 
+        if (employeeId != null && !employeeId.isEmpty() ) {
+            search.setEmployeeId(employeeId);
+
+        }
+
 
         if (attributeName != null && !attributeName.isEmpty()) {
             String attrName = attributeName;
@@ -347,6 +354,14 @@ public class UserSearchCommand implements Serializable {
 
     public void setElementList(MetadataElement[] elementList) {
         this.elementList = elementList;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 }
 
