@@ -170,12 +170,10 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 	@Override
 	public List<ReconcileUserEntity> findUserWByRole(String domainId, String roleId) {
 
-		log.debug("findUserByRole: domainId=" + domainId);
-		log.debug("findUserByRole: roleId=" + roleId);
-		
+
 		Session session = sessionFactory.getCurrentSession();
 
-		Query qry = session.createQuery("select usr from org.openiam.idm.srvc.user.domain.UserWrapperEntity as usr, UserRoleEntity ur " +
+		Query qry = session.createQuery("select usr from org.openiam.idm.srvc.user.domain.UserEntity as usr, UserRoleEntity ur " +
 						" where ur.serviceId = :domainId and ur.roleId = :roleId and ur.userId = usr.userId " +
 						" order by usr.lastName, usr.firstName ");
 		
