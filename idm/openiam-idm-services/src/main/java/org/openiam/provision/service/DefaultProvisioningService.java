@@ -904,7 +904,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     null, lTargetUser.getId().getLogin(), lTargetUser.getId()
                     .getDomainId());
         } else {
-            log.debug("Unable to log disable operation. Of of the following is null:");
+            log.debug("Unable to log disable operation. One of the following is null:");
             log.debug("Requestor identity=" + lRequestor);
             log.debug("Target identity=" + lTargetUser);
         }
@@ -914,8 +914,12 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                 .getUserId());
         if (principalList != null) {
             for (Login l : principalList) {
-                if (l.getStatus() != null
-                        && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
+
+                // ignore inactive records
+                if (l.getStatus() == null || "ACTIVE".equalsIgnoreCase(l.getStatus())) {
+
+             //   if (l.getStatus() != null
+             //           && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
                     l.setStatus("INACTIVE");
                     l.setAuthFailCount(0);
                     l.setPasswordChangeCount(0);
@@ -923,6 +927,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     loginManager.updateLogin(l);
 
                     // check if we should update the target system
+
                     if (user.isNotifyTargetSystems()) {
 
                         // only add the connectors if its a secondary identity.

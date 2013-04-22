@@ -21,12 +21,6 @@
  */
 package org.openiam.idm.srvc.recon.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
@@ -63,6 +57,12 @@ import org.openiam.provision.service.ConnectorAdapter;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.service.RemoteConnectorAdapter;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author suneet
@@ -238,7 +238,9 @@ public class ReconciliationServiceImpl implements ReconciliationService,
 			for (ResourceRole rRole : res.getResourceRoles()) {
 				List<ReconcileUserEntity> ids = roleDataService.findUserWByRole(
 						mSys.getDomainId(), rRole.getId().getRoleId());
-				users.addAll(ids);
+                if (ids != null && !ids.isEmpty()) {
+				    users.addAll(ids);
+                }
 			}
 
 			Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();

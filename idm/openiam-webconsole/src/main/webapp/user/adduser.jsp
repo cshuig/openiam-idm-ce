@@ -169,14 +169,9 @@ function selectChange(ctrl) {
          	<form:input path="user.title" size="30" /> 
          	<BR><form:errors path="user.title" cssClass="error" />  
          </td>
-		<td>Job-Classification</td>
-        <td>
-               <form:select path="user.jobCode">
-               		 <form:option value="" label="-Please Select-"/>
-	              	  <c:forEach items="${jobCodeList}" var="jobCode">
-		                <form:option value="${jobCode.id.statusCd}" label="${jobCode.description}" />
-		              </c:forEach>
-          		</form:select>         		
+		<td>Job-Code</td>
+        <td><form:input path="user.jobCode" size="20" maxlength="20"/>
+
         </td>
 			<td>Employment-Type</td>
         	<td   >

@@ -106,55 +106,56 @@ public class CSVAdapter extends AbstractSrcAdapter {
             final MatchObjectRule matchRule = matchRuleFactory.create(config);
             //Get Header
             final LineObject rowHeader = populateTemplate(rows[0]);
-            rows = Arrays.copyOfRange(rows,1,rows.length);
+            rows = Arrays.copyOfRange(rows, 1, rows.length);
             // Multithreading
             int allRowsCount = rows.length;
-            int threadCoount = THREAD_COUNT;
-            int rowsInOneExecutors =  allRowsCount / threadCoount;
-            int remains =allRowsCount % (rowsInOneExecutors * threadCoount);
-            if (remains != 0) {
-                threadCoount++;
-            }
-            log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-            System.out.println("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-            List<Future> results = new LinkedList<Future>();
-            final ExecutorService service = Executors.newCachedThreadPool();
-            for(int i = 0; i < threadCoount; i++) {
-                final int startIndex = i*rowsInOneExecutors;
-                int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount -1 ? remains : rowsInOneExecutors;
-
-                final String[][] part = Arrays.copyOfRange(rows,startIndex,startIndex+shiftIndex);
-                results.add(service.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        proccess(config, provService, synchStartLog, part, validationScript, transformScript, matchRule, rowHeader, startIndex);
-                    }
-                }));
-                //Give 30sec time for thread to be UP (load all cache and begin the work)
-                Thread.sleep(THREAD_DELAY_BEFORE_START);
-            }
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    service.shutdown();
-                    try {
-                        if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
-                            log.warn("Executor did not terminate in the specified time."); //optional *
-                            List<Runnable> droppedTasks = service.shutdownNow(); //optional **
-                            log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
-                        }
-                    } catch (InterruptedException e) {
-                        log.error(e);
-
-                        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
-                        auditHelper.logEvent(synchStartLog);
-
-                        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                        resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
-                    }
+            if (allRowsCount > 0) {
+                int threadCoount = THREAD_COUNT;
+                int rowsInOneExecutors = allRowsCount / threadCoount;
+                int remains = rowsInOneExecutors > 0 ? allRowsCount % (rowsInOneExecutors * threadCoount) : 0;
+                if (remains != 0) {
+                    threadCoount++;
                 }
-            });
-           waitUntilWorkDone(results);
+                log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+                System.out.println("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+                List<Future> results = new LinkedList<Future>();
+                final ExecutorService service = Executors.newCachedThreadPool();
+                for (int i = 0; i < threadCoount; i++) {
+                    final int startIndex = i * rowsInOneExecutors;
+                    int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount - 1 ? remains : rowsInOneExecutors;
 
+                    final String[][] part = Arrays.copyOfRange(rows, startIndex, startIndex + shiftIndex);
+                    results.add(service.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            proccess(config, provService, synchStartLog, part, validationScript, transformScript, matchRule, rowHeader, startIndex);
+                        }
+                    }));
+                    //Give 30sec time for thread to be UP (load all cache and begin the work)
+                    Thread.sleep(THREAD_DELAY_BEFORE_START);
+                }
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+                    public void run() {
+                        service.shutdown();
+                        try {
+                            if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
+                                log.warn("Executor did not terminate in the specified time."); //optional *
+                                List<Runnable> droppedTasks = service.shutdownNow(); //optional **
+                                log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
+                            }
+                        } catch (InterruptedException e) {
+                            log.error(e);
+
+                            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
+                            auditHelper.logEvent(synchStartLog);
+
+                            SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+                            resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
+                        }
+                    }
+                });
+                waitUntilWorkDone(results);
+            }
         } catch (FileNotFoundException fe) {
             fe.printStackTrace();
 
@@ -389,10 +390,6 @@ public class CSVAdapter extends AbstractSrcAdapter {
     public static void setAc(ApplicationContext ac) {
         CSVAdapter.ac = ac;
     }
-
-
-
-
 
 
     public String getSystemAccount() {

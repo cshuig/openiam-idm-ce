@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.List; 
+import java.util.List;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.grp.ws.GroupDataWebService;
@@ -7,42 +7,30 @@ import org.openiam.idm.groovy.helper.ServiceHelper;
 
 import org.openiam.base.BaseAttribute;
 import org.openiam.base.BaseAttributeContainer;
+import org.apache.commons.lang.StringUtils;
 
 def GroupDataWebService groupService = ServiceHelper.groupService();
 def Group grp;
 
-String groupBaseDN = ",OU=idm-test,DC=ad,DC=openiamdemo,DC=info";
 
-//List<String> roleStrList = new ArrayList<String>();
 def List<Group> groupList = user.getMemberOfGroups();
 
 BaseAttributeContainer attributeContainer = new BaseAttributeContainer();
 
 if (groupList != null) {
-	if (groupList.size() > 0)  {
-		for (Group r : groupList) {
-			String groupName = r.grpName;
-			
-			if (groupName == null) {
-			
-				grp =  groupService.getGroup(r.grpId).getGroup();
-        		groupName = grp.grpName;
-        
-			}
-			println("Adding group id  " + r.grpId + " --> " + (groupName + groupBaseDN));
+    if (groupList.size() > 0)  {
+        for (Group r : groupList) {
+                grp =  groupService.getGroup(r.grpId).getGroup();
+                if(StringUtils.isNotEmpty(grp.externalGroupName)){
+                    attributeContainer.getAttributeList().add(new BaseAttribute(grp.externalGroupName, grp.externalGroupName, r.operation));
+                }
+        }
 
-			String qualifiedGroupName = "cn=" + groupName +  groupBaseDN
-			
-			attributeContainer.getAttributeList().add(new BaseAttribute(qualifiedGroupName, qualifiedGroupName, r.operation));
-			
-			
-		}
-		//output = roleStrList;
-		output = attributeContainer;
-	}else {
-		output = null;
-	}
+        output = attributeContainer;
+    }else {
+        output = null;
+    }
 }else {
-	output = null;
+    output = null;
 }
 

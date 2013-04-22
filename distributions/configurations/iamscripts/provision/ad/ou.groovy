@@ -5,6 +5,8 @@ import org.openiam.idm.srvc.role.ws.RoleDataWebService
 
 
 
+println("Building ou string");
+
 List<String> roleStrList = new ArrayList<String>();
 def List<Role> roleList = user.getMemberOfRoles();
 
