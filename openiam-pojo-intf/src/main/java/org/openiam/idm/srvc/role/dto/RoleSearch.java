@@ -116,4 +116,17 @@ public class RoleSearch implements Serializable {
     public void setSearchAttributeList(List<ObjectSearchAttribute> searchAttributeList) {
         this.searchAttributeList = searchAttributeList;
     }
+
+    @Override
+    public String toString() {
+        return "RoleSearch{" +
+                "roleId='" + roleId + '\'' +
+                ", domainId='" + domainId + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", typeId='" + typeId + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", internalRoleId='" + internalRoleId + '\'' +
+                ", searchAttributeList=" + searchAttributeList +
+                '}';
+    }
 }
