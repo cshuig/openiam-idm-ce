@@ -208,7 +208,7 @@ public class ConnectorAdapter {
 
             if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
 
-                MuleMessage msg = getService(connector, config, connector.getServiceUrl(), "reconcile", muleContext);
+                MuleMessage msg = getService(connector, config, connector.getServiceUrl(), "reconcileResource", muleContext);
 
                 log.debug("MuleMessage payload=" + msg);
 
