@@ -27,6 +27,11 @@ insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('AD_GRO
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('LDAP_GROUP_TYPE','LDAP GROUP TYPE', 0);
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('DEFAULT_GROUP','DEFAULT GROUP TYPE', 0);
 
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('IDM_GOBAL_ROLE','DEFAULT IDM ROLES', 0);
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('ORA_ROLE','ORACLE DB ROLE', 0);
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('PEOPLESOFT_ROLE','PEOPLESOFT ROLE', 0);
+
+
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('APP_MENU','MENU', 0);
 
 
@@ -68,12 +73,19 @@ insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('430'
 
 insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ORG_TYPE', 'ROOT', 'ORGANIZATION Type',0);
 insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('GROUP_TYPE', 'ROOT', 'Group Type',0);
+insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ROLE_TYPE', 'ROOT', 'Group Type',0);
+
+
 insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','divisionType');
 insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','departmentType');
 
 insert into CATEGORY_TYPE (category_id, type_id) values('GROUP_TYPE','AD_GROUP_TYPE');
 insert into CATEGORY_TYPE (category_id, type_id) values('GROUP_TYPE','LDAP_GROUP_TYPE');
 insert into CATEGORY_TYPE (category_id, type_id) values('GROUP_TYPE','DEFAULT_GROUP');
+
+insert into CATEGORY_TYPE (category_id, type_id) values('ROLE_TYPE','IDM_GOBAL_ROLE');
+insert into CATEGORY_TYPE (category_id, type_id) values('ROLE_TYPE','ORA_ROLE');
+insert into CATEGORY_TYPE (category_id, type_id) values('ROLE_TYPE','PEOPLESOFT_ROLE');
 
 
 

@@ -27,6 +27,10 @@ insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('AD_GRO
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('LDAP_GROUP_TYPE','LDAP GROUP TYPE', 0);
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('DEFAULT_GROUP','DEFAULT GROUP TYPE', 0);
 
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('IDM_GOBAL_ROLE','DEFAULT IDM ROLES', 0);
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('ORA_ROLE','ORACLE DB ROLE', 0);
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('PEOPLESOFT_ROLE','PEOPLESOFT ROLE', 0);
+
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('APP_MENU','MENU', 0);
 
 
@@ -68,12 +72,19 @@ insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('430'
 
 insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ORG_TYPE', 'ROOT', 'ORGANIZATION Type',0);
 insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('GROUP_TYPE', 'ROOT', 'Group Type',0);
+insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ROLE_TYPE', 'ROOT', 'Group Type',0);
+
 insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','divisionType');
 insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','departmentType');
 
 insert into CATEGORY_TYPE (category_id, type_id) values('GROUP_TYPE','AD_GROUP_TYPE');
 insert into CATEGORY_TYPE (category_id, type_id) values('GROUP_TYPE','LDAP_GROUP_TYPE');
 insert into CATEGORY_TYPE (category_id, type_id) values('GROUP_TYPE','DEFAULT_GROUP');
+
+
+insert into CATEGORY_TYPE (category_id, type_id) values('ROLE_TYPE','IDM_GOBAL_ROLE');
+insert into CATEGORY_TYPE (category_id, type_id) values('ROLE_TYPE','ORA_ROLE');
+insert into CATEGORY_TYPE (category_id, type_id) values('ROLE_TYPE','PEOPLESOFT_ROLE');
 
 
 
@@ -906,6 +917,14 @@ where DATA_TYPE IS NULL AND MANAGED_SYS_ID = '110';
 /* MAP FOR MYSQL CONNECTOR */
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('550', '106', '106','PRINCIPAL', 'userName', '4600');
 INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('553', '106', '106','USER', 'password', '4603');
+
+/* MAP FOR ORACLE DB */
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('560', '111', '111','PRINCIPAL', 'MyAttributeAttrName', '4562');
+INSERT INTO ATTRIBUTE_MAP(ATTRIBUTE_MAP_ID, MANAGED_SYS_ID, RESOURCE_ID, MAP_FOR_OBJECT_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_POLICY_ID) VALUES ('561', '111', '111','PASSWORD', 'MyPasswordAttrName', '4603');
+
+UPDATE ATTRIBUTE_MAP
+SET DATA_TYPE = 'string'
+where DATA_TYPE IS NULL AND MANAGED_SYS_ID = '111';
 
 /* Reconciliation config */
 insert into RECONCILIATION_CONFIG(RECON_CONFIG_ID, RESOURCE_ID, FREQUENCY, STATUS) VALUES('4028b881373b90e501373b92ec180001', '101', 'NIGHTLY', 'ACTIVE');
