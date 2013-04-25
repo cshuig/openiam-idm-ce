@@ -185,7 +185,7 @@ public interface RoleDataService {
      * roleService.addRoleToGroup(domainId, roleId, groupId);<br>
      * </code>
      *
-     * @param grpId  The group for which the roleId is to be added .
+     * @param domainId  The domain for which the roleId is to be added .
      * @param roleId The roleId which is to be added to the group.
      */
     void addGroupToRole(String domainId, String roleId, String groupId);
