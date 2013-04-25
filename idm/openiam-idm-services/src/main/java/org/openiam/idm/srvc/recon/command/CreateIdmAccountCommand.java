@@ -33,46 +33,50 @@ public class CreateIdmAccountCommand implements ReconciliationCommand {
     private ReconciliationSituation config;
     private static final Log log = LogFactory.getLog(CreateIdmAccountCommand.class);
     private static String scriptEngine = "org.openiam.script.GroovyScriptEngineIntegration";
+    private PopulationScript script;
 
     public CreateIdmAccountCommand(ProvisionService provisionService, ReconciliationSituation config) {
         this.provisionService = provisionService;
         this.config = config;
+        try {
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
+            script = (PopulationScript) se.instantiateClass(null, config.getScript());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering CreateIdmAccountCommand");
-        if(attributes == null){
+        if (attributes == null) {
             log.debug("Can't create IDM user without attributes");
         } else {
             Map<String, String> line = new HashMap<String, String>();
-            for(ExtensibleAttribute attr: attributes){
+            for (ExtensibleAttribute attr : attributes) {
                 line.put(attr.getName(), attr.getValue());
             }
-            try {
-                ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-                PopulationScript script = (PopulationScript)se.instantiateClass(null, config.getScript());
-                ProvisionUser pUser = new ProvisionUser();
-                int retval = script.execute(line, pUser);
-                if(retval == 0){
-                    log.debug("Population successful for user: " + login.getId());
-                    if(login != null) {
-                        List<Login> pList = new ArrayList<Login>();
-                        pList.add(login);
-                        login.getId().setManagedSysId("0");
-                        pUser.setPrincipalList(pList);
-                    }
-                    provisionService.addUser(pUser);
-                    //provisionService.modifyUser(pUser);
-                }else{
-                    log.debug("Couldn't populate ProvisionUser. User not added");
-                    return false;
-                }
-                return true;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            if (script == null) {
+                log.debug("Error in Population for user because GroovyScript = " + config.getScript() + " wasn't initialized!");
             }
+            ProvisionUser pUser = new ProvisionUser();
+            int retval = script.execute(line, pUser);
+            if (retval == 0) {
+                log.debug("Population successful for user: " + login.getId());
+                if (login != null) {
+                    List<Login> pList = new ArrayList<Login>();
+                    pList.add(login);
+                    login.getId().setManagedSysId("0");
+                    pUser.setPrincipalList(pList);
+                }
+                provisionService.addUser(pUser);
+                //provisionService.modifyUser(pUser);
+            } else {
+                log.debug("Couldn't populate ProvisionUser. User not added");
+                return false;
+            }
+            return true;
         }
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }

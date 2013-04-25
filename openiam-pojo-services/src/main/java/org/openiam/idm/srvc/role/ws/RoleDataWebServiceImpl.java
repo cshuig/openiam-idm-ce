@@ -21,16 +21,14 @@
  */
 package org.openiam.idm.srvc.role.ws;
 
-import java.util.List;
+import java.util.*;
 
-import javax.jws.WebParam;
 import javax.jws.WebService;
 
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.grp.ws.GroupArrayResponse;
-import org.openiam.idm.srvc.grp.ws.GroupListResponse;
 import org.openiam.idm.srvc.role.dto.Role;
 import org.openiam.idm.srvc.role.dto.RoleAttribute;
 import org.openiam.idm.srvc.role.dto.RolePolicy;
@@ -264,12 +262,12 @@ public class RoleDataWebServiceImpl implements RoleDataWebService {
 	 */
 	public UserArrayResponse getUsersInRole(String serviceId, String roleId) {
 		UserArrayResponse resp = new UserArrayResponse(ResponseStatus.SUCCESS);
-		User[] userAry = roleDataService.getUsersInRole(serviceId, roleId); 
-		if (userAry == null) {
+		List<User> userList = roleDataService.getUsersInRole(serviceId, roleId);
+		if (userList == null) {
 			resp.setStatus(ResponseStatus.FAILURE);
 			return resp;
 		}
-		resp.setUserAry(userAry);
+		resp.setUserAry(userList.toArray(new User[userList.size()]));
 		return resp;
 	}
 

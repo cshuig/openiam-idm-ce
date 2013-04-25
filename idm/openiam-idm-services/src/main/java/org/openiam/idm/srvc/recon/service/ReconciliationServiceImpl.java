@@ -21,11 +21,9 @@
  */
 package org.openiam.idm.srvc.recon.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
@@ -196,94 +194,26 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 				log.debug("Start recon");
 				connectorAdapter.reconcileResource(mSys, config, muleContext);
 				log.debug("end recon");
-				  ReconciliationResponse resp = new ReconciliationResponse(ResponseStatus.SUCCESS);
-                  return resp;
+                return new ReconciliationResponse(ResponseStatus.SUCCESS);
 			}
-            
-
-            List<User> users = new ArrayList<User>();
+            // Do reconciliation User from Target Managed System to IDM, search for all Roles and Groups related with resource
             for(ResourceRole rRole: res.getResourceRoles()) {
-                User[] usrAry = roleDataService.getUsersInRole(mSys.getDomainId(), rRole.getId().getRoleId());
-                if(usrAry != null) {
-                    for(User user: usrAry){
-                        users.add(user);
+                List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
+                if(usrIds != null) {
+                    for(String userId : usrIds) {
+                        reconciliationUser(userId, mSys, situations);
                     }
                 }
             }
 
             List<Login> principalList =  loginManager.getAllLoginByManagedSys(managedSysId);
-            if (principalList == null || principalList.isEmpty()) {
+            if (CollectionUtils.isEmpty(principalList)) {
                 log.debug("No identities found for managedSysId in IDM repository");
-                ReconciliationResponse resp = new ReconciliationResponse(ResponseStatus.SUCCESS);
-                return resp;
-            }
-            for ( User u  : users ) {
-                Login l = null;
-                User user = userMgr.getUserWithDependent(u.getUserId(), true);
-                List<Login> logins = user.getPrincipalList();
-                if(logins != null) {
-                    for(Login login: logins){
-                        if(login.getId().getDomainId().equalsIgnoreCase(mSys.getDomainId()) && login.getId().getManagedSysId().equalsIgnoreCase(managedSysId)){
-                            l = login;
-                            break;
-                        }
-                    }
-                }
-                if(l == null){
-                    if(user.getStatus().equals(UserStatusEnum.DELETED)){
-                        // User is deleted and has no Identity for this managed system -> goto next user
-                        continue;
-                    }
-                    // There was never a resource account for this user.
-                    // Possibility: User was created before the managed Sys was associated.
-                    // Situation: Login Not Found
-                    ReconciliationCommand command = situations.get("Login Not Found");
-                    if(command != null){
-                        log.debug("Call command for IDM Login Not Found");
-                        command.execute(l, user, null);
-                    }
-                    ReconciliationResponse resp = new ReconciliationResponse(ResponseStatus.SUCCESS);
-					return resp;
-                }
-
-                String principal = l.getId().getLogin();
-                log.debug("looking up identity in resource: " + principal);
-
-                LookupUserResponse lookupResp =  provisionService.getTargetSystemUser(principal, managedSysId);
-
-                log.debug("Lookup status for " + principal + " =" +  lookupResp.getStatus());
-
-                //User user = userMgr.getUserByPrincipal(l.getId().getDomainId(), l.getId().getLogin(), l.getId().getManagedSysId(), true);
-
-                if (lookupResp.getStatus() == ResponseStatus.FAILURE && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
-                    // Situation: Resource Delete
-                    ReconciliationCommand command = situations.get("Resource Delete");
-                    if(command != null){
-                        log.debug("Call command for Resource Delete");
-                        command.execute(l, user, null);
-                    }
-                } else if (lookupResp.getStatus() == ResponseStatus.SUCCESS) {
-                    // found entry in managed sys
-                    if(l.getStatus().equalsIgnoreCase("INACTIVE") || user.getStatus().equals(UserStatusEnum.DELETED)) {
-                        // Situation: IDM Delete
-                        ReconciliationCommand command = situations.get("IDM Delete");
-                        if(command != null){
-                            log.debug("Call command for IDM Delete");
-                            command.execute(l, user, null);
-                        }
-                    } else {
-                        // Situation: IDM Changed/Resource Changed/Match Found
-                        ReconciliationCommand command = situations.get("Match Found");
-                        if(command != null){
-                            log.debug("Call command for Match Found");
-                            command.execute(l, user, null);
-                        }
-                    }
-
-                }
+                return new ReconciliationResponse(ResponseStatus.SUCCESS);
             }
 
-
+            //DO send Reconcilation configuration to Target System
+            //
             if (connector.getConnectorInterface() != null &&
                     connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
 
@@ -306,10 +236,79 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 			resp.setErrorText(e.getMessage());
 			return resp;
 		}
-        ReconciliationResponse resp = new ReconciliationResponse(ResponseStatus.SUCCESS);
-        return resp;
 
+        return new ReconciliationResponse(ResponseStatus.SUCCESS);
     }
+
+
+    private boolean reconciliationUser(final String usrId, final ManagedSys mSys, final Map<String, ReconciliationCommand> situations) {
+        Login l = null;
+        User user = userMgr.getUserWithDependent(usrId, true);
+        log.debug("Reconciliation for user "+user);
+        List<Login> logins = user.getPrincipalList();
+        if(logins != null) {
+            for(Login login: logins) {
+                if(login.getId().getDomainId().equalsIgnoreCase(mSys.getDomainId()) && login.getId().getManagedSysId().equalsIgnoreCase(mSys.getManagedSysId())){
+                    l = login;
+                    break;
+                }
+            }
+        }
+        if(l == null) {
+            if(user.getStatus().equals(UserStatusEnum.DELETED)){
+                // User is deleted and has no Identity for this managed system -> goto next user
+                return true;
+            }
+            // There was never a resource account for this user.
+            // Possibility: User was created before the managed Sys was associated.
+            // Situation: Login Not Found
+            ReconciliationCommand command = situations.get("Login Not Found");
+            if(command != null){
+                log.debug("Call command for IDM Login Not Found");
+                command.execute(l, user, null);
+            }
+            return false;
+        }
+
+        String principal = l.getId().getLogin();
+        log.debug("looking up identity in resource: " + principal);
+
+        LookupUserResponse lookupResp =  provisionService.getTargetSystemUser(principal, mSys.getManagedSysId());
+
+        log.debug("Lookup status for " + principal + " =" +  lookupResp.getStatus());
+
+        //User user = userMgr.getUserByPrincipal(l.getId().getDomainId(), l.getId().getLogin(), l.getId().getManagedSysId(), true);
+
+        if (lookupResp.getStatus() == ResponseStatus.FAILURE && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
+            // Situation: Resource Delete
+            ReconciliationCommand command = situations.get("Resource Delete");
+            if(command != null){
+                log.debug("Call command for Resource Delete");
+                command.execute(l, user, null);
+            }
+        } else if (lookupResp.getStatus() == ResponseStatus.SUCCESS) {
+            // found entry in managed sys
+            if(l.getStatus().equalsIgnoreCase("INACTIVE") || user.getStatus().equals(UserStatusEnum.DELETED)) {
+                // Situation: IDM Delete
+                ReconciliationCommand command = situations.get("IDM Delete");
+                if(command != null){
+                    log.debug("Call command for IDM Delete");
+                    command.execute(l, user, null);
+                }
+            } else {
+                // Situation: IDM Changed/Resource Changed/Match Found
+                ReconciliationCommand command = situations.get("Match Found");
+                if(command != null){
+                    log.debug("Call command for Match Found");
+                    command.execute(l, user, null);
+                }
+            }
+
+        }
+        return true;
+    }
+
+
 
     public LoginDataService getLoginManager() {
         return loginManager;

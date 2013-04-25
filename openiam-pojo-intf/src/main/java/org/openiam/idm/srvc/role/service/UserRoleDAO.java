@@ -63,6 +63,8 @@ public interface UserRoleDAO {
 	 */
 	List<UserEntity> findUserByRole(String domainId, String roleId);
 
+    List<String> findUserIdsByRole(String domainId, String roleId);
+
 	List<ReconcileUserEntity> findUserWByRole(String domainId, String roleId);
 
 }

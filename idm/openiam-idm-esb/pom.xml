@@ -78,10 +78,10 @@
 
 
 		<!-- Mule Dependencies -->
-		<dependency>
-			<groupId>org.mule</groupId>
-			<artifactId>mule-core</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-core</artifactId>
+        </dependency>
 		<!-- Mule Modules -->
 		<dependency>
 			<groupId>org.mule.modules</groupId>
@@ -122,6 +122,32 @@
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-quartz</artifactId>
 		</dependency>
+
+<!--        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-stdio</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-jbossts</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-management</artifactId>
+        </dependency>-->
+
+        <!-- JBoss Dependencies -->
+ <!--       <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jbossall-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-client</artifactId>
+        </dependency>      -->
 
 		<!-- Other Dependencies -->
 		<dependency>

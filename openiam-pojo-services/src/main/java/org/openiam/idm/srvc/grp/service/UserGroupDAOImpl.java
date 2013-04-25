@@ -110,7 +110,23 @@ public class UserGroupDAOImpl implements UserGroupDAO {
 		return result;
 	}
 
-	public void removeUserFromGroup(String grpId, String userId) {
+    @Override
+    public List<String> findUserIdsByGroup(String groupId) {
+        Session session = sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria(UserGroupEntity.class)
+                .createAlias("user", "usr")
+                .add(Restrictions.eq("group.grpId", groupId))
+                .addOrder(Order.asc("usr.lastName"))
+                .addOrder(Order.asc("usr.firstName"))
+                .setProjection(Projections.property("usr.userId"));
+
+        List<String> result = (List<String>) criteria.list();
+        if (result == null || result.size() == 0)
+            return null;
+        return result;
+    }
+
+    public void removeUserFromGroup(String grpId, String userId) {
 		Session session = sessionFactory.getCurrentSession();
 		Query qry = session
 				.createQuery("delete org.openiam.idm.srvc.grp.domain.UserGroupEntity ug "
