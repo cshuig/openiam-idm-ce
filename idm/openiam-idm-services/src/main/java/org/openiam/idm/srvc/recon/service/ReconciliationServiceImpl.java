@@ -51,6 +51,7 @@ import org.openiam.provision.service.ConnectorAdapter;
 import  org.openiam.provision.service.ProvisionService;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.provision.service.RemoteConnectorAdapter;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
@@ -76,6 +77,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     private static final Log log = LogFactory.getLog(ReconciliationServiceImpl.class);
 
+    @Transactional
     public ReconciliationConfig addConfig(ReconciliationConfig config) {
         if (config == null) {
 			throw new IllegalArgumentException("config parameter is null");
@@ -85,6 +87,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     }
 
+    @Transactional
     public ReconciliationConfig updateConfig(ReconciliationConfig config) {
         if (config == null) {
                     throw new IllegalArgumentException("config parameter is null");
@@ -94,6 +97,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     }
 
+    @Transactional
     public void removeConfigByResourceId(String resourceId) {
         if (resourceId == null) {
                     throw new IllegalArgumentException("resourceId parameter is null");
@@ -102,6 +106,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     }
 
+    @Transactional
     public void removeConfig(String configId) {
         if (configId == null) {
                     throw new IllegalArgumentException("configId parameter is null");
@@ -111,6 +116,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     }
 
+    @Transactional(readOnly = true)
     public ReconciliationConfig getConfigByResource(String resourceId) {
     if (resourceId == null) {
                     throw new IllegalArgumentException("resourceId parameter is null");
