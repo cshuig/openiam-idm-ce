@@ -407,14 +407,24 @@ public class RemoteConnectorAdapter {
 
 
             if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
+                SearchRequest searchRequest = new SearchRequest();
+                //TODO SearchRequest init
 
-                MuleMessage msg = getService(connector, config, connector.getServiceUrl(), "reconcile", muleContext);
+                //Send search to Remote Connector to get data (e.g. Active Directory via PowershellConnector)
+                MuleMessage msg = getService(connector, searchRequest, connector.getServiceUrl(), "search", muleContext);
                 if (msg != null) {
                     log.debug("Test connection Payload=" + msg.getPayload());
                     if (msg.getPayload() != null && msg.getPayload() instanceof ResponseType) {
-                        return (ResponseType) msg.getPayload();
+                        SearchResponse searchResponse = (SearchResponse) msg.getPayload();
+                        if(searchResponse.getStatus() == StatusCodeType.SUCCESS) {
+                            //TODO processing users in IDM
+
+
+                            resp.setStatus(StatusCodeType.SUCCESS);
+                            return resp;
+                        }
                     }
-                    resp.setStatus(StatusCodeType.SUCCESS);
+                    resp.setStatus(StatusCodeType.FAILURE);
                     return resp;
                 } else {
                     log.debug("MuleMessage is null..");
@@ -481,7 +491,10 @@ public class RemoteConnectorAdapter {
 
                 msg = client.send("vm://remoteConnectorMsgTestConnection", (ManagedSys) reqType, msgPropMap);
             }
+            if (operation.equalsIgnoreCase("search")) {
 
+                msg = client.send("vm://remoteConnectorClientSearch", (SearchRequest) reqType, msgPropMap);
+            }
 
             return msg;
 
