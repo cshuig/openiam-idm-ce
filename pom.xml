@@ -150,6 +150,8 @@
         <log4j.version>1.2.16</log4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ganymed.version>251beta1</ganymed.version>
+      <!--  <jbossall.version>3.2.1</jbossall.version>
+        <jboss.version>4.0.2</jboss.version>-->
 	</properties>
 
 
@@ -209,7 +211,35 @@
                 <version>${mule.version}</version>
              </dependency>
 
+           <!-- <dependency>
+                <groupId>org.mule.transports</groupId>
+                <artifactId>mule-transport-stdio</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>org.mule.modules</groupId>
+                <artifactId>mule-module-jbossts</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mule.modules</groupId>
+                <artifactId>mule-module-management</artifactId>
+                <version>${mule.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jbossall-client</artifactId>
+                <version>${jbossall.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jboss-client</artifactId>
+                <version>${jboss.version}</version>
+            </dependency>-->
 
 			<!-- Other Dependencies -->
 			<dependency>

@@ -142,8 +142,27 @@ public class UserRoleDAOImpl implements UserRoleDAO {
 			return null;
 		return result;			
 	}
-	
-	public void removeUserFromRole(String domainId, String roleId,	String userId) {
+
+    @Override
+    public List<String> findUserIdsByRole(String domainId, String roleId) {
+        log.debug("findUserByRole: domainId=" + domainId);
+        log.debug("findUserByRole: roleId=" + roleId);
+
+        Session session = sessionFactory.getCurrentSession();
+
+        Query qry = session.createQuery("select usr.userId from org.openiam.idm.srvc.user.domain.UserEntity as usr, UserRoleEntity ur " +
+                " where ur.serviceId = :domainId and ur.roleId = :roleId and ur.userId = usr.userId " +
+                " order by usr.lastName, usr.firstName ");
+
+        qry.setString("domainId",domainId);
+        qry.setString("roleId",roleId);
+        List<String> result = (List<String>)qry.list();
+        if (result == null || result.size() == 0)
+            return null;
+        return result;
+    }
+
+    public void removeUserFromRole(String domainId, String roleId,	String userId) {
 		log.debug("removeUserFromRole: userId=" + userId);
 		log.debug("removeUserFromRole: roleId=" + roleId);
 		

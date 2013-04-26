@@ -4,6 +4,8 @@ package org.openiam.idm.srvc.mngsys.service;
 
 import java.util.List;
 import javax.naming.InitialContext;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
@@ -166,12 +168,12 @@ public class ManagedSysDAOImpl implements ManagedSysDAO {
 		qry.setString("status",status);
 		List<ManagedSys> results = (List<ManagedSys>)qry.list();
 
-		if (results != null) {
+		if (CollectionUtils.isNotEmpty(results)) {
 			// avoids an exception in the event that there is more than 1 row with the same name
 			log.info("ManagedSys resultSet = " + results.size());	
 			return results.get(0);
 		}
-		log.info("No managedSys objects fround.");
+		log.info("No managedSys objects found.");
 		return null;
 	
 	}
