@@ -21,18 +21,15 @@
  */
 package org.openiam.idm.srvc.recon.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.connector.type.RemoteReconciliationConfig;
-import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.dto.ProvisionConnector;
@@ -51,343 +48,317 @@ import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.provision.resp.LookupUserResponse;
 import org.openiam.provision.service.ConnectorAdapter;
-import org.openiam.provision.service.ProvisionService;
+import  org.openiam.provision.service.ProvisionService;
+import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.provision.service.RemoteConnectorAdapter;
 
 /**
  * @author suneet
- * 
+ *
  */
-public class ReconciliationServiceImpl implements ReconciliationService,
-		MuleContextAware {
+public class ReconciliationServiceImpl implements ReconciliationService, MuleContextAware {
 
 	protected ReconciliationSituationDAO reconSituationDao;
 	protected ReconciliationResultDAO reconResultDao;
 	protected ReconciliationConfigDAO reconConfigDao;
 	protected ReconciliationResultDAO reconResultDetailDao;
-	protected MuleContext muleContext;
-	protected LoginDataService loginManager;
-	protected ProvisionService provisionService;
-	protected ResourceDataService resourceDataService;
-	protected UserDataService userMgr;
-	protected ManagedSystemDataService managedSysService;
-	protected ConnectorDataService connectorService;
-	protected ConnectorAdapter connectorAdapter;
-	protected RemoteConnectorAdapter remoteConnectorAdapter;
-	protected RoleDataService roleDataService;
+    protected MuleContext muleContext;
+    protected LoginDataService loginManager;
+    protected  ProvisionService provisionService;
+    protected ResourceDataService resourceDataService;
+    protected UserDataService userMgr;
+    protected ManagedSystemDataService managedSysService;
+    protected ConnectorDataService connectorService;
+    protected ConnectorAdapter connectorAdapter;
+    protected RemoteConnectorAdapter remoteConnectorAdapter;
+    protected RoleDataService roleDataService;
 
-	private static final Log log = LogFactory
-			.getLog(ReconciliationServiceImpl.class);
 
-	public ReconciliationConfig addConfig(ReconciliationConfig config) {
-		if (config == null) {
+    private static final Log log = LogFactory.getLog(ReconciliationServiceImpl.class);
+
+    public ReconciliationConfig addConfig(ReconciliationConfig config) {
+        if (config == null) {
 			throw new IllegalArgumentException("config parameter is null");
 		}
 		return reconConfigDao.add(config);
 
-	}
 
-	public ReconciliationConfig updateConfig(ReconciliationConfig config) {
-		if (config == null) {
-			throw new IllegalArgumentException("config parameter is null");
-		}
-		return reconConfigDao.update(config);
+    }
 
-	}
+    public ReconciliationConfig updateConfig(ReconciliationConfig config) {
+        if (config == null) {
+                    throw new IllegalArgumentException("config parameter is null");
+        }
+        return reconConfigDao.update(config);
 
-	public void removeConfigByResourceId(String resourceId) {
-		if (resourceId == null) {
-			throw new IllegalArgumentException("resourceId parameter is null");
-		}
-		reconConfigDao.removeByResourceId(resourceId);
 
-	}
+    }
 
-	public void removeConfig(String configId) {
-		if (configId == null) {
-			throw new IllegalArgumentException("configId parameter is null");
-		}
-		ReconciliationConfig config = reconConfigDao.findById(configId);
-		reconConfigDao.remove(config);
+    public void removeConfigByResourceId(String resourceId) {
+        if (resourceId == null) {
+                    throw new IllegalArgumentException("resourceId parameter is null");
+        }
+        reconConfigDao.removeByResourceId(resourceId);
 
-	}
+    }
 
-	public ReconciliationConfig getConfigByResource(String resourceId) {
-		if (resourceId == null) {
-			throw new IllegalArgumentException("resourceId parameter is null");
-		}
-		return reconConfigDao.findByResourceId(resourceId);
+    public void removeConfig(String configId) {
+        if (configId == null) {
+                    throw new IllegalArgumentException("configId parameter is null");
+        }
+        ReconciliationConfig config =  reconConfigDao.findById(configId);
+        reconConfigDao.remove(config);
 
-	}
+    }
 
-	public ReconciliationSituationDAO getReconSituationDao() {
+    public ReconciliationConfig getConfigByResource(String resourceId) {
+    if (resourceId == null) {
+                    throw new IllegalArgumentException("resourceId parameter is null");
+     }
+     return reconConfigDao.findByResourceId(resourceId);
+
+    }
+
+    public ReconciliationSituationDAO getReconSituationDao() {
 		return reconSituationDao;
 	}
 
-	public void setReconSituationDao(
-			ReconciliationSituationDAO reconSituationDao) {
+
+	public void setReconSituationDao(ReconciliationSituationDAO reconSituationDao) {
 		this.reconSituationDao = reconSituationDao;
 	}
+
 
 	public ReconciliationResultDAO getReconResultDao() {
 		return reconResultDao;
 	}
 
+
 	public void setReconResultDao(ReconciliationResultDAO reconResultDao) {
 		this.reconResultDao = reconResultDao;
 	}
+
 
 	public ReconciliationConfigDAO getReconConfigDao() {
 		return reconConfigDao;
 	}
 
+
 	public void setReconConfigDao(ReconciliationConfigDAO reconConfigDao) {
 		this.reconConfigDao = reconConfigDao;
 	}
+
 
 	public ReconciliationResultDAO getReconResultDetailDao() {
 		return reconResultDetailDao;
 	}
 
-	public void setReconResultDetailDao(
-			ReconciliationResultDAO reconResultDetailDao) {
+
+	public void setReconResultDetailDao(ReconciliationResultDAO reconResultDetailDao) {
 		this.reconResultDetailDao = reconResultDetailDao;
 	}
 
-	public ReconciliationConfig getConfigById(String configId) {
-		if (configId == null) {
-			throw new IllegalArgumentException("configId parameter is null");
-		}
-		return reconConfigDao.findById(configId);
+    public ReconciliationConfig getConfigById(String configId) {
+       if (configId == null) {
+                    throw new IllegalArgumentException("configId parameter is null");
+        }
+        return reconConfigDao.findById(configId);
 
-	}
+    }
 
-	public void setMuleContext(MuleContext ctx) {
+    public void setMuleContext(MuleContext ctx) {
 
-		muleContext = ctx;
-	}
+       muleContext = ctx;
+    }
 
-	public ReconciliationResponse startReconciliation(
-			ReconciliationConfig config) {
-		try {
-			log.debug("Reconciliation started for configId="
-					+ config.getReconConfigId() + " - resource="
-					+ config.getResourceId());
+    public ReconciliationResponse startReconciliation(ReconciliationConfig config) {
+        try {
+            log.debug("Reconciliation started for configId=" + config.getReconConfigId() + " - resource=" + config.getResourceId() );
 
-			Resource res = resourceDataService.getResource(config
-					.getResourceId());
-			String managedSysId = res.getManagedSysId();
-			ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
-			log.debug("ManagedSysId = " + managedSysId);
-			log.debug("Getting identities for managedSys");
+            Resource res = resourceDataService.getResource(config.getResourceId());
+            String managedSysId =  res.getManagedSysId();
+            ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
+            log.debug("ManagedSysId = " + managedSysId);
+            log.debug("Getting identities for managedSys");
 
-			Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();
-			for (ReconciliationSituation situation : config.getSituationSet()) {
-				situations.put(situation.getSituation().trim(),
-						ReconciliationCommandFactory.createCommand(
-								situation.getSituationResp(), situation,
-								managedSysId));
-				log.debug("Created Command for: " + situation.getSituation());
-			}
-			ProvisionConnector connector = connectorService.getConnector(mSys
-					.getConnectorId());
-
-			// IF managed system is CSV
+            Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();
+            for(ReconciliationSituation situation : config.getSituationSet()){
+                situations.put(situation.getSituation().trim(), ReconciliationCommandFactory.createCommand(situation.getSituationResp(), situation, managedSysId));
+                log.debug("Created Command for: " + situation.getSituation());
+            }
+            ProvisionConnector connector = connectorService.getConnector(mSys.getConnectorId());
+            
+        	// IF managed system is CSV
 			if (connector.getServiceUrl().contains("CSV")) {
 				// Get user without fetches
 				log.debug("Start recon");
 				connectorAdapter.reconcileResource(mSys, config, muleContext);
 				log.debug("end recon");
-				ReconciliationResponse resp = new ReconciliationResponse(
-						ResponseStatus.SUCCESS);
-				return resp;
+                return new ReconciliationResponse(ResponseStatus.SUCCESS);
 			}
+            // Do reconciliation User from Target Managed System to IDM, search for all Roles and Groups related with resource
+            for(ResourceRole rRole: res.getResourceRoles()) {
+                List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
+                if(usrIds != null) {
+                    for(String userId : usrIds) {
+                        reconciliationUser(userId, mSys, situations);
+                    }
+                }
+            }
 
-			List<User> users = new ArrayList<User>();
-			for (ResourceRole rRole : res.getResourceRoles()) {
-				User[] usrAry = roleDataService.getUsersInRole(
-						mSys.getDomainId(), rRole.getId().getRoleId());
-				if (usrAry != null) {
-					for (User user : usrAry) {
-						users.add(user);
-					}
-				}
-			}
+            List<Login> principalList =  loginManager.getAllLoginByManagedSys(managedSysId);
+            if (CollectionUtils.isEmpty(principalList)) {
+                log.debug("No identities found for managedSysId in IDM repository");
+                return new ReconciliationResponse(ResponseStatus.SUCCESS);
+            }
 
-			List<Login> principalList = loginManager
-					.getAllLoginByManagedSys(managedSysId);
-			if (principalList == null || principalList.isEmpty()) {
-				log.debug("No identities found for managedSysId in IDM repository");
-			} else {
-				for (User u : users) {
-					Login l = null;
-					User user = userMgr.getUserWithDependent(u.getUserId(),
-							true);
-					List<Login> logins = user.getPrincipalList();
-					if (logins != null) {
-						for (Login login : logins) {
-							if (login.getId().getDomainId()
-									.equalsIgnoreCase(mSys.getDomainId())
-									&& login.getId().getManagedSysId()
-											.equalsIgnoreCase(managedSysId)) {
-								l = login;
-								break;
-							}
-						}
-					}
-					if (l == null) {
-						if (user.getStatus().equals(UserStatusEnum.DELETED)) {
-							// User is deleted and has no Identity for this
-							// managed system -> goto next user
-							continue;
-						}
-						// There was never a resource account for this user.
-						// Possibility: User was created before the managed Sys
-						// was associated.
-						// Situation: Login Not Found
-						ReconciliationCommand command = situations
-								.get("Login Not Found");
-						if (command != null) {
-							log.debug("Call command for IDM Login Not Found");
-							command.execute(l, user, null);
-						}
-						continue;
-					}
+            //DO send Reconcilation configuration to Target System
+            //
+            if (connector.getConnectorInterface() != null &&
+                    connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
 
-					String principal = l.getId().getLogin();
-					log.debug("looking up identity in resource: " + principal);
+                log.debug("Calling reconcileResource with Remote connector");
+                RemoteReconciliationConfig remoteReconciliationConfig = null;
+                if(config != null) {
+                    remoteReconciliationConfig = new RemoteReconciliationConfig(config);
+                    remoteReconciliationConfig.setScriptHandler(mSys.getReconcileResourceHandler());
+                }
+                remoteConnectorAdapter.reconcileResource(remoteReconciliationConfig, connector, muleContext);
+            } else {
 
-					LookupUserResponse lookupResp = provisionService
-							.getTargetSystemUser(principal, managedSysId);
-
-					log.debug("Lookup status for " + principal + " ="
-							+ lookupResp.getStatus());
-
-					// User user =
-					// userMgr.getUserByPrincipal(l.getId().getDomainId(),
-					// l.getId().getLogin(), l.getId().getManagedSysId(), true);
-
-					if (ResponseStatus.FAILURE.equals(lookupResp.getStatus())
-							&& !"INACTIVE".equalsIgnoreCase(l.getStatus())) {
-						// Situation: Resource Delete
-						ReconciliationCommand command = situations
-								.get("Resource Delete");
-						if (command != null) {
-							log.debug("Call command for Resource Delete");
-							command.execute(l, user, null);
-						}
-					} else if (lookupResp.getStatus() == ResponseStatus.SUCCESS) {
-						// found entry in managed sys
-						if ("INACTIVE".equalsIgnoreCase(l.getStatus())
-								|| UserStatusEnum.DELETED.equals(user
-										.getStatus())) {
-							// Situation: IDM Delete
-							ReconciliationCommand command = situations
-									.get("IDM Delete");
-							if (command != null) {
-								log.debug("Call command for IDM Delete");
-								command.execute(l, user, null);
-							}
-						} else {
-							// Situation: IDM Changed/Resource Changed/Match
-							// Found
-							ReconciliationCommand command = situations
-									.get("Match Found");
-							if (command != null) {
-								log.debug("Call command for Match Found");
-								command.execute(l, user,
-										lookupResp.getAttrList());
-							}
-						}
-
-					}
-				}
-
-			}
-
-			if (connector.getConnectorInterface() != null
-					&& "REMOTE".equalsIgnoreCase(connector
-							.getConnectorInterface())) {
-
-				log.debug("Calling reconcileResource with Remote connector");
-				RemoteReconciliationConfig remoteReconciliationConfig = null;
-				if (config != null) {
-					remoteReconciliationConfig = new RemoteReconciliationConfig(
-							config);
-					remoteReconciliationConfig.setScriptHandler(mSys
-							.getReconcileResourceHandler());
-				}
-				remoteConnectorAdapter.reconcileResource(
-						remoteReconciliationConfig, connector, muleContext);
-			} else {
-
-				log.debug("Calling reconcileResource local connector");
-				connectorAdapter.reconcileResource(mSys, config, muleContext);
-			}
-		} catch (Exception e) {
+                log.debug("Calling reconcileResource local connector");
+                connectorAdapter.reconcileResource(mSys, config, muleContext);
+            }
+		}catch(Exception e) {
 			log.error(e);
-			e.printStackTrace();
-			ReconciliationResponse resp = new ReconciliationResponse(
-					ResponseStatus.FAILURE);
+            e.printStackTrace();
+			ReconciliationResponse resp = new ReconciliationResponse(ResponseStatus.FAILURE);
 			resp.setErrorText(e.getMessage());
 			return resp;
 		}
-		ReconciliationResponse resp = new ReconciliationResponse(
-				ResponseStatus.SUCCESS);
-		return resp;
 
-	}
+        return new ReconciliationResponse(ResponseStatus.SUCCESS);
+    }
 
-	public LoginDataService getLoginManager() {
-		return loginManager;
-	}
 
-	public void setLoginManager(LoginDataService loginManager) {
-		this.loginManager = loginManager;
-	}
+    private boolean reconciliationUser(final String usrId, final ManagedSys mSys, final Map<String, ReconciliationCommand> situations) {
+        Login l = null;
+        User user = userMgr.getUserWithDependent(usrId, true);
+        log.debug("Reconciliation for user "+user);
+        List<Login> logins = user.getPrincipalList();
+        if(logins != null) {
+            for(Login login: logins) {
+                if(login.getId().getDomainId().equalsIgnoreCase(mSys.getDomainId()) && login.getId().getManagedSysId().equalsIgnoreCase(mSys.getManagedSysId())){
+                    l = login;
+                    break;
+                }
+            }
+        }
+        if(l == null) {
+            if(user.getStatus().equals(UserStatusEnum.DELETED)){
+                // User is deleted and has no Identity for this managed system -> goto next user
+                return true;
+            }
+            // There was never a resource account for this user.
+            // Possibility: User was created before the managed Sys was associated.
+            // Situation: Login Not Found
+            ReconciliationCommand command = situations.get("Login Not Found");
+            if(command != null){
+                log.debug("Call command for IDM Login Not Found");
+                command.execute(l, user, null);
+            }
+            return false;
+        }
 
-	public ProvisionService getProvisionService() {
-		return provisionService;
-	}
+        String principal = l.getId().getLogin();
+        log.debug("looking up identity in resource: " + principal);
 
-	public void setProvisionService(ProvisionService provisionService) {
-		this.provisionService = provisionService;
-	}
+        LookupUserResponse lookupResp =  provisionService.getTargetSystemUser(principal, mSys.getManagedSysId());
 
-	public ResourceDataService getResourceDataService() {
-		return resourceDataService;
-	}
+        log.debug("Lookup status for " + principal + " =" +  lookupResp.getStatus());
 
-	public void setResourceDataService(ResourceDataService resourceDataService) {
-		this.resourceDataService = resourceDataService;
-	}
+        //User user = userMgr.getUserByPrincipal(l.getId().getDomainId(), l.getId().getLogin(), l.getId().getManagedSysId(), true);
 
-	public UserDataService getUserMgr() {
-		return userMgr;
-	}
+        if (lookupResp.getStatus() == ResponseStatus.FAILURE && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
+            // Situation: Resource Delete
+            ReconciliationCommand command = situations.get("Resource Delete");
+            if(command != null){
+                log.debug("Call command for Resource Delete");
+                command.execute(l, user, null);
+            }
+        } else if (lookupResp.getStatus() == ResponseStatus.SUCCESS) {
+            // found entry in managed sys
+            if(l.getStatus().equalsIgnoreCase("INACTIVE") || user.getStatus().equals(UserStatusEnum.DELETED)) {
+                // Situation: IDM Delete
+                ReconciliationCommand command = situations.get("IDM Delete");
+                if(command != null){
+                    log.debug("Call command for IDM Delete");
+                    command.execute(l, user, null);
+                }
+            } else {
+                // Situation: IDM Changed/Resource Changed/Match Found
+                ReconciliationCommand command = situations.get("Match Found");
+                if(command != null){
+                    log.debug("Call command for Match Found");
+                    command.execute(l, user, null);
+                }
+            }
 
-	public void setUserMgr(UserDataService userMgr) {
-		this.userMgr = userMgr;
-	}
+        }
+        return true;
+    }
 
-	public void setManagedSysService(ManagedSystemDataService managedSysService) {
-		this.managedSysService = managedSysService;
-	}
 
-	public void setConnectorService(ConnectorDataService connectorService) {
-		this.connectorService = connectorService;
-	}
 
-	public void setConnectorAdapter(ConnectorAdapter connectorAdapter) {
-		this.connectorAdapter = connectorAdapter;
-	}
+    public LoginDataService getLoginManager() {
+        return loginManager;
+    }
 
-	public void setRemoteConnectorAdapter(
-			RemoteConnectorAdapter remoteConnectorAdapter) {
-		this.remoteConnectorAdapter = remoteConnectorAdapter;
-	}
+    public void setLoginManager(LoginDataService loginManager) {
+        this.loginManager = loginManager;
+    }
 
-	public void setRoleDataService(RoleDataService roleDataService) {
-		this.roleDataService = roleDataService;
-	}
+    public ProvisionService getProvisionService() {
+        return provisionService;
+    }
+
+    public void setProvisionService(ProvisionService provisionService) {
+        this.provisionService = provisionService;
+    }
+
+    public ResourceDataService getResourceDataService() {
+        return resourceDataService;
+    }
+
+    public void setResourceDataService(ResourceDataService resourceDataService) {
+        this.resourceDataService = resourceDataService;
+    }
+
+    public UserDataService getUserMgr() {
+        return userMgr;
+    }
+
+    public void setUserMgr(UserDataService userMgr) {
+        this.userMgr = userMgr;
+    }
+
+    public void setManagedSysService(ManagedSystemDataService managedSysService) {
+        this.managedSysService = managedSysService;
+    }
+
+    public void setConnectorService(ConnectorDataService connectorService) {
+        this.connectorService = connectorService;
+    }
+
+    public void setConnectorAdapter(ConnectorAdapter connectorAdapter) {
+        this.connectorAdapter = connectorAdapter;
+    }
+
+    public void setRemoteConnectorAdapter(RemoteConnectorAdapter remoteConnectorAdapter) {
+        this.remoteConnectorAdapter = remoteConnectorAdapter;
+    }
+
+    public void setRoleDataService(RoleDataService roleDataService) {
+        this.roleDataService = roleDataService;
+    }
 }

@@ -297,9 +297,9 @@ public interface RoleDataService {
      * @return
      */
     // problem generating wsdl with this method
-    User[] getUsersInRole(String domainId, String roleId);
+    List<User> getUsersInRole(String domainId, String roleId);
 
-    
+    List<String> getUsersInRoleIds(String domainId, String roleId);
     /**
      * Returns an array of Role objects that indicate the Roles a user is
      * associated to.

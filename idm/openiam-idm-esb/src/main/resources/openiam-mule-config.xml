@@ -15,18 +15,18 @@
 
 	<!-- Connectors -->
 	
-	<!--  jms:activemq-connector name="jmsConnector" 
+	<!--  jms:activemq-connector name="jmsConnector"
 		specification="1.1" 
 		persistentDelivery="true"
         maxRedelivery="10"
-		brokerURL="vm://localhost" / 
+		brokerURL="vm://localhost" /
 	-->
 	
 	<!--
 	spring:bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
 		<spring:property name="config"  value="classpath:activemq.xml" />
 		<spring:property name="start" value="true" />
-	</spring:bean 
+	</spring:bean
 	-->
 
 		<model name="auditServiceModel">

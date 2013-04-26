@@ -32,39 +32,42 @@ public class UpdateIdmUserCommand implements ReconciliationCommand {
     private ReconciliationSituation config;
     private static final Log log = LogFactory.getLog(UpdateIdmUserCommand.class);
     private static String scriptEngine = "org.openiam.script.GroovyScriptEngineIntegration";
-
+    private PopulationScript script;
     public UpdateIdmUserCommand(ProvisionService provisionService, ReconciliationSituation config) {
         this.provisionService = provisionService;
         this.config = config;
+        try {
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
+            script = (PopulationScript)se.instantiateClass(null, config.getScript());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering UpdateIdmUserCommand");
         LookupUserResponse lookupResp =  provisionService.getTargetSystemUser(login.getId().getLogin(), login.getId().getManagedSysId());
-        if(lookupResp.getStatus() == ResponseStatus.FAILURE){
+        if (lookupResp.getStatus() == ResponseStatus.FAILURE) {
             log.debug("Can't update IDM user from non-existent resource...");
         } else {
             Map<String, String> line = new HashMap<String, String>();
-            for(ExtensibleAttribute attr: lookupResp.getAttrList()){
+            for (ExtensibleAttribute attr : lookupResp.getAttrList()) {
                 line.put(attr.getName(), attr.getValue());
             }
-            try {
-                ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-                PopulationScript script = (PopulationScript)se.instantiateClass(null, config.getScript());
-                ProvisionUser pUser = new ProvisionUser(user);
-                int retval = script.execute(line, pUser);
-                if(retval == 0){
-                    provisionService.modifyUser(pUser);
-                }else{
-                    log.debug("Couldn't populate ProvisionUser. User not modified");
-                    return false;
-                }
-                return true;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            if (script == null) {
+                log.debug("Error in Population for user because GroovyScript = " + config.getScript() + " wasn't initialized!");
             }
+            ProvisionUser pUser = new ProvisionUser(user);
+            int retval = script.execute(line, pUser);
+            if (retval == 0) {
+                provisionService.modifyUser(pUser);
+            } else {
+                log.debug("Couldn't populate ProvisionUser. User not modified");
+                return false;
+            }
+            return true;
         }
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }

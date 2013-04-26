@@ -30,7 +30,6 @@ import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
 
-import org.openiam.idm.srvc.user.dto.UserConstant;
 import org.openiam.idm.srvc.user.service.UserDataService;
 
 import java.util.*;
@@ -707,8 +706,56 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
+    @Override
     @Transactional(readOnly = true)
-	public User[] getUsersInRole(String domainId, String roleId) {
+    public List<String> getUsersInRoleIds(String domainId, String roleId) {
+        if (domainId == null)
+            throw new IllegalArgumentException("domainId is null");
+        if (roleId == null)
+            throw new IllegalArgumentException("roleId is null");
+        /* Get the users that are directly associated */
+        Role rl = getRole(domainId, roleId);
+
+        // System.out.println("in getUsersInRole: rl=" + rl);
+        // System.out.println("in getUsersInRole: users =" + rl.getUsers());
+
+        List<String> userList = userRoleDao
+                .findUserIdsByRole(domainId, roleId);
+
+        // No direct association, continue with indirect
+        if (userList == null || userList.isEmpty()) {
+            userList = new LinkedList<String>();
+        }
+        Set<String> newUserSet = new HashSet<String>(userList);
+
+        /* Get the users that are linked through a group */
+        Set<Group> groupSet = rl.getGroups();
+        // ensure that we have a unique set of users.
+        // iterate through the groups
+        if (groupSet != null && !groupSet.isEmpty()) {
+            for (Group grp : groupSet) {
+                List<String> userLst = userGroupDao.findUserIdsByGroup(grp
+                        .getGrpId());
+                newUserSet.addAll(userLst);
+            }
+        }
+
+        int size = newUserSet.size();
+        // no users found, return null
+        if (size == 0) {
+            return null;
+        }
+
+        log.debug("Count of users in getUsersInRole [domainId=  " + domainId+", roleId="+roleId+"]");
+        return new ArrayList<String>(newUserSet);
+    }
+
+
+
+
+    @Override
+    @Transactional(readOnly = true)
+	public List<User> getUsersInRole(String domainId, String roleId) {
 		if (domainId == null)
 			throw new IllegalArgumentException("domainId is null");
 		if (roleId == null)
@@ -724,37 +771,34 @@ public class RoleDataServiceImpl implements RoleDataService {
 				.findUserByRole(domainId, roleId);
 
 		// No direct association, continue with indirect
-		if (userList == null || userList.isEmpty())
+		if (userList == null || userList.isEmpty()) {
 			userList = new LinkedList<UserEntity>();
-
-		Set<UserEntity> newUserSet = updateUserRoleAssociation(userList,
-				UserConstant.DIRECT);
+        }
+		Set<UserEntity> newUserSet = new HashSet<UserEntity>(userList);
 
 		/* Get the users that are linked through a group */
 		Set<Group> groupSet = rl.getGroups();
 		// ensure that we have a unique set of users.
 		// iterate through the groups
 		if (groupSet != null && !groupSet.isEmpty()) {
-			Iterator<Group> it = groupSet.iterator();
-			while (it.hasNext()) {
-				Group grp = it.next();
-				List<UserEntity> userLst = userGroupDao.findUserByGroup(grp
-						.getGrpId());
-				// Set<User> grpUsers = grp.getUsers();
-				userSetToNewUserSet(userLst, UserConstant.INDIRECT, newUserSet);
-			}
+            for (Group grp : groupSet) {
+                List<UserEntity> userLst = userGroupDao.findUserByGroup(grp
+                        .getGrpId());
+                newUserSet.addAll(userLst);
+            }
 		}
-		Set<User> userSet = new HashSet<User>();
-		for (UserEntity userEntity : newUserSet) {
-			userSet.add(userDozerConverter.convertToDTO(userEntity, true));
-		}
-		int size = userSet.size();
-		// no users found, return null
-		if (size == 0)
-			return null;
-		User[] userAry = new User[size];
 
-		return userSet.toArray(userAry);
+		int size = newUserSet.size();
+		// no users found, return null
+		if (size == 0) {
+			return null;
+        }
+
+        log.debug("Count of users in getUsersInRole [domainId=  " + domainId+", roleId="+roleId+"]");
+
+        List<UserEntity> users = new ArrayList<UserEntity>(newUserSet);
+
+        return userDozerConverter.convertToDTOList(users, false);
 	}
 
 	/** **************** Helper Methods ***************************** */

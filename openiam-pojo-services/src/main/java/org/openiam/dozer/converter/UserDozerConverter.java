@@ -28,20 +28,22 @@ public class UserDozerConverter extends AbstractDozerEntityConverter<User, UserE
 	@Override
 	public UserEntity convertToEntity(User entity, boolean isDeep) {
         UserEntity userEntity = convertToCrossEntity(entity, isDeep, UserEntity.class);
-        for(EmailAddressEntity emailAddressEntity : userEntity.getEmailAddresses()) {
-            emailAddressEntity.setParent(userEntity);
-        }
-        for(AddressEntity addressEntity : userEntity.getAddresses()) {
-            addressEntity.setParent(userEntity);
-        }
-        for(PhoneEntity phoneEntity : userEntity.getPhones()) {
-            phoneEntity.setParent(userEntity);
-        }
-        for(UserNoteEntity userNoteEntity : userEntity.getUserNotes()) {
-            userNoteEntity.setUser(userEntity);
-        }
-        for(Map.Entry<String, UserAttributeEntity> attributeEntityEntry : userEntity.getUserAttributes().entrySet()) {
-            attributeEntityEntry.getValue().setUser(userEntity);
+        if(isDeep) {
+            for(EmailAddressEntity emailAddressEntity : userEntity.getEmailAddresses()) {
+                emailAddressEntity.setParent(userEntity);
+            }
+            for(AddressEntity addressEntity : userEntity.getAddresses()) {
+                addressEntity.setParent(userEntity);
+            }
+            for(PhoneEntity phoneEntity : userEntity.getPhones()) {
+                phoneEntity.setParent(userEntity);
+            }
+            for(UserNoteEntity userNoteEntity : userEntity.getUserNotes()) {
+                userNoteEntity.setUser(userEntity);
+            }
+            for(Map.Entry<String, UserAttributeEntity> attributeEntityEntry : userEntity.getUserAttributes().entrySet()) {
+                attributeEntityEntry.getValue().setUser(userEntity);
+            }
         }
         return userEntity;
 	}
