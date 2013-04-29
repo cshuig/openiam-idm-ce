@@ -13,6 +13,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
+import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 
 /**
  * Home object for domain model class ReconiliationConfig.
@@ -45,7 +46,11 @@ public class ReconciliationConfigDAOImpl implements ReconciliationConfigDAO {
 		log.debug("persisting ReconiliationConfig instance");
 		try {
 			sessionFactory.getCurrentSession().persist(transientInstance);
-			log.debug("persist successful");
+			for(ReconciliationSituation reconciliationConfig : transientInstance.getSituationSet()) {
+                reconciliationConfig.setReconConfigId(transientInstance.getReconConfigId());
+                sessionFactory.getCurrentSession().persist(reconciliationConfig);
+            }
+            log.debug("persist successful");
             return transientInstance;
 		} catch (RuntimeException re) {
 			log.error("persist failed", re);
