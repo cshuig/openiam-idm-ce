@@ -32,7 +32,9 @@
 			</key>
 			<one-to-many class="org.openiam.idm.srvc.recon.dto.ReconciliationSituation" />
 		</set>
-
+        <property name="targetSystemMatchScript" type="string">
+            <column name="TARGET_SYS_MATCH_SCRIPT" length="120" />
+        </property>
 
 	</class>
 </hibernate-mapping>

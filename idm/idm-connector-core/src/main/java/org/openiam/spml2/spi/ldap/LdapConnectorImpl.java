@@ -70,6 +70,8 @@ import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.idm.srvc.user.service.UserDataService;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
+import org.openiam.script.ScriptFactory;
+import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.base.AbstractSpml2Complete;
 import org.openiam.spml2.interf.ConnectorService;
 import org.openiam.spml2.msg.AddRequestType;
@@ -302,6 +304,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     }
 
     @Transactional
+    @Deprecated
     public ResponseType reconcileResource(@WebParam(name = "config", targetNamespace = "") ReconciliationConfig config) {
         log.debug("reconcile resource called in LDAPConnector");
 
@@ -320,6 +323,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
 
         LookupRequestType request = new LookupRequestType();
         ManagedSystemObjectMatch[] matchObjAry = managedSysService.managedSysObjectParam(managedSysId, "USER");
+       //execute all Reconciliation Commands need to be check
         if(matchObjAry.length == 0) {
             log.error("No match object found for this managed sys");
             response.setStatus(StatusCodeType.FAILURE);
@@ -327,6 +331,8 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         }
         String keyField = matchObjAry[0].getKeyField();
         String searchString = keyField + "=*," + matchObjAry[0].getBaseDn();
+       try {
+
         PSOIdentifierType idType = new PSOIdentifierType(searchString, null, managedSysId);
         request.setPsoID(idType);
 
@@ -355,6 +361,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
                     Login login = loginManager.getLoginByManagedSys(mSys.getDomainId(), searchPrincipal, managedSysId);
                     if(login == null) {
                         log.debug("Situation: IDM Not Found");
+                        // TODO notify security admin
                         DeleteRequestType delete = new DeleteRequestType();
                         idType = new PSOIdentifierType(searchPrincipal, null, managedSysId);
                         delete.setPsoID(idType);
@@ -374,7 +381,9 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
                 }
             }
         }
-
+       } catch(Exception e) {
+           log.error(e);
+       }
         return response;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -834,7 +843,6 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         log.debug("Searching BaseDN=" + objectBaseDN);
 
         return ctx.search(objectBaseDN, searchFilter, searchCtls);
-
-
     }
+
 }

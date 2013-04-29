@@ -405,6 +405,8 @@
 		<property name="connectorService" ref="connectorService" />
 		<!-- <property name="userCSVParser" ref="userCSVParser" /> -->
 		<!-- <property name="pathToCSV" value="${csv.path}" /> -->
+        <property name="scriptEngine"
+                  value="org.openiam.script.GroovyScriptEngineIntegration" />
 	</bean>
 
 
