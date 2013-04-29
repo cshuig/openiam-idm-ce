@@ -1,13 +1,11 @@
 package org.openiam.idm.srvc.recon.dto;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 
 // Generated May 29, 2010 8:20:09 PM by Hibernate Tools 3.2.2.GA
 
