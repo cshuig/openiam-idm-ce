@@ -392,7 +392,41 @@ public class RemoteConnectorAdapter {
         resp.setStatus(StatusCodeType.FAILURE);
         return resp;
 
+    }
 
+    public SearchResponse search(SearchRequest searchRequest, ProvisionConnector connector, MuleContext muleContext) {
+        SearchResponse resp = new SearchResponse();
+        if (searchRequest == null) {
+            resp.setStatus(StatusCodeType.FAILURE);
+            resp.setError(ErrorCode.INVALID_CONFIGURATION);
+            return resp;
+        }
+        log.debug("ConnectorAdapter:reconcileRequest called. Resource =" + searchRequest.getSearchQuery());
+        try {
+            if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
+                //Send search to Remote Connector to get data (e.g. Active Directory via PowershellConnector)
+                MuleMessage msg = getService(connector, searchRequest, connector.getServiceUrl(), "search", muleContext);
+                if (msg != null) {
+                    log.debug("Test connection Payload=" + msg.getPayload());
+                    if (msg.getPayload() != null && msg.getPayload() instanceof ResponseType) {
+                        resp = (SearchResponse) msg.getPayload();
+                        if(resp.getStatus() == StatusCodeType.SUCCESS) {
+                              resp.setStatus(StatusCodeType.SUCCESS);
+                            return resp;
+                        }
+                    }
+                    resp.setStatus(StatusCodeType.FAILURE);
+                    return resp;
+                } else {
+                    log.debug("MuleMessage is null..");
+                }
+
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        resp.setStatus(StatusCodeType.FAILURE);
+        return resp;
     }
 
     public ResponseType reconcileResource(RemoteReconciliationConfig config, ProvisionConnector connector, MuleContext muleContext){
@@ -407,24 +441,14 @@ public class RemoteConnectorAdapter {
 
 
             if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
-                SearchRequest searchRequest = new SearchRequest();
-                //TODO SearchRequest init
 
-                //Send search to Remote Connector to get data (e.g. Active Directory via PowershellConnector)
-                MuleMessage msg = getService(connector, searchRequest, connector.getServiceUrl(), "search", muleContext);
+                MuleMessage msg = getService(connector, config, connector.getServiceUrl(), "reconcile", muleContext);
                 if (msg != null) {
                     log.debug("Test connection Payload=" + msg.getPayload());
                     if (msg.getPayload() != null && msg.getPayload() instanceof ResponseType) {
-                        SearchResponse searchResponse = (SearchResponse) msg.getPayload();
-                        if(searchResponse.getStatus() == StatusCodeType.SUCCESS) {
-                            //TODO processing users in IDM
-
-
-                            resp.setStatus(StatusCodeType.SUCCESS);
-                            return resp;
-                        }
+                        return (ResponseType) msg.getPayload();
                     }
-                    resp.setStatus(StatusCodeType.FAILURE);
+                    resp.setStatus(StatusCodeType.SUCCESS);
                     return resp;
                 } else {
                     log.debug("MuleMessage is null..");

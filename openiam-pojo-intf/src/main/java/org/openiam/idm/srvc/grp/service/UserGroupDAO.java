@@ -53,5 +53,7 @@ public interface UserGroupDAO {
      */
     List<UserEntity> findUserByGroup(String groupId);
 
+    List<String> findUsersIdsByGroup(String groupId);
+
     List<String> findUserIdsByGroup(String groupId);
 }
