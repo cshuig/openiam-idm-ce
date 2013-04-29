@@ -39,6 +39,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
@@ -288,7 +289,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements
 	public LdapContext connect(String userName, String password) {
 
 		// LdapContext ctxLdap = null;
-		Hashtable<String, String> envDC = new Hashtable();
+		Hashtable<String, String> envDC = new Hashtable<String, String>();
 
 		// keystore = secres.getString("KEYSTORE");
 		System.setProperty("javax.net.ssl.trustStore", keystore);
@@ -304,7 +305,6 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements
 		// if (protocol != null && protocol.equalsIgnoreCase("SSL")) {
 		// envDC.put(Context.SECURITY_PROTOCOL, protocol);
 		// }
-
 		try {
 			return (new InitialLdapContext(envDC, null));
 		} catch (NamingException ne) {
