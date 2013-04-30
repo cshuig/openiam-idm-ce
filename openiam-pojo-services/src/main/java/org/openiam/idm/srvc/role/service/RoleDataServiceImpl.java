@@ -79,7 +79,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		this.roleDao = roleDao;
 	}
 
-    @Transactional
+	@Transactional
 	public Role addRole(Role role) {
 		if (role == null)
 			throw new IllegalArgumentException("role object is null");
@@ -89,7 +89,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return roleDozerConverter.convertToDTO(entity, true);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public Role getRole(String serviceId, String roleId) {
 		if (roleId == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -106,7 +106,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional
+	@Transactional
 	public void updateRole(Role role) {
 		if (role == null)
 			throw new IllegalArgumentException("role object is null");
@@ -121,7 +121,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * 
 	 * @return
 	 */
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> getAllRoles() {
 
 		List<RoleEntity> rolesEntities = roleDao.findAllRoles();
@@ -129,7 +129,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return roleDozerConverter.convertToDTOList(rolesEntities, false);
 	}
 
-    @Transactional
+	@Transactional
 	public int removeRole(String domainId, String roleId) {
 		if (roleId == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -150,7 +150,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return 1;
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> getRolesInDomain(String domainId) {
 		long start = System.currentTimeMillis();
 
@@ -166,7 +166,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	}
 
 	/* ---------------------- RoleAttribute Methods --------------- */
-    @Transactional
+	@Transactional
 	public RoleAttribute addAttribute(RoleAttribute attribute) {
 		if (attribute == null)
 			throw new IllegalArgumentException("Attribute can not be null");
@@ -182,7 +182,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return roleAttributeDozerConverter.convertToDTO(attributeEntity, true);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public RoleAttribute[] getAllAttributes(String serviceId, String roleId) {
 
 		if (roleId == null) {
@@ -197,7 +197,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return this.roleAttrSetToArray(attrSet);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public RoleAttribute getAttribute(String attrId) {
 		if (attrId == null) {
 			throw new IllegalArgumentException("attrId is null");
@@ -205,10 +205,11 @@ public class RoleDataServiceImpl implements RoleDataService {
 		RoleAttributeEntity roleAttributeEntity = roleAttributeDAO
 				.findById(attrId);
 
-		return roleAttributeDozerConverter.convertToDTO(roleAttributeEntity, true);
+		return roleAttributeDozerConverter.convertToDTO(roleAttributeEntity,
+				true);
 	}
 
-    @Transactional
+	@Transactional
 	public void removeAllAttributes(String serviceId, String roleId) {
 		if (roleId == null) {
 			throw new IllegalArgumentException("roleId is null");
@@ -217,7 +218,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional
+	@Transactional
 	public void removeAttribute(RoleAttribute attr) {
 		if (attr == null) {
 			throw new IllegalArgumentException("attr is null");
@@ -231,7 +232,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional
+	@Transactional
 	public void updateAttribute(RoleAttribute attribute) {
 		if (attribute == null)
 			throw new IllegalArgumentException("Attribute can not be null");
@@ -248,7 +249,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	}
 
 	/* ------------- Group to Role Methods --------------------------------- */
-    @Transactional
+	@Transactional
 	public void addGroupToRole(String serviceId, String roleId, String groupId) {
 		// TODO Auto-generated method stub
 		if (roleId == null)
@@ -262,7 +263,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public Group[] getGroupsInRole(String serviceId, String roleId) {
 		RoleEntity rl = roleDao
 				.findById(new RoleEmbeddableId(serviceId, roleId));
@@ -283,7 +284,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public boolean isGroupInRole(String serviceId, String roleId, String groupId) {
 
 		RoleEntity rl = roleDao
@@ -307,7 +308,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return false;
 	}
 
-    @Transactional
+	@Transactional
 	public void removeGroupFromRole(String serviceId, String roleId,
 			String groupId) {
 		if (roleId == null)
@@ -321,7 +322,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional
+	@Transactional
 	public void removeAllGroupsFromRole(String serviceId, String roleId) {
 		if (roleId == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -331,7 +332,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		roleDao.removeAllGroupsFromRole(serviceId, roleId);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> getRolesInGroup(String groupId) {
 		if (groupId == null)
 			throw new IllegalArgumentException("groupid is null");
@@ -351,7 +352,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * addUserToRole, but allows you to update attributes likes start and end
 	 * date.
 	 */
-    @Transactional
+	@Transactional
 	public void assocUserToRole(UserRole ur) {
 		if (ur.getRoleId() == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -369,7 +370,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * 
 	 * @param ur
 	 */
-    @Transactional
+	@Transactional
 	public void updateUserRoleAssoc(UserRole ur) {
 		if (ur.getRoleId() == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -380,7 +381,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		userRoleDao.update(userRoleDozerConverter.convertToEntity(ur, true));
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public UserRole getUserRoleById(String userRoleId) {
 		if (userRoleId == null) {
 			throw new IllegalArgumentException("userRoleId is null");
@@ -389,7 +390,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return userRoleDozerConverter.convertToDTO(entity, true);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<UserRole> getUserRolesForUser(String userId) {
 		if (userId == null) {
 			throw new IllegalArgumentException("userId is null");
@@ -400,7 +401,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return userRoleDozerConverter.convertToDTOList(entityList, false);
 	}
 
-    @Transactional
+	@Transactional
 	public void addUserToRole(String domainId, String roleId, String userId) {
 
 		if (roleId == null)
@@ -416,7 +417,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public boolean isUserInRole(String serviceId, String roleId, String userId) {
 		if (roleId == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -447,7 +448,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return false;
 	}
 
-    @Transactional
+	@Transactional
 	public void removeUserFromRole(String domainId, String roleId, String userId) {
 		if (roleId == null)
 			throw new IllegalArgumentException("roleId is null");
@@ -468,7 +469,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * @param userId
 	 * @return
 	 */
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> getUserRolesDirect(String userId) {
 		if (userId == null)
 			throw new IllegalArgumentException("userIdId is null");
@@ -520,7 +521,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * 
 	 * }
 	 */
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	private RoleEntity getParentRole(RoleEntity rl) {
 		RoleEmbeddableId id = new RoleEmbeddableId(rl.getRoleId()
 				.getServiceId(), rl.getParentRoleId());
@@ -545,7 +546,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * @param userId
 	 * @return
 	 */
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public List<Role> getUserRoles(String userId) {
 		if (userId == null)
 			throw new IllegalArgumentException("userIdId is null");
@@ -594,7 +595,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	private List<RoleEntity> getParentRoleFlat(RoleEntity rl) {
 		List<RoleEntity> roleList = new LinkedList<RoleEntity>();
 		RoleEmbeddableId id = new RoleEmbeddableId(rl.getRoleId()
@@ -621,7 +622,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	 * @param userId
 	 * @return
 	 */
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> getUserRolesAsFlatList(String userId) {
 		if (userId == null)
 			throw new IllegalArgumentException("userIdId is null");
@@ -678,7 +679,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return newRoleList;
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> getUserRolesByDomain(String domainId, String userId) {
 		if (userId == null)
 			throw new IllegalArgumentException("userIdId is null");
@@ -706,55 +707,53 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> getUsersInRoleIds(String domainId, String roleId) {
-        if (domainId == null)
-            throw new IllegalArgumentException("domainId is null");
-        if (roleId == null)
-            throw new IllegalArgumentException("roleId is null");
-        /* Get the users that are directly associated */
-        Role rl = getRole(domainId, roleId);
+	@Override
+	@Transactional(readOnly = true)
+	public List<String> getUsersInRoleIds(String domainId, String roleId) {
+		if (domainId == null)
+			throw new IllegalArgumentException("domainId is null");
+		if (roleId == null)
+			throw new IllegalArgumentException("roleId is null");
+		/* Get the users that are directly associated */
+		Role rl = getRole(domainId, roleId);
 
-        // System.out.println("in getUsersInRole: rl=" + rl);
-        // System.out.println("in getUsersInRole: users =" + rl.getUsers());
+		// System.out.println("in getUsersInRole: rl=" + rl);
+		// System.out.println("in getUsersInRole: users =" + rl.getUsers());
 
-        List<String> userList = userRoleDao
-                .findUserIdsByRole(domainId, roleId);
+		List<String> userList = userRoleDao.findUserIdsByRole(domainId, roleId);
 
-        // No direct association, continue with indirect
-        if (userList == null || userList.isEmpty()) {
-            userList = new LinkedList<String>();
-        }
-        Set<String> newUserSet = new HashSet<String>(userList);
+		// No direct association, continue with indirect
+		if (userList == null || userList.isEmpty()) {
+			userList = new LinkedList<String>();
+		}
+		Set<String> newUserSet = new HashSet<String>(userList);
 
-        /* Get the users that are linked through a group */
-        Set<Group> groupSet = rl.getGroups();
-        // ensure that we have a unique set of users.
-        // iterate through the groups
-        if (groupSet != null && !groupSet.isEmpty()) {
-            for (Group grp : groupSet) {
-                List<String> userLst = userGroupDao.findUserIdsByGroup(grp
-                        .getGrpId());
-                newUserSet.addAll(userLst);
-            }
-        }
+		/* Get the users that are linked through a group */
+		Set<Group> groupSet = rl.getGroups();
+		// ensure that we have a unique set of users.
+		// iterate through the groups
+		if (groupSet != null && !groupSet.isEmpty()) {
+			for (Group grp : groupSet) {
+				List<String> userLst = userGroupDao.findUserIdsByGroup(grp
+						.getGrpId());
+				if (userLst != null)
+					newUserSet.addAll(userLst);
+			}
+		}
 
-        int size = newUserSet.size();
-        // no users found, return null
-        if (size == 0) {
-            return null;
-        }
+		int size = newUserSet.size();
+		// no users found, return null
+		if (size == 0) {
+			return null;
+		}
 
-        log.debug("Count of users in getUsersInRole [domainId=  " + domainId+", roleId="+roleId+"]");
-        return new ArrayList<String>(newUserSet);
-    }
+		log.debug("Count of users in getUsersInRole [domainId=  " + domainId
+				+ ", roleId=" + roleId + "]");
+		return new ArrayList<String>(newUserSet);
+	}
 
-
-
-
-    @Override
-    @Transactional(readOnly = true)
+	@Override
+	@Transactional(readOnly = true)
 	public List<User> getUsersInRole(String domainId, String roleId) {
 		if (domainId == null)
 			throw new IllegalArgumentException("domainId is null");
@@ -773,7 +772,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		// No direct association, continue with indirect
 		if (userList == null || userList.isEmpty()) {
 			userList = new LinkedList<UserEntity>();
-        }
+		}
 		Set<UserEntity> newUserSet = new HashSet<UserEntity>(userList);
 
 		/* Get the users that are linked through a group */
@@ -781,24 +780,25 @@ public class RoleDataServiceImpl implements RoleDataService {
 		// ensure that we have a unique set of users.
 		// iterate through the groups
 		if (groupSet != null && !groupSet.isEmpty()) {
-            for (Group grp : groupSet) {
-                List<UserEntity> userLst = userGroupDao.findUserByGroup(grp
-                        .getGrpId());
-                newUserSet.addAll(userLst);
-            }
+			for (Group grp : groupSet) {
+				List<UserEntity> userLst = userGroupDao.findUserByGroup(grp
+						.getGrpId());
+				newUserSet.addAll(userLst);
+			}
 		}
 
 		int size = newUserSet.size();
 		// no users found, return null
 		if (size == 0) {
 			return null;
-        }
+		}
 
-        log.debug("Count of users in getUsersInRole [domainId=  " + domainId+", roleId="+roleId+"]");
+		log.debug("Count of users in getUsersInRole [domainId=  " + domainId
+				+ ", roleId=" + roleId + "]");
 
-        List<UserEntity> users = new ArrayList<UserEntity>(newUserSet);
+		List<UserEntity> users = new ArrayList<UserEntity>(newUserSet);
 
-        return userDozerConverter.convertToDTOList(users, false);
+		return userDozerConverter.convertToDTOList(users, false);
 	}
 
 	/** **************** Helper Methods ***************************** */
@@ -810,7 +810,8 @@ public class RoleDataServiceImpl implements RoleDataService {
 		Iterator<RoleAttributeEntity> it = attrSet.iterator();
 		int ctr = 0;
 		while (it.hasNext()) {
-			RoleAttribute ra = roleAttributeDozerConverter.convertToDTO(it.next(), true);
+			RoleAttribute ra = roleAttributeDozerConverter.convertToDTO(
+					it.next(), true);
 			roleAttrAry[ctr++] = ra;
 		}
 		return roleAttrAry;
@@ -850,7 +851,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<Role> search(RoleSearch search) {
 		if (search == null) {
 			throw new IllegalArgumentException("Search parameter is null");
@@ -899,7 +900,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	}
 
 	/* Role Policies */
-    @Transactional
+	@Transactional
 	public RolePolicy addRolePolicy(RolePolicy rPolicy) {
 		if (rPolicy == null) {
 			throw new NullPointerException("rPolicy is null");
@@ -910,7 +911,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return rolePolicyDozerConverter.convertToDTO(rolePolicyEntity, true);
 	}
 
-    @Transactional
+	@Transactional
 	public RolePolicy updateRolePolicy(RolePolicy rPolicy) {
 		if (rPolicy == null) {
 			throw new NullPointerException("rPolicy is null");
@@ -920,7 +921,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return rolePolicyDozerConverter.convertToDTO(rolePolicyEntity, true);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<RolePolicy> getAllRolePolicies(String domainId, String roleId) {
 		if (domainId == null) {
 			throw new NullPointerException("domainId is null");
@@ -934,7 +935,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return rolePolicyDozerConverter.convertToDTOList(entityList, false);
 	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public RolePolicy getRolePolicy(String rolePolicyId) {
 		if (rolePolicyId == null) {
 			throw new NullPointerException("rolePolicyId is null");
@@ -944,7 +945,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 		return rolePolicyDozerConverter.convertToDTO(policyEntity, true);
 	}
 
-    @Transactional
+	@Transactional
 	public void removeRolePolicy(RolePolicy rPolicy) {
 		if (rPolicy == null) {
 			throw new NullPointerException("rPolicy is null");
@@ -979,7 +980,7 @@ public class RoleDataServiceImpl implements RoleDataService {
 	}
 
 	@Override
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<ReconcileUserEntity> findUserWByRole(String domainId,
 			String roleId) {
 		if (domainId == null)
