@@ -2617,7 +2617,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                 response.setStatus(ResponseStatus.FAILURE);
                 return response;
             }
-            // response.setResponseValue( responseType.getValue() );
+            response.setPrincipalName(responseType.getUser().getUserIdentity());
+            response.setAttrList(responseType.getUser().getAttributeList());
+            response.setResponseValue(responseType.getUser());
+
 
             return response;
 
