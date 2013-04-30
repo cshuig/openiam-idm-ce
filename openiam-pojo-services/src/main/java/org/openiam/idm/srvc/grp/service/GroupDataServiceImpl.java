@@ -509,6 +509,11 @@ public class GroupDataServiceImpl implements GroupDataService {
         return userDozerConverter.convertToDTOList(userEntities, false);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getUsersIdsByGroup(String grpId) {
+        return userGroupDao.findUsersIdsByGroup(grpId);
+    }
 
     /*
       * (non-Javadoc)

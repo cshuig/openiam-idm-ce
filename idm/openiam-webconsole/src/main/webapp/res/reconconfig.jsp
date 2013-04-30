@@ -103,6 +103,12 @@
                       <td class="tdlightnormal"><form:input path="config.notificationEmailAddress" /></td>
                     </tr>
                   </c:if>
+                    <tr>
+                        <td class="tddark">Target System Search Query</td>
+                        <td class="tdlightnormal">
+                            <form:input path="config.targetSystemMatchScript" />
+                        </td>
+                    </tr>
                 </TABLE>
               </fieldset>
             </TD>

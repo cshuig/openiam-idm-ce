@@ -110,6 +110,21 @@ public class UserGroupDAOImpl implements UserGroupDAO {
 		return result;
 	}
 
+    public List<String> findUsersIdsByGroup(String groupId) {
+        Session session = sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria(UserGroupEntity.class)
+                .createAlias("user", "usr")
+                .add(Restrictions.eq("group.grpId", groupId))
+                .addOrder(Order.asc("usr.lastName"))
+                .addOrder(Order.asc("usr.firstName"))
+                .setProjection(Projections.property("usr.userId"));;
+
+        List<String> result = (List<String>) criteria.list();
+        if (result == null || result.size() == 0)
+            return null;
+        return result;
+    }
+
     @Override
     public List<String> findUserIdsByGroup(String groupId) {
         Session session = sessionFactory.getCurrentSession();

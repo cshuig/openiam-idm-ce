@@ -208,6 +208,7 @@ public interface GroupDataService {
     //@XmlJavaTypeAdapter(org.openiam.idm.srvc.user.dto.UserSetAdapter.class)
     public List<org.openiam.idm.srvc.user.dto.User> getUsersByGroup(String grpId);
 
+    public List<String> getUsersIdsByGroup(String grpId);
     /**
      * This method adds the user to a group .<br>
      * For example:
