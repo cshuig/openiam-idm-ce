@@ -86,4 +86,5 @@ public class ReconciliationSituation implements java.io.Serializable {
     public void setScript(String script) {
         this.script = script;
     }
+
 }

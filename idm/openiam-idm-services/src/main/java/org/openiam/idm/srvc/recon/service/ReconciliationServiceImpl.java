@@ -49,6 +49,7 @@ import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.role.dto.Role;
+import org.openiam.idm.srvc.role.dto.RoleAttribute;
 import org.openiam.idm.srvc.role.service.RoleDataService;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
@@ -253,7 +254,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 Role role = roleDataService.getRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
                 map.put("role",role);
                 //GET Users from Connector for specific Role
-                processing(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
+                processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
                 //Fire Groups
                 Group[] groups = roleDataService.getGroupsInRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
                 if(groups != null) {
@@ -261,7 +262,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                         //GET Users from Connector for specific Group
                         map = new HashMap<String, Object>();
                         map.put("group",gr);
-                        processing(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
+                        processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
                     }
                 }
             }
@@ -277,7 +278,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         return new ReconciliationResponse(ResponseStatus.SUCCESS);
     }
 
-    private void processing(ReconciliationConfig config, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, ProvisionConnector connector, String keyField, String baseDnField, ScriptIntegration scriptIntegrationCache, Map<String, Object> map) {
+    private void processingTargetToIDM(ReconciliationConfig config, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, ProvisionConnector connector, String keyField, String baseDnField, ScriptIntegration scriptIntegrationCache, Map<String, Object> map) {
         String searchQuery = (String)scriptIntegrationCache.execute(map, config.getTargetSystemMatchScript());
         if (connector.getConnectorInterface() != null &&
                 connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
@@ -314,7 +315,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         }
     }
 
-    // Reconciliation processing
+    // Reconciliation processingTargetToIDM
     private void reconcilationTargetUserObjectToIDM(String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, String keyField, List<ExtensibleAttribute> extensibleAttributes) {
         String targetUserPrincipal = null;
         for(ExtensibleAttribute attr : extensibleAttributes) {
@@ -334,10 +335,10 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
             Login login = loginManager.getLoginByManagedSys(mSys.getDomainId(), targetUserPrincipal, managedSysId);
             if(login != null) {
                // user exists in IDM too
-               // processing Match Found
+               // processingTargetToIDM Match Found
                // check IDM Delete status
                 if(login.getOperation() == AttributeOperationEnum.DELETE) {
-                    // processing "IDM Delete" command
+                    // processingTargetToIDM "IDM Delete" command
                     ReconciliationCommand command = situations.get("IDM Delete");
                     if(command != null) {
                         log.debug("Call command for IDM Delete login="+login.getId().getLogin());
@@ -345,7 +346,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                         command.execute(login, user, extensibleAttributes);
                     }
                 } else {
-                    // processing "IDM Match Found" command
+                    // processingTargetToIDM "IDM Match Found" command
                     ReconciliationCommand command = situations.get("IDM Match Found");
                     if(command != null) {
                         log.debug("Call command for Match Found");
@@ -355,7 +356,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 }
             } else {
               // user doesn't exists in IDM
-              // processing "IDM Not Found" command
+              // processingTargetToIDM "IDM Not Found" command
                 ReconciliationCommand command = situations.get("IDM Not Found");
                 if(command != null) {
                     Login l = new Login();
