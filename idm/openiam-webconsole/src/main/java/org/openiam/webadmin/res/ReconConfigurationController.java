@@ -2,11 +2,7 @@ package org.openiam.webadmin.res;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -141,12 +137,17 @@ public class ReconConfigurationController extends CancellableFormController {
 		} else {
 			// move set to a list
 			cmd.setConfig(config);
+            Map<String, ReconciliationSituation> situationMap = new HashMap<String, ReconciliationSituation>();
 			List<ReconciliationSituation> situationList = new ArrayList<ReconciliationSituation>();
 			for (ReconciliationSituation s : config.getSituationSet()) {
 				situationList.add(s);
+                situationMap.put(s.getSituation(), s);
 			}
-			cmd.setSituationList(situationList);
+            if(!situationMap.containsKey("IDM Match Found")) {
+                situationList.add(new ReconciliationSituation(null, "IDM Match Found"));
+            }
 
+			cmd.setSituationList(situationList);
 		}
 
 		List<Menu> level3MenuList = navigationDataService.menuGroupByUser(
