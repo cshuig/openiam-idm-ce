@@ -30,6 +30,7 @@ import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
 import org.mule.util.StringUtils;
 import org.openiam.base.AttributeOperationEnum;
+import org.openiam.base.id.UUIDGen;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.connector.type.*;
 import org.openiam.idm.srvc.auth.dto.LoginId;
@@ -106,6 +107,16 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
     public ReconciliationConfig updateConfig(ReconciliationConfig config) {
         if (config == null) {
                     throw new IllegalArgumentException("config parameter is null");
+        }
+        for(ReconciliationSituation situation : config.getSituationSet()) {
+            if(StringUtils.isEmpty(situation.getReconConfigId())) {
+                situation.setReconConfigId(config.getReconConfigId());
+                if(situation.getReconSituationId() == null) {
+                    reconSituationDao.add(situation);
+                } else {
+                    reconSituationDao.update(situation);
+                }
+            }
         }
         return reconConfigDao.update(config);
 
@@ -229,7 +240,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
             ScriptIntegration scriptIntegrationCache = ScriptFactory.createModule(this.scriptEngine);
             //1. Do reconciliation users from IDM to Target Managed System search for all Roles and Groups related with resource
-            for(ResourceRole rRole: res.getResourceRoles()) {
+       /*  TODO uncommented befor commit
+           for(ResourceRole rRole: res.getResourceRoles()) {
                 List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
                 if(usrIds != null) {
                     for(String userId : usrIds) {
@@ -245,7 +257,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                         }
                     }
                 }
-            }
+            }*/
 
             //2. Do reconciliation users from Target Managed System to IDM search for all Roles and Groups related with resource
             for(ResourceRole rRole: res.getResourceRoles()) {
@@ -253,6 +265,11 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 Map<String, Object> map = new HashMap<String, Object>();
                 Role role = roleDataService.getRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
                 map.put("role",role);
+                for(RoleAttribute roleAttr : role.getRoleAttributes()) {
+                   if("ROLE".equalsIgnoreCase(roleAttr.getName())) {
+                       baseDnField = roleAttr.getValue();
+                   }
+                }
                 //GET Users from Connector for specific Role
                 processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
                 //Fire Groups
@@ -267,7 +284,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 }
             }
 
-		}catch(Exception e) {
+		} catch(Exception e) {
 			log.error(e);
             e.printStackTrace();
 			ReconciliationResponse resp = new ReconciliationResponse(ResponseStatus.FAILURE);
@@ -280,38 +297,44 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     private void processingTargetToIDM(ReconciliationConfig config, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, ProvisionConnector connector, String keyField, String baseDnField, ScriptIntegration scriptIntegrationCache, Map<String, Object> map) {
         String searchQuery = (String)scriptIntegrationCache.execute(map, config.getTargetSystemMatchScript());
+        if(StringUtils.isEmpty(searchQuery)) {
+            //TODO log error
+            return;
+        }
+        SearchRequest searchRequest = new SearchRequest();
+        String requestId = "R" + UUIDGen.getUUID();
+        searchRequest.setRequestID(requestId);
+        searchRequest.setBaseDN(baseDnField);
+        searchRequest.setScriptHandler(mSys.getSearchHandler());
+        searchRequest.setSearchValue(keyField);
+        searchRequest.setSearchQuery(searchQuery);
+        searchRequest.setTargetID(mSys.getManagedSysId());
+        searchRequest.setHostUrl(mSys.getHostUrl());
+        searchRequest.setHostPort(mSys.getPort().toString());
+        searchRequest.setHostLoginId(mSys.getUserId());
+        searchRequest.setHostLoginPassword(mSys.getDecryptPassword());
+
+        SearchResponse searchResponse;
+
         if (connector.getConnectorInterface() != null &&
                 connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
             log.debug("Calling reconcileResource with Remote connector");
-            SearchRequest searchRequest = new SearchRequest();
-            searchRequest.setBaseDN(baseDnField);
-            searchRequest.setScriptHandler(mSys.getSearchHandler());
-            searchRequest.setSearchValue(keyField);
-            searchRequest.setSearchQuery(searchQuery);
-            SearchResponse searchResponse = remoteConnectorAdapter.search(searchRequest, connector, muleContext);
-            if(searchResponse.getStatus() == StatusCodeType.SUCCESS) {
-                List<UserValue> usersFromRemoteSys = searchResponse.getUserList();
-                if(usersFromRemoteSys != null) {
-                    for(UserValue userValue : usersFromRemoteSys) {
-                        List<ExtensibleAttribute> extensibleAttributes = userValue.getAttributeList();
-                        reconcilationTargetUserObjectToIDM(managedSysId, mSys, situations, keyField, extensibleAttributes);
-                    }
-                }
-            } else {
-                log.debug(searchResponse.getErrorMessage());
-            }
+            searchResponse = remoteConnectorAdapter.search(searchRequest, connector, muleContext);
+
         } else {
-            log.debug("Calling reconcileResource Local connector");
-            LookupRequestType lookupRequestType = new LookupRequestType();
-            PSOIdentifierType idType = new PSOIdentifierType(searchQuery, null, managedSysId);
-            lookupRequestType.setPsoID(idType);
-            LookupResponseType lookupResponseType = connectorAdapter.lookupRequest(mSys, lookupRequestType, muleContext);
-            if(!CollectionUtils.isEmpty(lookupResponseType.getAny())) {
-                for(ExtensibleObject obj: lookupResponseType.getAny()){
-                    List<ExtensibleAttribute> extensibleAttributes = obj.getAttributes();
+            log.debug("Calling reconcileResource with Local connector");
+            searchResponse = connectorAdapter.search(searchRequest,connector, muleContext);
+        }
+        if(searchResponse != null && searchResponse.getStatus() == StatusCodeType.SUCCESS) {
+            List<UserValue> usersFromRemoteSys = searchResponse.getUserList();
+            if(usersFromRemoteSys != null) {
+                for(UserValue userValue : usersFromRemoteSys) {
+                    List<ExtensibleAttribute> extensibleAttributes = userValue.getAttributeList();
                     reconcilationTargetUserObjectToIDM(managedSysId, mSys, situations, keyField, extensibleAttributes);
                 }
             }
+        } else {
+            log.debug(searchResponse.getErrorMessage());
         }
     }
 

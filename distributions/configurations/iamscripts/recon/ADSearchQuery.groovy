@@ -1,5 +1,5 @@
 import org.openiam.idm.srvc.role.dto.RoleAttribute
-
+def output="";
 if(role != null){
     Set<RoleAttribute> attributes =  role.getRoleAttributes();
     for(RoleAttribute attr : attributes) {

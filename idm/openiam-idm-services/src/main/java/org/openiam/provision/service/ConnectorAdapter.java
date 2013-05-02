@@ -27,12 +27,14 @@ import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
+import org.openiam.connector.type.*;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.dto.ProvisionConnector;
 import org.openiam.idm.srvc.mngsys.service.ConnectorDataService;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.spml2.interf.ConnectorService;
 import org.openiam.spml2.msg.*;
+import org.openiam.spml2.msg.ResponseType;
 import org.openiam.spml2.msg.password.ResetPasswordRequestType;
 import org.openiam.spml2.msg.password.ResetPasswordResponseType;
 import org.openiam.spml2.msg.password.SetPasswordRequestType;
@@ -198,6 +200,41 @@ public class ConnectorAdapter {
 
 		}
 
+    }
+
+    public SearchResponse search(SearchRequest searchRequest, ProvisionConnector connector, MuleContext muleContext) {
+        SearchResponse resp = new SearchResponse();
+        if (searchRequest == null) {
+            resp.setStatus(StatusCodeType.FAILURE);
+            resp.setError(ErrorCode.INVALID_CONFIGURATION);
+            return resp;
+        }
+        log.debug("ConnectorAdapter:reconcileRequest called. Resource =" + searchRequest.getSearchQuery());
+        try {
+            if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
+                //Send search to Local Connector to get data (e.g. Active Directory via LDAP)
+                MuleMessage msg = getService(connector, searchRequest, connector.getServiceUrl(), "search", muleContext);
+                if (msg != null) {
+                    log.debug("Test connection Payload=" + msg.getPayload());
+                    if (msg.getPayload() != null && msg.getPayload() instanceof org.openiam.connector.type.ResponseType) {
+                        resp = (SearchResponse) msg.getPayload();
+                        if(resp.getStatus() == StatusCodeType.SUCCESS) {
+                            resp.setStatus(StatusCodeType.SUCCESS);
+                            return resp;
+                        }
+                    }
+                    resp.setStatus(StatusCodeType.FAILURE);
+                    return resp;
+                } else {
+                    log.debug("MuleMessage is null..");
+                }
+
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        resp.setStatus(StatusCodeType.FAILURE);
+        return resp;
 	}
 
 	public ResponseType reconcileResource(ManagedSys managedSys,
@@ -594,7 +631,11 @@ public class ConnectorAdapter {
 			msg = client.send("vm://dispatchConnectorMsgTestConnection",
 					(ManagedSys) reqType, msgPropMap);
 		}
+        if (operation.equalsIgnoreCase("search")) {
 
+            msg = client.send("vm://dispatchConnectorMessageSearch",
+                    (SearchRequest) reqType, msgPropMap);
+        }
 		return msg;
 
 	}

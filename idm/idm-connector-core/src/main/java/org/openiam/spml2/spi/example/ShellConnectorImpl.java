@@ -54,6 +54,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openiam.connector.type.SearchRequest;
+import org.openiam.connector.type.SearchResponse;
 import org.openiam.exception.AuthenticationException;
 import org.openiam.exception.ConfigurationException;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
@@ -167,10 +169,15 @@ public class ShellConnectorImpl extends AbstractSpml2Complete implements Connect
 
 	 	return true;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openiam.spml2.interf.SpmlCore#add(org.openiam.spml2.msg.AddRequestType)
-	 */
+
+    @Override
+    public SearchResponse search(@WebParam(name = "searchRequest", targetNamespace = "") SearchRequest searchRequest) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /* (non-Javadoc)
+      * @see org.openiam.spml2.interf.SpmlCore#add(org.openiam.spml2.msg.AddRequestType)
+      */
 	public AddResponseType add(AddRequestType reqType) {
 		log.debug("add request called..");
 		

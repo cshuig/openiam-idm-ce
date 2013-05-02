@@ -1,6 +1,7 @@
 
 package org.openiam.connector.type;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -49,7 +50,7 @@ import org.openiam.spml2.msg.StatusCodeType;
 @XmlSeeAlso({
     UserResponse.class
 })
-public class ResponseType {
+public class ResponseType implements Serializable {
 
     protected List<String> errorMessage;
     @XmlAttribute(required = true)

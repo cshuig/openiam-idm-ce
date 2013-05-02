@@ -21,11 +21,7 @@
  */
 package org.openiam.spml2.spi.ldap;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -33,14 +29,15 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.directory.*;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openiam.connector.type.SearchRequest;
+import org.openiam.connector.type.SearchResponse;
+import org.openiam.connector.type.UserValue;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
 import org.openiam.idm.srvc.audit.service.IdmAuditLogDataService;
 import org.openiam.idm.srvc.auth.context.AuthenticationContext;
@@ -104,6 +101,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * Updates the OpenIAM repository with data received from external client.
@@ -845,4 +843,87 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         return ctx.search(objectBaseDN, searchFilter, searchCtls);
     }
 
+    @Override
+    @Transactional
+    public SearchResponse search(@WebParam(name = "searchRequest", targetNamespace = "") SearchRequest searchRequest) {
+        System.out.println("SEARCH EXECUTION==============================================================");
+        SearchResponse searchResponse = new SearchResponse();
+        ConnectionMgr conMgr = ConnectionFactory.create(ConnectionManagerConstant.LDAP_CONNECTION);
+        conMgr.setApplicationContext(ac);
+        if(StringUtils.isEmpty(searchRequest.getTargetID())) {
+            log.error("Search Target Managed System isn't set.");
+            searchResponse.setStatus(StatusCodeType.FAILURE);
+            return searchResponse;
+        }
+
+        ManagedSys mSys = managedSysService.getManagedSys(searchRequest.getTargetID());
+
+        ManagedSystemObjectMatch matchObj = null;
+        List<ManagedSystemObjectMatch> matchObjList = managedSysObjectMatchDao.findBySystemId(mSys.getManagedSysId(), "USER");
+        if (matchObjList != null && matchObjList.size() > 0) {
+            matchObj = matchObjList.get(0);
+        }
+        try {
+            LdapContext ldapContext = conMgr.connect(mSys);
+
+            log.debug("Search Filter=" + searchRequest.getSearchQuery());
+            log.debug("Searching BaseDN=" + searchRequest.getBaseDN());
+
+            SearchControls searchControls = new SearchControls();
+            NamingEnumeration results = ldapContext.search(searchRequest.getBaseDN(), searchRequest.getSearchQuery(), searchControls);
+
+            String identityAttrName = matchObj != null ? matchObj.getKeyField() : "cn";
+
+            List<UserValue> userValues = new LinkedList<UserValue>();
+
+            UserValue user = new UserValue();
+            user.setAttributeList(new LinkedList<ExtensibleAttribute>());
+            boolean found = false;
+            while (results != null && results.hasMoreElements()) {
+                SearchResult sr = (SearchResult) results.next();
+                Attributes attrs = sr.getAttributes();
+                if (attrs != null) {
+                    found = true;
+                    for (NamingEnumeration ae = attrs.getAll(); ae.hasMore();) {
+                        ExtensibleAttribute extAttr = new ExtensibleAttribute();
+                        Attribute attr = (Attribute) ae.next();
+
+                        boolean addToList = false;
+
+                        extAttr.setName(attr.getID());
+
+                        NamingEnumeration e = attr.getAll();
+
+                        while (e.hasMore()) {
+                            Object o = e.next();
+                            if (o instanceof String) {
+                                extAttr.setValue(o.toString());
+                                addToList = true;
+                            }
+                        }
+                        if(identityAttrName.equalsIgnoreCase(extAttr.getName())) {
+                            user.setUserIdentity(extAttr.getValue());
+                        }
+                        if (addToList) {
+                            user.getAttributeList().add(extAttr);
+                        }
+                    }
+                    userValues.add(user);
+                    user = new UserValue();
+                    user.setAttributeList(new LinkedList<ExtensibleAttribute>());
+                }
+            }
+            searchResponse.setUserList(userValues);
+            if (!found) {
+                searchResponse.setStatus(StatusCodeType.FAILURE);
+            } else {
+                searchResponse.setStatus(StatusCodeType.SUCCESS);
+            }
+        } catch (NamingException e) {
+            searchResponse.setStatus(StatusCodeType.FAILURE);
+            e.printStackTrace();
+        }
+
+        return searchResponse;
+    }
 }
