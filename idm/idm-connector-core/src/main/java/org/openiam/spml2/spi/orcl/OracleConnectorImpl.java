@@ -21,11 +21,14 @@
  */
 package org.openiam.spml2.spi.orcl;
 
+import javax.jws.WebParam;
 import javax.jws.WebService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.openiam.connector.type.SearchRequest;
+import org.openiam.connector.type.SearchResponse;
 import org.openiam.spml2.spi.common.jdbc.*;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -42,4 +45,8 @@ public class OracleConnectorImpl extends AbstractJDBCConnectorImpl {
 
     private static final Log log = LogFactory.getLog(OracleConnectorImpl.class);
 
+    @Override
+    public SearchResponse search(@WebParam(name = "searchRequest", targetNamespace = "") SearchRequest searchRequest) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

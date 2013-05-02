@@ -192,6 +192,8 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                 connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
 
             RemoteLookupRequest reqType = new RemoteLookupRequest();
+            String requestId = "R" + UUIDGen.getUUID();
+            reqType.setRequestID(requestId);
             reqType.setSearchValue(identity);
 
             reqType.setTargetID(mLg.getId().getManagedSysId());

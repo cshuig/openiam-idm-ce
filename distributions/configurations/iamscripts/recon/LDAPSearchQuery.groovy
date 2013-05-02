@@ -1,11 +1,6 @@
-import org.openiam.idm.srvc.role.dto.RoleAttribute
+def output="(&(objectCategory=person)(objectClass=user))";
 if(role != null) {
-    Set<RoleAttribute> attributes =  role.getRoleAttributes();
-    for(RoleAttribute attr : attributes) {
-        if("AD_OU".equals(attr.getName())) {
-            output="(&(&(objectCategory=person)(objectClass=user))(memberOf="+ attr.getValue() +"))";
-        };
-    }
+    output="(&(objectCategory=person)(objectClass=user))";
 } else if(group != null) {
-    output="(&(&(objectCategory=person)(objectClass=user))(memberOf="+ gr.externalGroupName +"))";
+    output="(&(&(objectCategory=person)(objectClass=user))(memberOf="+ group.externalGroupName +"))";
 }

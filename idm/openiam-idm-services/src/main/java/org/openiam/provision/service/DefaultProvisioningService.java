@@ -2602,6 +2602,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             log.debug("Calling lookupRequest with Remote connector");
 
             RemoteLookupRequest reqType = new RemoteLookupRequest();
+            String requestId = "R" + UUIDGen.getUUID();
+            reqType.setRequestID(requestId);
             reqType.setSearchValue(principalName);
 
             reqType.setTargetID(managedSysId);

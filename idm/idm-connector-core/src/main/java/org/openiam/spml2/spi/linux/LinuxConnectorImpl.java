@@ -2,6 +2,8 @@ package org.openiam.spml2.spi.linux;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openiam.connector.type.SearchRequest;
+import org.openiam.connector.type.SearchResponse;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAO;
@@ -429,6 +431,10 @@ public class LinuxConnectorImpl extends AbstractSpml2Complete implements Connect
         return responseType;
     }
 
+    @Override
+    public SearchResponse search(@WebParam(name = "searchRequest", targetNamespace = "") SearchRequest searchRequest) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     // >>>>>>>> Accessor/Mutator Methods for bean
     public ManagedSystemDataService getManagedSysService() {
@@ -454,4 +460,5 @@ public class LinuxConnectorImpl extends AbstractSpml2Complete implements Connect
     public void setResourceDataService(ResourceDataService resourceDataService) {
         this.resourceDataService = resourceDataService;
     }
+
 }

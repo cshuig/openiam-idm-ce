@@ -4,7 +4,10 @@ import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.spml2.msg.*;
 import org.openiam.spml2.msg.password.*;
 import org.openiam.spml2.msg.suspend.ResumeRequestType;
-import org.openiam.spml2.msg.suspend.SuspendRequestType;
+import org.openiam.spml2.msg.suspend.SuspendRequestType
+import org.openiam.idm.srvc.recon.dto.ReconciliationConfig
+import org.openiam.connector.type.SearchResponse
+import org.openiam.connector.type.SearchRequest;
 
 
 public class Test_Script_CONNECTOR  implements ConnectorService {
@@ -76,6 +79,15 @@ public class Test_Script_CONNECTOR  implements ConnectorService {
         return null;
     }
 
+    @Override
+    ResponseType reconcileResource(ReconciliationConfig config) {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    SearchResponse search(SearchRequest searchRequest) {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
 
 

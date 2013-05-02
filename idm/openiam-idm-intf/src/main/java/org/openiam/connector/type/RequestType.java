@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-
+import java.io.Serializable;
 
 
 /**
@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     UserRequest.class
 })
-public class RequestType   {
+public class RequestType implements Serializable {
 
     @XmlElement(required = true)
     protected String requestID;
