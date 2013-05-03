@@ -1890,22 +1890,16 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     } else {
 
                         Map<String, String> currentValueMap = new HashMap<String, String>();
-                        boolean isExistedInTargetSystem = false;
-                        if (mLg != null) {
-                            // get the attributes at the target system
-                            // this lookup only for getting attributes from the system
-                            isExistedInTargetSystem = getCurrentObjectAtTargetSystem(
-                                    mLg, mSys, connector, matchObj,
-                                    currentValueMap);
 
-                        }
+                        // get the attributes at the target system
+                        // this lookup only for getting attributes from the system
+                        boolean isExistedInTargetSystem = getCurrentObjectAtTargetSystem(
+                                mLg, mSys, connector, matchObj,
+                                currentValueMap);
 
-                        // if
-                        // (res.getObjectState().equalsIgnoreCase(BaseObject.NEW)
-                        // || mLg == null) {
                         boolean isMngSysIdentityExistsInOpeniam = mLg != null;
 
-                        if (mLg == null || (mLg != null && !isExistedInTargetSystem)) {
+                        if (!isExistedInTargetSystem) {
                             // create the secondary identity for this resource
                             log.debug("Adding new identity to target system. Primary Identity is:"
                                     + primaryIdentity);
@@ -2013,11 +2007,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 }
                             }
                             if (connectorSuccess) {
-                                /*  Login tempPrincipal = loginManager
-                        .getLoginByManagedSys(mLg.getId()
-                                .getDomainId(), mLg.getId()
-                                .getLogin(), mLg.getId()
-                                .getManagedSysId());*/
 
                                 if (!isMngSysIdentityExistsInOpeniam) {
                                     loginManager.addLogin(mLg);
@@ -2034,7 +2023,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 PostProcessor ppScript = createPostProcessScript(postProcessScript);
                                 if (ppScript != null) {
                                     executePostProcess(ppScript, bindingMap,
-                                            pUser, "MODIFY", connectorSuccess);
+                                            pUser, "ADD", connectorSuccess);
                                 }
                             }
                             if (!connectorSuccess) {
