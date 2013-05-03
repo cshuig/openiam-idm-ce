@@ -517,7 +517,7 @@ public class RemoteConnectorAdapter {
             }
             if (operation.equalsIgnoreCase("search")) {
 
-                msg = client.send("vm://remoteConnectorClientSearch", (SearchRequest) reqType, msgPropMap);
+                msg = client.send("vm://remoteConnectorMessageSearch", (SearchRequest) reqType, msgPropMap);
             }
 
             return msg;

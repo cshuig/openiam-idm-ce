@@ -846,7 +846,7 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
     @Override
     @Transactional
     public SearchResponse search(@WebParam(name = "searchRequest", targetNamespace = "") SearchRequest searchRequest) {
-        System.out.println("SEARCH EXECUTION==============================================================");
+        System.out.println("LDAP SEARCH EXECUTION ==============================================================");
         SearchResponse searchResponse = new SearchResponse();
         ConnectionMgr conMgr = ConnectionFactory.create(ConnectionManagerConstant.LDAP_CONNECTION);
         conMgr.setApplicationContext(ac);

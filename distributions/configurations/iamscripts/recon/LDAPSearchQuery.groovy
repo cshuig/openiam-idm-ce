@@ -1,4 +1,4 @@
-def output="(&(objectCategory=person)(objectClass=user))";
+output="(&(objectCategory=person)(objectClass=user))";
 if(role != null) {
     output="(&(objectCategory=person)(objectClass=user))";
 } else if(group != null) {

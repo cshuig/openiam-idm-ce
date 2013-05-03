@@ -3,7 +3,7 @@ import org.openiam.idm.srvc.loc.ws.LocationResponse
 import org.openiam.idm.srvc.user.dto.UserAttribute
 
 def locationService = context.getBean("locationWS");
-def output = "MAINOFFICE";
+output = "MAINOFFICE";
 
 if (user.locationCd != null && user.locationCd.length() > 0) {
     LocationResponse locationResp = locationService.getLocation(user.locationCd);
