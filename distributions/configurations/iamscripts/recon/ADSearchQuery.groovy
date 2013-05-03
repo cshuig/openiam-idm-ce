@@ -4,7 +4,7 @@ if(role != null) {
     Set<RoleAttribute> attributes =  role.getRoleAttributes();
     for(RoleAttribute attr : attributes) {
         if("AD_OU".equals(attr.getName())) {
-            output="Get-ADUser -Filter {Name -like '*'} -SearchBase '"+attr.getValue()+"'";
+            output="Get-ADUser -Filter {Name -like '*'} -SearchBase '"+attr.getValue()+"' -Properties *";
             break;
         };
     }
