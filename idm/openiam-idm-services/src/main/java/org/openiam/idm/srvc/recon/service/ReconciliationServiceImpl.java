@@ -239,9 +239,33 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
             String baseDnField = matchObjAry[0].getBaseDn();
 
             ScriptIntegration scriptIntegrationCache = ScriptFactory.createModule(this.scriptEngine);
-            //1. Do reconciliation users from IDM to Target Managed System search for all Roles and Groups related with resource
-       /*  TODO uncommented befor commit
-           for(ResourceRole rRole: res.getResourceRoles()) {
+            //1. Do reconciliation users from Target Managed System to IDM search for all Roles and Groups related with resource
+            for(ResourceRole rRole: res.getResourceRoles()) {
+                //Fire Role
+                Map<String, Object> map = new HashMap<String, Object>();
+                Role role = roleDataService.getRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
+                map.put("role",role);
+                for(RoleAttribute roleAttr : role.getRoleAttributes()) {
+                   if("ROLE".equalsIgnoreCase(roleAttr.getName())) {
+                       baseDnField = roleAttr.getValue();
+                       break;
+                   }
+                }
+                //GET Users from Connector for specific Role
+                processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
+                //Fire Groups
+                Group[] groups = roleDataService.getGroupsInRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
+                if(groups != null) {
+                    for(Group gr : groups) {
+                        //GET Users from Connector for specific Group
+                        map = new HashMap<String, Object>();
+                        map.put("group",gr);
+                        processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
+                    }
+                }
+            }
+            //2. Do reconciliation users from IDM to Target Managed System search for all Roles and Groups related with resource
+        /*   for(ResourceRole rRole: res.getResourceRoles()) {
                 List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
                 if(usrIds != null) {
                     for(String userId : usrIds) {
@@ -259,30 +283,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 }
             }*/
 
-            //2. Do reconciliation users from Target Managed System to IDM search for all Roles and Groups related with resource
-            for(ResourceRole rRole: res.getResourceRoles()) {
-                //Fire Role
-                Map<String, Object> map = new HashMap<String, Object>();
-                Role role = roleDataService.getRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
-                map.put("role",role);
-                for(RoleAttribute roleAttr : role.getRoleAttributes()) {
-                   if("ROLE".equalsIgnoreCase(roleAttr.getName())) {
-                       baseDnField = roleAttr.getValue();
-                   }
-                }
-                //GET Users from Connector for specific Role
-                processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
-                //Fire Groups
-                Group[] groups = roleDataService.getGroupsInRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
-                if(groups != null) {
-                    for(Group gr : groups) {
-                        //GET Users from Connector for specific Group
-                        map = new HashMap<String, Object>();
-                        map.put("group",gr);
-                        processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
-                    }
-                }
-            }
 
 		} catch(Exception e) {
 			log.error(e);
@@ -433,7 +433,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         log.debug("Lookup status for " + principal + " =" +  lookupResp.getStatus());
 
         //User user = userMgr.getUserByPrincipal(l.getId().getDomainId(), l.getId().getLogin(), l.getId().getManagedSysId(), true);
-
+        //TODO check this confition logic
         if (lookupResp.getStatus() == ResponseStatus.FAILURE && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
             // Situation: Resource Delete
             ReconciliationCommand command = situations.get("Resource Delete");
@@ -458,8 +458,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                     command.execute(l, user, null);
                 }
             }
-
         }
+
         return true;
     }
 
