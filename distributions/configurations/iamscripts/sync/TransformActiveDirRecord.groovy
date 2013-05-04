@@ -35,6 +35,9 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
     static String AD_MANAGED_SYS_ID = "110";
     static String defaultRole = "END_USER";
     static boolean KEEP_AD_ID = true;
+    static boolean IDENTITY_ATTRIBUTE = "sAMAccountName";
+   //static boolean IDENTITY_ATTRIBUTE = "userPrincipalName"; 
+   //static boolean IDENTITY_ATTRIBUTE = "distinguishedName";
 
 	public int execute(LineObject rowObj, ProvisionUser pUser) {
 
@@ -124,8 +127,9 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
 		
 		attrVal = columnMap.get("mail");
 		if (attrVal != null && attrVal.value != null ) {
-                // check if we already have a value for EMAIL1
-                addEmailAddress(attrVal, pUser, user);
+          // check if we already have a value for EMAIL1
+          addEmailAddress(attrVal, pUser, user);
+          pUser.email = attrVal.value;
 
 		}
 
@@ -177,12 +181,26 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
             addPhone("FAX", attrVal, pUser, user);
 
         }
+        
+        attrVal = columnMap.get("title");
+        if (attrVal != null && attrVal.getValue() != null) {
+
+            pUser.title = attrVal.getValue();
+
+        }
+        attrVal = columnMap.get("employeeID");
+        if (attrVal != null && attrVal.getValue() != null) {
+
+            pUser.employeeId = attrVal.getValue();
+
+        }
+        
 
         if (KEEP_AD_ID) {
 
             println(" - Processing PrincipalName and DN");
 
-            attrVal = columnMap.get("userPrincipalName");
+            attrVal = columnMap.get(IDENTITY_ATTRIBUTE);
             if (attrVal != null && attrVal.value != null) {
 
                 // PRE-POPULATE THE USER LOGIN. IN SOME CASES THE COMPANY WANTS TO KEEP THE LOGIN THAT THEY HAVE
@@ -192,36 +210,18 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
                     Login lg = new Login();
                     lg.id = new LoginId(DOMAIN, attrVal.value, "0");
                     principalList.add(lg);
-                    pUser.principalList = principalList;
-                }
-
-
-            } else {
-                // all AD objects must have a sAMAccountName. If this we dont have userPrincipalName then fail
-                // back to the sAMAccountName
-
-                if (isNewUser) {
-                    Login lg = new Login();
-                    lg.id = new LoginId(DOMAIN, sAMAccountName, "0");
+                    
+                    Login lg2 = new Login();
+                    lg2.id = new LoginId(DOMAIN, attrVal.value, AD_MANAGED_SYS_ID);
                     principalList.add(lg);
-                    pUser.principalList = principalList;
-                }
-            }
-
-            attrVal = columnMap.get("distinguishedName");
-            if (attrVal != null && attrVal.value != null) {
-                // PRE-POPULATE THE USER LOGIN. IN SOME CASES THE COMPANY WANTS TO KEEP THE LOGIN THAT THEY HAVE
-                // THIS SHOWS HOW WE CAN DO THAT
-
-                if (isNewUser) {
-                    Login lg = new Login();
-                    lg.id = new LoginId(DOMAIN, attrVal.value, AD_MANAGED_SYS_ID);
-                    principalList.add(lg);
+                    
                     pUser.principalList = principalList;
                 }
 
 
-            }
+            } 
+
+            
         }
 
         if (!principalList.isEmpty()) {
