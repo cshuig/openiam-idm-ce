@@ -152,6 +152,10 @@ public class UserSearchCommand implements Serializable {
             return true;
         }
 
+        if (employeeId != null && !employeeId.isEmpty()) {
+            return true;
+        }
+
         return false;
     }
 

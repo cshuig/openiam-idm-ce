@@ -110,7 +110,12 @@
 		<property name="roleDataService" ref="roleServiceClient" />
 		<property name="secDomainService" ref="secDomainServiceClient" />
 		<property name="cancelView" value="/" />
+        <property name="validator" ref="roleListValidator" />
 	</bean>
+
+    <bean id="roleListValidator" class="org.openiam.webadmin.role.RoleListValidator">
+    </bean>
+
 	<bean id="roleDetail" class="org.openiam.webadmin.role.RoleDetailController">
 		<property name="commandName" value="roleDetailCmd" />
 		<property name="commandClass" value="org.openiam.webadmin.role.RoleDetailCommand" />

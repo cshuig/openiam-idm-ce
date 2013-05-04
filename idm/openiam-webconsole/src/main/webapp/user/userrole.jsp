@@ -32,10 +32,11 @@
 	
     		<table width="100%">
     			<tr class="header">
-    				<th>Role ID</td>
-    				<th>Role Name</td>
-    				<th>Parent Role</td>
-    				<th>Status</td>
+    				<th>Role ID</th>
+    				<th>Role Name</th>
+                    <th>Type</th>
+    				<th>Parent Role</th>
+    				<th>Status</th>
     			</tr>
 		      <c:forEach items="${userRoleCmd.roleList}" var="roleList" varStatus="role">
 		  
@@ -47,6 +48,7 @@
 									<form:hidden path="roleList[${role.index}].id.roleId" />
 								</td>
 								<td class="tableEntry">${roleList.roleName}</td>
+                                <td class="tableEntry">${roleList.metadataTypeId}</td>
 								<td class="tableEntry">${roleList.parentRoleId}</td>
 								<td class="tableEntry">${roleList.status}</td>
 				</tr>

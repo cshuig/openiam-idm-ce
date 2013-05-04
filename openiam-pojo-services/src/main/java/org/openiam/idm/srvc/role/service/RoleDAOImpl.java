@@ -357,7 +357,8 @@ public class RoleDAOImpl implements RoleDAO {
 		Session session = sessionFactory.getCurrentSession();
         Criteria criteria = session.createCriteria(RoleEntity.class)
                 .add(Restrictions.eq("id.serviceId",serviceId))
-                .addOrder(Order.asc("id.roleId"))
+                .addOrder(Order.asc("metadataTypeId"))
+                .addOrder(Order.asc("roleName"))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
 		List<RoleEntity> results = (List<RoleEntity>) criteria.list();
