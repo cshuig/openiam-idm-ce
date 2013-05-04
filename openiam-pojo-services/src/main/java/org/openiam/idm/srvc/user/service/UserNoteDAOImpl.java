@@ -2,19 +2,17 @@ package org.openiam.idm.srvc.user.service;
 
 // Generated Jun 12, 2007 10:46:15 PM by Hibernate Tools 3.2.0.beta8
 
-import java.util.List;
-import javax.naming.InitialContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.LockMode;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.openiam.idm.srvc.role.domain.RoleEntity;
 import org.openiam.idm.srvc.user.domain.UserNoteEntity;
+
+import javax.naming.InitialContext;
+import java.util.List;
 
 /**
  * Home object for domain model class UserNote.
@@ -131,12 +129,17 @@ public class UserNoteDAOImpl implements UserNoteDAO {
 	}
 
 	public List<UserNoteEntity> findUserNotes(String userId) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(UserNoteEntity.class)
+        Session session = sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria(UserNoteEntity.class)
                 .add(Restrictions.eq("user.userId",userId))
-                .addOrder(Order.asc("userNoteId"));
+                .addOrder(Order.asc("createDate"))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		List<UserNoteEntity> results = (List<UserNoteEntity>)criteria.list();
 		return results;
-	}	
+	}
+
+
+
 	
 	public List findByExample(UserNoteEntity instance) {
 		log.debug("finding UserNoteEntity instance by example");
