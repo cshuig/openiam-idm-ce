@@ -1891,13 +1891,38 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                         Map<String, String> currentValueMap = new HashMap<String, String>();
 
+                        boolean isMngSysIdentityExistsInOpeniam = mLg != null;
+
+                        if (!isMngSysIdentityExistsInOpeniam) {
+                            Login primaryLogin = pUser.getPrimaryPrincipal(sysConfiguration
+                                    .getDefaultManagedSysId());
+
+                            log.debug(" - Building principal Name for: "
+                                    + managedSysId);
+                            // build the primary identity for resource by resource mapping
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, primaryLogin.getId().getDomainId());
+
+                            String newPrincipalName = buildPrincipalName(attrMap,
+                                    se, bindingMap);
+                            log.debug(" - New principalName = " + newPrincipalName);
+                            mLg = new Login();
+                            // get the current object as it stands in the target
+                            // system
+                            LoginId resLoginId = new LoginId(primaryLogin.getId()
+                                    .getDomainId(), newPrincipalName, managedSysId);
+
+                            mLg.setId(resLoginId);
+                            mLg.setPassword(primaryLogin.getPassword());
+                            mLg.setUserId(primaryLogin.getUserId());
+                        }
                         // get the attributes at the target system
                         // this lookup only for getting attributes from the system
                         boolean isExistedInTargetSystem = getCurrentObjectAtTargetSystem(
                                 mLg, mSys, connector, matchObj,
                                 currentValueMap);
 
-                        boolean isMngSysIdentityExistsInOpeniam = mLg != null;
+
+                        boolean connectorSuccess = false;
 
                         if (!isExistedInTargetSystem) {
                             // create the secondary identity for this resource
@@ -1933,33 +1958,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     .getId().getDomainId(), bindingMap,
                                     pUser.getUser().getLastUpdatedBy());
 
-                            List<Login> priList = pUser.getPrincipalList();
-                            if (priList != null) {
-                                for (Login l : priList) {
-                                    log.debug("identity after builder="
-                                            + l.getId());
-                                }
-                            } else {
-                                log.debug("priList is null");
-                            }
-
-                            // get the identity linked to this resource /
-                            // managedsys
-                            mLg = getPrincipalForManagedSys(managedSysId,
-                                    priList);
-                            if (mLg == null) {
-                                // build the primary identity for resource by resource mapping
-                                String newPrincipalName = buildPrincipalName(attrMap,
-                                        se, bindingMap);
-                                log.debug(" - New principalName = " + newPrincipalName);
-                                mLg = new Login();
-                                // get the current object as it stands in the target
-                                // system
-                                LoginId resLoginId = new LoginId(primaryIdentity.getId()
-                                        .getDomainId(), newPrincipalName, managedSysId);
-
-                                mLg.setId(resLoginId);
-                            }
                             // mLg.setPassword(primaryLogin.getPassword());
                             mLg.setUserId(primaryIdentity.getUserId());
 
@@ -1972,17 +1970,13 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 mLg.setPassword(primaryIdentity.getPassword());
                             }
 
-                            // loginManager.addLogin(mLg);
-
-                            boolean connectorSuccess = false;
 
                             if (connector.getConnectorInterface() != null
                                     && connector.getConnectorInterface()
                                     .equalsIgnoreCase("REMOTE")) {
 
                                 connectorSuccess = remoteAdd(mLg, requestId,
-                                        mSys, matchObj, extUser, connector,
-                                        pUser, auditLog);
+                                        mSys, matchObj, extUser, connector, auditLog);
 
                             } else {
                                 // build the request
@@ -2006,15 +2000,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     connectorSuccess = true;
                                 }
                             }
-                            if (connectorSuccess) {
 
-                                if (!isMngSysIdentityExistsInOpeniam) {
-                                    loginManager.addLogin(mLg);
-                                } else {
-                                    log.debug("Skipping the creation of identity in openiam repository. Identity already exists"
-                                            + mLg.getId());
-                                }
-                            }
                             // post processing
                             String postProcessScript = getResProperty(
                                     res.getResourceProps(), "POST_PROCESS");
@@ -2095,8 +2081,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             List<ExtensibleAttribute> extAttList = extUser
                                     .getAttributes();
                             //
-
-                            boolean connectorSuccess = false;
                             if (connector.getConnectorInterface() != null
                                     && connector.getConnectorInterface()
                                     .equalsIgnoreCase("REMOTE")) {
@@ -2182,6 +2166,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 }
 
                             }
+
                             // post processing
                             String postProcessScript = getResProperty(
                                     res.getResourceProps(), "POST_PROCESS");
@@ -2194,6 +2179,17 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 }
                             }
 
+                        }
+
+                        //add identity if IDM needs
+                        if (connectorSuccess) {
+
+                            if (!isMngSysIdentityExistsInOpeniam) {
+                                loginManager.addLogin(mLg);
+                            } else {
+                                log.debug("Skipping the creation of identity in openiam repository. Identity already exists"
+                                        + mLg.getId());
+                            }
                         }
                     }
                     bindingMap.remove(MATCH_PARAM);

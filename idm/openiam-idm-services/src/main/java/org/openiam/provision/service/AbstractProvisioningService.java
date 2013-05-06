@@ -161,7 +161,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         if (connector.getConnectorInterface() != null &&
                 connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
 
-            return remoteAdd(mLg, requestId, mSys, matchObj, extUser, connector, user, idmAuditLog);
+            return remoteAdd(mLg, requestId, mSys, matchObj, extUser, connector, idmAuditLog);
 
         }
 
@@ -2314,8 +2314,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     protected boolean remoteAdd(Login mLg, String requestId, ManagedSys mSys,
                               ManagedSystemObjectMatch matchObj, ExtensibleUser extUser,
-                              ProvisionConnector connector,
-                              ProvisionUser user, IdmAuditLog idmAuditLog) {
+                              ProvisionConnector connector, IdmAuditLog idmAuditLog) {
 
         log.debug("Calling remote connector " + connector.getName());
 
@@ -2335,14 +2334,6 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         userReq.setScriptHandler(mSys.getAddHandler());
 
         UserResponse resp = remoteConnectorAdapter.addRequest(mSys, userReq, connector, muleContext);
-
-        auditHelper.addLog("ADD IDENTITY", user.getRequestorDomain(), user.getRequestorLogin(),
-                "IDM SERVICE", user.getCreatedBy(), mLg.getId().getManagedSysId(),
-                "USER", user.getUserId(),
-                idmAuditLog.getLogId(), resp.getStatus().toString(), idmAuditLog.getLogId(), "IDENTITY_STATUS",
-                user.getUser().getStatus().toString(),
-                requestId, resp.getErrorCodeAsStr(), user.getSessionId(), resp.getErrorMsgAsStr(),
-                user.getRequestClientIP(), mLg.getId().getLogin(), mLg.getId().getDomainId());
 
         if (resp.getStatus() == StatusCodeType.FAILURE) {
             return false;
