@@ -1899,9 +1899,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                             log.debug(" - Building principal Name for: "
                                     + managedSysId);
-                            // build the primary identity for resource by resource mapping
-                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, primaryLogin.getId().getDomainId());
-
                             String newPrincipalName = buildPrincipalName(attrMap,
                                     se, bindingMap);
                             log.debug(" - New principalName = " + newPrincipalName);
