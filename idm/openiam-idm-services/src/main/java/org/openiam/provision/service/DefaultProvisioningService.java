@@ -1894,6 +1894,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                         boolean isMngSysIdentityExistsInOpeniam = mLg != null;
 
                         if (!isMngSysIdentityExistsInOpeniam) {
+                            if (CollectionUtils.isEmpty(pUser.getPrincipalList())) {
+                                // build the list
+                                buildPrimaryPrincipal(pUser, bindingMap, se);
+                            }
+
                             Login primaryLogin = pUser.getPrimaryPrincipal(sysConfiguration
                                     .getDefaultManagedSysId());
 
