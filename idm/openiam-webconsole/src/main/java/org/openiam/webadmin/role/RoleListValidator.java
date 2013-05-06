@@ -18,12 +18,8 @@ package org.openiam.webadmin.role;
  */
 
 
-import java.util.List;
-import org.openiam.webadmin.role.RoleListCommand;
-
-
-import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 /**
  * Validation class for the Managed System list.
  * @author suneet
@@ -38,13 +34,13 @@ public class RoleListValidator implements Validator {
 	}
 
 	public void validate(Object cmd, Errors err) {
-		// TODO Auto-generated method stub
+
 		org.openiam.webadmin.role.RoleListCommand listCommand =  (org.openiam.webadmin.role.RoleListCommand) cmd;
 
-		if (listCommand.getDomainId() != null &&
-			listCommand.getDomainId().equals("-") ) {
-			err.rejectValue("domainId", "required");
-		}
+        if ("-".equals(listCommand.getDomainId())) {
+            err.rejectValue("domainId", "required");
+        }
+
 		
 
 		

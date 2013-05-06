@@ -2,13 +2,15 @@ package org.openiam.idm.srvc.user.dto;
 
 // Generated Jun 12, 2007 10:46:13 PM by Hibernate Tools 3.2.0.beta8
 
+import org.openiam.base.BaseObject;
+import org.openiam.dozer.DozerDTOCorrespondence;
+import org.openiam.idm.srvc.user.domain.UserNoteEntity;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
-import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.user.domain.UserNoteEntity;
 
 
 /**
@@ -25,7 +27,7 @@ import org.openiam.idm.srvc.user.domain.UserNoteEntity;
         "userNoteId"
 })
 @DozerDTOCorrespondence(UserNoteEntity.class)
-public class UserNote implements java.io.Serializable {
+public class UserNote extends BaseObject {
 
     // Fields
     protected String userNoteId;

@@ -1,6 +1,5 @@
 package org.openiam.spml2.spi.orcl;
 
-import groovy.json.StringEscapeUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openiam.idm.srvc.mngsys.dto.AttributeMap;
@@ -16,8 +15,9 @@ import org.openiam.spml2.spi.common.AddCommand;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
+import java.sql.Statement;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,6 +29,7 @@ import java.util.List;
 public class OracleAddCommand extends  AbstractOracleCommand implements AddCommand {
 
     private static final String INSERT_SQL = "CREATE USER \"%s\" IDENTIFIED BY \"%s\"";
+    private static final String INITIAL_GRANT = "GRANT \"CONNECT\" TO \"%s\"";
 
     @Override
     public AddResponseType add(AddRequestType reqType) {
@@ -108,8 +109,12 @@ public class OracleAddCommand extends  AbstractOracleCommand implements AddComma
             if(log.isDebugEnabled()) {
                 log.debug(String.format("SQL=%s", sql));
             }
+            String grant = String.format(INITIAL_GRANT,principalName);
 
-            con.createStatement().execute(sql);
+            Statement stmt = con.createStatement();
+            stmt.execute(sql);
+            stmt.execute(grant);
+
         } catch (SQLException se) {
             log.error(se);
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.SQL_ERROR, se.toString());

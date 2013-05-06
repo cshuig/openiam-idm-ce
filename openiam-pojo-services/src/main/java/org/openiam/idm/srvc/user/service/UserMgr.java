@@ -1,25 +1,10 @@
 package org.openiam.idm.srvc.user.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.base.SysConfiguration;
-import org.openiam.dozer.converter.AddressDozerConverter;
-import org.openiam.dozer.converter.EmailAddressDozerConverter;
-import org.openiam.dozer.converter.PhoneDozerConverter;
-import org.openiam.dozer.converter.SupervisorDozerConverter;
-import org.openiam.dozer.converter.UserAttributeDozerConverter;
-import org.openiam.dozer.converter.UserDozerConverter;
-import org.openiam.dozer.converter.UserNoteDozerConverter;
+import org.openiam.dozer.converter.*;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.dto.LoginId;
 import org.openiam.idm.srvc.auth.login.LoginDAO;
@@ -33,20 +18,12 @@ import org.openiam.idm.srvc.continfo.dto.Phone;
 import org.openiam.idm.srvc.continfo.service.AddressDAO;
 import org.openiam.idm.srvc.continfo.service.EmailAddressDAO;
 import org.openiam.idm.srvc.continfo.service.PhoneDAO;
-import org.openiam.idm.srvc.user.domain.SupervisorEntity;
-import org.openiam.idm.srvc.user.domain.UserAttributeEntity;
-import org.openiam.idm.srvc.user.domain.UserEntity;
-import org.openiam.idm.srvc.user.domain.UserNoteEntity;
-import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
-import org.openiam.idm.srvc.user.dto.DelegationFilterSearch;
-import org.openiam.idm.srvc.user.dto.Supervisor;
-import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.user.dto.UserAttribute;
-import org.openiam.idm.srvc.user.dto.UserNote;
-import org.openiam.idm.srvc.user.dto.UserSearch;
-import org.openiam.idm.srvc.user.dto.UserStatusEnum;
+import org.openiam.idm.srvc.user.domain.*;
+import org.openiam.idm.srvc.user.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * Service interface that clients will access to gain information about users
@@ -719,8 +696,18 @@ public class UserMgr implements UserDataService {
 			throw new NullPointerException(
 					"User is not associated with this note.");
 		}
+
+        UserEntity usr = userDao.findById(note.getUserId());
+
+
 		UserNoteEntity userNoteEntity = userNoteDozerConverter.convertToEntity(
 				note, true);
+
+        if (userNoteEntity.getUser() == null) {
+            userNoteEntity.setUser(usr);
+
+        }
+
 		userNoteDao.persist(userNoteEntity);
 
 		return userNoteDozerConverter.convertToDTO(userNoteEntity, true);
@@ -745,7 +732,15 @@ public class UserMgr implements UserDataService {
 					"User is not associated with this note.");
 		}
 
-		userNoteDao.merge(userNoteDozerConverter.convertToEntity(note, true));
+        UserEntity usr = userDao.findById(note.getUserId());
+
+        UserNoteEntity userNoteEntity = userNoteDozerConverter.convertToEntity(note, true);
+        if (userNoteEntity.getUser() == null) {
+            userNoteEntity.setUser(usr);
+
+        }
+
+		userNoteDao.merge(userNoteEntity);
 
 	}
 

@@ -110,7 +110,12 @@
 		<property name="roleDataService" ref="roleServiceClient" />
 		<property name="secDomainService" ref="secDomainServiceClient" />
 		<property name="cancelView" value="/" />
+        <property name="validator" ref="roleListValidator" />
 	</bean>
+
+    <bean id="roleListValidator" class="org.openiam.webadmin.role.RoleListValidator">
+    </bean>
+
 	<bean id="roleDetail" class="org.openiam.webadmin.role.RoleDetailController">
 		<property name="commandName" value="roleDetailCmd" />
 		<property name="commandClass" value="org.openiam.webadmin.role.RoleDetailCommand" />
@@ -947,6 +952,22 @@
 		<property name="cancelView" value="userSearch.cnt" />
 	</bean>
 
+    <bean id="userNotes" class="org.openiam.webadmin.user.UserNotesController">
+        <property name="sessionForm">
+            <value>true</value>
+        </property>
+        <property name="commandName" value="userNoteCmd" />
+        <property name="commandClass"
+                  value="org.openiam.webadmin.user.UserNotesCommand" />
+        <property name="formView" value="/user/usernote" />
+        <property name="successView" value="/user/confirm" />
+        <property name="navigationDataService" ref="navServiceClient" />
+        <property name="redirectView" value="editUser.cnt?mode=1" />
+        <property name="userMgr" ref="userServiceClient" />
+        <property name="configuration" ref="appConfiguration" />
+        <property name="cancelView" value="userSearch.cnt" />
+    </bean>
+
 
 	<bean id="userDelegationFilter" class="org.openiam.webadmin.user.DelegationFilterController">
 		<property name="sessionForm">
@@ -1120,6 +1141,7 @@
 				<prop key="/userGroup.cnt">userGroup</prop>
 				<prop key="/userAttr.cnt">userAttr</prop>
 				<prop key="/userOrg.cnt">userOrg</prop>
+                <prop key="/userNotes.cnt">userNotes</prop>
 
 				<prop key="/userChangeStatus.cnt">userChangeStatus</prop>
 				<prop key="/selectSupervisor.cnt">selectSupervisor</prop>

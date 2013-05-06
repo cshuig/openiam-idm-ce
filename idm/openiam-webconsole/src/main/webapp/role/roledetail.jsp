@@ -73,7 +73,7 @@
               <td><label for="username" class="attribute">Role Type</label></td>
 			  			<td>
 			  			<form:select path="role.metadataTypeId">
-			  			<form:option value=""  label="-Select a value" />
+			  			<form:option value=""  label="Select a value" />
 			  			<form:options items="${roleDetailCmd.typeList}" itemValue="metadataTypeId" itemLabel="description"  />
 		            </form:select>
 			 			 </td>

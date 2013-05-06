@@ -77,6 +77,7 @@
       
          <tr>
 			  <th>Name</th>
+              <th>Type</th>
               <th>Description</th>
               <th>Status </th>
           </tr>
@@ -86,7 +87,8 @@
 		<tr>
 
 			<td class="tableEntry"><a href="roleDetail.cnt?domainid=${role.id.serviceId}&roleid=${role.id.roleId}"> ${role.roleName}</a></td>
-			<td class="tableEntry">${role.description}</td>
+            <td class="tableEntry">${role.metadataTypeId}</td>
+            <td class="tableEntry">${role.description}</td>
 			<td class="tableEntry">${role.status}</td>
 		</tr>
 	</c:forEach>
