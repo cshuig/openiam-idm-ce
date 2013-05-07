@@ -37,6 +37,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 //Note: as per spec serviceName goes in impl class and name goes in interface
 
@@ -191,10 +192,11 @@ public class RoleDataServiceImpl implements RoleDataService {
 
 		RoleEntity role = roleDao.findById(new RoleEmbeddableId(serviceId,
 				roleId));
-		Set<RoleAttributeEntity> attrSet = role.getRoleAttributes();
-		if (attrSet != null && attrSet.isEmpty())
+		Set<RoleAttributeEntity> attrSet = role != null ? role.getRoleAttributes() : null;
+		if (CollectionUtils.isEmpty(attrSet))
 			return null;
-		return this.roleAttrSetToArray(attrSet);
+        List<RoleAttribute> roleAttributes = roleAttributeDozerConverter.convertToDTOList(new ArrayList<RoleAttributeEntity>(attrSet),false);
+		return roleAttributes.toArray(new RoleAttribute[roleAttributes.size()]);
 	}
 
 	@Transactional(readOnly = true)

@@ -2033,8 +2033,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     .getLogin(), mLg.getId()
                                     .getDomainId());
 
-                            bindingMap.remove(MATCH_PARAM);
-
                         } else {
 
                             // existing identity

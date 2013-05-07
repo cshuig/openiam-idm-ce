@@ -12,7 +12,7 @@ if (user.locationCd != null && user.locationCd.length() > 0) {
        output=location.name;
     }
 } else {
-    UserAttribute attr = user.getUserAttributes().get("LOCATION");
+    UserAttribute attr = user.getUserAttributes().get("physicalDeliveryOfficeName");
     if(attr != null) {
         output=attr.value;
     }

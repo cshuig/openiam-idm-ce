@@ -68,6 +68,7 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
 
     private static final Log log = LogFactory.getLog(RDBMSAdapter.class);
     private Connection con = null;
+    private int THREAD_DELAY_BEFORE_SECOUNR_RECORD_EXECUTION = 20000;
 
     // synchronization monitor
     private final Object mutex = new Object();
@@ -80,6 +81,8 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
     public SyncResponse startSynch(final SynchConfig config) {
         int THREAD_COUNT = Integer.parseInt(res.getString("rdbmsvadapter.thread.count"));
         int THREAD_DELAY_BEFORE_START = Integer.parseInt(res.getString("rdbmsvadapter.thread.delay.beforestart"));
+        //TODO [Workaround] We set this delay for ActiveDirectory, it needs delay for import module
+        THREAD_DELAY_BEFORE_SECOUNR_RECORD_EXECUTION = Integer.parseInt(res.getString("rdbmsvadapter.thread.delay.workaround_for_ad"));
 
         final ProvisionService provService = (ProvisionService) ac.getBean("defaultProvision");
 
@@ -282,7 +285,17 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
 
     private Timestamp proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, List<LineObject> part, final ValidationScript validationScript, final TransformScript transformScript, int ctr) throws ClassNotFoundException {
         Timestamp mostRecentRecord = null;
+        int rowCounter = 0;
         for (LineObject rowObj : part) {
+            rowCounter ++;
+            if(rowCounter == 2) {
+                try {
+                    Thread.sleep(THREAD_DELAY_BEFORE_SECOUNR_RECORD_EXECUTION);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             log.debug("-RDBMS ADAPTER: SYNCHRONIZING  RECORD # ---" + ctr++);
             // make sure we have a new object for each row
             ProvisionUser pUser = new ProvisionUser();
