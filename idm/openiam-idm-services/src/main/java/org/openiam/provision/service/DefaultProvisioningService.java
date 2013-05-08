@@ -2001,6 +2001,16 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 if (responseType.getStatus() == StatusCodeType.SUCCESS) {
                                     connectorSuccess = true;
                                 }
+                                //add identity if IDM needs
+                                if (connectorSuccess) {
+
+                                    if (!isMngSysIdentityExistsInOpeniam) {
+                                        loginManager.addLogin(mLg);
+                                    } else {
+                                        log.debug("Skipping the creation of identity in openiam repository. Identity already exists"
+                                                + mLg.getId());
+                                    }
+                                }
                             }
 
                             // post processing
@@ -2181,16 +2191,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                         }
 
-                        //add identity if IDM needs
-                        if (connectorSuccess) {
-
-                            if (!isMngSysIdentityExistsInOpeniam) {
-                                loginManager.addLogin(mLg);
-                            } else {
-                                log.debug("Skipping the creation of identity in openiam repository. Identity already exists"
-                                        + mLg.getId());
-                            }
-                        }
                     }
                     bindingMap.remove(MATCH_PARAM);
                 }
