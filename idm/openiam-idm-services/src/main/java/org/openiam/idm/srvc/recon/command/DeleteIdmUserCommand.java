@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
@@ -27,11 +26,11 @@ public class DeleteIdmUserCommand implements ReconciliationCommand {
         this.provisionService = provisionService;
     }
 
-    public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
+    public boolean execute(Login login, ProvisionUser user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering DeleteIdmUserCommand");
         log.debug("Delete  user :" + login.getUserId());
 
-        ProvisionUser pUser = new ProvisionUser();
+        ProvisionUser pUser = user != null ? user : new ProvisionUser();
         pUser.setUserId(login.getUserId());
         pUser.setNotifyTargetSystems(true);
         provisionService.deleteByUserId( pUser, UserStatusEnum.DELETED,"3000");

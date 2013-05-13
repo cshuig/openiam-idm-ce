@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.type.ExtensibleAttribute;
@@ -26,10 +25,10 @@ public class CreateResourceAccountCommand implements ReconciliationCommand {
         this.provisionService = provisionService;
     }
 
-    public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
+    public boolean execute(Login login, ProvisionUser user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering CreateResourceAccountCommand");
         log.debug("Create Resource Account for user: " + user.getUserId());
-        ProvisionUser pUser = new ProvisionUser(user);
+        ProvisionUser pUser = user != null ? user : new ProvisionUser();
         provisionService.modifyUser(pUser);
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }

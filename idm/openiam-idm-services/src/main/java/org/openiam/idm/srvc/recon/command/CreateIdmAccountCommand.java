@@ -2,14 +2,11 @@ package org.openiam.idm.srvc.recon.command;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.service.PopulationScript;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.provision.dto.ProvisionUser;
-import org.openiam.provision.resp.LookupUserResponse;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.script.ScriptFactory;
@@ -48,7 +45,7 @@ public class CreateIdmAccountCommand implements ReconciliationCommand {
         }
     }
 
-    public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
+    public boolean execute(Login login, ProvisionUser user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering CreateIdmAccountCommand");
         if (attributes == null) {
             log.debug("Can't create IDM user without attributes");
@@ -60,7 +57,7 @@ public class CreateIdmAccountCommand implements ReconciliationCommand {
             if (script == null) {
                 log.debug("Error in Population for user because GroovyScript = " + config.getScript() + " wasn't initialized!");
             }
-            ProvisionUser pUser = new ProvisionUser();
+            ProvisionUser pUser = user != null ? user : new ProvisionUser();
             int retval = script.execute(line, pUser);
             if (retval == 0) {
                 log.debug("Population successful for user: " + login.getId());

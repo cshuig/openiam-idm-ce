@@ -5,14 +5,12 @@ import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.connector.type.RemoteUserRequest;
-import org.openiam.connector.type.UserRequest;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.mngsys.dto.ProvisionConnector;
 import org.openiam.idm.srvc.mngsys.service.ConnectorDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ConnectorAdapter;
 import org.openiam.provision.service.ProvisionService;
@@ -50,7 +48,7 @@ public class DeleteResourceAccountCommand implements ReconciliationCommand {
         this.connectorAdapter = connectorAdapter;
     }
 
-    public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
+    public boolean execute(Login login, ProvisionUser user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering DeleteResourceAccountCommand");
         if(user == null) {
             ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
@@ -87,7 +85,7 @@ public class DeleteResourceAccountCommand implements ReconciliationCommand {
             }
         }
 
-        ProvisionUser pUser = new ProvisionUser(user);
+        ProvisionUser pUser = user != null ? user : new ProvisionUser();
         pUser.setPrincipalList(principleList);
 
         provisionService.modifyUser(pUser);

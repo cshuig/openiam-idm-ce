@@ -134,16 +134,25 @@ public class ADPopulationScript implements org.openiam.idm.srvc.recon.service.Po
 
             }
         }
-        if(pUser.getMemberOfRoles() == null || pUser.getActiveMemberOfRoles().isEmpty()) {
-            List<Role> roleList = new ArrayList<Role>();
+        List<Role> roleList = pUser.getMemberOfRoles() != null ? pUser.getMemberOfRoles() : new LinkedList<Role>();
+        boolean isEndUserRoleFound = false;
+        RoleId endUserRoleId = new RoleId("USR_SEC_DOMAIN", "END_USER");
+
+        for(Role role : roleList) {
+            if(role.getId().equals(endUserRoleId)) {
+                isEndUserRoleFound = true;
+                break;
+            }
+        }
+        if(!isEndUserRoleFound) {
             RoleId id = new RoleId("USR_SEC_DOMAIN", "END_USER");
             Role r = new Role();
             r.setId(id);
             roleList.add(r);
             pUser.setMemberOfRoles(roleList);
-            //set status to active: IMPORTANT!!!!
-            pUser.setStatus(UserStatusEnum.PENDING_INITIAL_LOGIN);
         }
+        //set status to active: IMPORTANT!!!!
+        pUser.setStatus(UserStatusEnum.PENDING_INITIAL_LOGIN);
         return retval;
     }
 }

@@ -385,7 +385,7 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 	 * of the values that a User already has This can cause the provisioning
 	 * scripts to fail
 	 * 
-	 * @param origUser
+	 * @param user
 	 */
 	public void updateMissingUserAttributes(User user) {
 

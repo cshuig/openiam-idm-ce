@@ -5,11 +5,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
-import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.type.ExtensibleAttribute;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -27,9 +27,9 @@ public class DeleteIdmAccountCommand implements ReconciliationCommand {
         this.provisionService = provisionService;
     }
 
-    public boolean execute(Login login, User user, List<ExtensibleAttribute> attributes) {
+    public boolean execute(Login login, ProvisionUser user, List<ExtensibleAttribute> attributes) {
         log.debug("Entering DeleteIdmAccountCommand");
-        List<Login> principleList = user.getPrincipalList();
+        List<Login> principleList = user != null ? user.getPrincipalList() : new LinkedList<Login>();
         for(Login l : principleList){
             System.out.println("Checking login");
             if(l.getId().equals(login.getId())){
@@ -39,7 +39,7 @@ public class DeleteIdmAccountCommand implements ReconciliationCommand {
             }
         }
 
-        ProvisionUser pUser = new ProvisionUser(user);
+        ProvisionUser pUser = user != null ? user : new ProvisionUser();
         pUser.setPrincipalList(principleList);
 
         provisionService.modifyUser(pUser);
