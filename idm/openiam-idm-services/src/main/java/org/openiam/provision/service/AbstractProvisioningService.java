@@ -291,17 +291,20 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         try {
             MuleClient client = new MuleClient(muleContext);
 
-            HashMap<String, String> msgPropMap = new HashMap<String, String>();
-            msgPropMap.put(MailTemplateParameters.SERVICE_HOST.value(), serviceHost);
-            msgPropMap.put(MailTemplateParameters.SERVICE_CONTEXT.value(), serviceContext);
-            msgPropMap.put(MailTemplateParameters.USER_ID.value(), user.getUserId());
-            msgPropMap.put(MailTemplateParameters.IDENTITY.value(), identity);
-            msgPropMap.put(MailTemplateParameters.PASSWORD.value(), password);
-            msgPropMap.put(MailTemplateParameters.USER_NAME.value(), name);
-            msgPropMap.put(MailTemplateParameters.FIRST_NAME.value(), user.getFirstName());
-            msgPropMap.put(MailTemplateParameters.LAST_NAME.value(), user.getLastName());
+            HashMap<String, String> msgParamsMap = new HashMap<String, String>();
+            msgParamsMap.put(MailTemplateParameters.SERVICE_HOST.value(), serviceHost);
+            msgParamsMap.put(MailTemplateParameters.SERVICE_CONTEXT.value(), serviceContext);
+            msgParamsMap.put(MailTemplateParameters.USER_ID.value(), user.getUserId());
+            msgParamsMap.put(MailTemplateParameters.IDENTITY.value(), identity);
+            msgParamsMap.put(MailTemplateParameters.PASSWORD.value(), password);
+            msgParamsMap.put(MailTemplateParameters.USER_NAME.value(), name);
+            msgParamsMap.put(MailTemplateParameters.FIRST_NAME.value(), user.getFirstName());
+            msgParamsMap.put(MailTemplateParameters.LAST_NAME.value(), user.getLastName());
 
-            client.sendAsync("vm://notifyUserByEmailMessage", NEW_USER_EMAIL_SUPERVISOR_NOTIFICATION, msgPropMap);
+            Map<String, String> msgProp = new HashMap<String, String>();
+            msgProp.put("SERVICE_HOST", serviceHost);
+            msgProp.put("SERVICE_CONTEXT", serviceContext);
+            client.sendAsync("vm://notifyUserByEmailMessage", new NotificationRequest(NEW_USER_EMAIL_SUPERVISOR_NOTIFICATION, msgParamsMap), msgProp);
 
         } catch (MuleException me) {
             log.error(me.toString());

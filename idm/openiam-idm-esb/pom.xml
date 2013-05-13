@@ -14,7 +14,20 @@
 	<description>OpenIAM ESB Module based on Mule</description>
 
 	<dependencies>
-		<!-- OpenIAM Dependencies -->
+        <!-- provide groovy http builder for IAM scripts -->
+        <dependency>
+            <groupId>org.codehaus.groovy.modules.http-builder</groupId>
+            <artifactId>http-builder</artifactId>
+            <version>0.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- OpenIAM Dependencies -->
 		<dependency>
 			<groupId>org.openiam</groupId>
 			<artifactId>openiam-pojo-services</artifactId>
