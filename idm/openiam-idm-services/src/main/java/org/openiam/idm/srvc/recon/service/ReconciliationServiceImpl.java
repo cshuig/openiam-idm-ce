@@ -266,7 +266,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 }
             }
             //2. Do reconciliation users from IDM to Target Managed System search for all Roles and Groups related with resource
-        /*   for(ResourceRole rRole: res.getResourceRoles()) {
+           for(ResourceRole rRole: res.getResourceRoles()) {
                 List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
                 if(usrIds != null) {
                     for(String userId : usrIds) {
@@ -282,7 +282,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                         }
                     }
                 }
-            }*/
+            }
 
 
 		} catch(Exception e) {
