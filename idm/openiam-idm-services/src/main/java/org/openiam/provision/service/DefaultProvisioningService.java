@@ -151,6 +151,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("org", org);
         bindingMap.put("context", ac);
         bindingMap.put("operation", "ADD");
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
         // run the pre-processor before the body of the add operation
         if (callPreProcessor("ADD", user, bindingMap) != ProvisioningConstants.SUCCESS) {
@@ -433,6 +434,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             log.debug(" - Building principal Name for: "
                                     + managedSysId);
                             // build the primary identity for resource by resource mapping
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_NEW);
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, primaryLogin.getId().getDomainId());
 
                             String newPrincipalName = buildPrincipalName(attrMap,
@@ -1014,6 +1016,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         ProvisionUserResponse response = new ProvisionUserResponse(
                 ResponseStatus.SUCCESS);
         Map<String, Object> bindingMap = new HashMap<String, Object>();
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
         if (status != UserStatusEnum.DELETED && status != UserStatusEnum.LEAVE
                 && status != UserStatusEnum.TERMINATE
@@ -1572,6 +1575,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         String requestId = "R" + UUIDGen.getUUID();
         ScriptIntegration se = null;
         Map<String, Object> bindingMap = new HashMap<String, Object>();
+
         Organization org = null;
         //String primaryLogin = null;
         List<IdmAuditLog> pendingLogItems = new ArrayList<IdmAuditLog>();
@@ -1617,6 +1621,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("org", org);
         bindingMap.put("context", ac);
         bindingMap.put("operation", "MODIFY");
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
         // clone the user object so that we have it for comparison in the
         // scripts
         bindingMap.put("userBeforeModify", new ProvisionUser(origUser));
