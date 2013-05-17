@@ -92,6 +92,7 @@ public class RemoteConnectorAdapter {
 
     private UserResponse send(String eventName, UserRequest request, ProvisionConnector connector, MuleContext muleContext){
         UserResponse resp = new UserResponse();
+        resp.setStatus(StatusCodeType.FAILURE);
         MuleMessage msg = getService(connector, request, connector.getServiceUrl(), eventName, muleContext);
         if (msg != null) {
             log.debug("***Payload=" + msg.getPayload());
@@ -107,10 +108,11 @@ public class RemoteConnectorAdapter {
     }
     private LookupResponse sendLookup(String eventName, LookupRequest request, ProvisionConnector connector, MuleContext muleContext){
         LookupResponse resp = new LookupResponse();
+        resp.setStatus(StatusCodeType.FAILURE);
         MuleMessage msg = getService(connector, request, connector.getServiceUrl(), eventName, muleContext);
         if (msg != null) {
             log.debug("***Payload=" + msg.getPayload());
-            if (msg.getPayload() != null && msg.getPayload() instanceof UserResponse) {
+            if (msg.getPayload() != null && msg.getPayload() instanceof LookupResponse) {
                 return (LookupResponse) msg.getPayload();
             }
             resp.setStatus(StatusCodeType.SUCCESS);
@@ -202,20 +204,17 @@ public class RemoteConnectorAdapter {
         try {
 
             if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
-
-                MuleMessage msg = getService(connector, request, connector.getServiceUrl(), "delete", muleContext);
-                if (msg != null) {
-                    log.debug("***Payload=" + msg.getPayload());
-                    if (msg.getPayload() != null && msg.getPayload() instanceof UserResponse) {
-                        return (UserResponse) msg.getPayload();
-                    }
-                    resp.setStatus(StatusCodeType.SUCCESS);
-                    return resp;
-                } else {
-                    log.debug("MuleMessage is null..");
+                int i = 0;
+                resp = send("delete", request, connector, muleContext);
+                // Check if response has error = "A connection to the directory on which to process the request was unavailable. This is likely a transient condition."
+                // we try to resend request RESEND_COUNT times
+                while((resp.getStatus() == StatusCodeType.FAILURE && resp.getErrorMsgAsStr().toLowerCase().contains(AD_ERROR_THIS_IS_LIKELY_A_TRANSIENT_CONDITION.toLowerCase()))
+                        && i < RESEND_COUNT) {
+                    Thread.sleep(200);
+                    resp = send("delete", request, connector, muleContext);
+                    i++;
                 }
-
-
+                return resp;
             }
         } catch (Exception e) {
             log.error(e);
