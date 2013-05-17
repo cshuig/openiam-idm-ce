@@ -758,6 +758,30 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     }
 
+
+    protected String parseUserPrincipal(List<ExtensibleAttribute> extensibleAttributes) {
+        List<AttributeMap> policyAttrMap = this.managedSysService.getResourceAttributeMaps(sysConfiguration.getDefaultManagedSysId());
+        String principalAttributeName = null;
+        for (AttributeMap attr : policyAttrMap) {
+            String objectType = attr.getMapForObjectType();
+            if (objectType != null) {
+                if (objectType.equalsIgnoreCase("PRINCIPAL")) {
+                    if (attr.getAttributeName().equalsIgnoreCase("PRINCIPAL")) {
+                        principalAttributeName = attr.getAttributeName();
+                        break;
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(principalAttributeName)) {
+            for (ExtensibleAttribute extAttr : extensibleAttributes) {
+                if (extAttr.getName().equalsIgnoreCase(principalAttributeName)) {
+                    return extAttr.getValue();
+                }
+            }
+        }
+        return null;
+    }
     /**
      * when a request already contains an identity and password has not been setup, this method generates a password
      * based on our rules.

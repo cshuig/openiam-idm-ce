@@ -2609,8 +2609,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                 response.setStatus(ResponseStatus.FAILURE);
                 return response;
             }
-            response.setPrincipalName(responseType.getUser().getUserIdentity());
+            String targetPrincipalName = responseType.getUser().getUserIdentity() != null ? responseType.getUser().getUserIdentity()
+                    : parseUserPrincipal(responseType.getUser().getAttributeList());
+            response.setPrincipalName(targetPrincipalName);
             response.setAttrList(responseType.getUser().getAttributeList());
+
             response.setResponseValue(responseType.getUser());
 
 
@@ -2635,7 +2638,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             if (responseType.getAny() != null
                     && responseType.getAny().size() > 0) {
                 ExtensibleObject extObj = responseType.getAny().get(0);
-
+                response.setPrincipalName(parseUserPrincipal(extObj.getAttributes()));
                 response.setAttrList(extObj.getAttributes());
 
             }
