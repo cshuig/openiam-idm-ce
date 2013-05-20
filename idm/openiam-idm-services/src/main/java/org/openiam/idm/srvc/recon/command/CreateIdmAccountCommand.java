@@ -61,12 +61,8 @@ public class CreateIdmAccountCommand implements ReconciliationCommand {
             int retval = script.execute(line, pUser);
             if (retval == 0) {
                 log.debug("Population successful for user: " + login.getId());
-                if (login != null) {
-                    List<Login> pList = new ArrayList<Login>();
-                    pList.add(login);
-                    login.getId().setManagedSysId("0");
-                    pUser.setPrincipalList(pList);
-                }
+                login.getId().setManagedSysId("0");
+                pUser.getPrincipalList().add(login);
                 provisionService.addUser(pUser);
                 //provisionService.modifyUser(pUser);
             } else {

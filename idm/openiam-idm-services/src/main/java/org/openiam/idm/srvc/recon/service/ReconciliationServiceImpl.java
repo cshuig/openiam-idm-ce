@@ -390,6 +390,9 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                     id.setManagedSysId(managedSysId);
                     l.setId(id);
                     ProvisionUser newUser = new ProvisionUser();
+                    //ADD Target user principal
+                    newUser.getPrincipalList().add(l);
+
                     if(role != null) {
                         List<Role> roleList = new ArrayList<Role>();
                         roleList.add(role);
