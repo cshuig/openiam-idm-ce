@@ -424,17 +424,21 @@ public class RemoteConnectorAdapter {
             resp.setError(ErrorCode.INVALID_CONFIGURATION);
             return resp;
         }
-        log.debug("ConnectorAdapter:reconcileRequest called. Resource =" + searchRequest.getSearchQuery());
+        log.debug("RemoteConnectorAdapter:searchRequest called. Search query =" + searchRequest.getSearchQuery());
         try {
             if (connector != null && (connector.getServiceUrl() != null && connector.getServiceUrl().length() > 0)) {
                 //Send search to Remote Connector to get data (e.g. Active Directory via PowershellConnector)
                 MuleMessage msg = getService(connector, searchRequest, connector.getServiceUrl(), "search", muleContext);
                 if (msg != null) {
-                    log.debug("Test connection Payload=" + msg.getPayload());
+                    log.debug("Search Payload=" + msg.getPayload());
                     if (msg.getPayload() != null && msg.getPayload() instanceof ResponseType) {
                         resp = (SearchResponse) msg.getPayload();
-                        if(resp.getStatus() == StatusCodeType.SUCCESS) {
-                              resp.setStatus(StatusCodeType.SUCCESS);
+                        if(resp.getStatus() == StatusCodeType.SUCCESS || resp.getUserList().size() > 0) {
+                            if(resp.getErrorMessage().size() > 0 ) {
+                                log.debug("RemoteConnector Search: error message = " + resp.getErrorMsgAsStr());
+                            }
+                            log.debug("RemoteConnector Search:"+StatusCodeType.SUCCESS);
+                            resp.setStatus(StatusCodeType.SUCCESS);
                             return resp;
                         }
                     }

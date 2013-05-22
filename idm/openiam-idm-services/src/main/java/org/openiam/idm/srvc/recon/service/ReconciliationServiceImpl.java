@@ -246,16 +246,18 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
                 if(usrIds != null) {
                     for(String userId : usrIds) {
-                        reconciliationIDMUserToTargetSys(userId, mSys, situations);
+                     //   reconciliationIDMUserToTargetSys(userId, mSys, situations);
                     }
                 }
                 Group[] groups = roleDataService.getGroupsInRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
                 if(groups != null) {
                     for(Group gr : groups) {
-                        usrIds = groupDataService.getUsersIdsByGroup(gr.getGrpId());
-                        for(String userId : usrIds) {
-                            reconciliationIDMUserToTargetSys(userId, mSys, situations);
-                        }
+                        /*usrIds = groupDataService.getUsersIdsByGroup(gr.getGrpId());
+                        if(usrIds != null){
+                            for(String userId : usrIds) {
+                                reconciliationIDMUserToTargetSys(userId, mSys, situations);
+                            }
+                        }*/
                     }
                 }
             }
@@ -265,6 +267,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                 Map<String, Object> map = new HashMap<String, Object>();
                 Role role = roleDataService.getRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
                 map.put("role",role);
+                map.put("group",null);
                 for(RoleAttribute roleAttr : role.getRoleAttributes()) {
                     if("ROLE".equalsIgnoreCase(roleAttr.getName())) {
                         baseDnField = roleAttr.getValue();
@@ -279,6 +282,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                     for(Group gr : groups) {
                         //GET Users from Connector for specific Group
                         map = new HashMap<String, Object>();
+                        map.put("role",null);
                         map.put("group",gr);
                         processingTargetToIDM(role, gr, config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
                     }
@@ -302,6 +306,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
             //TODO log error
             return;
         }
+        log.debug("processingTargetToIDM: mSys="+mSys);
         SearchRequest searchRequest = new SearchRequest();
         String requestId = "R" + UUIDGen.getUUID();
         searchRequest.setRequestID(requestId);
@@ -309,7 +314,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         searchRequest.setScriptHandler(mSys.getSearchHandler());
         searchRequest.setSearchValue(keyField);
         searchRequest.setSearchQuery(searchQuery);
-        searchRequest.setTargetID(mSys.getManagedSysId());
+        searchRequest.setTargetID(managedSysId);
         searchRequest.setHostUrl(mSys.getHostUrl());
         searchRequest.setHostPort(mSys.getPort().toString());
         searchRequest.setHostLoginId(mSys.getUserId());
