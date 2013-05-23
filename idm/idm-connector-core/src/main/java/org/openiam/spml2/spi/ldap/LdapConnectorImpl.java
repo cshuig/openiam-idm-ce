@@ -840,6 +840,8 @@ public class LdapConnectorImpl extends AbstractSpml2Complete implements Connecto
         log.debug("Search Filter=" + searchFilter);
         log.debug("Searching BaseDN=" + objectBaseDN);
 
+        searchCtls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
         return ctx.search(objectBaseDN, searchFilter, searchCtls);
     }
 

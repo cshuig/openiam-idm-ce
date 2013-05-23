@@ -21,23 +21,23 @@ import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.continfo.dto.Phone;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
-import org.openiam.idm.srvc.continfo.dto.ContactConstants
-import javax.xml.ws.Service
-import javax.xml.namespace.QName
+import org.openiam.idm.srvc.continfo.dto.ContactConstants;
+import javax.xml.ws.Service;
+import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPBinding;
 
 
 public class TransformActiveDirRecord extends AbstractTransformScript {
 
     /* constants - maps to a managed sys id*/
-    static String BASE_URL= "http://localhost:8080/openiam-idm-esb/idmsrvc";
-    static String DOMAIN = "USR_SEC_DOMAIN";
-    static String AD_MANAGED_SYS_ID = "110";
-    static String defaultRole = "END_USER";
-    static boolean KEEP_AD_ID = true;
-    static boolean IDENTITY_ATTRIBUTE = "sAMAccountName";
-   //static boolean IDENTITY_ATTRIBUTE = "userPrincipalName"; 
-   //static boolean IDENTITY_ATTRIBUTE = "distinguishedName";
+    static String BASE_URL= "http://localhost:9090/idmsrvc";
+    String DOMAIN = "USR_SEC_DOMAIN";
+    String AD_MANAGED_SYS_ID = "110";
+    String defaultRole = "END_USER";
+    boolean KEEP_AD_ID = true;
+    String IDENTITY_ATTRIBUTE = "sAMAccountName";
+   //String IDENTITY_ATTRIBUTE = "userPrincipalName";
+   //String IDENTITY_ATTRIBUTE = "distinguishedName";
 
 	public int execute(LineObject rowObj, ProvisionUser pUser) {
 
@@ -52,30 +52,32 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
         println("");
 
 		populateObject(rowObj, pUser);
-		
+
 
 		pUser.setStatus(UserStatusEnum.ACTIVE);
 		pUser.securityDomain = "0"
-		
-	
-		
-		// Set default role
-		List<Role> roleList = new ArrayList<Role>();
+
+
+
+		// Add default role
+        if(userRoleList == null) {
+            userRoleList = new LinkedList<Role>();
+        }
 		RoleId id = new RoleId(DOMAIN, defaultRole);
 		Role r = new Role();
 		r.setId(id);
-		roleList.add(r);
-		
-		pUser.setMemberOfRoles(roleList);
-			
+        userRoleList.add(r);
+
+		pUser.setMemberOfRoles(userRoleList);
+
 		return TransformScript.NO_DELETE;
 	}
-	
+
 	private void populateObject(LineObject rowObj, ProvisionUser pUser) {
 		Attribute attrVal = null;
 		DateFormat df =  new SimpleDateFormat("MM-dd-yyyy");
         List<Login> principalList = new ArrayList<Login>();
-		
+
 		Map<String,Attribute> columnMap =  rowObj.getColumnMap();
         def OrganizationDataService orgService = orgService();
         String sAMAccountName = null;
@@ -117,14 +119,14 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
 		if (attrVal != null && attrVal.value != null) {
 			pUser.setFirstName(attrVal.getValue());
 		}
-		
+
 		attrVal = columnMap.get("sn");
 		if (attrVal != null && attrVal.value != null) {
 			pUser.setLastName(attrVal.getValue());
 		}
-		
 
-		
+
+
 		attrVal = columnMap.get("mail");
 		if (attrVal != null && attrVal.value != null ) {
           // check if we already have a value for EMAIL1
@@ -133,12 +135,12 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
 
 		}
 
-	
-		
+
+
 		attrVal = columnMap.get("street");
 		if (attrVal != null && attrVal.value != null) {
 			pUser.address1 = attrVal.getValue();
-		}			
+		}
 
         attrVal = columnMap.get("l");
         if (attrVal != null && attrVal.value != null) {
@@ -181,7 +183,7 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
             addPhone("FAX", attrVal, pUser, user);
 
         }
-        
+
         attrVal = columnMap.get("title");
         if (attrVal != null && attrVal.getValue() != null) {
 
@@ -194,7 +196,7 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
             pUser.employeeId = attrVal.getValue();
 
         }
-        
+
 
         if (KEEP_AD_ID) {
 
@@ -210,18 +212,19 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
                     Login lg = new Login();
                     lg.id = new LoginId(DOMAIN, attrVal.value, "0");
                     principalList.add(lg);
-                    
-                    Login lg2 = new Login();
-                    lg2.id = new LoginId(DOMAIN, attrVal.value, AD_MANAGED_SYS_ID);
-                    principalList.add(lg);
-                    
+
+                    /*  AD target system identity  */
+                 ///   Login lg2 = new Login();
+                 ///   lg2.id = new LoginId(DOMAIN, attrVal.value, AD_MANAGED_SYS_ID);
+                 ///   principalList.add(lg2);
+
                     pUser.principalList = principalList;
                 }
 
 
-            } 
+            }
 
-            
+
         }
 
         if (!principalList.isEmpty()) {
@@ -291,7 +294,7 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
     }
 
     private void addAttribute(ProvisionUser user, Attribute attr) {
-		
+
 		if (attr != null && attr.getName() != null && attr.getName().length() > 0) {
 			UserAttribute userAttr = new UserAttribute(attr.getName(), attr.getValue());
 			user.getUserAttributes().put(attr.getName(), userAttr);

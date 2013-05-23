@@ -144,9 +144,8 @@ public class ADPopulationScript implements org.openiam.idm.srvc.recon.service.Po
             }
         }
         if(!isEndUserRoleFound) {
-            RoleId id = new RoleId("USR_SEC_DOMAIN", "END_USER");
             Role r = new Role();
-            r.setId(id);
+            r.setId(endUserRoleId);
             roleList.add(r);
             pUser.setMemberOfRoles(roleList);
         }

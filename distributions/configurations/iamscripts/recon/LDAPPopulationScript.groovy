@@ -138,9 +138,8 @@ public class LDAPPopulationScript implements org.openiam.idm.srvc.recon.service.
           }
         }
         if(!isEndUserRoleFound) {
-            RoleId id = new RoleId("USR_SEC_DOMAIN", "END_USER");
             Role r = new Role();
-            r.setId(id);
+            r.setId(endUserRoleId);
             roleList.add(r);
             pUser.setMemberOfRoles(roleList);
         }
