@@ -31,9 +31,7 @@ import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
 import org.openiam.idm.srvc.audit.service.AuditHelper;
-import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
-import org.openiam.idm.srvc.role.service.RoleDataService;
 import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.synch.dto.Attribute;
 import org.openiam.idm.srvc.synch.dto.LineObject;
@@ -142,65 +140,73 @@ public class LdapAdapter implements SourceAdapter {
             // rule used to match object from source system to data in IDM
             final MatchObjectRule matchRule = matchRuleFactory.create(config);
 
-            NamingEnumeration<SearchResult> results = search(config);
-            List<SearchResult> resultList = Collections.list(results);
-            int allRowsCount = resultList.size();
-            int threadCoount = THREAD_COUNT;
-            int rowsInOneExecutors = allRowsCount / threadCoount;
-            int remains = allRowsCount % (rowsInOneExecutors * threadCoount);
-            if (remains != 0) {
-                threadCoount++;
-            }
-            log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+            List<String> ouList = buildOUList(ctx, config.getBaseDn());
 
-            List<Future> threadResults = new LinkedList<Future>();
-            final ExecutorService service = Executors.newCachedThreadPool();
-            for (int i = 0; i < threadCoount; i++) {
-                final int startIndex = i * rowsInOneExecutors;
-                int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount -1 ? remains : rowsInOneExecutors;
+            for (String s : ouList) {
 
-                final List<SearchResult> part = resultList.subList(startIndex, startIndex + shiftIndex);
-                threadResults.add(service.submit(new Runnable() {
-                    @Override
+                // modify the baseDN to leverage existing code
+                config.setBaseDn(s);
+
+                NamingEnumeration<SearchResult> results = search(config);
+                List<SearchResult> resultList = Collections.list(results);
+                int allRowsCount = resultList.size();
+                int threadCoount = THREAD_COUNT;
+                int rowsInOneExecutors = allRowsCount / threadCoount;
+                int remains = allRowsCount % (rowsInOneExecutors * threadCoount);
+                if (remains != 0) {
+                    threadCoount++;
+                }
+                log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+
+                List<Future> threadResults = new LinkedList<Future>();
+                final ExecutorService service = Executors.newCachedThreadPool();
+                for (int i = 0; i < threadCoount; i++) {
+                    final int startIndex = i * rowsInOneExecutors;
+                    int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount - 1 ? remains : rowsInOneExecutors;
+
+                    final List<SearchResult> part = resultList.subList(startIndex, startIndex + shiftIndex);
+                    threadResults.add(service.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                proccess(config, provService, synchStartLog, validationScript, transformScript, matchRule, startIndex, part);
+                            } catch (NamingException ne) {
+
+
+                                log.error(ne);
+
+                                synchStartLog.updateSynchAttributes("FAIL", ResponseCode.DIRECTORY_NAMING_EXCEPTION.toString(), ne.toString());
+                                auditHelper.logEvent(synchStartLog);
+
+                                SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+                                resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
+                                resp.setErrorText(ne.toString());
+                            }
+                        }
+                    }));
+                }
+                Runtime.getRuntime().addShutdownHook(new Thread() {
                     public void run() {
+                        service.shutdown();
                         try {
-                            proccess(config, provService, synchStartLog, validationScript, transformScript, matchRule, startIndex, part);
-                        } catch (NamingException ne) {
+                            if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
+                                log.warn("Executor did not terminate in the specified time."); //optional *
+                                List<Runnable> droppedTasks = service.shutdownNow(); //optional **
+                                log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
+                            }
+                        } catch (InterruptedException e) {
+                            log.error(e);
 
-
-                            log.error(ne);
-
-                            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.DIRECTORY_NAMING_EXCEPTION.toString(), ne.toString());
+                            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
                             auditHelper.logEvent(synchStartLog);
 
                             SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                            resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
-                            resp.setErrorText(ne.toString());
+                            resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
                         }
                     }
-                }));
+                });
+                waitUntilWorkDone(threadResults);
             }
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    service.shutdown();
-                    try {
-                        if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
-                            log.warn("Executor did not terminate in the specified time."); //optional *
-                            List<Runnable> droppedTasks = service.shutdownNow(); //optional **
-                            log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
-                        }
-                    } catch (InterruptedException e) {
-                        log.error(e);
-
-                        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
-                        auditHelper.logEvent(synchStartLog);
-
-                        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                        resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
-                    }
-                }
-            });
-            waitUntilWorkDone(threadResults);
 
 
         } catch (ClassNotFoundException cnfe) {
@@ -465,7 +471,8 @@ public class LdapAdapter implements SourceAdapter {
         String attrIds[] = {"1.1", "+", "*", "accountUnlockTime", "aci", "aclRights", "aclRightsInfo", "altServer", "attributeTypes", "changeHasReplFixupOp", "changeIsReplFixupOp", "copiedFrom", "copyingFrom", "createTimestamp", "creatorsName", "deletedEntryAttrs", "dITContentRules", "dITStructureRules", "dncomp", "ds-pluginDigest", "ds-pluginSignature", "ds6ruv", "dsKeyedPassword", "entrydn", "entryid", "hasSubordinates", "idmpasswd", "isMemberOf", "ldapSchemas", "ldapSyntaxes", "matchingRules", "matchingRuleUse", "modDNEnabledSuffixes", "modifiersName", "modifyTimestamp", "nameForms", "namingContexts", "nsAccountLock", "nsBackendSuffix", "nscpEntryDN", "nsds5ReplConflict", "nsIdleTimeout", "nsLookThroughLimit", "nsRole", "nsRoleDN", "nsSchemaCSN", "nsSizeLimit", "nsTimeLimit", "nsUniqueId", "numSubordinates", "objectClasses", "parentid", "passwordAllowChangeTime", "passwordExpirationTime", "passwordExpWarned", "passwordHistory", "passwordPolicySubentry", "passwordRetryCount", "pwdAccountLockedTime", "pwdChangedTime", "pwdFailureTime", "pwdGraceUseTime", "pwdHistory", "pwdLastAuthTime", "pwdPolicySubentry", "pwdReset", "replicaIdentifier", "replicationCSN", "retryCountResetTime", "subschemaSubentry", "supportedControl", "supportedExtension", "supportedLDAPVersion", "supportedSASLMechanisms", "supportedSSLCiphers", "targetUniqueId", "vendorName", "vendorVersion"};
 
         SearchControls searchCtls = new SearchControls();
-        searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        //searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchCtls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         searchCtls.setReturningAttributes(attrIds);
 
         String searchFilter = config.getQuery();
@@ -473,6 +480,51 @@ public class LdapAdapter implements SourceAdapter {
         return ctx.search(config.getBaseDn(), searchFilter, searchCtls);
 
 
+    }
+
+    private List<String> buildOUList(LdapContext ctx, String baseDN) throws NamingException {
+
+        String attrIds[] = {"distinguishedName"};
+
+        List<String> ouList = new LinkedList<String>();
+
+
+        SearchControls searchCtls = new SearchControls();
+        searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchCtls.setReturningAttributes(attrIds);
+
+        String searchFilter = "(&(objectclass=organizationalUnit))";
+
+
+        NamingEnumeration<SearchResult> results = ctx.search(baseDN, searchFilter, searchCtls);
+        List<SearchResult> resultList = Collections.list(results);
+
+        for (SearchResult sr : resultList) {
+            Attributes attrs = sr.getAttributes();
+
+            if (attrs != null) {
+
+                for (NamingEnumeration ae = attrs.getAll(); ae.hasMore(); ) {
+
+                    javax.naming.directory.Attribute attr = (javax.naming.directory.Attribute) ae.next();
+
+                    for (NamingEnumeration e = attr.getAll(); e.hasMore(); ) {
+                        Object o = e.next();
+                        if (o.toString() != null) {
+                            ouList.add(o.toString());
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+        // if we dont have child OUs, then only look at the baseDN
+        if (ouList.isEmpty()) {
+            ouList.add(baseDN);
+        }
+        return ouList;
     }
 
 
