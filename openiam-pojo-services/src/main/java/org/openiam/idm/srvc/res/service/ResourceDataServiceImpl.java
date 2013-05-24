@@ -1141,9 +1141,9 @@ public class ResourceDataServiceImpl implements ResourceDataService {
             throw new IllegalArgumentException("roleIdList is null");
         }
         List<ResourceEntity> resourceEntities = resourceDao.findResourcesForRoles(domainId, roleIdList);
-
-        return resourceConverter.convertToDTOList(resourceEntities, false);
-    }
+        // isDeep used in DefaultProvisionService for res.getResourceProps()
+        return resourceConverter.convertToDTOList(resourceEntities, true);
+}
 
     /**
      * Add a resource role privilege
