@@ -94,7 +94,6 @@ public class LdapAdapter implements SourceAdapter {
 
     public SyncResponse startSynch(final SynchConfig config) {
 
-        int THREAD_COUNT = Integer.parseInt(res.getString("csvadapter.thread.count"));
         // String changeLog = null;
         // Date mostRecentRecord = null;
         //    long mostRecentRecord = 0L;
@@ -140,86 +139,72 @@ public class LdapAdapter implements SourceAdapter {
             // rule used to match object from source system to data in IDM
             final MatchObjectRule matchRule = matchRuleFactory.create(config);
 
-            List<String> ouList = buildOUList(ctx, config.getBaseDn());
-
-            List<SearchResult> resultList = new LinkedList<SearchResult>();
-            for (String s : ouList) {
-
-                // modify the baseDN to leverage existing code
-                config.setBaseDn(s);
-                  try {
-                    NamingEnumeration<SearchResult> results = search(config);
-                    resultList.addAll(Collections.list(results));
-                } catch (NamingException ne) {
+            final List<String> ouList = buildOUList(ctx, config.getBaseDn());
 
 
-                    log.error(ne);
-
-                    synchStartLog.updateSynchAttributes("FAIL", ResponseCode.DIRECTORY_NAMING_EXCEPTION.toString(), ne.toString());
-                    auditHelper.logEvent(synchStartLog);
-
-                    SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                    resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
-                    resp.setErrorText(ne.toString());
-                }
+            log.debug("[LDAPAdapter] count of OU for processing = " + ouList.size() + ";\n  " + ouList);
+            for (String ou : ouList) {
+                log.debug(ou);
             }
-            int allRowsCount = resultList.size();
-                int threadCoount = THREAD_COUNT;
-                int rowsInOneExecutors = allRowsCount / threadCoount;
-                int remains = allRowsCount % (rowsInOneExecutors * threadCoount);
-                if (remains != 0) {
-                    threadCoount++;
-                }
-                log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-
-                List<Future> threadResults = new LinkedList<Future>();
-                final ExecutorService service = Executors.newCachedThreadPool();
-                for (int i = 0; i < threadCoount; i++) {
-                    final int startIndex = i * rowsInOneExecutors;
-                    int shiftIndex = threadCoount > THREAD_COUNT && i == threadCoount - 1 ? remains : rowsInOneExecutors;
-
-                    final List<SearchResult> part = resultList.subList(startIndex, startIndex + shiftIndex);
-                    threadResults.add(service.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                proccess(config, provService, synchStartLog, validationScript, transformScript, matchRule, startIndex, part);
-                            } catch (NamingException ne) {
 
 
-                                log.error(ne);
+            List<Future> threadResults = new LinkedList<Future>();
+            final ExecutorService service = Executors.newCachedThreadPool();
+            threadResults.add(service.submit(new Runnable() {
+                @Override
+                public void run() {
 
-                                synchStartLog.updateSynchAttributes("FAIL", ResponseCode.DIRECTORY_NAMING_EXCEPTION.toString(), ne.toString());
-                                auditHelper.logEvent(synchStartLog);
+                    for (String s : ouList) {
 
-                                SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                                resp.setErrorCode(ResponseCode.CLASS_NOT_FOUND);
-                                resp.setErrorText(ne.toString());
-                            }
-                        }
-                    }));
-                }
-                Runtime.getRuntime().addShutdownHook(new Thread() {
-                    public void run() {
-                        service.shutdown();
+                        log.debug("[LDAPAdapter] OU=" + s + " starting processing ...");
+                        // modify the baseDN to leverage existing code
+
                         try {
-                            if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
-                                log.warn("Executor did not terminate in the specified time."); //optional *
-                                List<Runnable> droppedTasks = service.shutdownNow(); //optional **
-                                log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
-                            }
-                        } catch (InterruptedException e) {
-                            log.error(e);
+                            config.setBaseDn(s);
 
-                            synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
-                            auditHelper.logEvent(synchStartLog);
+                            NamingEnumeration<SearchResult> results = search(config);
 
-                            SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
-                            resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
+                            List<SearchResult> resultList = new LinkedList<SearchResult>();
+                            resultList.addAll(Collections.list(results));
+
+                            log.debug("[LDAPAdapter] OU=\"" + s + "\" starting processing ...");
+                            proccess(config, provService, synchStartLog, validationScript, transformScript, matchRule, 0, resultList);
+
+                        } catch (Exception ne) {
+
+
+                            log.error(ne);
+
+                  //          synchStartLog.updateSynchAttributes("FAIL", ResponseCode.DIRECTORY_NAMING_EXCEPTION.toString(), ne.toString());
+                   //         auditHelper.logEvent(synchStartLog);
                         }
                     }
-                });
-                waitUntilWorkDone(threadResults);
+
+
+                }
+            }));
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    service.shutdown();
+                    try {
+                        if (!service.awaitTermination(SHUTDOWN_TIME, TimeUnit.MILLISECONDS)) { //optional *
+                            log.warn("Executor did not terminate in the specified time."); //optional *
+                            List<Runnable> droppedTasks = service.shutdownNow(); //optional **
+                            log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed."); //optional **
+                        }
+                    } catch (InterruptedException e) {
+                        log.error(e);
+
+                        synchStartLog.updateSynchAttributes("FAIL", ResponseCode.INTERRUPTED_EXCEPTION.toString(), e.toString());
+                        auditHelper.logEvent(synchStartLog);
+
+                        SyncResponse resp = new SyncResponse(ResponseStatus.FAILURE);
+                        resp.setErrorCode(ResponseCode.INTERRUPTED_EXCEPTION);
+                    }
+                }
+            });
+            waitUntilWorkDone(threadResults);
 
 
         } catch (ClassNotFoundException cnfe) {
@@ -280,6 +265,7 @@ public class LdapAdapter implements SourceAdapter {
 
     private void proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, ValidationScript validationScript, TransformScript transformScript, MatchObjectRule matchRule, int ctr, List<SearchResult> part) throws NamingException {
         for (SearchResult sr : part) {
+            System.out.println("LDAPAdapter processing: "+sr);
             Attributes attrs = sr.getAttributes();
 
             ProvisionUser pUser = new ProvisionUser();
@@ -477,7 +463,7 @@ public class LdapAdapter implements SourceAdapter {
 
     }
 
-    private NamingEnumeration<SearchResult> search(SynchConfig config) throws NamingException {
+    private NamingEnumeration<SearchResult> search(SynchConfig config) throws Exception {
 
         // String attrIds[] = {"1.1", "+", "*"};
 
@@ -490,9 +476,11 @@ public class LdapAdapter implements SourceAdapter {
 
         String searchFilter = config.getQuery();
 
-        return ctx.search(config.getBaseDn(), searchFilter, searchCtls);
+        NamingEnumeration<SearchResult> searchResult = null;
 
-
+        searchResult = ctx.search(config.getBaseDn(), searchFilter, searchCtls);
+        log.debug("Search by OU = \""+config.getBaseDn()+"\" complited.");
+        return searchResult;
     }
 
     private List<String> buildOUList(LdapContext ctx, String baseDN) throws NamingException {

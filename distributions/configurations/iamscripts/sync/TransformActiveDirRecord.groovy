@@ -275,8 +275,12 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
                 if (name.equalsIgnoreCase(p.getName())) {
 
                     // assumes phone format is:  xxx-xxx-xxxx
-                    p.setAreaCd(phoneString.substring(0,3));
-                    p.setPhoneNbr(phoneString.substring(4));
+                    if(phoneString.length()>4) {
+                        p.setAreaCd(phoneString.substring(0,3));
+                        p.setPhoneNbr(phoneString.substring(4));
+                    } else {
+                        p.setPhoneNbr(phoneString);
+                    }
                     pUser.getPhones().add(p);
                     return;
 
@@ -285,8 +289,13 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
             }
         }
         Phone newPhone = new Phone();
-        newPhone.setAreaCd(phoneString.substring(0,3));
-        newPhone.setPhoneNbr(phoneString.substring(4));
+
+        if(phoneString.length()>4) {
+            p.setAreaCd(phoneString.substring(0,3));
+            p.setPhoneNbr(phoneString.substring(4));
+        } else {
+            p.setPhoneNbr(phoneString);
+        }
         newPhone.setParentType(ContactConstants.PARENT_TYPE_USER);
         newPhone.setName(name);
         pUser.getPhones().add(newPhone);
