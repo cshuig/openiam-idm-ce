@@ -149,7 +149,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("sysId", sysConfiguration.getDefaultManagedSysId());
         bindingMap.put("user", user);
         bindingMap.put("org", org);
-        bindingMap.put("context", ac);
+        bindingMap.put(APP_CONTEXT, ac);
         bindingMap.put("operation", "ADD");
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
@@ -850,6 +850,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         IdmAuditLog auditLog = null;
         Map<String, Object> bindingMap = new HashMap<String, Object>();
+        bindingMap.put(APP_CONTEXT, ac);
 
         ProvisionUserResponse response = new ProvisionUserResponse(
                 ResponseStatus.SUCCESS);
@@ -1016,6 +1017,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         ProvisionUserResponse response = new ProvisionUserResponse(
                 ResponseStatus.SUCCESS);
         Map<String, Object> bindingMap = new HashMap<String, Object>();
+        bindingMap.put(APP_CONTEXT, ac);
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
         if (status != UserStatusEnum.DELETED && status != UserStatusEnum.LEAVE
@@ -1619,7 +1621,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("sysId", sysConfiguration.getDefaultManagedSysId());
         // bindingMap.put("user", pUser.getUser());
         bindingMap.put("org", org);
-        bindingMap.put("context", ac);
+        bindingMap.put(APP_CONTEXT, ac);
         bindingMap.put("operation", "MODIFY");
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
         // clone the user object so that we have it for comparison in the

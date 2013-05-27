@@ -107,6 +107,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     MuleContext muleContext;
 
+    public static final String APP_CONTEXT = "context";
     public static final String MATCH_PARAM = "matchParam";
     public static final String TARGET_SYSTEM_IDENTITY_STATUS = "targetSystemIdentityStatus";
     public static final String TARGET_SYSTEM_IDENTITY = "targetSystemIdentity";
