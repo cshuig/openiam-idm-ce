@@ -2034,7 +2034,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             if (!connectorSuccess) {
                                 resp.setStatus(ResponseStatus.FAILURE);
                                 resp.setErrorCode(ResponseCode.FAIL_CONNECTOR);
-                                return resp;
+                                continue;
                             }
 
                             auditHelper.addLog("ADD IDENTITY", pUser
