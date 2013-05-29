@@ -1787,9 +1787,18 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         return null;
     }
 
+    /**
+     * Get the Login based on the ManagedSysId and DomainID
+     * @param loginId
+     * @param loginList
+     * @return
+     */
     private Login getPrincipal(LoginId loginId, List<Login> loginList) {
+
         for (Login lg : loginList ) {
-            if (lg.getId().getManagedSysId().equals(loginId.getManagedSysId())) {
+            LoginId id = lg.getId();
+            if (id.getManagedSysId().equals(loginId.getManagedSysId())  &&
+                id.getDomainId().equals(loginId.getDomainId())  ) {
                 return lg;
             }
         }
@@ -2011,7 +2020,12 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                             newLg.setPassword(null);
                         }else {
                             try {
-                                newLg.setPassword(loginManager.encryptPassword(newPassword));
+
+                                // update the password only if they are different
+                                if (!newLg.getPassword().equals(origLogin.getPassword())) {
+
+                                    newLg.setPassword(loginManager.encryptPassword(newPassword));
+                                }
                             }catch(EncryptionException e) {
                                 log.error(e);
                                 e.printStackTrace();
