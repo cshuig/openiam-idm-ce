@@ -296,7 +296,7 @@ public class LdapAdapter implements SourceAdapter {
                     if (valueList.size() > 0) {
                         Attribute rowAttr = new Attribute();
                         rowAttr.populateAttribute(key, valueList);
-                        rowObj.put(key, rowAttr);
+                        rowObj.put(key.toLowerCase(), rowAttr);
                     } else {
                         log.debug("- value is null");
                     }

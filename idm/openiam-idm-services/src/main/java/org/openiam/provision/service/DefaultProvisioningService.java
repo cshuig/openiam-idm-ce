@@ -1941,7 +1941,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_NEW);
                             bindingMap.put(TARGET_SYSTEM_ATTRIBUTES, null);
 
-
                             bindingMap
                                     .put(TARGET_SYSTEM_IDENTITY, isMngSysIdentityExistsInOpeniam ? mLg.getId().getLogin() : null);
 
@@ -1983,7 +1982,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             if (connector.getConnectorInterface() != null
                                     && connector.getConnectorInterface()
                                     .equalsIgnoreCase("REMOTE")) {
-
+                                // update the group operation to ADD, because it is the new record for Target system
+                                for(Group group : curGroupList) {
+                                     group.setOperation(AttributeOperationEnum.ADD);
+                                }
                                 connectorSuccess = remoteAdd(mLg, requestId,
                                         mSys, matchObj, extUser, connector, auditLog);
 
