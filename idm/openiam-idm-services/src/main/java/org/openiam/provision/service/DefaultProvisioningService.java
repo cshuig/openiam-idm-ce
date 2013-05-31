@@ -1906,9 +1906,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 buildPrimaryPrincipal(pUser, bindingMap, se);
                             }
 
-                            Login primaryLogin = pUser.getPrimaryPrincipal(sysConfiguration
-                                    .getDefaultManagedSysId());
-
                             log.debug(" - Building principal Name for: "
                                     + managedSysId);
                             String newPrincipalName = buildPrincipalName(attrMap,
@@ -1917,12 +1914,12 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             mLg = new Login();
                             // get the current object as it stands in the target
                             // system
-                            LoginId resLoginId = new LoginId(primaryLogin.getId()
-                                    .getDomainId(), newPrincipalName, managedSysId);
+                            log.debug(" - PrimaryIdentity for build new identity for target system = "+primaryIdentity);
+                            LoginId resLoginId = new LoginId(primaryIdentity.getId().getDomainId(), newPrincipalName, managedSysId);
 
                             mLg.setId(resLoginId);
-                            mLg.setPassword(primaryLogin.getPassword());
-                            mLg.setUserId(primaryLogin.getUserId());
+                            mLg.setPassword(primaryIdentity.getPassword());
+                            mLg.setUserId(primaryIdentity.getUserId());
                         }
                         // get the attributes at the target system
                         // this lookup only for getting attributes from the system
@@ -1983,8 +1980,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     && connector.getConnectorInterface()
                                     .equalsIgnoreCase("REMOTE")) {
                                 // update the group operation to ADD, because it is the new record for Target system
-                                for(Group group : curGroupList) {
-                                     group.setOperation(AttributeOperationEnum.ADD);
+                                if(curGroupList != null) {
+                                    for(Group group : curGroupList) {
+                                         group.setOperation(AttributeOperationEnum.ADD);
+                                    }
                                 }
                                 connectorSuccess = remoteAdd(mLg, requestId,
                                         mSys, matchObj, extUser, connector, auditLog);
