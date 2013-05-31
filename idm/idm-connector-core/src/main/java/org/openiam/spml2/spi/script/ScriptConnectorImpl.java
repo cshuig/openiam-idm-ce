@@ -27,6 +27,7 @@ import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemObjectMatchDAO;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.base.AbstractSpml2Complete;
@@ -243,7 +244,7 @@ public class ScriptConnectorImpl extends AbstractSpml2Complete implements Connec
         ScriptIntegration se = ScriptFactory.createModule(this.scriptEngine);
         Map<String, Object> bindingMap = new HashMap<String, Object>();
         bindingMap.put("managedSys", managedSys);
-        return (ConnectorService) se.instantiateClass(bindingMap, connectorPath);
+        return (ConnectorService) se.instantiateClass(new BindingModelImpl(bindingMap, null), connectorPath);
     }
 
     public ManagedSystemDataService getManagedSysService() {

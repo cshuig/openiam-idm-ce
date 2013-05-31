@@ -32,6 +32,7 @@ import org.openiam.idm.srvc.auth.dto.*;
 import org.openiam.idm.srvc.pswd.service.PasswordService;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
+import org.openiam.script.BindingModelImpl;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -501,7 +502,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				bindingMap.put("user", user);
 
 				ScriptIntegration se = ScriptFactory.createModule(this.scriptEngine);
-				loginModName = (String)se.execute(bindingMap, selPolicy.getValue1());
+				loginModName = (String)se.execute(new BindingModelImpl(bindingMap, null), selPolicy.getValue1());
 
 				log.debug("LoginModName from script =" + loginModName);
 
@@ -746,7 +747,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				bindingMap.put("user", user);
 						
 				ScriptIntegration se = ScriptFactory.createModule(this.scriptEngine); 
-				loginModName = (String)se.execute(bindingMap, selPolicy.getValue1());
+				loginModName = (String)se.execute(new BindingModelImpl(bindingMap, null), selPolicy.getValue1());
 				
 				log.debug("LoginModName from script =" + loginModName);
 				

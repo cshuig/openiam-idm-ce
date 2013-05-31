@@ -29,6 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -61,9 +63,9 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
     }
 
     @Override
-    public Object execute(Map<String, Object> bindingMap, String scriptName) {
+    public Object execute(BindingModel bindingModel, String scriptName) {
         init();
-
+        Map<String, Object> bindingMap = bindingModel != null ? bindingModel.getBindingMap() : new HashMap<String, Object>();
         try {
             Binding binding = new Binding();
             if (bindingMap != null) {
@@ -82,7 +84,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
     }
 
     @Override
-    public Object instantiateClass(Map<String, Object> bindingMap, String scriptName) throws IOException {
+    public Object instantiateClass(BindingModel bindingModel, String scriptName) throws IOException {
         log.info("instantiateClass called.");
 
         GroovyClassLoader gcl = new GroovyClassLoader();
@@ -91,7 +93,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
             String fullPath = scriptPath + scriptName;
             Class cl = gcl.parseClass(new File(fullPath));
             Object instance = cl.newInstance();
-
+            Map<String, Object> bindingMap = bindingModel.getBindingMap();
             if (bindingMap != null) {
                 for (String key : bindingMap.keySet()) {
                     try {

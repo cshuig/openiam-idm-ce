@@ -30,7 +30,7 @@ import java.util.Map;
  * @author suneet
  */
 public interface ScriptIntegration {
-    public Object execute(Map<String, Object> bindingMap, String scriptName);
+    public Object execute(BindingModel bindingModel, String scriptName);
 
-    public Object instantiateClass(Map<String, Object> bindingMap, String scriptName) throws IOException;
+    public Object instantiateClass(BindingModel bindingModel, String scriptName) throws IOException;
 }

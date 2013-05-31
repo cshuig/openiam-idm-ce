@@ -149,7 +149,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("sysId", sysConfiguration.getDefaultManagedSysId());
         bindingMap.put("user", user);
         bindingMap.put("org", org);
-        bindingMap.put(APP_CONTEXT, ac);
         bindingMap.put("operation", "ADD");
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
@@ -485,7 +484,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "PRE_PROCESS");
                             if (preProcessScript != null
                                     && !preProcessScript.isEmpty()) {
-                                PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     if (executePreProcess(ppScript, bindingMap,
                                             user, "ADD") == ProvisioningConstants.FAIL) {
@@ -537,7 +536,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "POST_PROCESS");
                             if (postProcessScript != null
                                     && !postProcessScript.isEmpty()) {
-                                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     executePostProcess(ppScript, bindingMap, user,
                                             "ADD", connectorSuccess);
@@ -566,7 +565,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "PRE_PROCESS");
                             if (preProcessScript != null
                                     && !preProcessScript.isEmpty()) {
-                                PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     if (executePreProcess(ppScript, bindingMap,
                                             user, "MODIFY") == ProvisioningConstants.FAIL) {
@@ -685,7 +684,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "POST_PROCESS");
                             if (postProcessScript != null
                                     && !postProcessScript.isEmpty()) {
-                                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     executePostProcess(ppScript, bindingMap,
                                             user, "MODIFY", connectorSuccess);
@@ -850,7 +849,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         IdmAuditLog auditLog = null;
         Map<String, Object> bindingMap = new HashMap<String, Object>();
-        bindingMap.put(APP_CONTEXT, ac);
 
         ProvisionUserResponse response = new ProvisionUserResponse(
                 ResponseStatus.SUCCESS);
@@ -1017,7 +1015,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         ProvisionUserResponse response = new ProvisionUserResponse(
                 ResponseStatus.SUCCESS);
         Map<String, Object> bindingMap = new HashMap<String, Object>();
-        bindingMap.put(APP_CONTEXT, ac);
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
         if (status != UserStatusEnum.DELETED && status != UserStatusEnum.LEAVE
@@ -1099,7 +1096,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     String preProcessScript = getResProperty(
                             res.getResourceProps(), "PRE_PROCESS");
                     if (preProcessScript != null && !preProcessScript.isEmpty()) {
-                        PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                        PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                         if (ppScript != null) {
                             executePreProcess(ppScript, bindingMap, pUser,
                                     "DELETE");
@@ -1132,7 +1129,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             String postProcessScript = getResProperty(res.getResourceProps(),
                     "POST_PROCESS");
             if (postProcessScript != null && !postProcessScript.isEmpty()) {
-                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                 if (ppScript != null) {
                     executePostProcess(ppScript, bindingMap, pUser, "DELETE",
                             connectorSuccess);
@@ -1214,7 +1211,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                             "PRE_PROCESS");
                                     if (preProcessScript != null
                                             && !preProcessScript.isEmpty()) {
-                                        PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                        PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                                         if (ppScript != null) {
                                             if (executePreProcess(ppScript,
                                                     bindingMap, pUser, "DELETE") == ProvisioningConstants.FAIL) {
@@ -1255,7 +1252,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "POST_PROCESS");
                             if (postProcessScript != null
                                     && !postProcessScript.isEmpty()) {
-                                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     executePostProcess(ppScript, bindingMap,
                                             pUser, "DELETE", connectorSuccess);
@@ -1621,7 +1618,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("sysId", sysConfiguration.getDefaultManagedSysId());
         // bindingMap.put("user", pUser.getUser());
         bindingMap.put("org", org);
-        bindingMap.put(APP_CONTEXT, ac);
         bindingMap.put("operation", "MODIFY");
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
         // clone the user object so that we have it for comparison in the
@@ -1949,7 +1945,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "PRE_PROCESS");
                             if (preProcessScript != null
                                     && !preProcessScript.isEmpty()) {
-                                PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     if (executePreProcess(ppScript, bindingMap,
                                             pUser, "ADD") == ProvisioningConstants.FAIL) {
@@ -2026,7 +2022,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "POST_PROCESS");
                             if (postProcessScript != null
                                     && !postProcessScript.isEmpty()) {
-                                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     executePostProcess(ppScript, bindingMap,
                                             pUser, "ADD", connectorSuccess);
@@ -2075,7 +2071,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "PRE_PROCESS");
                             if (preProcessScript != null
                                     && !preProcessScript.isEmpty()) {
-                                PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     if (executePreProcess(ppScript, bindingMap,
                                             pUser, "MODIFY") == ProvisioningConstants.FAIL) {
@@ -2190,7 +2186,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "POST_PROCESS");
                             if (postProcessScript != null
                                     && !postProcessScript.isEmpty()) {
-                                PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     executePostProcess(ppScript, bindingMap,
                                             pUser, "MODIFY", connectorSuccess);
@@ -2873,7 +2869,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     res.getResourceProps(), "PRE_PROCESS");
                             if (preProcessScript != null
                                     && !preProcessScript.isEmpty()) {
-                                PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                                PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                                 if (ppScript != null) {
                                     if (executePreProcess(ppScript, bindingMap,
                                             null, "SET_PASSWORD") == ProvisioningConstants.FAIL) {
@@ -2932,7 +2928,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                         res.getResourceProps(), "POST_PROCESS");
                                 if (postProcessScript != null
                                         && !postProcessScript.isEmpty()) {
-                                    PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                                    PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                                     if (ppScript != null) {
                                         executePostProcess(ppScript,
                                                 bindingMap, null,
@@ -2976,7 +2972,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                 String preProcessScript = getResProperty(
                         resource.getResourceProps(), "PRE_PROCESS");
                 if (preProcessScript != null && !preProcessScript.isEmpty()) {
-                    PreProcessor ppScript = createPreProcessScript(preProcessScript);
+                    PreProcessor ppScript = createPreProcessScript(preProcessScript, bindingMap);
                     if (ppScript != null) {
                         executePreProcess(ppScript, bindingMap, null,
                                 "SET_PASSWORD");
@@ -3001,7 +2997,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                 String postProcessScript = getResProperty(
                         resource.getResourceProps(), "POST_PROCESS");
                 if (postProcessScript != null && !postProcessScript.isEmpty()) {
-                    PostProcessor ppScript = createPostProcessScript(postProcessScript);
+                    PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
                     if (ppScript != null) {
                         executePostProcess(ppScript, bindingMap, null,
                                 "SET_PASSWORD", connectorSuccess);

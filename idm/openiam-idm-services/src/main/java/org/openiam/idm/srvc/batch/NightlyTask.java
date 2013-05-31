@@ -50,6 +50,7 @@ import org.openiam.idm.srvc.user.dto.UserSearch;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.openiam.idm.srvc.user.ws.UserListResponse;
 import org.openiam.idm.srvc.user.ws.UserResponse;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
@@ -152,7 +153,7 @@ public class NightlyTask implements ApplicationContextAware {
 						bindingMap.put("lastExecTime", task.getLastExecTime());
 						bindingMap.put("parentRequestId", requestId);
 
-						Integer output = (Integer) se.execute(bindingMap,
+						Integer output = (Integer) se.execute(new BindingModelImpl(bindingMap, ac),
 								task.getTaskUrl());
 						if (output.intValue() == 0) {
 							auditHelper.addLog(task.getTaskName(), null, null,

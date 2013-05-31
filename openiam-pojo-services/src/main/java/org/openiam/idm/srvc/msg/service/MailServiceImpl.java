@@ -13,6 +13,7 @@ import org.openiam.idm.srvc.msg.ws.NotificationParam;
 import org.openiam.idm.srvc.msg.ws.NotificationRequest;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
@@ -146,7 +147,7 @@ public class MailServiceImpl implements MailService {
                 Map<String, Object> bindingMap = new HashMap<String, Object>();
 
                 ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-                NotificationMessageProvider messageProvider = (NotificationMessageProvider) se.instantiateClass(bindingMap, "/msgprovider/" + providerScript);
+                NotificationMessageProvider messageProvider = (NotificationMessageProvider) se.instantiateClass(new BindingModelImpl(bindingMap, ac), "/msgprovider/" + providerScript);
                 List<Message> messages = messageProvider.build(params);
                 if (messages == null || messages.size() == 0) {
                     log.info("No one message was not built in " + providerScript + ".");
