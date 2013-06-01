@@ -104,6 +104,9 @@
 										<form:option value="5MIN" label="5 min" />
 										<form:option value="15MIN" label="15 min" />
 										<form:option value="60MIN" label="60 min" />
+                                        <form:option value="120MIN" label="2 HOURS" />
+                                        <form:option value="180MIN" label="3 HOURS" />
+                                        <form:option value="360MIN" label="6 HOURS" />
 										<form:option value="NIGHTLY" label="NIGHTLY" />
 									</form:select></td>
 							</tr>
