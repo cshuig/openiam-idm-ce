@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="ReferenceDataWebService" soapui-version="4.5.2" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="$Proxy72ServiceSoapBinding" type="wsdl" bindingName="{http://proxy.sun.com/}$Proxy72ServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService?wsdl"><con:part><con:url>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="$Proxy72Service" targetNamespace="http://proxy.sun.com/" xmlns:ns1="urn:idm.openiam.org/srvc/ref/service" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://proxy.sun.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService?wsdl=ReferenceDataWebService.wsdl" namespace="urn:idm.openiam.org/srvc/ref/service"></wsdl:import>
+  <wsdl:binding name="$Proxy72ServiceSoapBinding" type="ns1:ReferenceDataWebService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="removeRefData">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="removeRefData">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="removeRefDataResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="saveRefData">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="saveRefData">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="saveRefDataResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRefDataById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getRefDataById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRefDataByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addRefData">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="addRefData">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addRefDataResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRefByGroup">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getRefByGroup">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRefByGroupResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="$Proxy72Service">
+    <wsdl:port binding="tns:$Proxy72ServiceSoapBinding" name="$Proxy72Port">
+      <soap:address location="http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService?wsdl=ReferenceDataWebService.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReferenceDataWebService" targetNamespace="urn:idm.openiam.org/srvc/ref/service" xmlns:ns1="urn:idm.openiam.org/srvc/ref/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xs:schema elementFormDefault="unqualified" targetNamespace="urn:idm.openiam.org/srvc/ref/service" version="1.0" xmlns:tns="urn:idm.openiam.org/srvc/ref/service" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="addRefData" type="tns:addRefData"/>
+      <xs:element name="addRefDataResponse" type="tns:addRefDataResponse"/>
+      <xs:element name="getRefByGroup" type="tns:getRefByGroup"/>
+      <xs:element name="getRefByGroupResponse" type="tns:getRefByGroupResponse"/>
+      <xs:element name="getRefDataById" type="tns:getRefDataById"/>
+      <xs:element name="getRefDataByIdResponse" type="tns:getRefDataByIdResponse"/>
+      <xs:element name="removeRefData" type="tns:removeRefData"/>
+      <xs:element name="removeRefDataResponse" type="tns:removeRefDataResponse"/>
+      <xs:element name="saveRefData" type="tns:saveRefData"/>
+      <xs:element name="saveRefDataResponse" type="tns:saveRefDataResponse"/>
+      <xs:complexType name="removeRefData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="val" type="tns:ReferenceData"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReferenceData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id" type="tns:ReferenceDataId"/>
+          <xs:element minOccurs="0" name="statusType" type="xs:string"/>
+          <xs:element minOccurs="0" name="description" type="xs:string"/>
+          <xs:element minOccurs="0" name="weight" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReferenceDataId">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="codeGroup" type="xs:string"/>
+          <xs:element minOccurs="0" name="statusCd" type="xs:string"/>
+          <xs:element minOccurs="0" name="languageCd" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="removeRefDataResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="saveRefData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="val" type="tns:ReferenceData"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="saveRefDataResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="getRefDataById">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="val" type="tns:ReferenceDataId"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefDataByIdResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="addRefData">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="val" type="tns:ReferenceData"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addRefDataResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="getRefByGroup">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="codeGroup" type="xs:string"/>
+          <xs:element minOccurs="0" name="languageCd" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefByGroupResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:ReferenceData"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="saveRefDataResponse">
+    <wsdl:part element="ns1:saveRefDataResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="saveRefData">
+    <wsdl:part element="ns1:saveRefData" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRefByGroup">
+    <wsdl:part element="ns1:getRefByGroup" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRefDataById">
+    <wsdl:part element="ns1:getRefDataById" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeRefDataResponse">
+    <wsdl:part element="ns1:removeRefDataResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeRefData">
+    <wsdl:part element="ns1:removeRefData" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addRefData">
+    <wsdl:part element="ns1:addRefData" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRefByGroupResponse">
+    <wsdl:part element="ns1:getRefByGroupResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRefDataByIdResponse">
+    <wsdl:part element="ns1:getRefDataByIdResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addRefDataResponse">
+    <wsdl:part element="ns1:addRefDataResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ReferenceDataWebService">
+    <wsdl:operation name="removeRefData">
+      <wsdl:input message="ns1:removeRefData" name="removeRefData"></wsdl:input>
+      <wsdl:output message="ns1:removeRefDataResponse" name="removeRefDataResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="saveRefData">
+      <wsdl:input message="ns1:saveRefData" name="saveRefData"></wsdl:input>
+      <wsdl:output message="ns1:saveRefDataResponse" name="saveRefDataResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRefDataById">
+      <wsdl:input message="ns1:getRefDataById" name="getRefDataById"></wsdl:input>
+      <wsdl:output message="ns1:getRefDataByIdResponse" name="getRefDataByIdResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addRefData">
+      <wsdl:input message="ns1:addRefData" name="addRefData"></wsdl:input>
+      <wsdl:output message="ns1:addRefDataResponse" name="addRefDataResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRefByGroup">
+      <wsdl:input message="ns1:getRefByGroup" name="getRefByGroup"></wsdl:input>
+      <wsdl:output message="ns1:getRefByGroupResponse" name="getRefByGroupResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="addRefData" bindingOperationName="addRefData" type="Request-Response" outputName="addRefDataResponse" inputName="addRefData" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/ref/service">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:addRefData>
+         <!--Optional:-->
+         <val>
+            <!--Optional:-->
+            <id>
+               <!--Optional:-->
+               <codeGroup>?</codeGroup>
+               <!--Optional:-->
+               <statusCd>?</statusCd>
+               <!--Optional:-->
+               <languageCd>?</languageCd>
+            </id>
+            <!--Optional:-->
+            <statusType>?</statusType>
+            <!--Optional:-->
+            <description>?</description>
+            <!--Optional:-->
+            <weight>?</weight>
+         </val>
+      </ser:addRefData>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/ReferenceDataWebService/addRefData"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getRefByGroup" bindingOperationName="getRefByGroup" type="Request-Response" outputName="getRefByGroupResponse" inputName="getRefByGroup" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/ref/service">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:getRefByGroup>
+         <!--Optional:-->
+         
+         <!--Optional:-->
+         <codeGroup>USER</codeGroup><languageCd>en</languageCd>
+      </ser:getRefByGroup>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/ReferenceDataWebService/getRefByGroup"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getRefDataById" bindingOperationName="getRefDataById" type="Request-Response" outputName="getRefDataByIdResponse" inputName="getRefDataById" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/ref/service">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:getRefDataById>
+         <!--Optional:-->
+         <val>
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            <codeGroup>USER</codeGroup><statusCd>ACTIVE</statusCd><languageCd>en</languageCd>
+            <!--Optional:-->
+            
+         </val>
+      </ser:getRefDataById>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/ReferenceDataWebService/getRefDataById"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeRefData" bindingOperationName="removeRefData" type="Request-Response" outputName="removeRefDataResponse" inputName="removeRefData" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/ref/service">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:removeRefData>
+         <!--Optional:-->
+         <val>
+            <!--Optional:-->
+            <id>
+               <!--Optional:-->
+               <codeGroup>?</codeGroup>
+               <!--Optional:-->
+               <statusCd>?</statusCd>
+               <!--Optional:-->
+               <languageCd>?</languageCd>
+            </id>
+            <!--Optional:-->
+            <statusType>?</statusType>
+            <!--Optional:-->
+            <description>?</description>
+            <!--Optional:-->
+            <weight>?</weight>
+         </val>
+      </ser:removeRefData>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/ReferenceDataWebService/removeRefData"/></con:call></con:operation><con:operation isOneWay="false" action="" name="saveRefData" bindingOperationName="saveRefData" type="Request-Response" outputName="saveRefDataResponse" inputName="saveRefData" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/ReferenceDataWebService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/ref/service">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:saveRefData>
+         <!--Optional:-->
+         <val>
+            <!--Optional:-->
+            <id>
+               <!--Optional:-->
+               <codeGroup>?</codeGroup>
+               <!--Optional:-->
+               <statusCd>?</statusCd>
+               <!--Optional:-->
+               <languageCd>?</languageCd>
+            </id>
+            <!--Optional:-->
+            <statusType>?</statusType>
+            <!--Optional:-->
+            <description>?</description>
+            <!--Optional:-->
+            <weight>?</weight>
+         </val>
+      </ser:saveRefData>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/ReferenceDataWebService/saveRefData"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:databaseConnectionContainer/></con:soapui-project>

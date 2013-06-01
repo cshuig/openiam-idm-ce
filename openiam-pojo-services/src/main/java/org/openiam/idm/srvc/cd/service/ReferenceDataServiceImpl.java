@@ -1,11 +1,11 @@
 package org.openiam.idm.srvc.cd.service;
 
-import org.openiam.idm.srvc.cd.dto.*;
+import org.openiam.idm.srvc.cd.dto.ReferenceData;
+import org.openiam.idm.srvc.cd.dto.ReferenceDataId;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-
 import javax.jws.WebService;
+import java.util.List;
 
 /**
 The <code>ReferenceDAOImpl</code> is used to manage and provide access to codes or lookup values 
@@ -31,10 +31,6 @@ The <code>ReferenceDAOImpl</code> is used to manage and provide access to codes 
  *  			}
  * 		}
  * </code>
- *
- * <br>
- * @see org.openidm.srvc.dto.Status
- * @author Suneet Shah
  */
 @WebService(endpointInterface = "org.openiam.idm.srvc.cd.service.ReferenceDataService", 
 		targetNamespace = "urn:idm.openiam.org/srvc/ref/service", 
@@ -102,11 +98,11 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
 	 * @see org.openiam.idm.srvc.cd.service.ReferenceDataService#getRefDataById(org.openiam.idm.srvc.cd.dto.ReferenceDataId)
 	 */
       @Transactional (readOnly = true)
-	public void getRefDataById(ReferenceDataId val) {
+	public ReferenceData getRefDataById(ReferenceDataId val) {
 		  if (val == null) {
-			  return;
+			  return null;
 		  }
-		  refDao.findById(val);
+		  return refDao.findById(val);
 	  }
 
 	  

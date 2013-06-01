@@ -66,7 +66,7 @@ public interface ReferenceDataService {
             ReferenceData val);
 
     @WebMethod
-    public abstract void getRefDataById(
+    public abstract ReferenceData getRefDataById(
             @WebParam(name = "val", targetNamespace = "")
             ReferenceDataId val);
 
