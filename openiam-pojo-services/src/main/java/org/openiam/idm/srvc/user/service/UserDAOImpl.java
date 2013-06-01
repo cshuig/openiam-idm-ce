@@ -1,5 +1,6 @@
 package org.openiam.idm.srvc.user.service;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -222,7 +223,7 @@ public class UserDAOImpl implements UserDAO {
 
 		SQLQuery qry = searchOracleInsensitiveQueryPrepare(search, select);
 		try {
-			BigInteger result = (BigInteger) qry.uniqueResult();
+			BigDecimal result = (BigDecimal) qry.uniqueResult();
 			if (result == null) {
 				log.debug("search result is null");
 				return null;
@@ -246,7 +247,7 @@ public class UserDAOImpl implements UserDAO {
 
 		SQLQuery qry = defaultSearchQueryPrepare(search, select);
 		try {
-			BigInteger result = (BigInteger) qry.uniqueResult();
+            BigDecimal result = (BigDecimal) qry.uniqueResult();
 			if (result == null) {
 				log.debug("search result is null");
 				return null;
