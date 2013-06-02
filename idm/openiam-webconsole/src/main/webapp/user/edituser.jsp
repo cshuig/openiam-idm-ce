@@ -186,10 +186,11 @@
                 <td class="userformInput" for="username" class="labelValue">
                     <form:input path="user.employeeId" size="35"/>
                 </td>
-                <td algn="right"><label for="username" class="attribute">User Type</label></td>
-                <td class="userformInput" for="username" class="labelValue"><form:input path="user.userTypeInd"
-                                                                                        size="30"/>
+                <td>Cost Center</td>
+                <td>
+                    <form:input path="user.costCenter" size="30" />
                 </td>
+
                 <td><label for="username" class="attribute">Empl. Type</label></td>
                 <td class="userformInput" for="username" class="labelValue">
                     <form:select path="user.employeeType">
@@ -210,7 +211,8 @@
                         href="javascript:showSupervisorDialog('supervisorId', 'supervisorName' );">Select Supervisor</a>
 
                 </td>
-                <td></td>
+                <td algn="right"><label for="username" class="attribute">User Type</label></td>
+                <td class="userformInput" for="username" class="labelValue"><form:input path="user.userTypeInd" size="30"/></td>
 
             </tr>
             <tr>

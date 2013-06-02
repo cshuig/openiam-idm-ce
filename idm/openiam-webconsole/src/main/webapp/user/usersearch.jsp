@@ -186,21 +186,25 @@
 
 <c:if test="${userList != null}" >
 
-    <table width="1000pt" >
+    <table width="1300pt" >
         <tr>
             <td align="center" height="100%">
                 <fieldset class="userform" >
                     <legend>Search Results - ${resultsize} User(s) found.</legend>
 
-                    <table class="resourceTable" cellspacing="2" cellpadding="2" width="1100pt">
+                    <table class="resourceTable" cellspacing="2" cellpadding="2" width="1300pt">
 
 
                         <tr class="header">
-                            <th width="30%">Name</th>
-                            <th width="30%">E-mail</th>
-                            <th width="20%">Phone</th>
-                            <th width="10%">Status</th>
-                            <th width="10%">Acct State</th>
+                            <th>Name</th>
+                            <th>E-mail</th>
+                            <th>Phone</th>
+
+                            <th>Status</th>
+                            <th>Acct State</th>
+                            <th>Title</th>
+                            <th>Employee ID</th>
+                            <th>Job Code</th>
 
                         </tr>
 
@@ -209,19 +213,20 @@
                             <tr>
 
 
-                                <td width="30%"  class="tableEntry" valign="top">
+                                <td class="tableEntry" valign="top">
                                     <a href="<%=request.getContextPath()%>/editUser.cnt?personId=${user.userId}&menugrp=QUERYUSER">${user.firstName} ${user.lastName}</a>
                                 </td>
-                                <td width="30%"  class="tableEntry"  valign="top">${user.email} </td>
-                                <td width="20%" class="tableEntry" valign="top">
+                                <td class="tableEntry"  valign="top">${user.email} </td>
+                                <td class="tableEntry" valign="top">
                                     <c:if test="${user.areaCd != ''}" >(${user.areaCd})</c:if>
-                                    <c:if test="${user.areaCd != ''}" >${user.phoneNbr}</c:if>
-                                    <c:if test="${user.areaCd != ''}" >ext. ${user.phoneExt}</c:if>
+                                    <c:if test="${user.phoneNbr != ''}" >${user.phoneNbr}</c:if>
+                                    <c:if test="${user.phoneExt != ''}" >ext. ${user.phoneExt}</c:if>
                                 </td>
-                                <td width="10%" class="tableEntry"  valign="top">${user.status}
-                                </td>
-                                <td width="10%" class="tableEntry"  valign="top">${user.secondaryStatus}
-                                </td>
+                                <td class="tableEntry"  valign="top">${user.status} </td>
+                                <td class="tableEntry"  valign="top">${user.secondaryStatus}</td>
+                                <td class="tableEntry"  valign="top">${user.title}</td>
+                                <td class="tableEntry"  valign="top">${user.employeeId}</td>
+                                <td class="tableEntry"  valign="top">${user.jobCode}</td>
 
 
                             </tr>

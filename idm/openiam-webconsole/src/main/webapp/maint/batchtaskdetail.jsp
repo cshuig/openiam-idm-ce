@@ -39,6 +39,9 @@
 	              <form:option value="5MIN" 	label="5 MINUTES" />
                	  <form:option value="15MIN" 	label="15 MINUTES" />
 	              <form:option value="60MIN" 	label="60 MINUTES" />
+                  <form:option value="120MIN" label="2 HOURS" />
+                  <form:option value="180MIN" label="3 HOURS" />
+                  <form:option value="360MIN" label="6 HOURS" />
 	              <form:option value="NIGHTLY" 	label="NIGHTLY" />
           		</form:select>
 			  </td>
@@ -54,7 +57,7 @@
           </tr>
 
           <tr>
-			 			 <td>Script URL</td>
+			 			 <td>Script URL<font color="red">*</font></td>
               <td><form:input path="batch.taskUrl" size="60" maxlength="60" /></td>
           </tr>
           <tr>

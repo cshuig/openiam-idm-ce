@@ -103,9 +103,72 @@
 		  </entry-point-resolver-set>
 		  <spring-object bean="intervalTask" />
 	</component>
-  </flow> 
+  </flow>
 
- <flow name="nightlyTaskFlow">
+    <flow name="twoHourFlow">
+        <description>
+        </description>
+
+        <quartz:inbound-endpoint name="twoHourTrigger" repeatInterval="7200000"
+                                 startDelay="330000" jobName="twoHourJob" >
+            <quartz:event-generator-job>
+                <quartz:payload>120MIN</quartz:payload>
+            </quartz:event-generator-job>
+        </quartz:inbound-endpoint>
+        <component>
+            <entry-point-resolver-set>
+                <reflection-entry-point-resolver/>
+                <method-entry-point-resolver>
+                    <include-entry-point method="execute"/>
+                </method-entry-point-resolver>
+            </entry-point-resolver-set>
+            <spring-object bean="intervalTask" />
+        </component>
+    </flow>
+
+    <flow name="threeHourFlow">
+        <description>
+         </description>
+
+        <quartz:inbound-endpoint name="threeHourTrigger" repeatInterval="10800000"
+                                 startDelay="340000" jobName="threeHourJob" >
+            <quartz:event-generator-job>
+                <quartz:payload>180MIN</quartz:payload>
+            </quartz:event-generator-job>
+        </quartz:inbound-endpoint>
+        <component>
+            <entry-point-resolver-set>
+                <reflection-entry-point-resolver/>
+                <method-entry-point-resolver>
+                    <include-entry-point method="execute"/>
+                </method-entry-point-resolver>
+            </entry-point-resolver-set>
+            <spring-object bean="intervalTask" />
+        </component>
+    </flow>
+
+    <flow name="sixHourFlow">
+        <description>
+         </description>
+
+        <quartz:inbound-endpoint name="sixHourTrigger" repeatInterval="21600000"
+                                 startDelay="350000" jobName="sixHourJob" >
+            <quartz:event-generator-job>
+                <quartz:payload>360MIN</quartz:payload>
+            </quartz:event-generator-job>
+        </quartz:inbound-endpoint>
+        <component>
+            <entry-point-resolver-set>
+                <reflection-entry-point-resolver/>
+                <method-entry-point-resolver>
+                    <include-entry-point method="execute"/>
+                </method-entry-point-resolver>
+            </entry-point-resolver-set>
+            <spring-object bean="intervalTask" />
+        </component>
+    </flow>
+
+    <flow name="nightlyTaskFlow">
 	  <description>
 		  This configuration will create an inbound event for testService2 every 1 minute indefinitely. 
 		  The event payload will always have the same value, which the contents of the file 'payload-data.txt'. The file can be on the classpath of on the local file system.

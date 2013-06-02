@@ -235,7 +235,7 @@ public class UserSearchCommand implements Serializable {
         }
 
         if (secondaryStatus != null) {
-            search.setStatus(secondaryStatus.toString());
+            search.setSecondaryStatus(secondaryStatus.toString());
         }
 
         if (lastLoginDate != null) {
