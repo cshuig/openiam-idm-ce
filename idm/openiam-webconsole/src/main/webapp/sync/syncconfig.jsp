@@ -224,7 +224,7 @@
 							<tr class="ldap-row">
 								<td class="tddark">Base DN</td>
 								<td class="tdlightnormal"><form:input
-										path="syncConfig.baseDn" size="60" /></td>
+										path="syncConfig.baseDn" size="60" maxlength="200" /></td>
 							</tr>
 
 							<tr>

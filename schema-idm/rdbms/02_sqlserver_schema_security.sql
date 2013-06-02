@@ -426,7 +426,7 @@ CREATE TABLE SYNCH_CONFIG (
 	   CONNECTION_URL			nvarchar(100) 	NULL,
 	   QUERY					nvarchar(1000) 	NULL,
 	   QUERY_TIME_FIELD			nvarchar(50) 	NULL,   /* FIELD IN THE TABLE THAT SHOULD BE USED WHEN DOING INCREMENTAL SEARCH */
-	   BASE_DN                  nvarchar(50)     NULL,
+	   BASE_DN                  nvarchar(200)     NULL,
 	   LAST_EXEC_TIME			datetime2		NULL,
 	   LAST_REC_PROCESSED       nvarchar(32)     NULL,
 	   MANAGED_SYS_ID			nvarchar(32) 	NULL, 
