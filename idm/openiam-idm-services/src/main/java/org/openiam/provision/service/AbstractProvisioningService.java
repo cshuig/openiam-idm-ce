@@ -2125,13 +2125,13 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
                         }
                     }
-
+                   //TODO check this case was added when StaterBros debug: the ACTIVE status was awerrided with INACTIVE from this condition
                     if (!found) {
                         if ( l.getId().getManagedSysId().equalsIgnoreCase( "0" )) {
                             // primary identity - do not delete. Just disable its status
                             log.debug("Primary identity - chagne its status");
-                            l.setStatus("INACTIVE");
-                            loginManager.updateLogin(l);
+                          //  l.setStatus("INACTIVE");
+                          //  loginManager.updateLogin(l);
 
                         }else {
 

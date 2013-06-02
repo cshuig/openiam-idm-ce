@@ -138,8 +138,8 @@ public class LdapAdapter implements SourceAdapter {
             final TransformScript transformScript = StringUtils.isNotEmpty(config.getTransformationRule()) ? SynchScriptFactory.createTransformationScript(config.getTransformationRule()) : null;
             // rule used to match object from source system to data in IDM
             final MatchObjectRule matchRule = matchRuleFactory.create(config);
-
-            final List<String> ouList = buildOUList(ctx, config.getBaseDn());
+            String[] baseDNArr = config.getBaseDn().contains(";") ? config.getBaseDn().split(";") : new String[]{config.getBaseDn()};
+            final List<String> ouList = buildOUList(ctx, baseDNArr);
 
 
             log.debug("[LDAPAdapter] count of OU for processing = " + ouList.size() + ";\n  " + ouList);
@@ -483,12 +483,11 @@ public class LdapAdapter implements SourceAdapter {
         return searchResult;
     }
 
-    private List<String> buildOUList(LdapContext ctx, String baseDN) throws NamingException {
+    private List<String> buildOUList(LdapContext ctx, String[] baseDNArr) throws NamingException {
 
         String attrIds[] = {"distinguishedName"};
 
-        List<String> ouList = new LinkedList<String>();
-
+        List<String> allOUList = new LinkedList<String>();
 
         SearchControls searchCtls = new SearchControls();
         searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -497,35 +496,39 @@ public class LdapAdapter implements SourceAdapter {
         String searchFilter = "(&(objectclass=organizationalUnit))";
 
 
-        NamingEnumeration<SearchResult> results = ctx.search(baseDN, searchFilter, searchCtls);
-        List<SearchResult> resultList = Collections.list(results);
+        for(String baseDN : baseDNArr){
+            NamingEnumeration<SearchResult> results = ctx.search(baseDN.trim(), searchFilter, searchCtls);
+            List<SearchResult> resultList = Collections.list(results);
+            List<String> ouList = new LinkedList<String>();
+            for (SearchResult sr : resultList) {
+                Attributes attrs = sr.getAttributes();
 
-        for (SearchResult sr : resultList) {
-            Attributes attrs = sr.getAttributes();
+                if (attrs != null) {
 
-            if (attrs != null) {
+                    for (NamingEnumeration ae = attrs.getAll(); ae.hasMore(); ) {
 
-                for (NamingEnumeration ae = attrs.getAll(); ae.hasMore(); ) {
+                        javax.naming.directory.Attribute attr = (javax.naming.directory.Attribute) ae.next();
 
-                    javax.naming.directory.Attribute attr = (javax.naming.directory.Attribute) ae.next();
-
-                    for (NamingEnumeration e = attr.getAll(); e.hasMore(); ) {
-                        Object o = e.next();
-                        if (o.toString() != null) {
-                            ouList.add(o.toString());
+                        for (NamingEnumeration e = attr.getAll(); e.hasMore(); ) {
+                            Object o = e.next();
+                            if (o.toString() != null) {
+                                ouList.add(o.toString());
+                            }
                         }
+
                     }
 
+
                 }
-
-
             }
+            // if we dont have child OUs, then only look at the baseDN
+            if (ouList.isEmpty()) {
+                ouList.add(baseDN);
+            }
+            allOUList.addAll(ouList);
         }
-        // if we dont have child OUs, then only look at the baseDN
-        if (ouList.isEmpty()) {
-            ouList.add(baseDN);
-        }
-        return ouList;
+
+        return allOUList;
     }
 
 
