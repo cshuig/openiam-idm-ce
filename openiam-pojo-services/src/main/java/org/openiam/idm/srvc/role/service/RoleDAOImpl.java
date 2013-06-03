@@ -8,6 +8,7 @@ import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.ResultTransformer;
 import org.openiam.base.ObjectSearchAttribute;
 import org.openiam.exception.data.ObjectNotFoundException;
 import org.openiam.idm.srvc.grp.domain.GroupEntity;
@@ -19,10 +20,7 @@ import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.service.UserDAO;
 
 import javax.naming.InitialContext;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Data access interface for domain model class Role.
@@ -418,10 +416,9 @@ public class RoleDAOImpl implements RoleDAO {
         }
 
 		crit.addOrder(Order.asc("roleName"));
-		
-		List<RoleEntity> results = (List<RoleEntity>)crit.list();
-		return results;		
-    	
+        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+    	return (List<RoleEntity>)crit.list();
     }
 
     private List<String> getAttributeNames(List<ObjectSearchAttribute> attrList, String field) {

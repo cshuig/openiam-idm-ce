@@ -2987,7 +2987,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
             }
             // post-process
-            if (res != null) {
+            if (resource != null) {
                 String postProcessScript = getResProperty(
                         resource.getResourceProps(), "POST_PROCESS");
                 if (postProcessScript != null && !postProcessScript.isEmpty()) {
