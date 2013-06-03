@@ -30,12 +30,17 @@ import javax.xml.ws.soap.SOAPBinding;
 public class TransformActiveDirRecord extends AbstractTransformScript {
 
     /* constants - maps to a managed sys id*/
-    static String BASE_URL= "http://localhost:9090/idmsrvc";
+    static String BASE_URL= "http://localhost:8080/idmsrvc";
     String DOMAIN = "USR_SEC_DOMAIN";
     String AD_MANAGED_SYS_ID = "110";
+    
     String defaultRole = "END_USER";
+    boolean assignDefaultRole = false;
+    
     boolean KEEP_AD_ID = true;
+   
     String IDENTITY_ATTRIBUTE = "sAMAccountName";
+   
    //String IDENTITY_ATTRIBUTE = "userPrincipalName";
    //String IDENTITY_ATTRIBUTE = "distinguishedName";
 
@@ -60,16 +65,19 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
 
 
 		// Add default role
-        if(userRoleList == null) {
-            userRoleList = new LinkedList<Role>();
-        }
-		RoleId id = new RoleId(DOMAIN, defaultRole);
-		Role r = new Role();
-		r.setId(id);
-        userRoleList.add(r);
+		if (assignDefaultRole) {
+	    
+	    if(userRoleList == null) {
+	        userRoleList = new LinkedList<Role>();
+	    }
+			RoleId id = new RoleId(DOMAIN, defaultRole);
+			Role r = new Role();
+			r.setId(id);
+	    userRoleList.add(r);
 
-		pUser.setMemberOfRoles(userRoleList);
+			pUser.setMemberOfRoles(userRoleList);
 
+		}
 		return TransformScript.NO_DELETE;
 	}
 
@@ -79,7 +87,9 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
         List<Login> principalList = new ArrayList<Login>();
 
 		Map<String,Attribute> columnMap =  rowObj.getColumnMap();
+        
         def OrganizationDataService orgService = orgService();
+        
         String sAMAccountName = null;
 
         if (isNewUser) {
@@ -214,9 +224,9 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
                     principalList.add(lg);
 
                     /*  AD target system identity  */
-                 ///   Login lg2 = new Login();
-                 ///   lg2.id = new LoginId(DOMAIN, attrVal.value, AD_MANAGED_SYS_ID);
-                 ///   principalList.add(lg2);
+                    Login lg2 = new Login();
+                    lg2.id = new LoginId(DOMAIN, attrVal.value, AD_MANAGED_SYS_ID);
+                    principalList.add(lg2);
 
                     pUser.principalList = principalList;
                 }
@@ -310,7 +320,8 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
 		}
 	}
 
-    static OrganizationDataService orgService() {
+   
+	 static OrganizationDataService orgService() {
         String serviceUrl = BASE_URL + "/OrganizationDataService"
         String port ="OrganizationDataWebServicePort"
         String nameSpace = "urn:idm.openiam.org/srvc/org/service"
