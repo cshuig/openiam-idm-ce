@@ -210,8 +210,7 @@ public class NewUserController extends AbstractWizardFormController {
         pUser.setRequestorDomain(domain);
 
          try {
-            ScriptIntegration se = null;
-            se = ScriptFactory.createModule(scriptEngine);
+            ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
             ExtendController extCmd = (ExtendController)se.instantiateClass(null, extendController);
             Map<String,Object> controllerObj = new HashMap<String,Object>();
 

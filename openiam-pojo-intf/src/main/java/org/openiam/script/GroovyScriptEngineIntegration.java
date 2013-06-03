@@ -93,7 +93,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
             String fullPath = scriptPath + scriptName;
             Class cl = gcl.parseClass(new File(fullPath));
             Object instance = cl.newInstance();
-            Map<String, Object> bindingMap = bindingModel.getBindingMap();
+            Map<String, Object> bindingMap = bindingModel != null ? bindingModel.getBindingMap() : new HashMap<String, Object>();
             if (bindingMap != null) {
                 for (String key : bindingMap.keySet()) {
                     try {

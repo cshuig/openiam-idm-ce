@@ -473,12 +473,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             bindingMap.put(TARGET_SYSTEM_IDENTITY, resLogin.getId().getLogin());
                             bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, resLogin.getId().getDomainId());
 
-
-                            bindingMap
-                                    .put(TARGET_SYSTEM_IDENTITY, resLogin.getId().getLogin());
-                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN,
-                                    resLogin.getId().getDomainId());
-
                             // pre-processing
                             String preProcessScript = getResProperty(
                                     res.getResourceProps(), "PRE_PROCESS");
