@@ -91,6 +91,7 @@ if (msgPrincipal != null) { %>
                                   <form:option value="long" label="Float"/>
                                   <form:option value="timestamp" label="Timestamp"/>
                                   <form:option value="memberOf" label="Member Of"/>
+                                  <form:option value="byteArray" label="byte[]"/>
        					  </form:select>
        			</td>
                 <td class="tableEntry">
