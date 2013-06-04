@@ -13,9 +13,13 @@ import org.openiam.idm.srvc.report.domain.ReportSubscriptionEntity;
 import org.openiam.exception.ScriptEngineException;
 import org.openiam.idm.srvc.report.domain.ReportParamTypeEntity;
 import org.openiam.idm.srvc.report.dto.ReportDataDto;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author vitaly.yakunin
  */
 @Service
-public class ReportDataServiceImpl implements ReportDataService {
+public class ReportDataServiceImpl implements ReportDataService, ApplicationContextAware {
  
     private static final String scriptEngine = "org.openiam.script.GroovyScriptEngineIntegration";
 
@@ -39,6 +43,10 @@ public class ReportDataServiceImpl implements ReportDataService {
     private ReportSubCriteriaParamDao subCriteriaParamDao;
     @Autowired
     private ReportParamTypeDao reportParamTypeDao;
+
+    // used to inject the application context into the groovy scripts
+    protected static ApplicationContext ac;
+
     @Override
     @Transactional(readOnly = true)
     public ReportDataDto getReportData(final String reportName, final Map<String, String> reportParams) throws ClassNotFoundException, ScriptEngineException, IOException {
@@ -48,7 +56,7 @@ public class ReportDataServiceImpl implements ReportDataService {
         }
 
         ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-        ReportDataSetBuilder dataSourceBuilder = (ReportDataSetBuilder) se.instantiateClass(Collections.EMPTY_MAP, "/reports/" + reportInfo.getDatasourceFilePath());
+        ReportDataSetBuilder dataSourceBuilder = (ReportDataSetBuilder) se.instantiateClass(new BindingModelImpl(Collections.EMPTY_MAP, null), "/reports/" + reportInfo.getDatasourceFilePath());
 
         return dataSourceBuilder.getReportData(reportParams);
     }
@@ -134,5 +142,10 @@ public class ReportDataServiceImpl implements ReportDataService {
     @Transactional(readOnly = true)
     public List<ReportSubscriptionEntity> getAllSubscribedReports() {
         return reportSubscriptionDao.findAll();
-    }    
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ac = applicationContext;
+    }
 }

@@ -17,6 +17,7 @@ import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.batch.dto.BatchTask;
 import org.openiam.idm.srvc.batch.service.BatchDataService;
 import org.openiam.idm.srvc.policy.service.PolicyDataService;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
@@ -122,7 +123,7 @@ public class IntervalTask  implements ApplicationContextAware, MuleContextAware 
 						bindingMap.put("lastExecTime", task.getLastExecTime());
 						bindingMap.put("parentRequestId", requestId);
 						
-						Integer output = (Integer)se.execute(bindingMap, task.getTaskUrl());
+						Integer output = (Integer)se.execute(new BindingModelImpl(bindingMap, ac), task.getTaskUrl());
 						if (output.intValue() == 0 ) {
 							 auditHelper.addLog(task.getTaskName(), null,	null,
 									"IDM BATCH TASK", null, "0", "BATCH", task.getTaskId(), 

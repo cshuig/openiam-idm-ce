@@ -56,6 +56,7 @@ import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
 import org.openiam.provision.type.ExtensibleUser;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.msg.*;
@@ -107,7 +108,6 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     MuleContext muleContext;
 
-    public static final String APP_CONTEXT = "context";
     public static final String MATCH_PARAM = "matchParam";
     public static final String TARGET_SYSTEM_IDENTITY_STATUS = "targetSystemIdentityStatus";
     public static final String TARGET_SYSTEM_IDENTITY = "targetSystemIdentity";
@@ -327,7 +327,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
             if (objectType != null) {
                 if (objectType.equalsIgnoreCase("PRINCIPAL")) {
                     if (url != null) {
-                        return (String) se.execute(bindingMap, url);
+                        return (String) se.execute(new BindingModelImpl(bindingMap, ac), url);
                     }
                 }
             }
@@ -368,7 +368,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                 final Policy policy = attr.getAttributePolicy();
                 final String url = policy.getRuleSrcUrl();
                 if (url != null) {
-                    Object output = se.execute(bindingMap, url);
+                    Object output = se.execute(new BindingModelImpl(bindingMap, ac), url);
                     if (output != null) {
                         final String objectType = attr.getMapForObjectType();
                         if (objectType != null) {
@@ -723,20 +723,20 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                         if (objectType != null) {
                             if (objectType.equalsIgnoreCase("PRINCIPAL")) {
                                 if (attr.getAttributeName().equalsIgnoreCase("PRINCIPAL")) {
-                                    String output = (String)se.execute(bindingMap, url);
+                                    String output = (String)se.execute(new BindingModelImpl(bindingMap, ac), url);
                                     primaryID.setLogin(output);
                                 }
                                 if (attr.getAttributeName().equalsIgnoreCase("PASSWORD")) {
-                                    String output = (String)se.execute(bindingMap, url);
+                                    String output = (String)se.execute(new BindingModelImpl(bindingMap, ac), url);
                                     primaryIdentity.setPassword(output);
                                 }
                                 if (attr.getAttributeName().equalsIgnoreCase("DOMAIN")) {
-                                    String output = (String)se.execute(bindingMap, url);
+                                    String output = (String)se.execute(new BindingModelImpl(bindingMap, ac), url);
                                     primaryID.setDomainId(output);
                                 }
                             }
                             if (objectType.equals("EMAIL")) {
-                                String output = (String)se.execute(bindingMap, url);
+                                String output = (String)se.execute(new BindingModelImpl(bindingMap, ac), url);
                                 primaryEmail.setEmailAddress(output);
                                 primaryEmail.setIsDefault(1);
                             }
@@ -820,7 +820,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                         if (objectType != null) {
                             if (objectType.equalsIgnoreCase("PRINCIPAL")) {
                                 if (attr.getAttributeName().equalsIgnoreCase("PASSWORD")) {
-                                    String output = (String)se.execute(bindingMap, url);
+                                    String output = (String)se.execute(new BindingModelImpl(bindingMap, ac), url);
                                     primaryIdentity.setPassword(output);
                                 }
                             }
@@ -891,9 +891,9 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
         ProvisionServicePreProcessor addPreProcessScript;
         if ( pUser != null) {
-            if (!pUser.isSkipPreprocessor() && (addPreProcessScript = createProvPreProcessScript(preProcessor)) != null) {
+            if (!pUser.isSkipPreprocessor() && (addPreProcessScript = createProvPreProcessScript(preProcessor, bindingMap)) != null) {
                 addPreProcessScript.setMuleContext(muleContext);
-                return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
+                return executeProvisionPreProcess(addPreProcessScript, new BindingModelImpl(bindingMap, ac), pUser, null, operation);
 
             }
         }
@@ -907,7 +907,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         ProvisionServicePostProcessor addPostProcessScript;
 
         if ( pUser != null) {
-            if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(postProcessor)) != null) {
+            if (!pUser.isSkipPostProcessor() && (addPostProcessScript = createProvPostProcessScript(postProcessor, bindingMap)) != null) {
                 addPostProcessScript.setMuleContext(muleContext);
                 return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
 
@@ -919,10 +919,10 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
 
 
-    protected PreProcessor createPreProcessScript(String scriptName) {
+    protected PreProcessor createPreProcessScript(String scriptName, Map<String, Object> bindingMap) {
         try {
             ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-            return (PreProcessor) se.instantiateClass(null, scriptName);
+            return (PreProcessor) se.instantiateClass(new BindingModelImpl(bindingMap, ac), scriptName);
         } catch (Exception ce) {
             log.error(ce);
             return null;
@@ -931,10 +931,10 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     }
 
-    protected PostProcessor createPostProcessScript(String scriptName) {
+    protected PostProcessor createPostProcessScript(String scriptName, Map<String, Object> bindingMap) {
         try {
             ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-            return (PostProcessor) se.instantiateClass(null, scriptName);
+            return (PostProcessor) se.instantiateClass(new BindingModelImpl(bindingMap, ac), scriptName);
         } catch (Exception ce) {
             log.error(ce);
             return null;
@@ -943,10 +943,10 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     }
 
-    protected ProvisionServicePreProcessor createProvPreProcessScript(String scriptName) {
+    protected ProvisionServicePreProcessor createProvPreProcessScript(String scriptName, Map<String, Object> bindingMap) {
         try {
             ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-            return (ProvisionServicePreProcessor) se.instantiateClass(null, scriptName);
+            return (ProvisionServicePreProcessor) se.instantiateClass(new BindingModelImpl(bindingMap, ac), scriptName);
         } catch (Exception ce) {
             log.error(ce);
             return null;
@@ -955,10 +955,10 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     }
 
-    protected ProvisionServicePostProcessor createProvPostProcessScript(String scriptName) {
+    protected ProvisionServicePostProcessor createProvPostProcessScript(String scriptName,Map<String, Object> bindingMap) {
         try {
             ScriptIntegration se = ScriptFactory.createModule(scriptEngine);
-            return (ProvisionServicePostProcessor) se.instantiateClass(null, scriptName);
+            return (ProvisionServicePostProcessor) se.instantiateClass(new BindingModelImpl(bindingMap, ac), scriptName);
         } catch (Exception ce) {
             log.error(ce);
             return null;
@@ -967,18 +967,18 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     }
 
-    protected int executeProvisionPreProcess(ProvisionServicePreProcessor ppScript, Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, String operation) {
+    protected int executeProvisionPreProcess(ProvisionServicePreProcessor ppScript, BindingModelImpl bindingModel, ProvisionUser user, PasswordSync passwordSync, String operation) {
         if ("ADD".equalsIgnoreCase(operation)) {
-            return ppScript.addUser(user, bindingMap);
+            return ppScript.addUser(user, bindingModel.getBindingMap());
         }
         if ("MODIFY".equalsIgnoreCase(operation)) {
-            return ppScript.modifyUser(user, bindingMap);
+            return ppScript.modifyUser(user, bindingModel.getBindingMap());
         }
         if ("DELETE".equalsIgnoreCase(operation)) {
-            return ppScript.deleteUser(user, bindingMap);
+            return ppScript.deleteUser(user, bindingModel.getBindingMap());
         }
         if ("SET_PASSWORD".equalsIgnoreCase(operation)) {
-            return ppScript.setPassword(passwordSync, bindingMap);
+            return ppScript.setPassword(passwordSync, bindingModel.getBindingMap());
         }
 
         return 0;
@@ -2247,7 +2247,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                 Policy policy = attr.getAttributePolicy();
                 String url = policy.getRuleSrcUrl();
                 if (url != null) {
-                    Object output = se.execute(bindingMap, url);
+                    Object output = se.execute(new BindingModelImpl(bindingMap, ac), url);
                     if (output != null) {
                         String objectType = attr.getMapForObjectType();
                         if (objectType != null) {

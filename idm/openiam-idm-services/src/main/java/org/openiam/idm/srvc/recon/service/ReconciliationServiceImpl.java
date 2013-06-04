@@ -63,16 +63,20 @@ import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.provision.service.RemoteConnectorAdapter;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleObject;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.msg.*;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author suneet
  *
  */
-public class ReconciliationServiceImpl implements ReconciliationService, MuleContextAware {
+public class ReconciliationServiceImpl implements ReconciliationService, MuleContextAware, ApplicationContextAware {
 
 	protected ReconciliationSituationDAO reconSituationDao;
 	protected ReconciliationResultDAO reconResultDao;
@@ -89,6 +93,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
     protected RemoteConnectorAdapter remoteConnectorAdapter;
     protected RoleDataService roleDataService;
     protected GroupDataService groupDataService;
+    // used to inject the application context into the groovy scripts
+    public static ApplicationContext ac;
 
     private String scriptEngine;
 
@@ -301,7 +307,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
     }
 
     private void processingTargetToIDM(Role role, Group group, ReconciliationConfig config, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, ProvisionConnector connector, String keyField, String baseDnField, ScriptIntegration scriptIntegrationCache, Map<String, Object> map) {
-        String searchQuery = (String)scriptIntegrationCache.execute(map, config.getTargetSystemMatchScript());
+        String searchQuery = (String)scriptIntegrationCache.execute(new BindingModelImpl(map, ac), config.getTargetSystemMatchScript());
         if(StringUtils.isEmpty(searchQuery)) {
             //TODO log error
             return;
@@ -543,5 +549,10 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     public void setScriptEngine(String scriptEngine) {
         this.scriptEngine = scriptEngine;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ac = applicationContext;
     }
 }

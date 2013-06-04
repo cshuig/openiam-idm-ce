@@ -84,6 +84,7 @@ import org.openiam.provision.resp.LookupUserResponse;
 import org.openiam.provision.resp.PasswordResponse;
 import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.type.ExtensibleUser;
+import org.openiam.script.BindingModelImpl;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.spml2.interf.ConnectorService;
@@ -171,7 +172,7 @@ public class ProvisionServiceImpl implements ProvisionService,  ApplicationConte
 
 		bindingMap.put("context", ac);
 		
-		String gmSysKey = (String)se.execute(bindingMap, "provision/globalManagerSyskey.groovy");
+		String gmSysKey = (String)se.execute(new BindingModelImpl(bindingMap,ac), "provision/globalManagerSyskey.groovy");
 		
 		//TODO: Add policies to validate the request
 		//TODO: Add policies to enhance the request
@@ -214,8 +215,8 @@ public class ProvisionServiceImpl implements ProvisionService,  ApplicationConte
 		}
 		
 	/* -- Temp hack -- */
-		String networxId = (String)se.execute(bindingMap, "provision/networxId.groovy");
-		String globalManagerId = (String)se.execute(bindingMap, "provision/globalManagerId.groovy");
+		String networxId = (String)se.execute(new BindingModelImpl(bindingMap,ac), "provision/networxId.groovy");
+		String globalManagerId = (String)se.execute(new BindingModelImpl(bindingMap,ac), "provision/globalManagerId.groovy");
 	
 			
 	/*	LoginId networkLgId = new LoginId(secDomain, networxId, "1" );
@@ -807,10 +808,10 @@ public class ProvisionServiceImpl implements ProvisionService,  ApplicationConte
 			e.printStackTrace();
 		}
 		
-		String networxId = (String)se.execute(bindingMap, "provision/networxId.groovy");
-		String globalManagerId = (String)se.execute(bindingMap, "provision/globalManagerId.groovy");
-		String gmSysKey = (String)se.execute(bindingMap, "provision/globalManagerSyskey.groovy");
-		
+		String networxId = (String)se.execute(new BindingModelImpl(bindingMap, ac), "provision/networxId.groovy");
+		String globalManagerId = (String)se.execute(new BindingModelImpl(bindingMap, ac), "provision/globalManagerId.groovy");
+		String gmSysKey = (String)se.execute(new BindingModelImpl(bindingMap, ac), "provision/globalManagerSyskey.groovy");
+
 		/* -- Temp hack -- */
 		//
 		
