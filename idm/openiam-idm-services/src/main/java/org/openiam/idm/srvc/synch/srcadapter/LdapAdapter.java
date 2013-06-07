@@ -156,17 +156,20 @@ public class LdapAdapter implements SourceAdapter {
 
                     for (String s : ouList) {
 
-                        log.debug("[LDAPAdapter] OU=" + s + " starting processing ...");
-                        // modify the baseDN to leverage existing code
+                         // modify the baseDN to leverage existing code
 
                         try {
                             config.setBaseDn(s);
-
+                            log.debug("[LDAPAdapter] OU=\"" + s + "\" starting search ...");
                             NamingEnumeration<SearchResult> results = search(config);
 
                             List<SearchResult> resultList = new LinkedList<SearchResult>();
-                            resultList.addAll(Collections.list(results));
-
+                            while (results.hasMoreElements()) {
+                                SearchResult searchResult =  results.nextElement();
+                                log.debug("SearchResult:"+searchResult.getName());
+                                resultList.add(searchResult);
+                            }
+                            log.debug("Search by OU = \""+config.getBaseDn()+"\" completed."+" Was found: "+resultList.size()+" records.");
                             log.debug("[LDAPAdapter] OU=\"" + s + "\" starting processing ...");
                             proccess(config, provService, synchStartLog, validationScript, transformScript, matchRule, 0, resultList);
 
@@ -479,7 +482,6 @@ public class LdapAdapter implements SourceAdapter {
         NamingEnumeration<SearchResult> searchResult = null;
 
         searchResult = ctx.search(config.getBaseDn(), searchFilter, searchCtls);
-        log.debug("Search by OU = \""+config.getBaseDn()+"\" complited.");
         return searchResult;
     }
 
