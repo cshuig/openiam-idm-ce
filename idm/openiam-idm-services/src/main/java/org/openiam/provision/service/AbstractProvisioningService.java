@@ -401,6 +401,9 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                                     final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
                                     extUser.getAttributes().add(new ExtensibleAttribute(attr.getAttributeName(), sdf.format(d), 1, attr.getDataType()));
 
+                                } else if (output instanceof byte[]) {
+                                    extUser.getAttributes().add(new ExtensibleAttribute(attr.getAttributeName(), (byte[])output, 1, attr.getDataType()));
+
                                 } else if (output instanceof BaseAttributeContainer) {
 
                                     // process a complex object which can be passed to the connector
@@ -2283,6 +2286,10 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                                     newAttr.setObjectType(objectType);
                                     extUser.getAttributes().add(newAttr);
 
+                                } else if(output instanceof byte[]) {
+                                    newAttr = new ExtensibleAttribute(attr.getAttributeName(), (byte[]) output, 1, attr.getDataType());
+                                    newAttr.setObjectType(objectType);
+                                    extUser.getAttributes().add(newAttr);
                                 } else {
                                     // process a list - multi-valued object
                                     newAttr = new ExtensibleAttribute(attr.getAttributeName(), (List) output, 1, attr.getDataType());

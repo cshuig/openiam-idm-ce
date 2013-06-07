@@ -29,6 +29,8 @@ public class UserAttributeEntity {
     @Column(name = "VALUE", length = 1000)
     private String value;
 
+    @Column(name="VALUE_AS_BYTE_ARRAY")
+    private byte[] valueAsBytes;
 
     public UserAttributeEntity() {
     }
@@ -73,7 +75,13 @@ public class UserAttributeEntity {
         this.value = value;
     }
 
+    public byte[] getValueAsBytes() {
+        return valueAsBytes;
+    }
 
+    public void setValueAsBytes(byte[] valueAsBytes) {
+        this.valueAsBytes = valueAsBytes;
+    }
 
     @Override
     public boolean equals(Object o) {

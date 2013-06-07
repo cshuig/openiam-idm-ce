@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
         "name",
         "userId",
         "value",
+        "valueAsBytes",
         "operation",
         "required"
 })
@@ -46,6 +47,8 @@ public class UserAttribute extends BaseObject {
     protected Boolean required = Boolean.TRUE;
 
     protected String userId;
+
+    protected byte[] valueAsBytes;
     // Constructors
 
     /**
@@ -67,6 +70,7 @@ public class UserAttribute extends BaseObject {
         this.name = userAtributeEntity.getName();
         this.value = userAtributeEntity.getValue();
         this.userId = userAtributeEntity.getUser() != null ? userAtributeEntity.getUser().getUserId() : "";
+        this.valueAsBytes = userAtributeEntity.getValueAsBytes();
     }
 
     public UserAttribute(String name, String value) {
@@ -152,15 +156,25 @@ public class UserAttribute extends BaseObject {
         this.userId = userId;
     }
 
+    public byte[] getValueAsBytes() {
+        return valueAsBytes;
+    }
+
+    public void setValueAsBytes(byte[] valueAsBytes) {
+        this.valueAsBytes = valueAsBytes;
+    }
+
     @Override
     public String toString() {
         return "UserAttribute{" +
                 "id='" + id + '\'' +
                 ", metadataElementId='" + metadataElementId + '\'' +
                 ", name='" + name + '\'' +
-                ", userId='" + userId +
                 ", value='" + value + '\'' +
                 ", operation=" + operation +
+                ", required=" + required +
+                ", userId='" + userId + '\'' +
+                ", valueAsBytes=" + valueAsBytes +
                 '}';
     }
 

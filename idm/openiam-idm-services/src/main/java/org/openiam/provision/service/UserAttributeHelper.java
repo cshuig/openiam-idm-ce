@@ -254,6 +254,7 @@ public class UserAttributeHelper {
 		String name = extUser.getName();
 		name = "USER_ATTRIBUTE." + attr.getName();
 		ExtensibleAttribute extAttr = new ExtensibleAttribute(name, attr.getValue(), attr.getMetadataElementId());
+        extAttr.setValueAsByteArray(attr.getValueAsBytes());
 		if (attr.getOperation() == (AttributeOperationEnum.DELETE)) {
 			extAttr.setOperation(AttributeOperationEnum.DELETE.getValue());
 		}else {
@@ -291,7 +292,8 @@ public class UserAttributeHelper {
 			// not found add to the 
 			ExtensibleAttribute extAttr = new ExtensibleAttribute("USER_ATTRIBUTE." + attr.getName(), attr.getValue(),
 					attr.getMetadataElementId());
-			extAttr.setOperation(0);
+			extAttr.setValueAsByteArray(attr.getValueAsBytes());
+            extAttr.setOperation(0);
 			extUser.getAttributes().add(extAttr);
 
 		}

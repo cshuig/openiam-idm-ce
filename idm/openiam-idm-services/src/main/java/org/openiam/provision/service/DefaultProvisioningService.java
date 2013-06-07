@@ -865,6 +865,14 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         }
         ProvisionUser pUser = new ProvisionUser(usr);
 
+        Login lRequestor = loginManager.getPrimaryIdentity(requestorId);
+        Login lTargetUser = loginManager.getPrimaryIdentity(usr.getUserId());
+
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_EXIST);
+        bindingMap.put(TARGET_SYS_MANAGED_SYS_ID, getSysConfiguration().getDefaultManagedSysId());
+        bindingMap.put(TARGET_SYSTEM_IDENTITY, lTargetUser.getId().getLogin());
+        bindingMap.put(TARGET_SYS_RES_ID, null);
+        bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, lTargetUser.getId().getDomainId());
         if (callPreProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
             response.setStatus(ResponseStatus.FAILURE);
             response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
@@ -885,9 +893,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         usr.setLastUpdatedBy(requestorId);
         usr.setLastUpdate(new Date(System.currentTimeMillis()));
         userMgr.updateUserWithDependent(usr, false);
-
-        Login lRequestor = loginManager.getPrimaryIdentity(requestorId);
-        Login lTargetUser = loginManager.getPrimaryIdentity(usr.getUserId());
 
         if (lRequestor != null && lTargetUser != null) {
 
@@ -960,6 +965,19 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     .getId().getLogin(), null, l.getId()
                                     .getManagedSysId());
 
+                            // SET ATTRIBUTES PRE
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY, l.getId().getLogin());
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_EXIST);
+                            bindingMap.put(TARGET_SYS_MANAGED_SYS_ID, mSys.getManagedSysId());
+                            bindingMap.put(TARGET_SYS_RES_ID, null);
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, l.getId().getDomainId());
+
+                            if (callPreProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+                                response.setStatus(ResponseStatus.FAILURE);
+                                response.setErrorCode(ResponseCode.FAIL_PREPROCESSOR);
+                                return response;
+                            }
+
                             if (connector.getConnectorInterface() != null
                                     && connector.getConnectorInterface()
                                     .equalsIgnoreCase("REMOTE")) {
@@ -974,13 +992,23 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                             }
 
+                            //SET ATTRIBUTES POST
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
+                            if (callPostProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
+                                response.setStatus(ResponseStatus.FAILURE);
+                                response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
+                                return response;
+                            }
                         }
                     }
                 }
 
             }
         }
-
+        bindingMap.put(TARGET_SYSTEM_IDENTITY, lTargetUser.getId().getLogin());
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
+        bindingMap.put(TARGET_SYS_RES_ID, null);
+        bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, lTargetUser.getId().getDomainId());
         if (callPostProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
             response.setStatus(ResponseStatus.FAILURE);
             response.setErrorCode(ResponseCode.FAIL_POSTPROCESSOR);
@@ -1009,7 +1037,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         ProvisionUserResponse response = new ProvisionUserResponse(
                 ResponseStatus.SUCCESS);
         Map<String, Object> bindingMap = new HashMap<String, Object>();
-        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
 
         if (status != UserStatusEnum.DELETED && status != UserStatusEnum.LEAVE
                 && status != UserStatusEnum.TERMINATE
@@ -1044,6 +1071,12 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             return response;
         }
         ProvisionUser pUser = new ProvisionUser(usr);
+        // SET PRE ATTRIBUTES FOR DEFAULT SYS SCRIPT
+        bindingMap.put(TARGET_SYS_MANAGED_SYS_ID, managedSystemId);
+        bindingMap.put(TARGET_SYSTEM_IDENTITY, login.getId().getLogin());
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_EXIST);
+        bindingMap.put(TARGET_SYS_RES_ID, null);
+        bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, login.getId().getDomainId());
 
         if (callPreProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
             response.setStatus(ResponseStatus.FAILURE);
@@ -1083,6 +1116,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
             bindingMap.put("IDENTITY", login);
             bindingMap.put("RESOURCE", res);
+            bindingMap.put(TARGET_SYSTEM_IDENTITY, login.getId().getLogin());
+            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_EXIST);
+            bindingMap.put(TARGET_SYS_RES_ID, resourceId);
+            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, login.getId().getDomainId());
 
             if (resourceId != null) {
                 res = resourceDataService.getResource(resourceId);
@@ -1119,7 +1156,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     connectorSuccess = true;
                 }
             }
-
+            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
             String postProcessScript = getResProperty(res.getResourceProps(),
                     "POST_PROCESS");
             if (postProcessScript != null && !postProcessScript.isEmpty()) {
@@ -1194,14 +1231,22 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             bindingMap.put("IDENTITY", l);
                             bindingMap.put("RESOURCE", res);
 
-                            Resource res = null;
+                            Resource resource = null;
                             String resourceId = mSys.getResourceId();
+
+                            // SET PRE ATTRIBUTES FOR TARGET SYS SCRIPT
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY, l.getId().getLogin());
+                            bindingMap.put(TARGET_SYS_MANAGED_SYS_ID, mSys.getManagedSysId());
+                            bindingMap.put(TARGET_SYS_RES_ID, resourceId);
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, IDENTITY_EXIST);
+                            bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, l.getId().getDomainId());
+
                             if (resourceId != null) {
-                                res = resourceDataService
+                                resource = resourceDataService
                                         .getResource(resourceId);
-                                if (res != null) {
+                                if (resource != null) {
                                     String preProcessScript = getResProperty(
-                                            res.getResourceProps(),
+                                            resource.getResourceProps(),
                                             "PRE_PROCESS");
                                     if (preProcessScript != null
                                             && !preProcessScript.isEmpty()) {
@@ -1241,18 +1286,20 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                     connectorSuccess = true;
                                 }
                             }
-
-                            String postProcessScript = getResProperty(
-                                    res.getResourceProps(), "POST_PROCESS");
-                            if (postProcessScript != null
-                                    && !postProcessScript.isEmpty()) {
-                                PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
-                                if (ppScript != null) {
-                                    executePostProcess(ppScript, bindingMap,
-                                            pUser, "DELETE", connectorSuccess);
+                            // SET POST ATTRIBUTES FOR TARGET SYS SCRIPT
+                            bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
+                            if (resource != null) {
+                                String postProcessScript = getResProperty(
+                                        resource.getResourceProps(), "POST_PROCESS");
+                                if (postProcessScript != null
+                                        && !postProcessScript.isEmpty()) {
+                                    PostProcessor ppScript = createPostProcessScript(postProcessScript, bindingMap);
+                                    if (ppScript != null) {
+                                        executePostProcess(ppScript, bindingMap,
+                                                pUser, "DELETE", connectorSuccess);
+                                    }
                                 }
                             }
-
                         }
                     }
 
@@ -1260,6 +1307,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             }
 
         }
+        // SET POST ATTRIBUTES FOR DEFAULT SYS SCRIPT
+        bindingMap.put(TARGET_SYSTEM_IDENTITY, login.getId().getLogin());
+        bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
+        bindingMap.put(TARGET_SYS_RES_ID, null);
+        bindingMap.put(TARGET_SYS_SECURITY_DOMAIN, login.getId().getDomainId());
 
         if (callPostProcessor("DELETE", pUser, bindingMap) != ProvisioningConstants.SUCCESS) {
             response.setStatus(ResponseStatus.FAILURE);
@@ -1816,8 +1868,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                 }
 
                 bindingMap.put(TARGET_SYS_RES_ID, res.getResourceId());
-                bindingMap
-                        .put(TARGET_SYS_MANAGED_SYS_ID, res.getManagedSysId());
+                bindingMap.put(TARGET_SYS_MANAGED_SYS_ID, managedSysId);
 
                 if (managedSysId != null) {
 
