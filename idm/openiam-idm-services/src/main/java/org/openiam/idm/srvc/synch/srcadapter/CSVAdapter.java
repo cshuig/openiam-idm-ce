@@ -217,9 +217,6 @@ public class CSVAdapter extends AbstractSrcAdapter {
 
             //populate the data object
             ProvisionUser pUser = new ProvisionUser();
-            //Disable PRE and POST processors/performance optimizations
-            pUser.setSkipPreprocessor(true);
-            pUser.setSkipPostProcessor(true);
 
             LineObject rowObj = rowHeader.copy();
             populateRowObject(rowObj, row);

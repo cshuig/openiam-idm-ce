@@ -54,6 +54,9 @@ public class TransformPeoplesoftView extends AbstractTransformScript {
 
         populateObject(rowObj, pUser);
 
+        // this configure the loading Pre/Post groovy scrips, should be switch off for performance
+        pUser.setSkipPostProcessor(true);
+        pUser.setSkipPreprocessor(true);
 
         pUser.setStatus(UserStatusEnum.PENDING_INITIAL_LOGIN);
         pUser.securityDomain = "0";

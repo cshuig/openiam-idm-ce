@@ -57,7 +57,9 @@ public class TransformActiveDirRecord extends AbstractTransformScript {
 		pUser.setStatus(UserStatusEnum.ACTIVE);
 		pUser.securityDomain = "0"
 
-
+        // this configure the loading Pre/Post groovy scrips, should be switch off for performance
+        pUser.setSkipPostProcessor(true);
+        pUser.setSkipPreprocessor(true);
 
 		// Add default role
         if(userRoleList == null) {
