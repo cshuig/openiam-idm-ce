@@ -299,9 +299,6 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
             log.debug("-RDBMS ADAPTER: SYNCHRONIZING  RECORD # ---" + ctr++);
             // make sure we have a new object for each row
             ProvisionUser pUser = new ProvisionUser();
-            // this configure the loading Pre/Post groovy scrips, should be switch off for performance
-            pUser.setSkipPostProcessor(true);
-            pUser.setSkipPreprocessor(true);
 
             log.debug(" - Record update time=" + rowObj.getLastUpdate());
 
