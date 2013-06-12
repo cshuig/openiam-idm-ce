@@ -91,8 +91,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
     protected ConnectorDataService connectorService;
     protected ConnectorAdapter connectorAdapter;
     protected RemoteConnectorAdapter remoteConnectorAdapter;
-    protected RoleDataService roleDataService;
-    protected GroupDataService groupDataService;
     // used to inject the application context into the groovy scripts
     public static ApplicationContext ac;
 
@@ -118,11 +116,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         for(ReconciliationSituation situation : config.getSituationSet()) {
             if(StringUtils.isEmpty(situation.getReconConfigId())) {
                 situation.setReconConfigId(config.getReconConfigId());
-                if(situation.getReconSituationId() == null) {
-                    reconSituationDao.add(situation);
-                } else {
-                    reconSituationDao.update(situation);
-                }
             }
         }
         return reconConfigDao.update(config);
@@ -214,21 +207,23 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         try {
             log.debug("Reconciliation started for configId=" + config.getReconConfigId() + " - resource=" + config.getResourceId() );
 
+         // have resource
             Resource res = resourceDataService.getResource(config.getResourceId());
             String managedSysId =  res.getManagedSysId();
             ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
             log.debug("ManagedSysId = " + managedSysId);
             log.debug("Getting identities for managedSys");
-
+        // have situations
             Map<String, ReconciliationCommand> situations = new HashMap<String, ReconciliationCommand>();
             for(ReconciliationSituation situation : config.getSituationSet()){
                 situations.put(situation.getSituation().trim(), ReconciliationCommandFactory.createCommand(situation.getSituationResp(), situation, managedSysId));
                 log.debug("Created Command for: " + situation.getSituation());
             }
+         // have resource connector
             ProvisionConnector connector = connectorService.getConnector(mSys.getConnectorId());
-            
-        	// IF managed system is CSV
-			if (connector.getServiceUrl().contains("CSV")) {
+
+         // TODO check IF managed system is CSV, because we don't need to do reconciliation into TargetSystem directional
+            if (connector.getServiceUrl().contains("CSV")) {
 				// Get user without fetches
 				log.debug("Start recon");
 				connectorAdapter.reconcileResource(mSys, config, muleContext);
@@ -248,52 +243,15 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
             ScriptIntegration scriptIntegrationCache = ScriptFactory.createModule(this.scriptEngine);
 
             //1. Do reconciliation users from IDM to Target Managed System search for all Roles and Groups related with resource
-           for(ResourceRole rRole: res.getResourceRoles()) {
-                List<String> usrIds = roleDataService.getUsersInRoleIds(mSys.getDomainId(), rRole.getId().getRoleId());
-                if(usrIds != null) {
-                    for(String userId : usrIds) {
-                     //   reconciliationIDMUserToTargetSys(userId, mSys, situations);
-                    }
-                }
-                Group[] groups = roleDataService.getGroupsInRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
-                if(groups != null) {
-                    for(Group gr : groups) {
-                        /*usrIds = groupDataService.getUsersIdsByGroup(gr.getGrpId());
-                        if(usrIds != null){
-                            for(String userId : usrIds) {
-                                reconciliationIDMUserToTargetSys(userId, mSys, situations);
-                            }
-                        }*/
-                    }
-                }
+            // Get List with all users who have Identity if this resource
+            List<Login> idmIdentities = loginManager.getAllLoginByManagedSys(managedSysId);
+            for(Login identity : idmIdentities) {
+                reconciliationIDMUserToTargetSys(identity, mSys, situations);
             }
+
             //2. Do reconciliation users from Target Managed System to IDM search for all Roles and Groups related with resource
-            for(ResourceRole rRole: res.getResourceRoles()) {
-                //Fire Role
-                Map<String, Object> map = new HashMap<String, Object>();
-                Role role = roleDataService.getRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
-                map.put("role",role);
-                map.put("group",null);
-                for(RoleAttribute roleAttr : role.getRoleAttributes()) {
-                    if("ROLE".equalsIgnoreCase(roleAttr.getName())) {
-                        baseDnField = roleAttr.getValue();
-                        break;
-                    }
-                }
-                //GET Users from Connector for specific Role
-                processingTargetToIDM(role, null, config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
-                //Fire Groups
-                Group[] groups = roleDataService.getGroupsInRole(rRole.getId().getDomainId(), rRole.getId().getRoleId());
-                if(groups != null) {
-                    for(Group gr : groups) {
-                        //GET Users from Connector for specific Group
-                        map = new HashMap<String, Object>();
-                        map.put("role",null);
-                        map.put("group",gr);
-                        processingTargetToIDM(role, gr, config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache, map);
-                    }
-                }
-            }
+            //GET Users from ConnectorAdapter by BaseDN and query rules
+            processingTargetToIDM(config, managedSysId, mSys, situations, connector, keyField, baseDnField, scriptIntegrationCache);
 
 		} catch(Exception e) {
 			log.error(e);
@@ -306,11 +264,11 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         return new ReconciliationResponse(ResponseStatus.SUCCESS);
     }
 
-    private void processingTargetToIDM(Role role, Group group, ReconciliationConfig config, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, ProvisionConnector connector, String keyField, String baseDnField, ScriptIntegration scriptIntegrationCache, Map<String, Object> map) {
-        String searchQuery = (String)scriptIntegrationCache.execute(new BindingModelImpl(map, ac), config.getTargetSystemMatchScript());
+    private ReconciliationResponse processingTargetToIDM(ReconciliationConfig config, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, ProvisionConnector connector, String keyField, String baseDnField, ScriptIntegration scriptIntegrationCache) {
+        String searchQuery = (String)scriptIntegrationCache.execute(new BindingModelImpl(ac), config.getTargetSystemMatchScript());
         if(StringUtils.isEmpty(searchQuery)) {
-            //TODO log error
-            return;
+            log.error("SearchQuery not defined for this reconciliation config.");
+            return new ReconciliationResponse(ResponseStatus.FAILURE);
         }
         log.debug("processingTargetToIDM: mSys="+mSys);
         SearchRequest searchRequest = new SearchRequest();
@@ -341,21 +299,22 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
             List<UserValue> usersFromRemoteSys = searchResponse.getUserList();
             if(usersFromRemoteSys != null) {
                 for(UserValue userValue : usersFromRemoteSys) {
-                    List<ExtensibleAttribute> extensibleAttributes = userValue.getAttributeList();
-                    reconcilationTargetUserObjectToIDM(role, group, managedSysId, mSys, situations, keyField, extensibleAttributes);
+                    List<ExtensibleAttribute> extensibleAttributes = userValue.getAttributeList() != null ? userValue.getAttributeList() : new LinkedList<ExtensibleAttribute>();
+                    reconcilationTargetUserObjectToIDM(managedSysId, mSys, situations, keyField, extensibleAttributes);
                 }
             }
         } else {
             log.debug(searchResponse.getErrorMessage());
         }
+        return new ReconciliationResponse(ResponseStatus.FAILURE);
     }
 
     // Reconciliation processingTargetToIDM
-    private void reconcilationTargetUserObjectToIDM(Role role, Group group, String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, String keyField, List<ExtensibleAttribute> extensibleAttributes) {
+    private void reconcilationTargetUserObjectToIDM(String managedSysId, ManagedSys mSys, Map<String, ReconciliationCommand> situations, String keyField, List<ExtensibleAttribute> extensibleAttributes) {
         String targetUserPrincipal = null;
         for(ExtensibleAttribute attr : extensibleAttributes) {
            //search principal attribute by KeyField (matchObjAry[0].getKeyField();)
-           if(attr.getName().equalsIgnoreCase(keyField)) {
+           if(attr.getName().equals(keyField)) {
                targetUserPrincipal = attr.getValue();
                break;
            }
@@ -366,34 +325,16 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
            //if principal attribute exists in user attributes from target system
            //we need to define Command
            //try to find user in IDM by login=principal
-           // TODO clarify: should we search identity by Login or by any configurable User Attribue
             Login login = loginManager.getLoginByManagedSys(mSys.getDomainId(), targetUserPrincipal, managedSysId);
-            if(login != null) {
-               // user exists in IDM too
-               // processingTargetToIDM Match Found
-               // check IDM Delete status
-                if(login.getOperation() == AttributeOperationEnum.DELETE) {
-                    // processingTargetToIDM "IDM Delete" command
-                    ReconciliationCommand command = situations.get("IDM Delete");
-                    if(command != null) {
-                        log.debug("Call command for IDM Delete login="+login.getId().getLogin());
-                        User user = userMgr.getUserWithDependent(login.getUserId(), true);
-                        command.execute(login, new ProvisionUser(user), extensibleAttributes);
-                    }
-                } else {
-                    // processingTargetToIDM "IDM Match Found" command
-                    ReconciliationCommand command = situations.get("IDM Match Found");
-                    if(command != null) {
-                        log.debug("Call command for Match Found");
-                        User user = userMgr.getUserWithDependent(login.getUserId(), true);
-                        command.execute(login, new ProvisionUser(user), extensibleAttributes);
-                    }
-                }
-            } else {
-              // user doesn't exists in IDM
-              // processingTargetToIDM "IDM Not Found" command
-                ReconciliationCommand command = situations.get("IDM Not Found");
-                if(command != null) {
+            Login idmLogin = loginManager.getLoginByManagedSys(mSys.getDomainId(), targetUserPrincipal, "0");
+            boolean identityExistsInIDM = login != null;
+
+            if (!identityExistsInIDM) {
+                // user doesn't exists in IDM
+
+                //   SYS_EXISTS__IDM_NOT_EXISTS
+                ReconciliationCommand command = situations.get(ReconciliationCommand.SYS_EXISTS__IDM_NOT_EXISTS);
+                if (command != null) {
                     Login l = new Login();
                     LoginId id = new LoginId();
                     id.setDomainId(mSys.getDomainId());
@@ -403,16 +344,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
                     ProvisionUser newUser = new ProvisionUser();
                     //ADD Target user principal
                     newUser.getPrincipalList().add(l);
-
-                    if(role != null) {
-                        List<Role> roleList = new ArrayList<Role>();
-                        roleList.add(role);
-                        newUser.setMemberOfRoles(roleList);
-                    }
-                    if(group != null) {
-                        List<Group> groupList = new ArrayList<Group>();
-                        groupList.add(group);
-                        newUser.setMemberOfGroups(groupList);
+                    if(idmLogin != null) {
+                        newUser.getPrincipalList().add(idmLogin);
                     }
                     log.debug("Call command for Match Found");
                     command.execute(l, newUser, extensibleAttributes);
@@ -421,67 +354,47 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
         }
     }
 
+    private boolean reconciliationIDMUserToTargetSys(final Login identity, final ManagedSys mSys, final Map<String, ReconciliationCommand> situations) {
+        User user = userMgr.getUserWithDependent(identity.getUserId(), true);
+        log.debug("1 Reconciliation for user "+user);
 
-    private boolean reconciliationIDMUserToTargetSys(final String usrId, final ManagedSys mSys, final Map<String, ReconciliationCommand> situations) {
-        Login l = null;
-        User user = userMgr.getUserWithDependent(usrId, true);
-        log.debug("Reconciliation for user "+user);
-        List<Login> logins = user.getPrincipalList();
-        if(logins != null) {
-            for(Login login: logins) {
-                if(login.getId().getDomainId().equalsIgnoreCase(mSys.getDomainId()) && login.getId().getManagedSysId().equalsIgnoreCase(mSys.getManagedSysId())){
-                    l = login;
-                    break;
-                }
-            }
-        }
-        if(l == null) {
-            if(user.getStatus().equals(UserStatusEnum.DELETED)){
-                // User is deleted and has no Identity for this managed system -> goto next user
-                return true;
-            }
-            // There was never a resource account for this user.
-            // Possibility: User was created before the managed Sys was associated.
-            // Situation: Login Not Found
-            ReconciliationCommand command = situations.get("Login Not Found");
-            if(command != null) {
-                log.debug("Call command for IDM Login Not Found");
-                command.execute(l, new ProvisionUser(user), null);
-            }
-            return false;
-        }
-
-        String principal = l.getId().getLogin();
+        String principal = identity.getId().getLogin();
         log.debug("looking up identity in resource: " + principal);
 
         LookupUserResponse lookupResp =  provisionService.getTargetSystemUser(principal, mSys.getManagedSysId());
 
         log.debug("Lookup status for " + principal + " =" +  lookupResp.getStatus());
 
-        //User user = userMgr.getUserByPrincipal(l.getId().getDomainId(), l.getId().getLogin(), l.getId().getManagedSysId(), true);
-        //TODO check this logic
-        if (lookupResp.getStatus() == ResponseStatus.FAILURE && !l.getStatus().equalsIgnoreCase("INACTIVE")) {
-            // Situation: Resource Delete
-            ReconciliationCommand command = situations.get("Resource Delete");
-            if(command != null){
-                log.debug("Call command for Resource Delete");
-                command.execute(l, new ProvisionUser(user), null);
-            }
-        } else if (lookupResp.getStatus() == ResponseStatus.SUCCESS) {
-            // found entry in managed sys
-            if("INACTIVE".equalsIgnoreCase(l.getStatus()) || user.getStatus().equals(UserStatusEnum.DELETED)) {
-                // Situation: IDM Delete
-                ReconciliationCommand command = situations.get("IDM Delete");
-                if(command != null) {
-                    log.debug("Call command for IDM Delete");
-                    command.execute(l, new ProvisionUser(user), null);
+        boolean userFoundInTargetSystem = lookupResp.getStatus() == ResponseStatus.SUCCESS;
+
+        List<ExtensibleAttribute> extensibleAttributes = lookupResp.getAttrList() != null ? lookupResp.getAttrList() : new LinkedList<ExtensibleAttribute>();
+
+        if (userFoundInTargetSystem) {
+            // Record exists in resource
+            if (user.getStatus().equals(UserStatusEnum.DELETED)) {
+                //    IDM_DELETED__SYS_EXISTS
+                ReconciliationCommand command = situations.get(ReconciliationCommand.IDM_DELETED__SYS_EXISTS);
+                if (command != null) {
+                    log.debug("Call command for: Record in resource but deleted in IDM");
+                    command.execute(identity, new ProvisionUser(user), extensibleAttributes);
                 }
             } else {
-                // Situation: IDM Changed/Resource Changed/Match Found
-                ReconciliationCommand command = situations.get("Match Found");
-                if(command != null){
-                    log.debug("Call command for Match Found");
-                    command.execute(l, new ProvisionUser(user), null);
+                //    IDM_EXISTS__SYS_EXISTS
+                ReconciliationCommand command = situations.get(ReconciliationCommand.IDM_EXISTS__SYS_EXISTS);
+                if (command != null) {
+                    log.debug("Call command for: Record in resource and in IDM");
+                    command.execute(identity, new ProvisionUser(user), extensibleAttributes);
+                }
+            }
+
+        } else {
+            // Record not found in resource
+            if (!user.getStatus().equals(UserStatusEnum.DELETED)) {
+                //    IDM_EXISTS__SYS_NOT_EXISTS
+                ReconciliationCommand command = situations.get(ReconciliationCommand.IDM_EXISTS__SYS_NOT_EXISTS);
+                if (command != null) {
+                    log.debug("Call command for: Record in resource and in IDM");
+                    command.execute(identity, new ProvisionUser(user), extensibleAttributes);
                 }
             }
         }
@@ -537,10 +450,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, MuleCon
 
     public void setRemoteConnectorAdapter(RemoteConnectorAdapter remoteConnectorAdapter) {
         this.remoteConnectorAdapter = remoteConnectorAdapter;
-    }
-
-    public void setRoleDataService(RoleDataService roleDataService) {
-        this.roleDataService = roleDataService;
     }
 
     public String getScriptEngine() {
