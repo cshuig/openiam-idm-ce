@@ -3,6 +3,7 @@ package org.openiam.idm.srvc.recon.command;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.auth.dto.Login;
+import org.openiam.idm.srvc.auth.dto.LoginId;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
 import org.openiam.idm.srvc.recon.service.PopulationScript;
 import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
@@ -61,9 +62,23 @@ public class CreateIdmAccountCommand implements ReconciliationCommand {
             int retval = script.execute(line, pUser);
             if (retval == 0) {
                 log.debug("Population successful for user: " + login.getId());
-                login.getId().setManagedSysId("0");
-                pUser.getPrincipalList().add(login);
-                provisionService.addUser(pUser);
+                Login idmIdentity = null;
+                for(Login iden : pUser.getPrincipalList()){
+                   if(iden.getId().getManagedSysId().equals("0")){
+                       idmIdentity = iden;
+                       break;
+                   }
+                }
+                if(idmIdentity == null) {
+                    LoginId idmLoginId = new LoginId(login.getId().getDomainId(),login.getId().getLogin(), "0");
+                    Login idmLogin = new Login();
+                    idmLogin.setId(idmLoginId);
+                    pUser.getPrincipalList().add(idmLogin);
+                    provisionService.addUser(pUser);
+                } else {
+                    pUser.setUserId(idmIdentity.getUserId());
+                    provisionService.modifyUser(pUser);
+                }
                 //provisionService.modifyUser(pUser);
             } else {
                 log.debug("Couldn't populate ProvisionUser. User not added");

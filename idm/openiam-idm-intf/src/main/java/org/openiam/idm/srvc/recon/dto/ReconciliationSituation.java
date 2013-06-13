@@ -87,4 +87,29 @@ public class ReconciliationSituation implements java.io.Serializable {
         this.script = script;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReconciliationSituation situation1 = (ReconciliationSituation) o;
+
+        if (reconConfigId != null ? !reconConfigId.equals(situation1.reconConfigId) : situation1.reconConfigId != null)
+            return false;
+        if (script != null ? !script.equals(situation1.script) : situation1.script != null) return false;
+        if (situation != null ? !situation.equals(situation1.situation) : situation1.situation != null) return false;
+        if (situationResp != null ? !situationResp.equals(situation1.situationResp) : situation1.situationResp != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = reconConfigId != null ? reconConfigId.hashCode() : 0;
+        result = 31 * result + (situation != null ? situation.hashCode() : 0);
+        result = 31 * result + (situationResp != null ? situationResp.hashCode() : 0);
+        result = 31 * result + (script != null ? script.hashCode() : 0);
+        return result;
+    }
 }

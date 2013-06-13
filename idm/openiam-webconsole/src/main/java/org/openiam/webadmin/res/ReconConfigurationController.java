@@ -22,11 +22,13 @@ import org.openiam.idm.srvc.mngsys.service.ConnectorDataService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.dto.ReconciliationSituation;
+import org.openiam.idm.srvc.recon.service.ReconciliationCommand;
 import org.openiam.idm.srvc.recon.ws.AsynchReconciliationService;
 import org.openiam.idm.srvc.recon.ws.ReconciliationWebService;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -119,36 +121,17 @@ public class ReconConfigurationController extends CancellableFormController {
 		ReconciliationConfig config = reconcileService.getConfigByResource(
 				resId).getConfig();
 		if (config == null) {
-
 			cmd.getConfig().setResourceId(resId);
+            cmd.getSituationList().addAll(getDefaultSituations());
+        } else {
+            cmd.setConfig(config);
+            if(CollectionUtils.isEmpty(config.getSituationSet())) {
+               cmd.getSituationList().addAll(getDefaultSituations());
+           } else {
+               cmd.getSituationList().addAll(config.getSituationSet());
+           }
+        }
 
-			cmd.getSituationList().add(
-					new ReconciliationSituation(null, "Match Found"));
-			cmd.getSituationList().add(
-					new ReconciliationSituation(null, "Resource Delete"));
-            cmd.getSituationList().add(
-                    new ReconciliationSituation(null, "IDM Match Found"));
-			cmd.getSituationList().add(
-					new ReconciliationSituation(null, "IDM Delete"));
-			cmd.getSituationList().add(
-					new ReconciliationSituation(null, "IDM Not Found"));
-			cmd.getSituationList().add(
-					new ReconciliationSituation(null, "Login Not Found"));
-		} else {
-			// move set to a list
-			cmd.setConfig(config);
-            Map<String, ReconciliationSituation> situationMap = new HashMap<String, ReconciliationSituation>();
-			List<ReconciliationSituation> situationList = new ArrayList<ReconciliationSituation>();
-			for (ReconciliationSituation s : config.getSituationSet()) {
-				situationList.add(s);
-                situationMap.put(s.getSituation(), s);
-			}
-            if(!situationMap.containsKey("IDM Match Found")) {
-                situationList.add(new ReconciliationSituation(null, "IDM Match Found"));
-            }
-
-			cmd.setSituationList(situationList);
-		}
 
 		List<Menu> level3MenuList = navigationDataService.menuGroupByUser(
 				menuGrp, userId, "en").getMenuList();
@@ -160,7 +143,20 @@ public class ReconConfigurationController extends CancellableFormController {
 		return cmd;
 	}
 
-	public void setConnectorService(ConnectorDataService connectorService) {
+    private List<ReconciliationSituation> getDefaultSituations() {
+        List<ReconciliationSituation> situations = new LinkedList<ReconciliationSituation>();
+        situations.add(
+                new ReconciliationSituation(null, ReconciliationCommand.IDM_EXISTS__SYS_EXISTS));
+        situations.add(
+                new ReconciliationSituation(null, ReconciliationCommand.IDM_DELETED__SYS_EXISTS));
+        situations.add(
+                new ReconciliationSituation(null, ReconciliationCommand.IDM_EXISTS__SYS_NOT_EXISTS));
+        situations.add(
+                new ReconciliationSituation(null, ReconciliationCommand.SYS_EXISTS__IDM_NOT_EXISTS));
+        return situations;
+    }
+
+    public void setConnectorService(ConnectorDataService connectorService) {
 		this.connectorService = connectorService;
 	}
 

@@ -2033,8 +2033,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 // build the request
                                 AddRequestType addReqType = new AddRequestType();
 
+                                //Used in LDAP
+                                String searchPrincipal = matchObj.getKeyField() + "=" + mLg.getId().getLogin() + "," + matchObj.getBaseDn();
+
                                 PSOIdentifierType idType = new PSOIdentifierType(
-                                        mLg.getId().getLogin(), null, "target");
+                                        searchPrincipal, null, "target");
                                 addReqType.setPsoID(idType);
                                 addReqType.setRequestID(requestId);
                                 addReqType.setTargetID(mLg.getId()

@@ -13,8 +13,9 @@ def List<Role> roleList = user.getMemberOfRoles();
 ApplicationContext ac =  context;
 RoleDataWebService roleDataService = (RoleDataWebService)ac.getBean("roleWS");
 
-println("user roles =" + roleList);
 
+println("user roles =" + roleList);
+output = matchParam.baseDn;
 //reset output from old value
 if (roleList != null) {
     // process only the first role otherwise we may end up with multiple OUs

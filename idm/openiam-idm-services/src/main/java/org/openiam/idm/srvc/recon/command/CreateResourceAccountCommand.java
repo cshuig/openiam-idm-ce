@@ -10,13 +10,6 @@ import org.openiam.provision.type.ExtensibleAttribute;
 
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Pascal
- * Date: 27.04.12
- * Time: 15:43
- * To change this template use File | Settings | File Templates.
- */
 public class CreateResourceAccountCommand implements ReconciliationCommand {
     private ProvisionService provisionService;
     private static final Log log = LogFactory.getLog(CreateResourceAccountCommand.class);
@@ -30,6 +23,6 @@ public class CreateResourceAccountCommand implements ReconciliationCommand {
         log.debug("Create Resource Account for user: " + user.getUserId());
         ProvisionUser pUser = user != null ? user : new ProvisionUser();
         provisionService.modifyUser(pUser);
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 }
