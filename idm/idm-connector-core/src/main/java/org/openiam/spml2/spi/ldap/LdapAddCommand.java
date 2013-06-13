@@ -121,7 +121,8 @@ public class LdapAddCommand extends LdapAbstractCommand {
 
             // get the field that is to be used as the UniqueIdentifier
             //String ldapName = matchObj.getKeyField() +"=" + psoID.getID() + "," + baseDN;
-            String ldapName = psoID.getID();
+            //String ldapName = psoID.getID();
+            String ldapName = "cn=" + psoID.getID() + "," + baseDN;
 
             log.debug("Checking if the identity exists: " + ldapName);
 

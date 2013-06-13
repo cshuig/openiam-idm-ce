@@ -69,7 +69,7 @@ public class CreateIdmAccountCommand implements ReconciliationCommand {
                        break;
                    }
                 }
-                if(idmIdentity == null){
+                if(idmIdentity == null) {
                     LoginId idmLoginId = new LoginId(login.getId().getDomainId(),login.getId().getLogin(), "0");
                     Login idmLogin = new Login();
                     idmLogin.setId(idmLoginId);
