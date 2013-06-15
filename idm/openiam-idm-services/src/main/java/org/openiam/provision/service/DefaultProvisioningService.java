@@ -151,7 +151,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("org", org);
         bindingMap.put("operation", "ADD");
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
-
+        bindingMap.put(TARGET_SYSTEM_IDENTITY, null);
         // run the pre-processor before the body of the add operation
         if (callPreProcessor("ADD", user, bindingMap) != ProvisioningConstants.SUCCESS) {
             resp.setStatus(ResponseStatus.FAILURE);
@@ -1666,6 +1666,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         bindingMap.put("org", org);
         bindingMap.put("operation", "MODIFY");
         bindingMap.put(TARGET_SYSTEM_IDENTITY_STATUS, null);
+        bindingMap.put(TARGET_SYSTEM_IDENTITY, null);
         // clone the user object so that we have it for comparison in the
         // scripts
         bindingMap.put("userBeforeModify", new ProvisionUser(origUser));
@@ -2033,11 +2034,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 // build the request
                                 AddRequestType addReqType = new AddRequestType();
 
-                                //Used in LDAP
-                                String searchPrincipal = matchObj.getKeyField() + "=" + mLg.getId().getLogin() + "," + matchObj.getBaseDn();
-
                                 PSOIdentifierType idType = new PSOIdentifierType(
-                                        searchPrincipal, null, "target");
+                                        mLg.getId().getLogin(), null, "target");
                                 addReqType.setPsoID(idType);
                                 addReqType.setRequestID(requestId);
                                 addReqType.setTargetID(mLg.getId()
@@ -2628,6 +2626,14 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         // get the connector for the managedSystem
 
         ManagedSys mSys = managedSysService.getManagedSys(managedSysId);
+        ManagedSystemObjectMatch matchObj = null;
+        ManagedSystemObjectMatch[] matchObjAry = managedSysService
+                .managedSysObjectParam(managedSysId,
+                        "USER");
+        if (matchObjAry != null
+                && matchObjAry.length > 0) {
+            matchObj = matchObjAry[0];
+        }
         ProvisionConnector connector = connectorService.getConnector(mSys
                 .getConnectorId());
 
