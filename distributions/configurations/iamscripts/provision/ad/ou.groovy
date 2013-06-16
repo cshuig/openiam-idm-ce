@@ -4,7 +4,10 @@ import org.openiam.idm.srvc.role.dto.RoleAttribute
 import org.openiam.idm.srvc.role.ws.RoleDataWebService
 
 
-
+/**
+ * ou.groovy example shows how you can associate an OU to the Role. The OU is stored in a Role Attribute called
+ *  AD_OU.  As a person's role changes so will their OU in AD
+ */
 println("Building ou string");
 
 List<String> roleStrList = new ArrayList<String>();

@@ -21,10 +21,9 @@ println("uid.groovy called.")
 	loginId =  lg.id.login;
 	
 	origLoginID = loginId
-	
 
-	loginId = matchParam.keyField + "=" + loginId + ",ou=people," + matchParam.baseDn;
 
+    loginId = matchParam.keyField + "=" + loginId + "," + matchParam.baseDn;
 
 	ctr = 1;
 	

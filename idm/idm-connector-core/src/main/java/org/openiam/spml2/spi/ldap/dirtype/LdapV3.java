@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseAttribute;
 import org.openiam.base.SysConfiguration;
+import org.openiam.exception.EncryptionException;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSystemObjectMatch;
@@ -14,19 +15,18 @@ import org.openiam.spml2.msg.DeleteRequestType;
 import org.openiam.spml2.msg.password.SetPasswordRequestType;
 import org.openiam.spml2.msg.suspend.ResumeRequestType;
 import org.openiam.spml2.msg.suspend.SuspendRequestType;
-import org.openiam.exception.EncryptionException;
 import org.openiam.util.encrypt.HashDigest;
+import org.openiam.util.encrypt.SHA1Hash;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
+import javax.naming.ldap.LdapContext;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.naming.ldap.LdapContext;
-import org.openiam.util.encrypt.SHA1Hash;
 
 /**
  * Implements directory specific extensions for standard LDAP v3
@@ -208,7 +208,9 @@ public class LdapV3 implements Directory{
             return false;
         }
         for (String member : membershipList) {
-            if (member.equalsIgnoreCase(objectName)) {
+            // ldap search will not return the fully qualified name.
+            if (objectName.contains(member)) {
+            //if (member.equalsIgnoreCase(objectName)) {
                 return true;
             }
         }
@@ -222,20 +224,15 @@ public class LdapV3 implements Directory{
 
         List<String> currentMembershipList = new ArrayList<String>();
 
-        log.debug("isMemberOf()...");
-        log.debug(" - userDN =" + userDN);
-        log.debug(" - MembershipObjectDN=" + matchObj.getSearchBaseDn());
-
         String userSearchFilter = "(&(objectclass=*)(uniqueMember=" + userDN + "))";
         String searchBase = matchObj.getSearchBaseDn();
-
-
 
         try {
 
             SearchControls ctls = new SearchControls();
 
             String userReturnedAtts[]={"uniqueMember"};
+
             ctls.setReturningAttributes(userReturnedAtts);
             ctls.setSearchScope(SearchControls.SUBTREE_SCOPE); // Search object only
 
@@ -247,9 +244,13 @@ public class LdapV3 implements Directory{
                 SearchResult sr = (SearchResult)answer.next();
 
                 String objectName = sr.getName();
-                if (!objectName.contains(matchObj.getBaseDn()))  {
-                    objectName = objectName + "," + matchObj.getBaseDn();
-                }
+
+
+                // adding base dn may not work. Groups may be anywhere in the ldap hierarchy
+
+                //if (!objectName.contains(matchObj.getBaseDn()))  {
+                //    objectName = objectName + "," + matchObj.getBaseDn();
+                //}
 
                 log.debug("Adding to current membership list " + objectName);
                 currentMembershipList.add(objectName);

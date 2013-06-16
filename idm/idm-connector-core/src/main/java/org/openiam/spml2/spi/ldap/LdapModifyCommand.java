@@ -150,6 +150,8 @@ public class LdapModifyCommand extends LdapAbstractCommand {
 
                             log.debug("Extensible Attribute: " + att.getName() + " " + att.getDataType());
 
+                            boolean addToModList = true;
+
                             if (att.getDataType() == null) {
                                 continue;
                             }
@@ -157,11 +159,13 @@ public class LdapModifyCommand extends LdapAbstractCommand {
                             if (att.getDataType().equalsIgnoreCase("memberOf")) {
                                 if (groupMembershipEnabled) {
                                     buildMembershipList(att, targetMembershipList);
+                                    addToModList = false;
                                 }
-                            } if (att.getDataType().equalsIgnoreCase("byteArray")) {
+                            }
+                            if (att.getDataType().equalsIgnoreCase("byteArray")) {
 
                                 modItemList.add(new ModificationItem(att.getOperation(), new BasicAttribute(att.getName(), att.getValueAsByteArray())));
-                            } else if (att.getOperation() != 0 && att.getName() != null) {
+                            } else if (att.getOperation() != 0 && att.getName() != null && addToModList) {
 
                                 // set an attribute to null
                                 if ((att.getValue() == null || att.getValue().contains("null")) && (att.getValueList() == null || att.getValueList().size() == 0)) {
