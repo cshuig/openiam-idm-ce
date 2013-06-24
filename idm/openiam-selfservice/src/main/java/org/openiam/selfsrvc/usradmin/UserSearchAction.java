@@ -25,11 +25,9 @@ import org.openiam.selfsrvc.AppConfiguration;
 import org.openiam.selfsrvc.IdToObjectHelper;
 import org.springframework.web.struts.DispatchActionSupport;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -349,10 +347,11 @@ public class UserSearchAction extends DispatchActionSupport {
                 newCodeList.add(new LabelValueBean("", ""));
 
                 for (Role val : roleList ) {
-
-                    LabelValueBean label = new LabelValueBean(val.getId().getServiceId() + "->" + val.getRoleName(),
-                            val.getId().getServiceId() + "*" + val.getId().getRoleId());
-                    newCodeList.add(label);
+                    if (!"NO".equalsIgnoreCase( val.getProvisionObjName())) {
+                        LabelValueBean label = new LabelValueBean(val.getId().getServiceId() + "->" + val.getRoleName(),
+                                val.getId().getServiceId() + "*" + val.getId().getRoleId());
+                        newCodeList.add(label);
+                    }
                 }
             }
         } catch (Exception e) {

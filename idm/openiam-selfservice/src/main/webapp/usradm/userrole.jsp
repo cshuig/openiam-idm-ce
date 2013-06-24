@@ -20,7 +20,7 @@
 		</tr>
 
 	      <c:forEach items="${userRoleCmd.roleList}" var="roleList" varStatus="role">
-		  
+              <c:if test="${roleList.provisionObjName != 'NO'}" >
 						<tr>
 								<td>
 									<form:checkbox path="roleList[${role.index}].selected" />
@@ -31,10 +31,12 @@
 								<td>${roleList.roleName}</td>
 								<td>${roleList.parentRoleId}</td>
 								<td>${roleList.status}</td>
-						</tr>				
+						</tr>
+              </c:if>
 				</c:forEach>
 
-   
+
+
 
   <tr>
     <td colspan="4" align="right"> 

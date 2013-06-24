@@ -605,10 +605,14 @@ public class NewHireExtController {
         List<OptionTag> roles = new LinkedList<OptionTag>();
         if(roleList != null) {
             for(Role role : roleList) {
-                OptionTag ot = new OptionTag();
-                ot.setLabel(role.getRoleName());
-                ot.setValue(role.getId().getServiceId()+"*"+role.getId().getRoleId());
-                roles.add(ot);
+
+                if (!"NO".equalsIgnoreCase(role.getProvisionObjName())) {
+
+                    OptionTag ot = new OptionTag();
+                    ot.setLabel(role.getRoleName());
+                    ot.setValue(role.getId().getServiceId()+"*"+role.getId().getRoleId());
+                    roles.add(ot);
+                }
             }
         }
         return roles;
