@@ -16,6 +16,14 @@ public enum OrgClassificationEnum {
 
     @XmlEnumValue("organization")
     ORGANIZATION("ORGANIZATION"),
+    @XmlEnumValue("school")
+    SCHOOL("SCHOOL"),
+    @XmlEnumValue("district")
+    DISTRICT("DISTRICT"),
+    @XmlEnumValue("university")
+    UNIVERSITY("UNIVERSITY"),
+    @XmlEnumValue("college")
+    COLLEGE("COLLEGE"),
     @XmlEnumValue("department")
     DEPARTMENT("DEPARTMENT"),
     @XmlEnumValue("division")
