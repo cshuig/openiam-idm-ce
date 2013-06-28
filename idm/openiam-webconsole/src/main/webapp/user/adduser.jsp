@@ -386,7 +386,7 @@ function selectChange(ctrl) {
    </tr>
   <tr>
        <td>Bldg Num - Address</td>
-       <td><form:input path="user.bldgNum" size="5" maxlength="5" /> <form:input path="user.address1" size="20" maxlength="30" /></td>
+       <td><form:input path="user.bldgNum" size="5" maxlength="5" /> <form:input path="user.address1" size="20" maxlength="512" /></td>
        <td    >Cell/BlackBerry Phone</td>
        <td   colspan="3">
        		<form:input path="cellAreaCode" size="3" maxlength="3"  />
@@ -398,7 +398,7 @@ function selectChange(ctrl) {
    </tr>
   <tr>
        <td    ></td>
-       <td  ><form:input path="user.address2" size="30"  /></td>
+       <td  ><form:input path="user.address2" size="30" maxlength="512" /></td>
        <td    >Fax</td>
        <td   colspan="3">
 			<form:input path="faxAreaCode" size="3" maxlength="3"  />

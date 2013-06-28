@@ -171,10 +171,10 @@ public class UserEntity {
 	@Column(name = "SUITE", length = 20)
 	private String suite;
 
-	@Column(name = "ADDRESS1", length = 45)
+	@Column(name = "ADDRESS1", length = 512)
 	private String address1;
 
-	@Column(name = "ADDRESS2", length = 45)
+	@Column(name = "ADDRESS2", length = 512)
 	private String address2;
 
 	@Column(name = "ADDRESS3", length = 45)
