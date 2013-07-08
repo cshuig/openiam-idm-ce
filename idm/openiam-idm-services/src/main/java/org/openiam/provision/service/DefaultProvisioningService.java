@@ -452,7 +452,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                         boolean userExistedInTargetSystem = getCurrentObjectAtTargetSystem(
                                 resLogin, mSys, connector, matchObj,
-                                curValueMap);
+                                curValueMap, user, auditLog);
 
                         if (!userExistedInTargetSystem) {
                             if (curValueMap == null
@@ -617,6 +617,15 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 UserResponse respType = remoteConnectorAdapter
                                         .modifyRequest(mSys, userReq,
                                                 connector, muleContext);
+
+                                auditHelper.addLog("MODIFY IDENTITY", mSys.getDomainId(), auditLog.getPrincipal(),
+                                        "IDM SERVICE", user.getCreatedBy(), resLogin.getId().getManagedSysId(),
+                                        "IDENTITY", user.getUserId(),
+                                        auditLog.getLogId(), resp.getStatus().toString(), auditLog.getLogId(), "IDENTITY_STATUS",
+                                        "MODIFY",
+                                        requestId, respType.getErrorCodeAsStr(), user.getSessionId(), respType.getErrorMsgAsStr(),
+                                        user.getRequestClientIP(), resLogin.getId().getLogin(), resLogin.getId().getDomainId());
+
                                 if (respType.getStatus() == StatusCodeType.SUCCESS) {
                                     connectorSuccess = true;
                                 }
@@ -1967,7 +1976,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                         // this lookup only for getting attributes from the system
                         boolean isExistedInTargetSystem = getCurrentObjectAtTargetSystem(
                                 mLg, mSys, connector, matchObj,
-                                currentValueMap);
+                                currentValueMap, pUser, auditLog);
 
 
                         boolean connectorSuccess = false;
@@ -2027,8 +2036,9 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                          group.setOperation(AttributeOperationEnum.ADD);
                                     }
                                 }
+
                                 connectorSuccess = remoteAdd(mLg, requestId,
-                                        mSys, matchObj, extUser, connector, auditLog);
+                                        mSys, matchObj, extUser, pUser, connector, auditLog);
 
                             } else {
                                 // build the request
@@ -2048,6 +2058,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 AddResponseType responseType = connectorAdapter
                                         .addRequest(mSys, addReqType,
                                                 muleContext);
+
                                 if (responseType.getStatus() == StatusCodeType.SUCCESS) {
                                     connectorSuccess = true;
                                 }
@@ -2172,6 +2183,15 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 UserResponse respType = remoteConnectorAdapter
                                         .modifyRequest(mSys, userReq,
                                                 connector, muleContext);
+
+                                auditHelper.addLog("MODIFY IDENTITY", mSys.getDomainId(), auditLog.getPrincipal(),
+                                        "IDM SERVICE", pUser.getCreatedBy(), mLg.getId().getManagedSysId(),
+                                        "IDENTITY", pUser.getUserId(),
+                                        auditLog.getLogId(), resp.getStatus().toString(), auditLog.getLogId(), "IDENTITY_STATUS",
+                                        "MODIFY",
+                                        requestId, respType.getErrorCodeAsStr(), pUser.getSessionId(), respType.getErrorMsgAsStr(),
+                                        pUser.getRequestClientIP(), mLg.getId().getLogin(), mLg.getId().getDomainId());
+
                                 if (respType.getStatus() == StatusCodeType.SUCCESS) {
                                     connectorSuccess = true;
                                 }

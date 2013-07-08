@@ -74,7 +74,7 @@ public class RemoteConnectorAdapter {
                 // we try to resend request RESEND_COUNT times
                 while((resp.getStatus() == StatusCodeType.FAILURE && resp.getErrorMsgAsStr().toLowerCase().contains(AD_ERROR_THIS_IS_LIKELY_A_TRANSIENT_CONDITION.toLowerCase()))
                         && i < RESEND_COUNT) {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                     resp = send("add", addReqType, connector, muleContext);
                     i++;
                 }
@@ -140,7 +140,7 @@ public class RemoteConnectorAdapter {
                 // we try to resend request RESEND_COUNT times
                 while((resp.getStatus() == StatusCodeType.FAILURE && resp.getErrorMsgAsStr().toLowerCase().contains(AD_ERROR_THIS_IS_LIKELY_A_TRANSIENT_CONDITION.toLowerCase()))
                         && i < RESEND_COUNT) {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                     resp = send("modify", request, connector, muleContext);
                     i++;
                 }
@@ -176,7 +176,7 @@ public class RemoteConnectorAdapter {
                 // we try to resend request RESEND_COUNT times
                 while((resp.getStatus() == StatusCodeType.FAILURE && resp.getErrorMsgAsStr().toLowerCase().contains(AD_ERROR_THIS_IS_LIKELY_A_TRANSIENT_CONDITION.toLowerCase()))
                         && i < RESEND_COUNT) {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                     resp = sendLookup("lookup", req, connector, muleContext);
                     i++;
                 }
@@ -210,7 +210,7 @@ public class RemoteConnectorAdapter {
                 // we try to resend request RESEND_COUNT times
                 while((resp.getStatus() == StatusCodeType.FAILURE && resp.getErrorMsgAsStr().toLowerCase().contains(AD_ERROR_THIS_IS_LIKELY_A_TRANSIENT_CONDITION.toLowerCase()))
                         && i < RESEND_COUNT) {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                     resp = send("delete", request, connector, muleContext);
                     i++;
                 }

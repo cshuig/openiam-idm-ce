@@ -1,5 +1,6 @@
 package org.openiam.provision.service;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
@@ -162,7 +163,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         if (connector.getConnectorInterface() != null &&
                 connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
 
-            return remoteAdd(mLg, requestId, mSys, matchObj, extUser, connector, idmAuditLog);
+            return remoteAdd(mLg, requestId, mSys, matchObj, extUser, user, connector, idmAuditLog);
 
         }
 
@@ -174,7 +175,8 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
     protected boolean getCurrentObjectAtTargetSystem(Login mLg, ManagedSys mSys,
                                                                  ProvisionConnector connector,
                                                                  ManagedSystemObjectMatch matchObj,
-                                                                 Map<String, String> curValueMap ) {
+                                                                 Map<String, String> curValueMap,
+                                                                 ProvisionUser user, IdmAuditLog idmAuditLog) {
 
 
         String identity = mLg.getId().getLogin();
@@ -206,6 +208,14 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
             reqType.setScriptHandler(mSys.getLookupHandler());
 
             LookupResponse lookupRespType = remoteConnectorAdapter.lookupRequest(mSys, reqType, connector, muleContext);
+
+            auditHelper.addLog("LOOKUP IDENTITY", mSys.getDomainId(), mLg.getId().getLogin(),
+                    "IDM SERVICE", user.getCreatedBy(), mLg.getId().getManagedSysId(),
+                    "IDENTITY", user.getUserId(),
+                    idmAuditLog.getLogId(), lookupRespType.getStatus().toString(), idmAuditLog.getLogId(), "IDENTITY_STATUS",
+                    "LOOKUP",
+                    requestId, lookupRespType.getErrorCodeAsStr(), user.getSessionId(), lookupRespType.getErrorMsgAsStr(),
+                    user.getRequestClientIP(), mLg.getId().getLogin(), mLg.getId().getDomainId());
 
             if (lookupRespType != null && lookupRespType.getStatus() == StatusCodeType.SUCCESS) {
                 return true;
@@ -2360,12 +2370,58 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
     }
 
+    private ExtensibleAttribute getExtensibleAttribute(final List<ExtensibleAttribute> attributes, final String name) {
+        for(ExtensibleAttribute extensibleAttribute : attributes) {
+            if(extensibleAttribute.getName().equals(name)) {
+                return extensibleAttribute;
+            }
+        }
+        return null;
+    }
+
+    private List<ExtensibleAttribute> replaceExtensibleAttribute(final List<ExtensibleAttribute> attributes, final ExtensibleAttribute extensibleAttribute) {
+        List<ExtensibleAttribute> extensibleAttributesCopy = new LinkedList<ExtensibleAttribute>();
+        for(ExtensibleAttribute attribute : attributes) {
+            if(attribute.getName().equals(extensibleAttribute.getName())) {
+                extensibleAttributesCopy.add(extensibleAttribute);
+            } else {
+                extensibleAttributesCopy.add(attribute);
+            }
+        }
+        return extensibleAttributesCopy;
+    }
 
     protected boolean remoteAdd(Login mLg, String requestId, ManagedSys mSys,
                               ManagedSystemObjectMatch matchObj, ExtensibleUser extUser,
-                              ProvisionConnector connector, IdmAuditLog idmAuditLog) {
+                              ProvisionUser user, ProvisionConnector connector, IdmAuditLog idmAuditLog) {
 
         log.debug("Calling remote connector " + connector.getName());
+        // TODO check unical of Name attribute in AD (SEND search by name and analyz)
+        // hardcode for ActiveDirectory check Name attribute
+        // needs to add marker for attribute list in UI => if isUnical we need to check on unical in target system
+        ExtensibleAttribute extensibleAttribute = getExtensibleAttribute(extUser.getAttributes(), "Name");
+        if(extensibleAttribute != null && StringUtils.isNotEmpty(extensibleAttribute.getName())) {
+            SearchRequest searchRequest = new SearchRequest();
+            searchRequest.setSearchQuery("Get-ADUser -Filter {Name -eq '"+extensibleAttribute.getValue()+"'}");
+            searchRequest.setRequestID(requestId);
+            searchRequest.setTargetID(mLg.getId().getManagedSysId());
+            searchRequest.setHostLoginId(mSys.getUserId());
+            searchRequest.setHostLoginPassword(mSys.getDecryptPassword());
+            searchRequest.setHostUrl(mSys.getHostUrl());
+            if (matchObj != null) {
+                searchRequest.setBaseDN(matchObj.getBaseDn());
+            }
+            searchRequest.setScriptHandler(mSys.getSearchHandler());
+            SearchResponse searchResponce = remoteConnectorAdapter.search(searchRequest, connector, muleContext);
+            if (searchResponce.getStatus() == StatusCodeType.SUCCESS
+                    && CollectionUtils.isNotEmpty(searchResponce.getUserList())) {
+
+               extensibleAttribute.setValue(extensibleAttribute.getValue()+""+(searchResponce.getUserList().size()));
+               extUser.setAttributes(replaceExtensibleAttribute(extUser.getAttributes(),extensibleAttribute));
+               log.debug("[Remote Connector Add] Rename Name attribute for user with identity: " + mLg.getId().getLogin()+", new Name ="+extensibleAttribute.getValue());
+            }
+        }
+        //TODO end
 
         RemoteUserRequest userReq = new RemoteUserRequest();
         userReq.setUserIdentity(mLg.getId().getLogin());
@@ -2384,11 +2440,15 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
         UserResponse resp = remoteConnectorAdapter.addRequest(mSys, userReq, connector, muleContext);
 
-        if (resp.getStatus() == StatusCodeType.FAILURE) {
-            return false;
-        }
-        return true;
+        auditHelper.addLog("ADD IDENTITY", mSys.getDomainId(), idmAuditLog.getPrincipal(),
+                "IDM SERVICE", user.getCreatedBy(), mLg.getId().getManagedSysId(),
+                "IDENTITY", user.getUserId(),
+                idmAuditLog.getLogId(), resp.getStatus().toString(), idmAuditLog.getLogId(), "IDENTITY_STATUS",
+                "ADD",
+                requestId, resp.getErrorCodeAsStr(), user.getSessionId(), resp.getErrorMsgAsStr(),
+                user.getRequestClientIP(), mLg.getId().getLogin(), mLg.getId().getDomainId());
 
+        return resp.getStatus() != StatusCodeType.FAILURE;
 
     }
 
