@@ -1,7 +1,10 @@
 package org.openiam.idm.srvc.health;
 
 
+import org.openiam.base.ws.Response;
+
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 
 /**
@@ -19,7 +22,8 @@ public interface HeartBeatWebService {
      * @return
      */
     @WebMethod
-    public String isAlive();
+    public Response isAlive(@WebParam(name = "serviceName", targetNamespace = "")
+                                String serviceName);
 
 
 }

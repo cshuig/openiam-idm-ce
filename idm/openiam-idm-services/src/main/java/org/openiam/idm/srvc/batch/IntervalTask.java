@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.mule.api.MuleContext;
+import org.mule.api.MuleMessage;
 import org.mule.api.context.MuleContextAware;
 import org.mule.module.client.MuleClient;
 import org.openiam.base.id.UUIDGen;
@@ -166,9 +167,8 @@ public class IntervalTask  implements ApplicationContextAware, MuleContextAware 
         try {
 
             MuleClient client = new MuleClient(muleContext);
-            client.send("vm://heartBeatIsAlive", null, msgPropMap);
-
-        }catch(Exception  ce) {
+            MuleMessage muleMessage = client.send("vm://heartBeatIsAlive", "", msgPropMap);
+        } catch(Exception  ce) {
             log.error(ce.toString());
 
             if (ce instanceof ConnectException) {

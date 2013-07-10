@@ -618,7 +618,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                         .modifyRequest(mSys, userReq,
                                                 connector, muleContext);
 
-                                auditHelper.addLog("MODIFY IDENTITY", mSys.getDomainId(), auditLog.getPrincipal(),
+                                auditHelper.addLog("MODIFY IDENTITY", mSys.getDomainId(), resLogin.getId().getLogin(),
                                         "IDM SERVICE", user.getCreatedBy(), resLogin.getId().getManagedSysId(),
                                         "IDENTITY", user.getUserId(),
                                         auditLog.getLogId(), resp.getStatus().toString(), auditLog.getLogId(), "IDENTITY_STATUS",
@@ -2183,14 +2183,13 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                                 UserResponse respType = remoteConnectorAdapter
                                         .modifyRequest(mSys, userReq,
                                                 connector, muleContext);
-
-                                auditHelper.addLog("MODIFY IDENTITY", mSys.getDomainId(), auditLog.getPrincipal(),
-                                        "IDM SERVICE", pUser.getCreatedBy(), mLg.getId().getManagedSysId(),
-                                        "IDENTITY", pUser.getUserId(),
-                                        auditLog.getLogId(), resp.getStatus().toString(), auditLog.getLogId(), "IDENTITY_STATUS",
+                                auditHelper.addLog("MODIFY IDENTITY", mSys.getDomainId(), mLg.getId().getLogin(),
+                                        "IDM SERVICE", pUser.getUser().getCreatedBy(), mLg.getId().getManagedSysId(),
+                                        "IDENTITY", pUser.getUser().getUserId(),
+                                        auditLog.getLogId(), respType.getStatus().toString(), auditLog.getLogId(), "IDENTITY_STATUS",
                                         "MODIFY",
-                                        requestId, respType.getErrorCodeAsStr(), pUser.getSessionId(), respType.getErrorMsgAsStr(),
-                                        pUser.getRequestClientIP(), mLg.getId().getLogin(), mLg.getId().getDomainId());
+                                        requestId, respType.getErrorCodeAsStr(),  pUser.getSessionId(), respType.getErrorMsgAsStr(),
+                                        pUser.getUser().getRequestClientIP(), mLg.getId().getLogin(), mLg.getId().getDomainId());
 
                                 if (respType.getStatus() == StatusCodeType.SUCCESS) {
                                     connectorSuccess = true;

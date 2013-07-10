@@ -23,6 +23,9 @@ package org.openiam.idm.srvc.health;
 
 
 
+import org.openiam.base.ws.Response;
+import org.openiam.base.ws.ResponseStatus;
+
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
@@ -36,7 +39,9 @@ import javax.jws.WebService;
 		portName = "HeartBeatServicePort")
 public class HeartBeatWebServiceImpl implements HeartBeatWebService {
 
-    public String isAlive() {
-        return "TRUE";
+    public Response isAlive(String serviceName) {
+        Response response = new Response();
+        response.setStatus(ResponseStatus.SUCCESS);
+        return response;
     }
 }
