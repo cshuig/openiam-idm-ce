@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project name="OrganizationDataService" resourceRoot="" soapui-version="4.0.1-SNAPSHOT" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="$Proxy19ServiceSoapBinding" type="wsdl" bindingName="{http://unknown.namespace/}$Proxy19ServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl"><con:part><con:url>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="$Proxy19Service" targetNamespace="http://unknown.namespace/" xmlns:ns1="urn:idm.openiam.org/srvc/org/service" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://unknown.namespace/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<con:soapui-project activeEnvironment="Default" name="OrganizationDataService" resourceRoot="" soapui-version="4.5.2" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="$Proxy66ServiceSoapBinding" type="wsdl" bindingName="{http://proxy.sun.com/}$Proxy66ServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl"><con:part><con:url>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="$Proxy66Service" targetNamespace="http://proxy.sun.com/" xmlns:ns1="urn:idm.openiam.org/srvc/org/service" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://proxy.sun.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <wsdl:import location="http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService?wsdl=OrganizationDataService.wsdl" namespace="urn:idm.openiam.org/srvc/org/service"></wsdl:import>
-  <wsdl:binding name="$Proxy19ServiceSoapBinding" type="ns1:OrganizationDataService">
+  <wsdl:binding name="$Proxy66ServiceSoapBinding" type="ns1:OrganizationDataService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="getOrganizationList">
       <soap:operation soapAction="" style="document"/>
@@ -238,8 +238,8 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="$Proxy19Service">
-    <wsdl:port binding="tns:$Proxy19ServiceSoapBinding" name="$Proxy19Port">
+  <wsdl:service name="$Proxy66Service">
+    <wsdl:port binding="tns:$Proxy66ServiceSoapBinding" name="$Proxy66Port">
       <soap:address location="http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService"/>
     </wsdl:port>
   </wsdl:service>
@@ -546,8 +546,17 @@
           <xs:element minOccurs="0" name="return" type="ns1:organizationAttributeMap"/>
         </xs:sequence>
       </xs:complexType>
+      <xs:simpleType name="AttributeOperationEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="nochange"/>
+          <xs:enumeration value="add"/>
+          <xs:enumeration value="replace"/>
+          <xs:enumeration value="delete"/>
+        </xs:restriction>
+      </xs:simpleType>
     </xs:schema>
     <xs:schema elementFormDefault="qualified" targetNamespace="urn:idm.openiam.org/srvc/org/dto" version="1.0" xmlns:tns="urn:idm.openiam.org/srvc/org/dto" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="urn:idm.openiam.org/srvc/org/service"/>
       <xs:complexType name="organization">
         <xs:sequence>
           <xs:element minOccurs="0" name="alias" type="xs:string"/>
@@ -565,10 +574,12 @@
           <xs:element minOccurs="0" name="parentId" type="xs:string"/>
           <xs:element minOccurs="0" name="classification" type="tns:OrgClassification"/>
           <xs:element minOccurs="0" name="internalOrgId" type="xs:string"/>
+          <xs:element minOccurs="0" name="internalOrgName" type="xs:string"/>
           <xs:element minOccurs="0" name="status" type="xs:string"/>
           <xs:element minOccurs="0" name="abbreviation" type="xs:string"/>
           <xs:element minOccurs="0" name="symbol" type="xs:string"/>
           <xs:element minOccurs="0" name="selected" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="operation" type="ns1:AttributeOperationEnum"/>
         </xs:sequence>
       </xs:complexType>
       <xs:complexType name="organizationAttributeMap">
@@ -607,6 +618,10 @@
       <xs:simpleType name="OrgClassification">
         <xs:restriction base="xs:string">
           <xs:enumeration value="organization"/>
+          <xs:enumeration value="school"/>
+          <xs:enumeration value="district"/>
+          <xs:enumeration value="university"/>
+          <xs:enumeration value="college"/>
           <xs:enumeration value="department"/>
           <xs:enumeration value="division"/>
           <xs:enumeration value="agency"/>
@@ -900,71 +915,30 @@
          </organizationAttribute>
       </typ:addAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/addAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="addOrganization" bindingOperationName="addOrganization" type="Request-Response" outputName="addOrganizationResponse" inputName="addOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/addAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="addOrganization" bindingOperationName="addOrganization" type="Request-Response" outputName="addOrganizationResponse" inputName="addOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:addOrganization>
-         <!--Optional:-->
          <organization>
-            <!--Optional:-->
-            <dto:alias>?</dto:alias>
-            <!--Optional:-->
             <dto:attributes>
                <!--Zero or more repetitions:-->
-               <dto:organizationAttributeEntry id="?">
-                  <!--Optional:-->
+               <dto:organizationAttributeEntry id="HOSPITAL-FOUR">
                   <dto:organizationAttribute>
-                     <!--Optional:-->
-                     <dto:attrId>?</dto:attrId>
-                     <!--Optional:-->
-                     <dto:metadataElementId>?</dto:metadataElementId>
-                     <!--Optional:-->
-                     <dto:name>?</dto:name>
-                     <!--Optional:-->
-                     <dto:organizationId>?</dto:organizationId>
-                     <!--Optional:-->
-                     <dto:value>?</dto:value>
+                     <dto:name>HOSPITAL-FOUR</dto:name>
+                     <dto:value>SOME VALUE</dto:value>
                   </dto:organizationAttribute>
                </dto:organizationAttributeEntry>
             </dto:attributes>
             <!--Optional:-->
-            <dto:createDate>?</dto:createDate>
-            <!--Optional:-->
-            <dto:createdBy>?</dto:createdBy>
-            <!--Optional:-->
-            <dto:description>?</dto:description>
-            <!--Optional:-->
-            <dto:domainName>?</dto:domainName>
-            <!--Optional:-->
-            <dto:ldapStr>?</dto:ldapStr>
-            <!--Optional:-->
-            <dto:lstUpdate>?</dto:lstUpdate>
-            <!--Optional:-->
-            <dto:lstUpdatedBy>?</dto:lstUpdatedBy>
-            <!--Optional:-->
-            <dto:metadataTypeId>?</dto:metadataTypeId>
-            <!--Optional:-->
-            <dto:orgId>?</dto:orgId>
-            <!--Optional:-->
-            <dto:organizationName>?</dto:organizationName>
-            <!--Optional:-->
-            <dto:parentId>?</dto:parentId>
-            <!--Optional:-->
-            <dto:classification>?</dto:classification>
-            <!--Optional:-->
-            <dto:internalOrgId>?</dto:internalOrgId>
-            <!--Optional:-->
-            <dto:status>?</dto:status>
-            <!--Optional:-->
-            <dto:abbreviation>?</dto:abbreviation>
-            <!--Optional:-->
-            <dto:symbol>?</dto:symbol>
-            <!--Optional:-->
-            <dto:selected>?</dto:selected>
+            <dto:createDate>2013-07-26T00:00:00.000-04:00</dto:createDate>
+            <dto:domainName>nihoo</dto:domainName>
+            <dto:ldapStr>ou=People,ou=Hospital4,ou=NHHHIO,ou=tenants,dc=orionsaas,dc=com</dto:ldapStr>
+            <dto:organizationName>HOSPITAL FOUR</dto:organizationName>
+            <dto:classification>organization</dto:classification>
          </organization>
       </typ:addOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/addOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="addUserToOrg" bindingOperationName="addUserToOrg" type="Request-Response" outputName="addUserToOrgResponse" inputName="addUserToOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/addOrganization"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="addUserToOrg" bindingOperationName="addUserToOrg" type="Request-Response" outputName="addUserToOrgResponse" inputName="addUserToOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:addUserToOrg>
@@ -974,7 +948,7 @@
          <userId>?</userId>
       </ser:addUserToOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/addUserToOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="allDepartments" bindingOperationName="allDepartments" type="Request-Response" outputName="allDepartmentsResponse" inputName="allDepartments" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/addUserToOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="allDepartments" bindingOperationName="allDepartments" type="Request-Response" outputName="allDepartmentsResponse" inputName="allDepartments" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:allDepartments>
@@ -982,7 +956,7 @@
          <parentId>?</parentId>
       </ser:allDepartments>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/allDepartments"/></con:call></con:operation><con:operation isOneWay="false" action="" name="allDivisions" bindingOperationName="allDivisions" type="Request-Response" outputName="allDivisionsResponse" inputName="allDivisions" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/allDepartments"/></con:call></con:operation><con:operation isOneWay="false" action="" name="allDivisions" bindingOperationName="allDivisions" type="Request-Response" outputName="allDivisionsResponse" inputName="allDivisions" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:allDivisions>
@@ -990,7 +964,7 @@
          <parentId>?</parentId>
       </ser:allDivisions>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/allDivisions"/></con:call></con:operation><con:operation isOneWay="false" action="" name="assocUserToOrg" bindingOperationName="assocUserToOrg" type="Request-Response" outputName="assocUserToOrgResponse" inputName="assocUserToOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/allDivisions"/></con:call></con:operation><con:operation isOneWay="false" action="" name="assocUserToOrg" bindingOperationName="assocUserToOrg" type="Request-Response" outputName="assocUserToOrgResponse" inputName="assocUserToOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:assocUserToOrg>
@@ -1015,7 +989,7 @@
          </userorg>
       </ser:assocUserToOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/assocUserToOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="containsChildren" bindingOperationName="containsChildren" type="Request-Response" outputName="containsChildrenResponse" inputName="containsChildren" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/assocUserToOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="containsChildren" bindingOperationName="containsChildren" type="Request-Response" outputName="containsChildrenResponse" inputName="containsChildren" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:containsChildren>
@@ -1023,7 +997,7 @@
          <orgId>?</orgId>
       </typ:containsChildren>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/containsChildren"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getAllAttributes" bindingOperationName="getAllAttributes" type="Request-Response" outputName="getAllAttributesResponse" inputName="getAllAttributes" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/containsChildren"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getAllAttributes" bindingOperationName="getAllAttributes" type="Request-Response" outputName="getAllAttributesResponse" inputName="getAllAttributes" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getAllAttributes>
@@ -1031,12 +1005,12 @@
          <orgId>?</orgId>
       </ser:getAllAttributes>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getAllAttributes"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getAllOrganizations" bindingOperationName="getAllOrganizations" type="Request-Response" outputName="getAllOrganizationsResponse" inputName="getAllOrganizations" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getAllAttributes"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getAllOrganizations" bindingOperationName="getAllOrganizations" type="Request-Response" outputName="getAllOrganizationsResponse" inputName="getAllOrganizations" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getAllOrganizations/>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getAllOrganizations"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getAttribute" bindingOperationName="getAttribute" type="Request-Response" outputName="getAttributeResponse" inputName="getAttribute" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getAllOrganizations"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getAttribute" bindingOperationName="getAttribute" type="Request-Response" outputName="getAttributeResponse" inputName="getAttribute" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getAttribute>
@@ -1044,7 +1018,7 @@
          <attributeId>?</attributeId>
       </typ:getAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganization" bindingOperationName="getOrganization" type="Request-Response" outputName="getOrganizationResponse" inputName="getOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganization" bindingOperationName="getOrganization" type="Request-Response" outputName="getOrganizationResponse" inputName="getOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getOrganization>
@@ -1052,7 +1026,7 @@
          <orgId>?</orgId>
       </typ:getOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganizationByType" bindingOperationName="getOrganizationByType" type="Request-Response" outputName="getOrganizationByTypeResponse" inputName="getOrganizationByType" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganizationByType" bindingOperationName="getOrganizationByType" type="Request-Response" outputName="getOrganizationByTypeResponse" inputName="getOrganizationByType" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getOrganizationByType>
@@ -1062,7 +1036,7 @@
          <parentId>?</parentId>
       </ser:getOrganizationByType>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getOrganizationByType"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganizationList" bindingOperationName="getOrganizationList" type="Request-Response" outputName="getOrganizationListResponse" inputName="getOrganizationList" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getOrganizationByType"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganizationList" bindingOperationName="getOrganizationList" type="Request-Response" outputName="getOrganizationListResponse" inputName="getOrganizationList" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getOrganizationList>
@@ -1072,7 +1046,7 @@
          <status>?</status>
       </typ:getOrganizationList>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getOrganizationList"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganizationsForUser" bindingOperationName="getOrganizationsForUser" type="Request-Response" outputName="getOrganizationsForUserResponse" inputName="getOrganizationsForUser" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getOrganizationList"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getOrganizationsForUser" bindingOperationName="getOrganizationsForUser" type="Request-Response" outputName="getOrganizationsForUserResponse" inputName="getOrganizationsForUser" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getOrganizationsForUser>
@@ -1080,12 +1054,12 @@
          <userId>?</userId>
       </ser:getOrganizationsForUser>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getOrganizationsForUser"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getTopLevelOrganizations" bindingOperationName="getTopLevelOrganizations" type="Request-Response" outputName="getTopLevelOrganizationsResponse" inputName="getTopLevelOrganizations" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getOrganizationsForUser"/></con:call></con:operation><con:operation isOneWay="false" action="" name="getTopLevelOrganizations" bindingOperationName="getTopLevelOrganizations" type="Request-Response" outputName="getTopLevelOrganizationsResponse" inputName="getTopLevelOrganizations" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getTopLevelOrganizations/>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/getTopLevelOrganizations"/></con:call></con:operation><con:operation isOneWay="false" action="" name="isRootOrganization" bindingOperationName="isRootOrganization" type="Request-Response" outputName="isRootOrganizationResponse" inputName="isRootOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/getTopLevelOrganizations"/></con:call></con:operation><con:operation isOneWay="false" action="" name="isRootOrganization" bindingOperationName="isRootOrganization" type="Request-Response" outputName="isRootOrganizationResponse" inputName="isRootOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:isRootOrganization>
@@ -1093,7 +1067,7 @@
          <orgId>?</orgId>
       </typ:isRootOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/isRootOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="isUserAffilatedWithOrg" bindingOperationName="isUserAffilatedWithOrg" type="Request-Response" outputName="isUserAffilatedWithOrgResponse" inputName="isUserAffilatedWithOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/isRootOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="isUserAffilatedWithOrg" bindingOperationName="isUserAffilatedWithOrg" type="Request-Response" outputName="isUserAffilatedWithOrgResponse" inputName="isUserAffilatedWithOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:isUserAffilatedWithOrg>
@@ -1103,7 +1077,7 @@
          <userId>?</userId>
       </ser:isUserAffilatedWithOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/isUserAffilatedWithOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeAllAttributes" bindingOperationName="removeAllAttributes" type="Request-Response" outputName="removeAllAttributesResponse" inputName="removeAllAttributes" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/isUserAffilatedWithOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeAllAttributes" bindingOperationName="removeAllAttributes" type="Request-Response" outputName="removeAllAttributesResponse" inputName="removeAllAttributes" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:removeAllAttributes>
@@ -1111,7 +1085,7 @@
          <orgId>?</orgId>
       </typ:removeAllAttributes>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/removeAllAttributes"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeAttribute" bindingOperationName="removeAttribute" type="Request-Response" outputName="removeAttributeResponse" inputName="removeAttribute" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/removeAllAttributes"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeAttribute" bindingOperationName="removeAttribute" type="Request-Response" outputName="removeAttributeResponse" inputName="removeAttribute" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:removeAttribute>
@@ -1130,7 +1104,7 @@
          </organizationAttribute>
       </typ:removeAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/removeAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeOrganization" bindingOperationName="removeOrganization" type="Request-Response" outputName="removeOrganizationResponse" inputName="removeOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/removeAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeOrganization" bindingOperationName="removeOrganization" type="Request-Response" outputName="removeOrganizationResponse" inputName="removeOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:removeOrganization>
@@ -1138,7 +1112,7 @@
          <orgId>?</orgId>
       </typ:removeOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/removeOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeUserFromOrg" bindingOperationName="removeUserFromOrg" type="Request-Response" outputName="removeUserFromOrgResponse" inputName="removeUserFromOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/removeOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeUserFromOrg" bindingOperationName="removeUserFromOrg" type="Request-Response" outputName="removeUserFromOrgResponse" inputName="removeUserFromOrg" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:removeUserFromOrg>
@@ -1148,7 +1122,7 @@
          <userId>?</userId>
       </ser:removeUserFromOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/removeUserFromOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="search" bindingOperationName="search" type="Request-Response" outputName="searchResponse" inputName="search" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/removeUserFromOrg"/></con:call></con:operation><con:operation isOneWay="false" action="" name="search" bindingOperationName="search" type="Request-Response" outputName="searchResponse" inputName="search" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:search>
@@ -1162,7 +1136,7 @@
          <internalOrgId>?</internalOrgId>
       </typ:search>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/search"/></con:call></con:operation><con:operation isOneWay="false" action="" name="subOrganizations" bindingOperationName="subOrganizations" type="Request-Response" outputName="subOrganizationsResponse" inputName="subOrganizations" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/search"/></con:call></con:operation><con:operation isOneWay="false" action="" name="subOrganizations" bindingOperationName="subOrganizations" type="Request-Response" outputName="subOrganizationsResponse" inputName="subOrganizations" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:subOrganizations>
@@ -1170,7 +1144,7 @@
          <orgId>?</orgId>
       </typ:subOrganizations>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/subOrganizations"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateAttribute" bindingOperationName="updateAttribute" type="Request-Response" outputName="updateAttributeResponse" inputName="updateAttribute" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/subOrganizations"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateAttribute" bindingOperationName="updateAttribute" type="Request-Response" outputName="updateAttributeResponse" inputName="updateAttribute" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:updateAttribute>
@@ -1189,7 +1163,7 @@
          </organizationAttribute>
       </typ:updateAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/updateAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateOrganization" bindingOperationName="updateOrganization" type="Request-Response" outputName="updateOrganizationResponse" inputName="updateOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/updateAttribute"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateOrganization" bindingOperationName="updateOrganization" type="Request-Response" outputName="updateOrganizationResponse" inputName="updateOrganization" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:updateOrganization>
@@ -1243,6 +1217,8 @@
             <!--Optional:-->
             <dto:internalOrgId>?</dto:internalOrgId>
             <!--Optional:-->
+            <dto:internalOrgName>?</dto:internalOrgName>
+            <!--Optional:-->
             <dto:status>?</dto:status>
             <!--Optional:-->
             <dto:abbreviation>?</dto:abbreviation>
@@ -1250,10 +1226,12 @@
             <dto:symbol>?</dto:symbol>
             <!--Optional:-->
             <dto:selected>?</dto:selected>
+            <!--Optional:-->
+            <dto:operation>?</dto:operation>
          </organization>
       </typ:updateOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/updateOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateUserOrgAssoc" bindingOperationName="updateUserOrgAssoc" type="Request-Response" outputName="updateUserOrgAssocResponse" inputName="updateUserOrgAssoc" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/updateOrganization"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateUserOrgAssoc" bindingOperationName="updateUserOrgAssoc" type="Request-Response" outputName="updateUserOrgAssocResponse" inputName="updateUserOrgAssoc" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:updateUserOrgAssoc>
@@ -1278,7 +1256,7 @@
          </userorg>
       </ser:updateUserOrgAssoc>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://unknown.namespace/OrganizationDataService/updateUserOrgAssoc"/></con:call></con:operation></con:interface><con:testSuite name="$Proxy19ServiceSoapBinding TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>addAttribute</con:operation><con:request name="addAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://proxy.sun.com/OrganizationDataService/updateUserOrgAssoc"/></con:call></con:operation></con:interface><con:testSuite name="$Proxy66ServiceSoapBinding TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>addAttribute</con:operation><con:request name="addAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:addAttribute>
@@ -1297,7 +1275,7 @@
          </organizationAttribute>
       </typ:addAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/addAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>addOrganization</con:operation><con:request name="addOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/addAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>addOrganization</con:operation><con:request name="addOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:addOrganization>
@@ -1351,6 +1329,8 @@
             <!--Optional:-->
             <dto:internalOrgId>?</dto:internalOrgId>
             <!--Optional:-->
+            <dto:internalOrgName>?</dto:internalOrgName>
+            <!--Optional:-->
             <dto:status>?</dto:status>
             <!--Optional:-->
             <dto:abbreviation>?</dto:abbreviation>
@@ -1358,20 +1338,22 @@
             <dto:symbol>?</dto:symbol>
             <!--Optional:-->
             <dto:selected>?</dto:selected>
+            <!--Optional:-->
+            <dto:operation>?</dto:operation>
          </organization>
       </typ:addOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/addOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addUserToOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addUserToOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>addUserToOrg</con:operation><con:request name="addUserToOrg"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/addOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addUserToOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addUserToOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>addUserToOrg</con:operation><con:request name="addUserToOrg"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:addUserToOrg>
          <!--Optional:-->
-         
+         <orgId>?</orgId>
          <!--Optional:-->
-         <userId>3000</userId><orgId>100</orgId>
+         <userId>?</userId>
       </ser:addUserToOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/addUserToOrg" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="allDepartments TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="allDepartments"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>allDepartments</con:operation><con:request name="allDepartments"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/addUserToOrg"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="allDepartments TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="allDepartments"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>allDepartments</con:operation><con:request name="allDepartments"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:allDepartments>
@@ -1379,7 +1361,7 @@
          <parentId>?</parentId>
       </ser:allDepartments>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/allDepartments"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="allDivisions TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="allDivisions"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>allDivisions</con:operation><con:request name="allDivisions"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/allDepartments"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="allDivisions TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="allDivisions"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>allDivisions</con:operation><con:request name="allDivisions"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:allDivisions>
@@ -1387,29 +1369,32 @@
          <parentId>?</parentId>
       </ser:allDivisions>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/allDivisions"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="assocUserToOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="assocUserToOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>assocUserToOrg</con:operation><con:request name="assocUserToOrg"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/allDivisions"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="assocUserToOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="assocUserToOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>assocUserToOrg</con:operation><con:request name="assocUserToOrg"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:assocUserToOrg>
          <!--Optional:-->
          <userorg>
-            <dto:userId>3000</dto:userId>
-            <dto:organizationId>40288185324428e20132444f43eb0018</dto:organizationId>
+            <!--Optional:-->
+            <dto:userAffiliationId>?</dto:userAffiliationId>
+            <!--Optional:-->
+            <dto:organizationId>?</dto:organizationId>
+            <!--Optional:-->
+            <dto:userId>?</dto:userId>
+            <!--Optional:-->
+            <dto:createDate>?</dto:createDate>
+            <!--Optional:-->
+            <dto:startDate>?</dto:startDate>
+            <!--Optional:-->
+            <dto:endDate>?</dto:endDate>
+            <!--Optional:-->
+            <dto:status>?</dto:status>
+            <!--Optional:-->
+            <dto:createdBy>?</dto:createdBy>
          </userorg>
       </ser:assocUserToOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/assocUserToOrg" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="assocUserToOrg2"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>assocUserToOrg</con:operation><con:request name="assocUserToOrg2"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
-   <soapenv:Header/>
-   <soapenv:Body>
-      <ser:assocUserToOrg>
-         <!--Optional:-->
-         <userorg>
-            <dto:userId>3000</dto:userId>
-            <dto:organizationId>402881c2322319970132231cca700002</dto:organizationId>
-         </userorg>
-      </ser:assocUserToOrg>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/assocUserToOrg" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="containsChildren TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="containsChildren"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>containsChildren</con:operation><con:request name="containsChildren"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/assocUserToOrg"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="containsChildren TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="containsChildren"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>containsChildren</con:operation><con:request name="containsChildren"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:containsChildren>
@@ -1417,7 +1402,7 @@
          <orgId>?</orgId>
       </typ:containsChildren>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/containsChildren"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getAllAttributes TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getAllAttributes"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getAllAttributes</con:operation><con:request name="getAllAttributes"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/containsChildren"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getAllAttributes TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getAllAttributes"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getAllAttributes</con:operation><con:request name="getAllAttributes"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getAllAttributes>
@@ -1425,12 +1410,12 @@
          <orgId>?</orgId>
       </ser:getAllAttributes>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getAllAttributes"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getAllOrganizations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getAllOrganizations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getAllOrganizations</con:operation><con:request name="getAllOrganizations"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getAllAttributes"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getAllOrganizations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getAllOrganizations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getAllOrganizations</con:operation><con:request name="getAllOrganizations"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getAllOrganizations/>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getAllOrganizations"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getAttribute</con:operation><con:request name="getAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getAllOrganizations"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getAttribute</con:operation><con:request name="getAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getAttribute>
@@ -1438,7 +1423,7 @@
          <attributeId>?</attributeId>
       </typ:getAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getOrganization</con:operation><con:request name="getOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getOrganization</con:operation><con:request name="getOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getOrganization>
@@ -1446,7 +1431,7 @@
          <orgId>?</orgId>
       </typ:getOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganizationByType TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganizationByType"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getOrganizationByType</con:operation><con:request name="getOrganizationByType"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganizationByType TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganizationByType"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getOrganizationByType</con:operation><con:request name="getOrganizationByType"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getOrganizationByType>
@@ -1456,7 +1441,7 @@
          <parentId>?</parentId>
       </ser:getOrganizationByType>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getOrganizationByType"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganizationList TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganizationList"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getOrganizationList</con:operation><con:request name="getOrganizationList"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getOrganizationByType"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganizationList TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganizationList"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getOrganizationList</con:operation><con:request name="getOrganizationList"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getOrganizationList>
@@ -1466,20 +1451,20 @@
          <status>?</status>
       </typ:getOrganizationList>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getOrganizationList"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganizationsForUser TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganizationsForUser"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getOrganizationsForUser</con:operation><con:request name="getOrganizationsForUser"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getOrganizationList"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getOrganizationsForUser TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getOrganizationsForUser"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getOrganizationsForUser</con:operation><con:request name="getOrganizationsForUser"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:getOrganizationsForUser>
          <!--Optional:-->
-         
-      <userId>3000</userId></ser:getOrganizationsForUser>
+         <userId>?</userId>
+      </ser:getOrganizationsForUser>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getOrganizationsForUser" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getTopLevelOrganizations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getTopLevelOrganizations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>getTopLevelOrganizations</con:operation><con:request name="getTopLevelOrganizations"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getOrganizationsForUser"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getTopLevelOrganizations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getTopLevelOrganizations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>getTopLevelOrganizations</con:operation><con:request name="getTopLevelOrganizations"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:getTopLevelOrganizations/>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/getTopLevelOrganizations"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="isRootOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="isRootOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>isRootOrganization</con:operation><con:request name="isRootOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/getTopLevelOrganizations"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="isRootOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="isRootOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>isRootOrganization</con:operation><con:request name="isRootOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:isRootOrganization>
@@ -1487,17 +1472,17 @@
          <orgId>?</orgId>
       </typ:isRootOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/isRootOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="isUserAffilatedWithOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="isUserAffilatedWithOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>isUserAffilatedWithOrg</con:operation><con:request name="isUserAffilatedWithOrg"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/isRootOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="isUserAffilatedWithOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="isUserAffilatedWithOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>isUserAffilatedWithOrg</con:operation><con:request name="isUserAffilatedWithOrg"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:isUserAffilatedWithOrg>
          <!--Optional:-->
-         
+         <orgId>?</orgId>
          <!--Optional:-->
-         <orgId>100</orgId><userId>3000</userId>
+         <userId>?</userId>
       </ser:isUserAffilatedWithOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/isUserAffilatedWithOrg" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeAllAttributes TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeAllAttributes"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>removeAllAttributes</con:operation><con:request name="removeAllAttributes"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/isUserAffilatedWithOrg"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeAllAttributes TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeAllAttributes"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>removeAllAttributes</con:operation><con:request name="removeAllAttributes"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:removeAllAttributes>
@@ -1505,7 +1490,7 @@
          <orgId>?</orgId>
       </typ:removeAllAttributes>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/removeAllAttributes"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>removeAttribute</con:operation><con:request name="removeAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/removeAllAttributes"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>removeAttribute</con:operation><con:request name="removeAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:removeAttribute>
@@ -1524,7 +1509,7 @@
          </organizationAttribute>
       </typ:removeAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/removeAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>removeOrganization</con:operation><con:request name="removeOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/removeAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>removeOrganization</con:operation><con:request name="removeOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:removeOrganization>
@@ -1532,17 +1517,17 @@
          <orgId>?</orgId>
       </typ:removeOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/removeOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeUserFromOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeUserFromOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>removeUserFromOrg</con:operation><con:request name="removeUserFromOrg"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/removeOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeUserFromOrg TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeUserFromOrg"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>removeUserFromOrg</con:operation><con:request name="removeUserFromOrg"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:removeUserFromOrg>
          <!--Optional:-->
-         
+         <orgId>?</orgId>
          <!--Optional:-->
-         <userId>3000</userId><orgId>100</orgId>
+         <userId>?</userId>
       </ser:removeUserFromOrg>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/removeUserFromOrg" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="search TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="search"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>search</con:operation><con:request name="search"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/removeUserFromOrg"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="search TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="search"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>search</con:operation><con:request name="search"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:search>
@@ -1556,7 +1541,7 @@
          <internalOrgId>?</internalOrgId>
       </typ:search>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/search"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="subOrganizations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="subOrganizations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>subOrganizations</con:operation><con:request name="subOrganizations"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/search"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="subOrganizations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="subOrganizations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>subOrganizations</con:operation><con:request name="subOrganizations"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:subOrganizations>
@@ -1564,7 +1549,7 @@
          <orgId>?</orgId>
       </typ:subOrganizations>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/subOrganizations"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>updateAttribute</con:operation><con:request name="updateAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/subOrganizations"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateAttribute TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateAttribute"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>updateAttribute</con:operation><con:request name="updateAttribute"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:updateAttribute>
@@ -1583,7 +1568,7 @@
          </organizationAttribute>
       </typ:updateAttribute>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/updateAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>updateOrganization</con:operation><con:request name="updateOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/updateAttribute"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateOrganization TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateOrganization"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>updateOrganization</con:operation><con:request name="updateOrganization"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:idm.openiam.org/srvc/org/types" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <typ:updateOrganization>
@@ -1637,6 +1622,8 @@
             <!--Optional:-->
             <dto:internalOrgId>?</dto:internalOrgId>
             <!--Optional:-->
+            <dto:internalOrgName>?</dto:internalOrgName>
+            <!--Optional:-->
             <dto:status>?</dto:status>
             <!--Optional:-->
             <dto:abbreviation>?</dto:abbreviation>
@@ -1644,32 +1631,34 @@
             <dto:symbol>?</dto:symbol>
             <!--Optional:-->
             <dto:selected>?</dto:selected>
+            <!--Optional:-->
+            <dto:operation>?</dto:operation>
          </organization>
       </typ:updateOrganization>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/updateOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateUserOrgAssoc TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateUserOrgAssoc"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy19ServiceSoapBinding</con:interface><con:operation>updateUserOrgAssoc</con:operation><con:request name="updateUserOrgAssoc"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/updateOrganization"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateUserOrgAssoc TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateUserOrgAssoc"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>$Proxy66ServiceSoapBinding</con:interface><con:operation>updateUserOrgAssoc</con:operation><con:request name="updateUserOrgAssoc"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/openiam-idm-esb/idmsrvc/OrganizationDataService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="urn:idm.openiam.org/srvc/org/service" xmlns:dto="urn:idm.openiam.org/srvc/org/dto">
    <soapenv:Header/>
    <soapenv:Body>
       <ser:updateUserOrgAssoc>
          <!--Optional:-->
          <userorg>
             <!--Optional:-->
-            
+            <dto:userAffiliationId>?</dto:userAffiliationId>
             <!--Optional:-->
-            <dto:userId>3000</dto:userId><dto:status>INACTIVE</dto:status><dto:organizationId>40288185304ccbff01304ccf7770001f</dto:organizationId><dto:userAffiliationId>4028818932fa04e70132fa0ebe220003</dto:userAffiliationId>
+            <dto:organizationId>?</dto:organizationId>
             <!--Optional:-->
-            
+            <dto:userId>?</dto:userId>
             <!--Optional:-->
-            
+            <dto:createDate>?</dto:createDate>
             <!--Optional:-->
-            
+            <dto:startDate>?</dto:startDate>
             <!--Optional:-->
-            
+            <dto:endDate>?</dto:endDate>
             <!--Optional:-->
-            
+            <dto:status>?</dto:status>
             <!--Optional:-->
-            
+            <dto:createdBy>?</dto:createdBy>
          </userorg>
       </ser:updateUserOrgAssoc>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://unknown.namespace/OrganizationDataService/updateUserOrgAssoc" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig action="http://proxy.sun.com/OrganizationDataService/updateUserOrgAssoc"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:properties/><con:wssContainer/><con:databaseConnectionContainer/></con:soapui-project>
