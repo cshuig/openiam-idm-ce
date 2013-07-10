@@ -460,8 +460,8 @@
             <vm:inbound-endpoint path="heartBeatIsAlive" exchange-pattern="request-response"  >
             </vm:inbound-endpoint>
 
-            <outbound-endpoint
-                    address="http://#[header:INBOUND:SERVICE_HOST]/#[header:INBOUND:SERVICE_CONTEXT]HeartBeatService" exchange-pattern="request-response" >
+            <outbound-endpoint responseTimeout="18000000"
+                address="http://#[header:INBOUND:SERVICE_HOST]/#[header:INBOUND:SERVICE_CONTEXT]HeartBeatService" exchange-pattern="request-response" >
 
                 <cxf:jaxws-client serviceClass="org.openiam.idm.srvc.health.HeartBeatWebService" operation="isAlive" >
                 </cxf:jaxws-client>

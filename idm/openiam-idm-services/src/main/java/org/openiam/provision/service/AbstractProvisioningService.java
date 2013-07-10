@@ -2400,7 +2400,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         // hardcode for ActiveDirectory check Name attribute
         // needs to add marker for attribute list in UI => if isUnical we need to check on unical in target system
         ExtensibleAttribute extensibleAttribute = getExtensibleAttribute(extUser.getAttributes(), "Name");
-        if(extensibleAttribute != null && StringUtils.isNotEmpty(extensibleAttribute.getName())) {
+        if(extensibleAttribute != null && StringUtils.isNotEmpty(extensibleAttribute.getValue())) {
             SearchRequest searchRequest = new SearchRequest();
             searchRequest.setSearchQuery("Get-ADUser -Filter {Name -eq '"+extensibleAttribute.getValue()+"'}");
             searchRequest.setRequestID(requestId);
