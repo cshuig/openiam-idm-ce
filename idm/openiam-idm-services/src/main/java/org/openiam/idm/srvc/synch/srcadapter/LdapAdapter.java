@@ -161,7 +161,14 @@ public class LdapAdapter implements SourceAdapter {
                         try {
                             config.setBaseDn(s);
                             log.debug("[LDAPAdapter] OU=\"" + s + "\" starting search ...");
+
+                            log.debug("[LDAPAdapter]: getting a new connection for this OU");
+                            connect(config);
+
+
                             NamingEnumeration<SearchResult> results = search(config);
+
+                            log.debug("[LDAPAdapter]: results found for OU=" + s);
 
                             List<SearchResult> resultList = new LinkedList<SearchResult>();
                             while (results.hasMoreElements()) {
@@ -175,6 +182,7 @@ public class LdapAdapter implements SourceAdapter {
 
                         } catch (Exception ne) {
 
+                            ne.printStackTrace();
 
                             log.error(ne);
 
@@ -286,14 +294,14 @@ public class LdapAdapter implements SourceAdapter {
 
                     String key = attr.getID();
 
-                    log.debug("attribute id=: " + key);
+                   // log.debug("attribute id=: " + key);
 
 
                     for (NamingEnumeration e = attr.getAll(); e.hasMore(); ) {
                         Object o = e.next();
                         if (o.toString() != null) {
                             valueList.add(o.toString());
-                            log.debug("- value:=" + o.toString());
+
                         }
                     }
                     if (valueList.size() > 0) {
@@ -301,7 +309,7 @@ public class LdapAdapter implements SourceAdapter {
                         rowAttr.populateAttribute(key, valueList);
                         rowObj.put(key, rowAttr);
                     } else {
-                        log.debug("- value is null");
+
                     }
                 }
 
@@ -480,6 +488,7 @@ public class LdapAdapter implements SourceAdapter {
         String searchFilter = config.getQuery();
 
         NamingEnumeration<SearchResult> searchResult = null;
+
 
         searchResult = ctx.search(config.getBaseDn(), searchFilter, searchCtls);
         return searchResult;
