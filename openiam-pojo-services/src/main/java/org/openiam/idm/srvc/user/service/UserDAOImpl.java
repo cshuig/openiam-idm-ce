@@ -337,6 +337,8 @@ public class UserDAOImpl implements UserDAO {
 		boolean bDivIdList = false;
 		boolean bAttrIdList = false;
 
+        boolean dateOfBirth = false;
+
 		List<String> nameList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 		if (search.getShowInSearch() != null) {
@@ -378,6 +380,14 @@ public class UserDAOImpl implements UserDAO {
 			where.append(" u.CLASSIFICATION = :classification ");
 			classification = true;
 		}
+
+        if (search.getDateOfBirth() != null) {
+            if (where.length() > 0) {
+                where.append(" and ");
+            }
+            where.append(" u.BIRTHDATE = :dob ");
+            dateOfBirth = true;
+        }
 
 		if (search.getFirstName() != null) {
 			if (where.length() > 0) {
@@ -702,6 +712,11 @@ public class UserDAOImpl implements UserDAO {
 		if (classification) {
 			qry.setString("classification", search.getClassification());
 		}
+
+        if (dateOfBirth) {
+            qry.setDate("dob", search.getDateOfBirth());
+        }
+
 		if (userTypeInd) {
 			qry.setString("userTypeInd", search.getUserTypeInd());
 		}
@@ -859,6 +874,14 @@ public class UserDAOImpl implements UserDAO {
 			where.append(" u.CLASSIFICATION = :classification ");
 			classification = true;
 		}
+
+        if (search.getDateOfBirth() != null) {
+            if (where.length() > 0) {
+                where.append(" and ");
+            }
+            where.append(" u.BIRTHDATE = :dob ");
+            dateOfBirth = true;
+        }
 
 		if (search.getLocationCd() != null) {
 			if (where.length() > 0) {
@@ -1280,6 +1303,11 @@ public class UserDAOImpl implements UserDAO {
 		if (classification) {
 			qry.setString("classification", search.getClassification());
 		}
+
+        if (dateOfBirth) {
+            qry.setDate("dob", search.getDateOfBirth());
+        }
+
 		if (userTypeInd) {
 			qry.setString("userTypeInd", search.getUserTypeInd());
 		}
