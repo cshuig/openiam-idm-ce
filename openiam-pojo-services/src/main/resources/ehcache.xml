@@ -130,7 +130,7 @@
         overflowToDisk="false" 
      />
           
-    <cache name="org.openiam.idm.srvc.role.dto.Role"
+    <!-- cache name="org.openiam.idm.srvc.role.dto.Role"
         maxElementsInMemory="200"
         eternal="false"
         overflowToDisk="false" 
@@ -172,7 +172,7 @@
     eternal="false"
     timeToLiveSeconds="28880"
     overflowToDisk="true"
-    />
+    / -->
 
     <cache name="org.openiam.idm.srvc.res.dto.Resource"
         maxElementsInMemory="2000"

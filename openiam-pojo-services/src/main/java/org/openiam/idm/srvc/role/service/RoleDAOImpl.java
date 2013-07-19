@@ -179,8 +179,8 @@ public class RoleDAOImpl implements RoleDAO {
 		
 		qry.addEntity(RoleEntity.class);
 		qry.setString("userId", userId);
-		qry.setCacheable(true);
-		qry.setCacheRegion("query.role.findIndirectUsersRole");
+		//qry.setCacheable(true);
+		//qry.setCacheRegion("query.role.findIndirectUsersRole");
 		List<RoleEntity> result = (List<RoleEntity>) qry.list();
 		if (result == null || result.size() == 0)
 			return null;
@@ -232,9 +232,9 @@ public class RoleDAOImpl implements RoleDAO {
 		*/
 		qry.setString("serviceId", serviceId);
 		qry.setString("roleId", roleId);
-		// enable caching
-		qry.setCacheable(true);
-		qry.setCacheRegion("query.role.findUsersInRole");
+		// disable caching - causing issues in a cluster that is based on a load balancer
+		//qry.setCacheable(true);
+		//qry.setCacheRegion("query.role.findUsersInRole");
 		
 		List<UserEntity> results = (List<UserEntity>) qry.list();
 		if (results == null || results.size() == 0)
@@ -258,8 +258,8 @@ public class RoleDAOImpl implements RoleDAO {
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
 		// enable caching
-		criteria.setCacheable(true);
-		criteria.setCacheRegion("query.role.findAllRoles");
+		//criteria.setCacheable(true);
+		//criteria.setCacheRegion("query.role.findAllRoles");
 		
 		List<RoleEntity> result = (List<RoleEntity>) criteria.list();
 		if (result == null || result.size() == 0)
