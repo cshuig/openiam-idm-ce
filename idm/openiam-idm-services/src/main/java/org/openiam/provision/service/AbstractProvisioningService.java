@@ -2401,24 +2401,19 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         // needs to add marker for attribute list in UI => if isUnical we need to check on unical in target system
         ExtensibleAttribute extensibleAttribute = getExtensibleAttribute(extUser.getAttributes(), "Name");
         if(extensibleAttribute != null && StringUtils.isNotEmpty(extensibleAttribute.getValue())) {
-            SearchRequest searchRequest = new SearchRequest();
-            searchRequest.setSearchQuery("Get-ADUser -Filter {Name -eq '"+extensibleAttribute.getValue()+"'}");
-            searchRequest.setRequestID(requestId);
-            searchRequest.setTargetID(mLg.getId().getManagedSysId());
-            searchRequest.setHostLoginId(mSys.getUserId());
-            searchRequest.setHostLoginPassword(mSys.getDecryptPassword());
-            searchRequest.setHostUrl(mSys.getHostUrl());
-            if (matchObj != null) {
-                searchRequest.setBaseDN(matchObj.getBaseDn());
+            boolean existName = true;
+            int postfix=0;
+            while(existName) {
+                String nameValue = extensibleAttribute.getValue() +"" +(postfix > 0 ? postfix : "");
+                existName = checkNameOnExists(mLg, requestId, mSys, matchObj, extUser, connector, nameValue);
+                if(existName) {
+                    postfix++;
+                }
             }
-            searchRequest.setScriptHandler(mSys.getSearchHandler());
-            SearchResponse searchResponce = remoteConnectorAdapter.search(searchRequest, connector, muleContext);
-            if (searchResponce.getStatus() == StatusCodeType.SUCCESS
-                    && CollectionUtils.isNotEmpty(searchResponce.getUserList())) {
-
-               extensibleAttribute.setValue(extensibleAttribute.getValue()+""+(searchResponce.getUserList().size()));
-               extUser.setAttributes(replaceExtensibleAttribute(extUser.getAttributes(),extensibleAttribute));
-               log.debug("[Remote Connector Add] Rename Name attribute for user with identity: " + mLg.getId().getLogin()+", new Name ="+extensibleAttribute.getValue());
+            if(postfix > 0) {
+                extensibleAttribute.setValue(extensibleAttribute.getValue()+""+postfix);
+                extUser.setAttributes(replaceExtensibleAttribute(extUser.getAttributes(),extensibleAttribute));
+                log.debug("[Remote Connector Add] Rename Name attribute for user with identity: " + mLg.getId().getLogin()+", new Name ="+extensibleAttribute.getValue());
             }
         }
         //TODO end
@@ -2450,6 +2445,27 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
         return resp.getStatus() != StatusCodeType.FAILURE;
 
+    }
+
+    private boolean checkNameOnExists(Login mLg, String requestId, ManagedSys mSys, ManagedSystemObjectMatch matchObj, ExtensibleUser extUser, ProvisionConnector connector, String nameValue) {
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setSearchQuery("Get-ADUser -Filter {Name -eq '"+nameValue+"'}");
+        searchRequest.setRequestID(requestId);
+        searchRequest.setTargetID(mLg.getId().getManagedSysId());
+        searchRequest.setHostLoginId(mSys.getUserId());
+        searchRequest.setHostLoginPassword(mSys.getDecryptPassword());
+        searchRequest.setHostUrl(mSys.getHostUrl());
+        if (matchObj != null) {
+            searchRequest.setBaseDN(matchObj.getBaseDn());
+        }
+        searchRequest.setScriptHandler(mSys.getSearchHandler());
+        SearchResponse searchResponce = remoteConnectorAdapter.search(searchRequest, connector, muleContext);
+
+        if (searchResponce.getStatus() == StatusCodeType.SUCCESS
+                && CollectionUtils.isNotEmpty(searchResponce.getUserList())) {
+           return true;
+        }
+        return false;
     }
 
 

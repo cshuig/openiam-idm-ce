@@ -68,9 +68,10 @@
                             <td class="tableEntry">
 
                                 <% if ( log.getObjectTypeId().equalsIgnoreCase("USER") && !log.getTargetSystemId().equals('0') ) { %>
-                                <li>
+
                                         <% } %>
-                                <fmt:formatDate type="both" dateStyle="default" timeStyle="default" value="${log.actionDatetime}" /></td>
+                                <fmt:formatDate type="both" dateStyle="default" timeStyle="default" value="<%=log.getActionDatetime() %>" /></td>
+
                             <td class="tableEntry"><%=log.getObjectTypeId()%></td>
                             <td class="tableEntry">
                                 <% if ( !log.getObjectTypeId().equalsIgnoreCase("SYNCH_USER")  ) { %>
