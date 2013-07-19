@@ -40,6 +40,8 @@ public enum UserStatusEnum {
     DISABLED("DISABLED"),
     @XmlEnumValue("retired")
     RETIRED("RETIRED"),
+    @XmlEnumValue("null_value")
+    NULL_VALUE("NULL_VALUE"),
     @XmlEnumValue("leave")
     LEAVE("LEAVE");
     private String value;

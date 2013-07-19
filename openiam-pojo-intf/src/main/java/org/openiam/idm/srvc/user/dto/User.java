@@ -1273,9 +1273,7 @@ public class User extends org.openiam.base.BaseObject {
 				this.prefix = newUser.getPrefix();
 			}
 		}
-		if (newUser.getSecondaryStatus() != null) {
-			this.secondaryStatus = newUser.getSecondaryStatus();
-		}
+
 		if (newUser.getSex() != null) {
 			if (newUser.getSex().equalsIgnoreCase(BaseConstants.NULL_STRING)) {
 				this.sex = null;
@@ -1292,8 +1290,25 @@ public class User extends org.openiam.base.BaseObject {
 		}
 
 		if (newUser.getStatus() != null) {
-			this.status = newUser.getStatus();
+
+            if (newUser.getStatus().equals(UserStatusEnum.NULL_VALUE)) {
+                this.status = null;
+            }else {
+                this.status = newUser.getStatus();
+            }
+
+
 		}
+        if (newUser.getSecondaryStatus() != null) {
+
+            if (newUser.getSecondaryStatus().equals(UserStatusEnum.NULL_VALUE)) {
+                this.secondaryStatus = null;
+            } else {
+                this.secondaryStatus = newUser.getSecondaryStatus();
+            }
+        }
+
+
 		if (newUser.getStreetDirection() != null) {
 			if (newUser.getStreetDirection().equalsIgnoreCase(
 					BaseConstants.NULL_STRING)) {
