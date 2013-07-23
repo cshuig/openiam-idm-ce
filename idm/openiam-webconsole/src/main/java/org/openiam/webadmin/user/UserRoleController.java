@@ -1,48 +1,34 @@
 package org.openiam.webadmin.user;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.ResourceBundle;
-import java.text.SimpleDateFormat;
-
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.openiam.idm.srvc.org.dto.Organization;
-import org.openiam.idm.srvc.org.service.OrganizationDataService;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.CancellableFormController;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.idm.srvc.menu.dto.Menu;
+import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
+import org.openiam.idm.srvc.org.dto.Organization;
+import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.role.dto.Role;
 import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.role.ws.RoleListResponse;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.openiam.idm.srvc.user.ws.UserResponse;
-import org.openiam.idm.srvc.menu.dto.Menu;
-import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
-import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisionService;
-import org.openiam.webadmin.admin.AppConfiguration;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class UserRoleController extends CancellableFormController {
@@ -189,6 +175,16 @@ public class UserRoleController extends CancellableFormController {
 			for (Role r : newRoleList) {
 				if (r.getSelected()) {
 					log.info("add following role to provRoleList="  +r.getId());
+                    /// if the user is in the current list then - no-change
+                    // other wise it the list
+
+                    if (isMemberOfCurrentList(r, currentUserRoleList)) {
+                        r.setOperation(AttributeOperationEnum.NO_CHANGE);
+
+                    } else {
+                        r.setOperation(AttributeOperationEnum.ADD);
+                    }
+
 					provRoleList.add(r);
 	
 				}
@@ -222,6 +218,25 @@ public class UserRoleController extends CancellableFormController {
 		return new ModelAndView(new RedirectView(url, true));
 
 	}
+
+
+    private boolean isMemberOfCurrentList(Role r, List<Role> currentUserRoleList ) {
+
+        if (currentUserRoleList == null || currentUserRoleList.isEmpty()) {
+            return false;
+        }
+
+        for (Role curRole : currentUserRoleList) {
+
+            if (curRole.getId().getRoleId().equalsIgnoreCase(r.getId().getRoleId()) &&
+                curRole.getId().getServiceId().equalsIgnoreCase(r.getId().getServiceId()))
+
+                return true;
+
+        }
+        return false;
+
+    }
 
 
 	private boolean isCurrentRoleInList(Role curRl, List<Role> newRoleList) {
