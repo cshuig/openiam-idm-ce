@@ -10,6 +10,10 @@
 <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
 
+<%
+String hostName =  java.net.InetAddress.getLocalHost().getHostName();
+    %>
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/all.css" type="text/css"/>
@@ -18,7 +22,7 @@
     <script src="<%= request.getContextPath() %>/js/myriad-pro.js" type="text/javascript"></script>
     <script src="<%= request.getContextPath() %>/js/calibri.js" type="text/javascript"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/js/jquery.main.js"></script>
-    <title>OpenIAM Identity Manager Selfservice v2.2.3</title>
+    <title>OpenIAM Identity Manager Selfservice v2.3.2 - <%= hostName%> </title>
 
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
     <meta http-equiv="Cache-Control" content="no-cache">
