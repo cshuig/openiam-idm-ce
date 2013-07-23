@@ -1,36 +1,13 @@
 package org.openiam.webadmin.user;
 
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.text.SimpleDateFormat;
-
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.openiam.base.ExtendController;
-import org.openiam.idm.srvc.msg.service.MailService;
-import org.openiam.idm.srvc.msg.service.MailTemplateParameters;
-import org.openiam.idm.srvc.msg.ws.NotificationRequest;
-import org.openiam.provision.resp.ProvisionUserResponse;
-import org.openiam.webadmin.util.AuditHelper;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.CancellableFormController;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openiam.base.BaseConstants;
+import org.openiam.base.ExtendController;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.idm.srvc.auth.dto.Login;
+import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.cd.dto.ReferenceData;
 import org.openiam.idm.srvc.cd.service.ReferenceDataService;
 import org.openiam.idm.srvc.continfo.dto.Address;
@@ -38,30 +15,44 @@ import org.openiam.idm.srvc.continfo.dto.ContactConstants;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 import org.openiam.idm.srvc.continfo.dto.Phone;
 import org.openiam.idm.srvc.continfo.ws.AddressResponse;
-import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.user.dto.UserStatusEnum;
-import org.openiam.idm.srvc.org.dto.Organization;
-
-import org.openiam.idm.srvc.user.dto.Supervisor;
-import org.openiam.idm.srvc.user.ws.SupervisorListResponse;
-import org.openiam.idm.srvc.user.ws.UserDataWebService;
-import org.openiam.idm.srvc.user.ws.UserResponse;
-import org.openiam.idm.srvc.auth.dto.Login;
-import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.grp.ws.GroupDataWebService;
-import org.openiam.idm.srvc.org.service.OrganizationDataService;
-import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.loc.dto.Location;
 import org.openiam.idm.srvc.loc.ws.LocationDataWebService;
 import org.openiam.idm.srvc.menu.dto.Menu;
 import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemDataService;
+import org.openiam.idm.srvc.msg.service.MailService;
+import org.openiam.idm.srvc.msg.service.MailTemplateParameters;
+import org.openiam.idm.srvc.msg.ws.NotificationRequest;
+import org.openiam.idm.srvc.org.dto.Organization;
+import org.openiam.idm.srvc.org.service.OrganizationDataService;
+import org.openiam.idm.srvc.role.ws.RoleDataWebService;
+import org.openiam.idm.srvc.user.dto.Supervisor;
+import org.openiam.idm.srvc.user.dto.User;
+import org.openiam.idm.srvc.user.dto.UserStatusEnum;
+import org.openiam.idm.srvc.user.ws.SupervisorListResponse;
+import org.openiam.idm.srvc.user.ws.UserDataWebService;
+import org.openiam.idm.srvc.user.ws.UserResponse;
 import org.openiam.provision.dto.ProvisionUser;
-import org.openiam.provision.service.ProvisionService;
+import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.service.AsynchUserProvisionService;
-import org.openiam.webadmin.admin.AppConfiguration;
+import org.openiam.provision.service.ProvisionService;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
+import org.openiam.webadmin.admin.AppConfiguration;
+import org.openiam.webadmin.util.AuditHelper;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class EditUserController extends CancellableFormController {
@@ -293,6 +284,9 @@ public class EditUserController extends CancellableFormController {
 		
 		User usr = cmd.getUser();
 
+        // clear dates
+        clearDates(usr);
+
         List<Organization> currentOrgList = orgManager.getOrganizationsForUser(usr.getUserId());
         
 
@@ -383,6 +377,21 @@ public class EditUserController extends CancellableFormController {
         return new ModelAndView(new RedirectView(url, true));
 
 	}
+
+
+    private void clearDates(User usr) {
+
+        if (usr.getLastDate() == null) {
+            usr.setLastDate(BaseConstants.NULL_DATE);
+        }
+        if (usr.getStartDate() == null) {
+            usr.setStartDate(BaseConstants.NULL_DATE);
+        }
+        if (usr.getBirthdate() == null) {
+            usr.setBirthdate(BaseConstants.NULL_DATE);
+
+        }
+    }
 
 
     /**
