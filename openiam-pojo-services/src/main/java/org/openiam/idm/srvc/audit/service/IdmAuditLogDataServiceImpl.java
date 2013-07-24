@@ -109,7 +109,7 @@ public class IdmAuditLogDataServiceImpl implements IdmAuditLogDataService {
 
         List<String> principalListAsStr = getListOfPrincipals(principalList);
 
-        return auditDao.findEventsAboutIdentityList(principalListAsStr,startDate);
+        return auditDao.findEventsAboutIdentityList(principalListAsStr,startDate, l.getUserId());
 
     }
 

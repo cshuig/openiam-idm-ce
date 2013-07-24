@@ -1,19 +1,12 @@
 package org.openiam.idm.srvc.continfo.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.annotations.GenericGenerator;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.user.domain.UserEntity;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "ADDRESS")
@@ -43,19 +36,19 @@ public class AddressEntity {
     @Column(name = "ADDRESS2", length = 512)
     private String address2;
 
-    @Column(name = "ADDRESS3", length = 45)
+    @Column(name = "ADDRESS3", length = 255)
     private String address3;
 
-    @Column(name = "ADDRESS4", length = 45)
+    @Column(name = "ADDRESS4", length = 255)
     private String address4;
 
-    @Column(name = "ADDRESS5", length = 45)
+    @Column(name = "ADDRESS5", length = 255)
     private String address5;
 
-    @Column(name = "ADDRESS6", length = 45)
+    @Column(name = "ADDRESS6", length = 255)
     private String address6;
 
-    @Column(name = "ADDRESS7", length = 45)
+    @Column(name = "ADDRESS7", length = 255)
     private String address7;
 
     @Column(name = "CITY", length = 45)
@@ -77,7 +70,7 @@ public class AddressEntity {
     @Column(name = "POSTAL_CD", length = 10)
     private String postalCd;
 
-    @Column(name = "STATE", length = 15)
+    @Column(name = "STATE", length = 45)
     private String state;
 
     @Column(name = "NAME", length = 40)

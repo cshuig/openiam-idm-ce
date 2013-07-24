@@ -122,11 +122,12 @@ public class IdmAuditLogDAOImpl implements IdmAuditLogDAO {
     	
     }
 
-    public List<IdmAuditLog> findEventsAboutUser(String principal, Date startDate) {
+    public List<IdmAuditLog> findEventsAboutUser(String principal, Date startDate,  String userId) {
          Session session = sessionFactory.getCurrentSession();
     	Query qry = session.createQuery("from org.openiam.idm.srvc.audit.dto.IdmAuditLog log " +
     				" where log.actionDatetime >= :startDate AND " +
-                "       (log.principal = :principal  OR log.customAttrvalue3 = :principal )"    +
+                "       (log.principal = :principal  OR log.customAttrvalue3 = :principal ) OR"    +
+                "       log.objectId = :userId "    +
                     " ORDER BY log.actionDatetime ");
         qry.setDate("startDate", startDate);
         qry.setString("principal", principal);
@@ -142,14 +143,16 @@ public class IdmAuditLogDAOImpl implements IdmAuditLogDAO {
     	return results;
     }
 
-    public List<IdmAuditLog> findEventsAboutIdentityList(List<String> principalList, Date startDate) {
+    public List<IdmAuditLog> findEventsAboutIdentityList(List<String> principalList, Date startDate, String userId) {
         Session session = sessionFactory.getCurrentSession();
         Query qry = session.createQuery("from org.openiam.idm.srvc.audit.dto.IdmAuditLog log " +
                 " where log.actionDatetime >= :startDate AND " +
-                "       (log.principal in ( :principalList )  OR log.customAttrvalue3 in ( :principalList ) )"    +
+                "       (log.principal in ( :principalList )  OR log.customAttrvalue3 in ( :principalList ) OR " +
+                "       log.objectId = :userId )"    +
                 " ORDER BY log.actionDatetime ");
         qry.setDate("startDate", startDate);
         qry.setParameterList("principalList", principalList);
+        qry.setString("userId", userId);
 
         List results = (List<IdmAuditLog>)qry.list();
 

@@ -63,7 +63,7 @@ public interface IdmAuditLogDAO {
      */
     void remove(IdmAuditLog instance) throws DataException;
 
-    List<IdmAuditLog> findEventsAboutUser(String principal, Date startDate);
+    List<IdmAuditLog> findEventsAboutUser(String principal, Date startDate, String userId);
 
-    List<IdmAuditLog> findEventsAboutIdentityList(List<String> principal, Date startDate);
+    List<IdmAuditLog> findEventsAboutIdentityList(List<String> principal, Date startDate, String userId);
 }

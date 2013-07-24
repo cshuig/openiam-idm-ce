@@ -1,45 +1,18 @@
 package org.openiam.idm.srvc.user.domain;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.ParamDef;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.continfo.domain.AddressEntity;
 import org.openiam.idm.srvc.continfo.domain.EmailAddressEntity;
 import org.openiam.idm.srvc.continfo.domain.PhoneEntity;
-import org.openiam.idm.srvc.continfo.dto.Address;
-import org.openiam.idm.srvc.continfo.dto.EmailAddress;
-import org.openiam.idm.srvc.continfo.dto.Phone;
-import org.openiam.idm.srvc.user.dto.Supervisor;
 import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.user.dto.UserAttribute;
-import org.openiam.idm.srvc.user.dto.UserAttributeMapAdapter;
-import org.openiam.idm.srvc.user.dto.UserNote;
-import org.openiam.idm.srvc.user.dto.UserNoteSetAdapter;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
+
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @FilterDef(name = "parentTypeFilter", parameters = @ParamDef(name = "parentFilter", type = "string"))
@@ -177,25 +150,25 @@ public class UserEntity {
 	@Column(name = "ADDRESS2", length = 512)
 	private String address2;
 
-	@Column(name = "ADDRESS3", length = 45)
+	@Column(name = "ADDRESS3", length = 255)
 	private String address3;
 
-	@Column(name = "ADDRESS4", length = 45)
+	@Column(name = "ADDRESS4", length = 255)
 	private String address4;
 
-	@Column(name = "ADDRESS5", length = 45)
+	@Column(name = "ADDRESS5", length = 255)
 	private String address5;
 
-	@Column(name = "ADDRESS6", length = 45)
+	@Column(name = "ADDRESS6", length = 255)
 	private String address6;
 
-	@Column(name = "ADDRESS7", length = 45)
+	@Column(name = "ADDRESS7", length = 255)
 	private String address7;
 
-	@Column(name = "CITY", length = 30)
+	@Column(name = "CITY", length = 45)
 	private String city;
 
-	@Column(name = "STATE", length = 15)
+	@Column(name = "STATE", length = 45)
 	private String state;
 
 	@Column(name = "POSTAL_CD", length = 10)
