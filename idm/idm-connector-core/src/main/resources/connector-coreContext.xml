@@ -314,9 +314,56 @@
 	<!-- END Oracle Connector -->
 
 
+    <!-- Start Peoplesoft DB connector -->
 
-	<!-- ensure that the above transactional advice runs for any execution of 
-		an operation defined by the FooService interface -->
+
+    <bean id="peoplesoftDbConnector" class="org.openiam.spml2.spi.peoplesoft.PeoplesoftDBConnectorImpl">
+        <property name="addCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftAddCommand"
+                  parent="abstractPeoplesoftCommand" />
+        </property>
+        <property name="deleteCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftDeleteCommand"
+                  parent="abstractPeoplesoftCommand" />
+        </property>
+        <property name="lookupCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftLookupCommand"
+                  parent="abstractPeoplesoftCommand" />
+        </property>
+        <property name="modifyCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftModifyCommand"
+                  parent="abstractPeoplesoftCommand" />
+        </property>
+        <property name="resumeCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftResumeCommand"
+                  parent="abstractPeoplesoftCommand">
+                <property name="loginManager" ref="loginManager" />
+            </bean>
+        </property>
+        <property name="setPasswordCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftPasswordCommand"
+                  parent="abstractPeoplesoftCommand" />
+        </property>
+        <property name="suspendCommand">
+            <bean class="org.openiam.spml2.spi.peoplesoft.PeoplesoftSuspendCommand"
+                  parent="abstractPeoplesoftCommand" />
+        </property>
+        <property name="connectionMgr">
+            <ref local="jdbcConnection" />
+        </property>
+    </bean>
+
+    <bean id="abstractPeoplesoftCommand" class="org.openiam.spml2.spi.peoplesoft.AbstractPeoplesoftCommand"
+          abstract="true">
+        <property name="connectionMgr" ref="jdbcConnection" />
+        <property name="managedSysService" ref="managedSysService" />
+        <property name="resourceDataService" ref="resourceDataService" />
+    </bean>
+
+    <!-- END Peoplesoft DB connector -->
+
+    <!-- ensure that the above transactional advice runs for any execution of
+         an operation defined by the FooService interface -->
 </beans>
 
 

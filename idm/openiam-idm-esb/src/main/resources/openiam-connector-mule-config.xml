@@ -143,5 +143,19 @@
             </component>
         </service>
     </model>
+
+    <model name="peoplesoftDbConnectorServiceModel">
+        <service name="peoplesoftDbConnectorService">
+            <inbound>
+                <inbound-endpoint address="${webservice.path}PeoplesoftDbConnector" exchange-pattern="request-response">
+                    <cxf:jaxws-service />
+                </inbound-endpoint>
+            </inbound>
+            <component>
+                <spring-object bean="peoplesoftDbConnector" />
+            </component>
+        </service>
+    </model>
+
 </mule>
 

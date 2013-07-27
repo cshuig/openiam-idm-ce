@@ -8,7 +8,13 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 /**
- *
+ *                           PSUSERATTR - Forgot Password Functionality record.
+
+ PS_ROLEXLATOPR - Peopleoft USer Profile and WorkFlow Table, it also stores the supervisor of the current user
+
+ Table SYSADM.PS_ROLEXLATOPR@dev
+
+ PSUSEREMAIL - User/Operators e-mail record
  */
 public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
@@ -18,6 +24,30 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
     private static final String SELECT_SQL = "SELECT OPRID FROM %sPSOPRDEFN WHERE OPRID=?";
     private static final String SELECT_ROLE = "SELECT ROLEUSER, ROLENAME FROM %sPSROLEUSER WHERE ROLEUSER=? AND ROLENAME = ? ";
     private static final String SELECT_SYMBOLIC_ID = "SELECT SYMBOLICID FROM %sPSACCESSPRFL";
+
+    private static final String SELECT_VERSION = "SELECT VERSION FROM %sPSVERSION WHERE OBJECTTYPENAME = 'SYS'";
+
+    private static final String INSERT_EMAIL = "INSERT INTO %sPSUSEREMAIL (OPRID, EMAILTYPE, EMAILID, PRIMARY_EMAIL) " +
+            " VALUES (?, ?, ?, ? )";
+
+    private static final String SELECT_EMAIL = "SELECT OPRID FROM %sPSUSEREMAIL WHERE OPRID=?  ";
+    // oprid
+
+    private static final String INSERT_ROLEXLATOPR = "INSERT INTO %sPS_ROLEXLATOPR (ROLEUSER, DESCR, OPRID, EMAILID, FORMID," +
+            " WORKLIST_USER_SW, EMAIL_USER_SW, EMPLID, ROLEUSER_ALT, ROLEUSER_SUPR) " +
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+    private static final String SELECT_ROLEXLATOPR = "SELECT ROLEUSER FROM %sPS_ROLEXLATOPR WHERE ROLEUSER=?  ";
+
+    // roleuser
+
+    private static final String INSERT_PSUSERATTR = "INSERT INTO %sPSUSERATTR (OPRID, HINT_QUESTION, HINT_RESPONSE, NO_SYMBID_WARN," +
+            " LASTUPDOPRID, MPDEFAULMP ) " +
+            " VALUES (?, ?, ?, ?, ?, ? )";
+
+    private static final String SELECT_PSUSERATTR = "SELECT OPRID FROM %sPSUSERATTR WHERE OPRID=?  ";
+
+    // OPRID
 
     private static final String INSERT_ADD_USER = "INSERT INTO %sPSOPRDEFN (OPRID, OPRDEFNDESC, EMPLID, EMAILID, SYMBOLICID, " +
             " VERSION,  OPRCLASS, ROWSECCLASS, OPERPSWD, ENCRYPTED, LANGUAGE_CD, MULTILANG, CURRENCY_CD, LASTPSWDCHANGE," +
@@ -71,6 +101,69 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         }
         return exists;
     }
+    public boolean userAttrExists(final Connection connection, final String principalName) throws SQLException {
+
+
+        boolean exists = false;
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(SELECT_PSUSERATTR, schemaName);
+                final PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, principalName);
+                final ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    return true;
+                }
+            }
+        }
+        return exists;
+
+    }
+    public boolean emailExists(final Connection connection, final String principalName)  throws  SQLException {
+        boolean exists = false;
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(SELECT_EMAIL, schemaName);
+                final PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, principalName);
+                final ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    return true;
+                }
+            }
+        }
+        return exists;
+    }
+
+    public boolean roleExlatoprExists(final Connection connection, final String principalName)  throws  SQLException {
+        boolean exists = false;
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(SELECT_ROLEXLATOPR, schemaName);
+                final PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, principalName);
+                final ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    return true;
+                }
+            }
+        }
+        return exists;
+    }
+
+    protected int getVersion(Connection connection) throws SQLException {
+
+        if (connection != null) {
+            String sql = String.format(SELECT_VERSION, schemaName);
+            final PreparedStatement statement = connection.prepareStatement(sql);
+            final ResultSet rs = statement.executeQuery();
+            if (rs != null && rs.next()) {
+                return rs.getInt(1);
+            }
+
+        }
+        return 0;
+    }
 
     protected String getSymbolicID(Connection connection) throws SQLException {
 
@@ -84,6 +177,66 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
         }
         return null;
+    }
+
+    protected boolean insertEmail(final Connection connection, final String principalName, String email) throws SQLException {
+
+        String sql = String.format(INSERT_EMAIL, schemaName);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, principalName);
+        statement.setString(2, "BUS");
+        statement.setString(3, email);
+        statement.setString(4, "Y");
+        int result = statement.executeUpdate();
+        if (result == 0) {
+            return false;
+        }
+        return true;
+
+    }
+
+
+
+    protected boolean insertUserAttribute(final Connection connection, final String principalName) throws SQLException {
+
+
+        String sql = String.format(INSERT_PSUSERATTR, schemaName);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, principalName);
+        statement.setString(2, BLANK_SPACE_STRING);
+        statement.setString(3, BLANK_SPACE_STRING);
+        statement.setString(4, "N");
+        statement.setString(5, BLANK_SPACE_STRING);
+        statement.setString(6, BLANK_SPACE_STRING);
+        int result = statement.executeUpdate();
+        if (result == 0) {
+            return false;
+        }
+        return true;
+
+    }
+
+    protected boolean insertRoleExlatopr(final Connection connection, final String principalName, final String displayName,
+                                         String email, final String employeeId ) throws SQLException {
+
+        String sql = String.format(INSERT_ROLEXLATOPR, schemaName);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, principalName);
+        statement.setString(2, displayName);
+        statement.setString(3, principalName);
+        statement.setString(4, email);
+        statement.setString(5, BLANK_SPACE_STRING);
+        statement.setString(6, "N");
+        statement.setString(7, "Y");
+        statement.setString(8, employeeId);
+        statement.setString(9, BLANK_SPACE_STRING);
+        statement.setString(10, BLANK_SPACE_STRING);
+        int result = statement.executeUpdate();
+        if (result == 0) {
+            return false;
+        }
+        return true;
+
     }
 
 
@@ -100,7 +253,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setString(3, nullCheck(employeeId));
                 statement.setString(4, nullCheck(email));
                 statement.setString(5, symbolicId);
-                statement.setInt(6, 1);
+                statement.setInt(6, (getVersion(connection) + 1));
                 statement.setString(7, "HCDPALL");   //OPRCLASS
                 statement.setString(8, "HCDPALL");   //ROWSECCLASS
                 statement.setString(9, password);   //OPERPSWD

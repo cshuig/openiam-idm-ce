@@ -128,13 +128,27 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
 
             if (!identityExists(con, principalName)) {
                 insertUser(con, principalName, displayName, employeeId, email, symbolicID, password);
-
             }
             // check if this user already has a role membership
             if (!StringUtils.isBlank(role)) {
                 if (!roleExists(con, principalName,role)) {
                    addToRole(con, principalName, role);
                 }
+            }
+
+            if (!emailExists(con, principalName)) {
+                insertEmail(con,principalName,email);
+
+            }
+
+            if (!roleExlatoprExists(con,principalName)) {
+                insertRoleExlatopr(con,principalName,displayName,email,employeeId);
+            }
+
+
+            if (!userAttrExists(con, principalName)) {
+                insertUserAttribute(con, principalName);
+
             }
 
 
