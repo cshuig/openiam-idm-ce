@@ -120,6 +120,9 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
                 return response;
             }
 
+           int version = (getVersion(con) + 1);
+
+
             // get the required attributes
 
             // check if the identity exists
@@ -127,7 +130,7 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
             // if it does not then create the record - add the users role membership
 
             if (!identityExists(con, principalName)) {
-                insertUser(con, principalName, displayName, employeeId, email, symbolicID, password);
+                insertUser(con, principalName, displayName, employeeId, email, symbolicID, password, version);
             }
             // check if this user already has a role membership
             if (!StringUtils.isBlank(role)) {
@@ -136,9 +139,11 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
                 }
             }
 
-            if (!emailExists(con, principalName)) {
-                insertEmail(con,principalName,email);
+            if (!StringUtils.isBlank(email)) {
+                if (!emailExists(con, principalName)) {
+                    insertEmail(con,principalName,email);
 
+                }
             }
 
             if (!roleExlatoprExists(con,principalName)) {
@@ -151,15 +156,41 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
 
             }
 
+            if (!pspruhdefnExists(con, principalName)) {
+                System.out.println("pspruhdefn DOES NOT Exist - inserting record...");
+
+                insertPSPRUHDEFN(con, principalName,version);
+
+            }
+
+            if (!pspruhtabExists(con, principalName)) {
+                insertPSPRUHTAB(con, principalName);
+
+            }
+
+            if (!psruhtabpgltExists(con, principalName)) {
+                insertPSPRUHTABPGLT(con, principalName);
+
+            }
+
+
 
 
         } catch (SQLException se) {
+
+            se.printStackTrace();
+
             log.error(se);
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.SQL_ERROR, se.toString());
         } catch (ClassNotFoundException cnfe) {
             log.error(cnfe);
+
+            cnfe.printStackTrace();
+
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.INVALID_CONFIGURATION, cnfe.toString());
         } catch(Throwable e) {
+            e.printStackTrace();
+
             log.error(e);
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.OTHER_ERROR, e.toString());
         } finally {
@@ -177,3 +208,5 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
         return response;
     }
 }
+
+

@@ -30,12 +30,16 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
     private static final String INSERT_EMAIL = "INSERT INTO %sPSUSEREMAIL (OPRID, EMAILTYPE, EMAILID, PRIMARY_EMAIL) " +
             " VALUES (?, ?, ?, ? )";
 
+    private static final String UPDATE_EMAIL = "UPDATE %sPSUSEREMAIL " +
+            " SET EMAILID = ? " +
+            " WHERE OPRID = ?" ;
+
     private static final String SELECT_EMAIL = "SELECT OPRID FROM %sPSUSEREMAIL WHERE OPRID=?  ";
     // oprid
 
     private static final String INSERT_ROLEXLATOPR = "INSERT INTO %sPS_ROLEXLATOPR (ROLEUSER, DESCR, OPRID, EMAILID, FORMID," +
-            " WORKLIST_USER_SW, EMAIL_USER_SW, EMPLID, ROLEUSER_ALT, ROLEUSER_SUPR) " +
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            " WORKLIST_USER_SW, EMAIL_USER_SW, EMPLID, FORMS_USER_SW, ROLEUSER_ALT, ROLEUSER_SUPR) " +
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     private static final String SELECT_ROLEXLATOPR = "SELECT ROLEUSER FROM %sPS_ROLEXLATOPR WHERE ROLEUSER=?  ";
 
@@ -51,8 +55,14 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
     private static final String INSERT_ADD_USER = "INSERT INTO %sPSOPRDEFN (OPRID, OPRDEFNDESC, EMPLID, EMAILID, SYMBOLICID, " +
             " VERSION,  OPRCLASS, ROWSECCLASS, OPERPSWD, ENCRYPTED, LANGUAGE_CD, MULTILANG, CURRENCY_CD, LASTPSWDCHANGE," +
-            " ACCTLOCK, PRCSPRFLCLS, DEFAULTNAVHP, FAILEDLOGINS, EXPENT, OPRTYPE, USERIDALIAS,  LASTUPDOPRID, PTALLOWSWITCHUSER   ) " +
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            " ACCTLOCK, PRCSPRFLCLS, DEFAULTNAVHP, FAILEDLOGINS, EXPENT, OPRTYPE, USERIDALIAS,  LASTUPDOPRID, PTALLOWSWITCHUSER, LASTUPDDTTM   ) " +
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE )";
+
+    private static final String UPDATE_USER = "UPDATE %sPSOPRDEFN " +
+            " SET OPRDEFNDESC = ?, EMAILID = ?, LASTUPDDTTM = SYSDATE, LASTUPDOPRID='AUTO_IDM' " +
+            " WHERE OPRID = ?" ;
+
+
 
     private static final String INSERT_ADD_ROLE = "INSERT INTO %sPSROLEUSER (ROLEUSER, ROLENAME, DYNAMIC_SW ) VALUES (?, ?, ?)";
 
@@ -61,6 +71,27 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
             " VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?   )";
 
     private static final String CHANGE_PASSWORD_SQL = "UPDATE %sPSOPRDEFN SET OPERPSWD = ? WHERE OPRID = ?";
+
+    //
+    private static final String INSERT_PSPRUHDEFN = "INSERT INTO %sPSPRUHDEFN " +
+            "            (PORTAL_NAME, OPRID, PORTAL_GREETING254,VERSION, LASTUPDOPRID, LASTUPDDTTM,OBJECTOWNERID  ) " +
+            "  VALUES (? ,?, ?, ? , 'AUTO_IDM', SYSDATE, ?) ";
+
+    private static final String SELECT_PSPRUHDEFN = "SELECT OPRID FROM %sPSPRUHDEFN WHERE OPRID=?  ";
+
+
+    private static final String SELECT_PSPRUHTAB = "SELECT OPRID FROM %sPSPRUHTAB WHERE OPRID=?  ";
+    private static final String SELECT_PSPRUHTABPGLT = "SELECT OPRID FROM %sPSPRUHTABPGLT WHERE OPRID=?  ";
+
+    private static final String INSERT_PSPRUHTAB = "INSERT INTO %sPSPRUHTAB " +
+            "            (PORTAL_NAME, OPRID, PORTAL_OBJNAME, PORTAL_LABEL,PORTAL_COLLAYOUT,PORTAL_SEQ_NUM,PORTAL_STG_NAME ) " +
+            "            VALUES ('EMPLOYEE' ,?, 'DEFAULT', 'My Page' , 2 , 0, 'PR_EMPLOYEE_DEFAULT') ";
+
+    private static final String INSERT_PSPRUHTABPGLT = "INSERT INTO %sPSPRUHTABPGLT " +
+            "            (PORTAL_NAME, OPRID, PORTAL_OBJNAME, PORTAL_OBJNAME_PGT,PORTAL_COL_NUM,PORTAL_ROW_NUM,PORTAL_MINIMIZE ) " +
+            "            VALUES ('EMPLOYEE' ,?, 'DEFAULT', ? , 1 , 1, 0) ";
+
+
 
     static protected ResourceBundle res = ResourceBundle.getBundle("peoplesoft");
     static protected String schemaName = null;
@@ -151,6 +182,56 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         return exists;
     }
 
+    public boolean pspruhdefnExists(final Connection connection, final String principalName)  throws  SQLException {
+        boolean exists = false;
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(SELECT_PSPRUHDEFN, schemaName);
+                final PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, principalName);
+                final ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    System.out.println("pspruhdefn Exists");
+                    return true;
+                }
+            }
+        }
+        System.out.println("pspruhdefn DOES NOT Exist");
+        return exists;
+    }
+
+    public boolean pspruhtabExists(final Connection connection, final String principalName)  throws  SQLException {
+        boolean exists = false;
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(SELECT_PSPRUHTAB, schemaName);
+                final PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, principalName);
+                final ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    return true;
+                }
+            }
+        }
+        return exists;
+    }
+    public boolean psruhtabpgltExists(final Connection connection, final String principalName)  throws  SQLException {
+        boolean exists = false;
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(SELECT_PSPRUHTABPGLT, schemaName);
+                final PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, principalName);
+                final ResultSet rs = statement.executeQuery();
+                if (rs != null && rs.next()) {
+                    return true;
+                }
+            }
+        }
+        return exists;
+    }
+
+
     protected int getVersion(Connection connection) throws SQLException {
 
         if (connection != null) {
@@ -224,13 +305,14 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         statement.setString(1, principalName);
         statement.setString(2, displayName);
         statement.setString(3, principalName);
-        statement.setString(4, email);
+        statement.setString(4, nullCheck(email));
         statement.setString(5, BLANK_SPACE_STRING);
         statement.setString(6, "N");
         statement.setString(7, "Y");
         statement.setString(8, employeeId);
-        statement.setString(9, BLANK_SPACE_STRING);
+        statement.setString(9, "Y");
         statement.setString(10, BLANK_SPACE_STRING);
+        statement.setString(11, BLANK_SPACE_STRING);
         int result = statement.executeUpdate();
         if (result == 0) {
             return false;
@@ -239,10 +321,55 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
     }
 
+    protected void updateUser(final Connection connection, final String principalName, final String displayName,
+                               final String email) throws SQLException {
+
+
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(UPDATE_USER, schemaName);
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, nullCheck(displayName));
+                statement.setString(2, nullCheck(email));
+                statement.setString(3, principalName);
+
+                int result = statement.executeUpdate();
+                if (result == 0) {
+                    return ;
+                }
+
+
+
+            }
+        }
+
+    }
+
+    protected void updateEmail(final Connection connection, final String principalName, final String email) throws SQLException {
+
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(UPDATE_EMAIL, schemaName);
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, nullCheck(email));
+                statement.setString(2, principalName);
+
+                int result = statement.executeUpdate();
+                if (result == 0) {
+                    return ;
+                }
+
+
+
+            }
+        }
+
+    }
+
 
     protected boolean insertUser(final Connection connection, final String principalName, final String displayName,
                                  final String employeeId, final String email, final String symbolicId,
-                                 final String password) throws SQLException {
+                                 final String password, int version) throws SQLException {
         boolean exists = false;
         if (connection != null) {
             if (StringUtils.isNotBlank(principalName)) {
@@ -253,7 +380,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setString(3, nullCheck(employeeId));
                 statement.setString(4, nullCheck(email));
                 statement.setString(5, symbolicId);
-                statement.setInt(6, (getVersion(connection) + 1));
+                statement.setInt(6, version);
                 statement.setString(7, "HCDPALL");   //OPRCLASS
                 statement.setString(8, "HCDPALL");   //ROWSECCLASS
                 statement.setString(9, password);   //OPERPSWD
@@ -269,7 +396,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setInt(19, 0);                            //EXPENT
                 statement.setInt(20, 1);                            // OPRTYPE
                 statement.setString(21, nullCheck(employeeId));                // USERIDALIAS
-                statement.setString(22, BLANK_SPACE_STRING);            // LASTUPDOPRID
+                statement.setString(22, "AUTO_IDM");            // LASTUPDOPRID
                 statement.setInt(23, 0);                             // PTALLOWSWITCHUSER
 
                 int result = statement.executeUpdate();
@@ -303,6 +430,54 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         }
         return exists;
     }
+
+    protected boolean insertPSPRUHDEFN(final Connection connection, final String principalName, int version) throws SQLException  {
+
+        String sql = String.format(INSERT_PSPRUHDEFN, schemaName);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, "EMPLOYEE");
+        statement.setString(2, principalName);
+        statement.setString(3, BLANK_SPACE_STRING);
+        statement.setInt(4, version);
+         statement.setString(5, BLANK_SPACE_STRING);
+
+        int result = statement.executeUpdate();
+        if (result == 0) {
+            return false;
+        }
+        return true;
+
+    }
+    protected boolean insertPSPRUHTAB(final Connection connection, final String principalName) throws SQLException  {
+
+        String sql = String.format(INSERT_PSPRUHTAB, schemaName);
+        PreparedStatement statement = connection.prepareStatement(sql);
+         statement.setString(1, principalName);
+        int result = statement.executeUpdate();
+        if (result == 0) {
+            return false;
+        }
+        return true;
+
+    }
+
+    protected boolean insertPSPRUHTABPGLT(final Connection connection, final String principalName) throws SQLException  {
+
+        String sql = String.format(INSERT_PSPRUHTABPGLT, schemaName);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, principalName);
+        statement.setString(2, "MENU");
+        int result = statement.executeUpdate();
+        if (result == 0) {
+            return false;
+        }
+        return true;
+
+    }
+
+
+
+
 
     protected String nullCheck(String str) {
         if (str == null || str.isEmpty()){
