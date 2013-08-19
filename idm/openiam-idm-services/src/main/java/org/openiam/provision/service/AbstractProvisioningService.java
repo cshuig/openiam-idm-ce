@@ -2207,6 +2207,8 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                 if (currentValueMap == null) {
                     attr.setOperation(1);
                 }else {
+
+
                     String curVal = currentValueMap.get(nm);
                     if (curVal == null) {
                         // temp hack
@@ -2216,6 +2218,11 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                             log.debug("- Op = 1 - AttrName = " +nm );
 
                             attr.setOperation(1);
+
+                            // temp hack for byteArrays
+                            if (attr.getDataType().equalsIgnoreCase("byteArray")) {
+                                attr.setOperation(2);
+                            }
                         }
                     }else {
                         if (curVal.equalsIgnoreCase(attr.getValue())) {
