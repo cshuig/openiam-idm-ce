@@ -2,42 +2,25 @@ package org.openiam.idm.srvc.role.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openiam.dozer.converter.GroupDozerConverter;
-import org.openiam.dozer.converter.RoleAttributeDozerConverter;
-import org.openiam.dozer.converter.RoleDozerConverter;
-import org.openiam.dozer.converter.RolePolicyDozerConverter;
-import org.openiam.dozer.converter.UserDozerConverter;
-import org.openiam.dozer.converter.UserRoleDozerConverter;
+import org.openiam.dozer.converter.*;
 import org.openiam.exception.data.ObjectNotFoundException;
 import org.openiam.idm.srvc.grp.domain.GroupEntity;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.grp.service.UserGroupDAO;
 import org.openiam.idm.srvc.res.service.ResourceRoleDAO;
-import org.openiam.idm.srvc.role.domain.RoleAttributeEntity;
-import org.openiam.idm.srvc.role.domain.RoleEmbeddableId;
-import org.openiam.idm.srvc.role.domain.RoleEntity;
-import org.openiam.idm.srvc.role.domain.RolePolicyEntity;
-import org.openiam.idm.srvc.role.domain.UserRoleEntity;
-import org.openiam.idm.srvc.role.dto.Role;
-import org.openiam.idm.srvc.role.dto.RoleAttribute;
-import org.openiam.idm.srvc.role.dto.RoleConstant;
-import org.openiam.idm.srvc.role.dto.RoleId;
-import org.openiam.idm.srvc.role.dto.RolePolicy;
-import org.openiam.idm.srvc.role.dto.RoleSearch;
-import org.openiam.idm.srvc.role.dto.UserRole;
+import org.openiam.idm.srvc.role.domain.*;
+import org.openiam.idm.srvc.role.dto.*;
 import org.openiam.idm.srvc.service.service.ServiceDAO;
-import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
+import org.openiam.idm.srvc.user.domain.UserEntity;
 import org.openiam.idm.srvc.user.dto.User;
-
 import org.openiam.idm.srvc.user.service.UserDataService;
-
-import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.util.*;
 
 //Note: as per spec serviceName goes in impl class and name goes in interface
 
@@ -785,7 +768,10 @@ public class RoleDataServiceImpl implements RoleDataService {
 			for (Group grp : groupSet) {
 				List<UserEntity> userLst = userGroupDao.findUserByGroup(grp
 						.getGrpId());
-				newUserSet.addAll(userLst);
+
+                if (userLst != null && !userList.isEmpty()) {
+				    newUserSet.addAll(userLst);
+                }
 			}
 		}
 
