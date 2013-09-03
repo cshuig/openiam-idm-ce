@@ -32,7 +32,7 @@
 				<tr>
 					<td>    
 							<fieldset class="userformSearch" >
-							<legend>ORGANIZATION DETAILS</legend>
+							<legend>GROUP DETAILS</legend>
 				
 					<table class="fieldsetTable"  width="100%" >
 	
@@ -43,7 +43,7 @@
           </tr>
           <tr>
               <td>Name<font color="red">*</font></td>
-			  <td><form:input path="group.grpName" size="40" maxlength="40"  /><br>
+			  <td><form:input path="group.grpName" size="40" maxlength="80"  /><br>
 			  <form:errors path="group.grpName" cssClass="error" /></td>
 		  </tr>
           <tr>

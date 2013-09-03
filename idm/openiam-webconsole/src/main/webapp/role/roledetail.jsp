@@ -61,7 +61,7 @@
 
           <tr>
               <td><label for="username" class="attribute">Name</label><font color="red">*</font></td>
-			 			  <td><form:input path="role.roleName" size="40" maxlength="40"  />
+			 			  <td><form:input path="role.roleName" size="40" maxlength="80"  />
 			  <form:errors path="role.roleName" cssClass="error" /><br>
 			  </td>
 		  </tr>
