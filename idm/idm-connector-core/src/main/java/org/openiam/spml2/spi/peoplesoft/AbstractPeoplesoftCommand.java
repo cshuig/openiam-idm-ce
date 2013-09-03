@@ -384,7 +384,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setString(7, "HCDPALL");   //OPRCLASS
                 statement.setString(8, "HCDPALL");   //ROWSECCLASS
                 statement.setString(9, password);   //OPERPSWD
-                statement.setInt(10, 0);             //ENCRYPTED
+                statement.setInt(10, 1);             //ENCRYPTED
                 statement.setString(11, "ENG");     //LANGUAGE_CD
                 statement.setInt(12, 0);             //MULTILANG
                 statement.setString(13, "USD");     //CURRENCY CODE
@@ -437,8 +437,8 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, "EMPLOYEE");
         statement.setString(2, principalName);
-        statement.setString(3, BLANK_SPACE_STRING);
-        statement.setInt(4, version);
+        statement.setString(3, "Stater Bros. Markets2");
+        statement.setInt(4, 62);
          statement.setString(5, BLANK_SPACE_STRING);
 
         int result = statement.executeUpdate();
@@ -466,7 +466,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         String sql = String.format(INSERT_PSPRUHTABPGLT, schemaName);
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, principalName);
-        statement.setString(2, "MENU");
+        statement.setString(2, "PT_SC_PGT_MAIN_MENU");
         int result = statement.executeUpdate();
         if (result == 0) {
             return false;
