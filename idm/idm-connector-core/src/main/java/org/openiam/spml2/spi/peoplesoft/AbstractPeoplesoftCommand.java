@@ -191,12 +191,12 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setString(1, principalName);
                 final ResultSet rs = statement.executeQuery();
                 if (rs != null && rs.next()) {
-                    System.out.println("pspruhdefn Exists");
+
                     return true;
                 }
             }
         }
-        System.out.println("pspruhdefn DOES NOT Exist");
+
         return exists;
     }
 
