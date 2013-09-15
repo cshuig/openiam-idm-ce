@@ -59,7 +59,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
             " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE )";
 
     private static final String UPDATE_USER = "UPDATE %sPSOPRDEFN " +
-            " SET OPRDEFNDESC = ?, EMAILID = ?, LASTUPDDTTM = SYSDATE, LASTUPDOPRID='AUTO_IDM' " +
+            " SET OPRDEFNDESC = ?, EMAILID = ?, ACCTLOCK = ? ,LASTUPDDTTM = SYSDATE, LASTUPDOPRID='AUTO_IDM' " +
             " WHERE OPRID = ?" ;
 
 
@@ -322,7 +322,8 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
     }
 
     protected void updateUser(final Connection connection, final String principalName, final String displayName,
-                               final String email) throws SQLException {
+                               final String email,
+                               int status) throws SQLException {
 
 
         if (connection != null) {
@@ -331,7 +332,8 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setString(1, nullCheck(displayName));
                 statement.setString(2, nullCheck(email));
-                statement.setString(3, principalName);
+                statement.setInt(3,status);
+                statement.setString(4, principalName);
 
                 int result = statement.executeUpdate();
                 if (result == 0) {
@@ -369,7 +371,8 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
     protected boolean insertUser(final Connection connection, final String principalName, final String displayName,
                                  final String employeeId, final String email, final String symbolicId,
-                                 final String password, int version) throws SQLException {
+                                 final String password, int version,
+                                 int status ) throws SQLException {
         boolean exists = false;
         if (connection != null) {
             if (StringUtils.isNotBlank(principalName)) {
@@ -389,7 +392,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setInt(12, 0);             //MULTILANG
                 statement.setString(13, "USD");     //CURRENCY CODE
                 statement.setDate(14, new Date(System.currentTimeMillis()));  // LASTPSWDCHANGE
-                statement.setInt(15, 0);                            // ACCTLOCK
+                statement.setInt(15, status);                            // ACCTLOCK
                 statement.setString(16, "HCSPPRFL");                 // PRCSPRFLCLS
                 statement.setString(17, "HCSPNAVHP");               //DEFAULTNAVHP
                 statement.setInt(18, 0);                            //FAILEDLOGINS
@@ -437,7 +440,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, "EMPLOYEE");
         statement.setString(2, principalName);
-        statement.setString(3, "Stater Bros. Markets2");
+        statement.setString(3, "Stater Bros. Markets");
         statement.setInt(4, 62);
          statement.setString(5, BLANK_SPACE_STRING);
 

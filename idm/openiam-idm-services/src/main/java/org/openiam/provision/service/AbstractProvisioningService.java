@@ -2035,7 +2035,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                             try {
 
                                 // update the password only if they are different
-                                if (!newLg.getPassword().equals(origLogin.getPassword())) {
+                                if (origLogin.getPassword() == null ||  !newLg.getPassword().equals(origLogin.getPassword())) {
 
                                     newLg.setPassword(loginManager.encryptPassword(newPassword));
                                 }

@@ -1,9 +1,5 @@
 package org.openiam.idm.srvc.synch.srcadapter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.base.ws.ResponseStatus;
@@ -16,6 +12,9 @@ import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.openiam.idm.srvc.user.ws.UserListResponse;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+
+import java.util.List;
+import java.util.Map;
 
 public class DefaultMatchObjectRule implements MatchObjectRule {
 
@@ -39,7 +38,7 @@ public class DefaultMatchObjectRule implements MatchObjectRule {
 
         if ( atr == null ) {
 
-            log.debug("Match attribute not found. Check synchronization configuration");
+            log.debug("DefaultMatchObjectRule: Match attribute not found. Check synchronization configuration");
             return null;
 
         }
@@ -50,26 +49,38 @@ public class DefaultMatchObjectRule implements MatchObjectRule {
 	
 		
 		if ( MATCH_USERID.equalsIgnoreCase(config.getMatchFieldName())) {
+
+            log.debug("DefaultMatchObjectRule: Searching by user: " + srcFieldValue);
+
 			search.setUserId(srcFieldValue);
 		}
 		if (MATCH_PRINCIPAL.equalsIgnoreCase(config.getMatchFieldName()) ) {
+
+            log.debug("DefaultMatchObjectRule: Searching by principal: " + srcFieldValue);
+
 			search.setPrincipal(srcFieldValue);
 		}
 		if (MATCH_EMAIL.equalsIgnoreCase(config.getMatchFieldName())) {
+
+            log.debug("DefaultMatchObjectRule: Searching by emailAddress: " + srcFieldValue);
+
 			search.setEmailAddress(srcFieldValue);
 		}	
-		if (MATCH_EMPLOYEE_ID.equalsIgnoreCase(config.getMatchFieldName())) {
+		if ( MATCH_EMPLOYEE_ID.equalsIgnoreCase(config.getMatchFieldName())) {
+
+            log.debug("DefaultMatchObjectRule: Searching by employeeId: " + srcFieldValue);
+
 			search.setEmployeeId(srcFieldValue);
 		}		
 		if (MATCH_CUSTOM_ATTRIBUTE.equalsIgnoreCase(config.getMatchFieldName())) {
 
-            log.debug("- Match users with custom attribute: " + config.getCustomMatchAttr());
+            log.debug("- Searching by custom attributes: " + config.getCustomMatchAttr());
 		
 				
 			// get the attribute value from the data_set
 			String valueToMatch = rowAttr.get(config.getCustomMatchAttr()).getValue();
 
-            log.debug("- Src field value used in matching: " + valueToMatch);
+            log.debug("--> Src field value used in matching: " + valueToMatch);
 			
 			search.setAttributeName(config.getCustomMatchAttr());
 			search.setAttributeValue(valueToMatch);
@@ -86,13 +97,13 @@ public class DefaultMatchObjectRule implements MatchObjectRule {
             List<User> userList = userListResponse.getUserList();
 
             if (userList != null && !userList.isEmpty()) {
-			    log.debug("User matched with existing user...");
+			    log.debug("DefaultMatchObjectRule: User matched with existing user...");
 
                 User u = userList.get(0);
 			    return u;
 		    }
         }
-        log.debug("No matching user found");
+        log.debug("DefaultMatchObjectRule: No matching user found");
 
 		return null;
 	}

@@ -36,6 +36,7 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
         String employeeId = null ;
         String symbolicID;
         String password = null;
+        String status = null;
 
         schemaName =  res.getString("SCHEMA");
 
@@ -100,6 +101,14 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
                             password = att.getValue();
                         }
 
+                        if(StringUtils.equalsIgnoreCase("status",  att.getName())) {
+                            status = att.getValue();
+                            if (status == null) {
+                                status = "0";
+
+                            }
+                        }
+
                     //}
                 }
             }
@@ -130,7 +139,7 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
             // if it does not then create the record - add the users role membership
 
             if (!identityExists(con, principalName)) {
-                insertUser(con, principalName, displayName, employeeId, email, symbolicID, password, version);
+                insertUser(con, principalName, displayName, employeeId, email, symbolicID, password, version, Integer.valueOf(status));
             }
             // check if this user already has a role membership
             if (!StringUtils.isBlank(role)) {

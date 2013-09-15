@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.idm.srvc.synch.dto.SynchConfig;
 import org.openiam.idm.srvc.synch.service.MatchObjectRule;
-import org.openiam.idm.srvc.synch.service.SourceAdapter;
 import org.openiam.script.ScriptFactory;
 import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
@@ -38,7 +37,10 @@ public class MatchRuleFactory implements  ApplicationContextAware {
 		}
 		try {
 			se = ScriptFactory.createModule(scriptEngine); 
-			return (MatchObjectRule)se.instantiateClass(null, matchRule);
+			MatchObjectRule scriptRule =  (MatchObjectRule)se.instantiateClass(null, matchRule);
+
+            scriptRule.setApplicationContext(ac);
+            return scriptRule;
 		}catch(Exception e) {
 			log.error(e);
 			e.printStackTrace();

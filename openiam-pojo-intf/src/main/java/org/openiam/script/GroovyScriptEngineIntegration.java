@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -85,7 +84,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
 
     @Override
     public Object instantiateClass(BindingModel bindingModel, String scriptName) throws IOException {
-        log.info("instantiateClass called.");
+
 
         GroovyClassLoader gcl = new GroovyClassLoader();
         try {
@@ -100,7 +99,7 @@ public class GroovyScriptEngineIntegration implements ScriptIntegration {
                         Field field = cl.getField(key);
                         field.set(instance, bindingMap.get(key));
                     } catch (Exception e) {
-                        log.info("Ignoring field " + key + " in script " + scriptName + ", error: " + e.toString());
+                        //log.info("Ignoring field " + key + " in script " + scriptName + ", error: " + e.toString());
                     }
                 }
             }

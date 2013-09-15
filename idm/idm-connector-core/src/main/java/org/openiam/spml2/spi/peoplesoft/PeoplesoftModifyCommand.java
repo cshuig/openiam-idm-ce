@@ -31,6 +31,7 @@ public class PeoplesoftModifyCommand extends  AbstractPeoplesoftCommand implemen
         String employeeId = null ;
         String symbolicID;
         String password = null;
+        String status = null;
 
         final PSOIdentifierType psoID = reqType.getPsoID();
         final String principalName = psoID.getID();
@@ -74,6 +75,14 @@ public class PeoplesoftModifyCommand extends  AbstractPeoplesoftCommand implemen
                                     if(StringUtils.equalsIgnoreCase("employeeId",  att.getName())) {
                                         employeeId = att.getValue();
                                     }
+                                    if(StringUtils.equalsIgnoreCase("status",  att.getName())) {
+                                        status = att.getValue();
+                                        if (status == null) {
+                                            status = "0";
+
+                                        }
+                                    }
+
 
 
 
@@ -87,7 +96,7 @@ public class PeoplesoftModifyCommand extends  AbstractPeoplesoftCommand implemen
                 int version = (getVersion(con) + 1);
 
                 if (identityExists(con, principalName)) {
-                    updateUser(con, principalName, displayName, email);
+                    updateUser(con, principalName, displayName, email, Integer.valueOf(status));
                 }
 
                 if (!StringUtils.isBlank(role)) {
