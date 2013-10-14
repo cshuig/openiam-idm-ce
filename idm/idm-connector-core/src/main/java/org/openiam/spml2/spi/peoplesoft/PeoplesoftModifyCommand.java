@@ -34,7 +34,7 @@ public class PeoplesoftModifyCommand extends  AbstractPeoplesoftCommand implemen
         String status = null;
 
         final PSOIdentifierType psoID = reqType.getPsoID();
-        final String principalName = psoID.getID();
+        String principalName = psoID.getID();
         final String targetID = psoID.getTargetID();
         final ManagedSys managedSys = managedSysService.getManagedSys(targetID);
 
@@ -43,6 +43,11 @@ public class PeoplesoftModifyCommand extends  AbstractPeoplesoftCommand implemen
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.INVALID_CONFIGURATION, String.format("No Managed System with target id: %s", targetID));
             return response;
         }
+
+        if (principalName != null) {
+            principalName = principalName.toUpperCase();
+        }
+
         final List<ModificationType> modTypeList = reqType.getModification();
 
 

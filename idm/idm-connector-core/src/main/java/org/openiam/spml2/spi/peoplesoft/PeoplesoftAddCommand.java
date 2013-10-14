@@ -59,11 +59,12 @@ public class PeoplesoftAddCommand extends  AbstractPeoplesoftCommand implements 
             return response;
         }
 
-        final String principalName = reqType.getPsoID().getID();
+        String principalName = reqType.getPsoID().getID();
         if(principalName == null) {
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.INVALID_CONFIGURATION, "No principal sent");
             return response;
         }
+        principalName = principalName.toUpperCase();
 
         final List<ExtensibleObject> objectList = reqType.getData().getAny();
 
