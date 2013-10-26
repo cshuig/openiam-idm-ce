@@ -102,6 +102,43 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         return validateConnection.testConnection(managedSysId, muleContext);
     }
 
+
+    private boolean isValidIdentityObjects(ProvisionUser user) {
+        // check if we have any malformed identity objects
+        List<Login> submittedIdentityList = user.getPrincipalList();
+
+        if (submittedIdentityList != null && !submittedIdentityList.isEmpty()) {
+
+            for (Login submittedId : submittedIdentityList) {
+
+                if (submittedId != null && submittedId.getId() != null) {
+                    LoginId subLoginID = submittedId.getId();
+                    if (subLoginID != null) {
+                        if ( subLoginID.getLogin() == null || subLoginID.getLogin().isEmpty()) {
+                            return false;
+                        }
+
+                        String loginVal = subLoginID.getLogin();
+                        if (loginVal != null) {
+                            if (subLoginID.getDomainId() == null || subLoginID.getDomainId().isEmpty()) {
+                                return false;
+                            }
+                            if (subLoginID.getManagedSysId() == null || subLoginID.getManagedSysId().isEmpty()) {
+                                return false;
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
+            }
+    }
+        return true;
+    }
+
     /*
       * (non-Javadoc)
       *
@@ -159,10 +196,22 @@ public class DefaultProvisioningService extends AbstractProvisioningService
             return resp;
         }
 
+        // validation checks
         if (user.getStatus() == null) {
             resp.setStatus(ResponseStatus.FAILURE);
             resp.setErrorCode(ResponseCode.MISSING_REQUIRED_ATTRIBUTE);
             return resp;
+        }
+
+        if (user.getPrincipalList() != null) {
+
+            // check if we have any malformed identity objects
+            if (! isValidIdentityObjects(user) ) {
+                resp.setStatus(ResponseStatus.FAILURE);
+                resp.setErrorCode(ResponseCode.MISSING_REQUIRED_ATTRIBUTE);
+                return resp;
+            }
+
         }
 
         // make sure that our object as the attribute set that will be used for
