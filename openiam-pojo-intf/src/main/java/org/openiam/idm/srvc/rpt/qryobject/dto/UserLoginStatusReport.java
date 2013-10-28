@@ -52,7 +52,7 @@ import java.util.Date;
         "supervisorLastName"
 })
 @XmlRootElement(name = "UserLoginStatusReport")
-public class UserLoginStatusReport {
+public class UserLoginStatusReport  implements java.io.Serializable {
 
     private String userId;
     private String firstName;

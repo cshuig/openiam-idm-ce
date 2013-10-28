@@ -75,6 +75,14 @@
                                         <tr><td colspan="4">No reports</td></tr>
                                    </c:otherwise>
                                    </c:choose>
+
+                                    <!-- HTML reports - integrate correctly in v3 using BIRt  -->
+
+                                    <tr>
+                                        <td><a href="<%=request.getContextPath()%>/itPolicyReport.cnt">IT Policy Report</a></td>
+                                    </tr>
+
+
                                     <tr><td colspan="4" align="left"><input type="submit" name="add_btn" value="New"></td></tr>
                                 </table>
                             </fieldset>
