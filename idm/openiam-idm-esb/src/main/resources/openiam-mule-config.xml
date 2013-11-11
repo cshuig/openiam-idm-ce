@@ -360,4 +360,18 @@
         </service>
     </model>
 
+
+    <model name="courseManagementServiceModel">
+        <service name="courseManagementService">
+            <inbound>
+                <inbound-endpoint address="${webservice.path}CourseManagementWebService" 		exchange-pattern="request-response">
+                    <cxf:jaxws-service />
+                </inbound-endpoint>
+            </inbound>
+            <component>
+                <spring-object bean="courseWS" />
+            </component>
+        </service>
+    </model>
+
 </mule>

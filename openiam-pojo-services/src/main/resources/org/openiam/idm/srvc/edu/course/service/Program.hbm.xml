@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "classpath://hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+    <class name="org.openiam.idm.srvc.edu.course.dto.Program" table="PROGRAM" >
+        <comment></comment>
+        <id name="id" type="string">
+            <column name="PROGRAM_ID" length="32" />
+            <generator class="uuid" />
+        </id>
+
+        <property name="status" type="string">
+            <column name="STATUS" length="20" >
+                <comment></comment>
+            </column>
+        </property>
+        <property name="name" type="string">
+            <column name="NAME" length="60" >
+                <comment></comment>
+            </column>
+        </property>
+
+
+    </class>
+</hibernate-mapping>
