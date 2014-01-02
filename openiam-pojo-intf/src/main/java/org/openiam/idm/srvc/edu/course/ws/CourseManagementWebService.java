@@ -1,8 +1,6 @@
 package org.openiam.idm.srvc.edu.course.ws;
 
-import org.openiam.idm.srvc.edu.course.dto.Program;
-import org.openiam.idm.srvc.edu.course.dto.ProgramListResponse;
-import org.openiam.idm.srvc.edu.course.dto.ProgramResponse;
+import org.openiam.idm.srvc.edu.course.dto.*;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -34,5 +32,25 @@ public interface CourseManagementWebService {
             @WebParam(name = "program", targetNamespace = "")
             Program program);
 
+
+    @WebMethod
+    public CourseResponse addCourse(
+            @WebParam(name = "course", targetNamespace = "")
+            Course course);
+
+    @WebMethod
+    public CourseResponse updateCourse(
+            @WebParam(name = "course", targetNamespace = "")
+            Course course);
+
+    @WebMethod
+    public void removeCourse(
+            @WebParam(name = "courseId", targetNamespace = "")
+            String courseId);
+
+    @WebMethod
+    public CourseSearchResponse searchCourses(
+            @WebParam(name = "search", targetNamespace = "")
+            CourseSearch search);
 
 }

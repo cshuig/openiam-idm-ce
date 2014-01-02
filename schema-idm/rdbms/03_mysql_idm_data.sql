@@ -18,6 +18,10 @@ insert into LANGUAGE (LANGUAGE_CD, LANGUAGE) VALUES ('pt','Portugese');
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION) values('OrgOpenIAM','OpenIAM');
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('divisionType','Division', 0);
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('departmentType','Department', 0);
+insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('subsidiaryType','Subsidiary', 0);
+
+
+
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('MANAGED_SYS','Managed System', 0);
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('SYS_ACTION','System Actions', 0);
 insert into METADATA_TYPE(TYPE_ID, DESCRIPTION, SYNC_MANAGED_SYS) values('WORKFLOW','Workflow', 0);
@@ -72,7 +76,7 @@ insert into METADATA_ELEMENT(metadata_id, type_id, attribute_name) values ('430'
 
 insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ORG_TYPE', 'ROOT', 'ORGANIZATION Type',0);
 insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('GROUP_TYPE', 'ROOT', 'Group Type',0);
-insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ROLE_TYPE', 'ROOT', 'Group Type',0);
+insert into CATEGORY (category_id, parent_id, category_name, show_list) values ('ROLE_TYPE', 'ROOT', 'Role Type',0);
 
 insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','divisionType');
 insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','departmentType');

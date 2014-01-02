@@ -1,6 +1,9 @@
 package org.openiam.idm.srvc.edu.course.service;
 
 
+import org.openiam.idm.srvc.edu.course.dto.Course;
+import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
+import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.dto.Program;
 
 import java.util.List;
@@ -8,6 +11,7 @@ import java.util.List;
 public class CourseManagementServiceImpl implements CourseManagementService {
 
     protected ProgramDAO programDao;
+    protected CourseDAO courseDao;
 
 
     @Override
@@ -19,7 +23,11 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     @Override
     public void removeProgram(String programId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Program prg = programDao.findById(programId);
+        if (prg != null) {
+
+            programDao.remove(prg);
+        }
     }
 
     @Override
@@ -31,7 +39,38 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     @Override
     public Program updateProgram(Program program) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Program prg = programDao.update(program);
+        return prg;
+
+    }
+
+
+    @Override
+    public Course addCourse(Course course) {
+       Course cr = courseDao.add(course);
+        return cr;
+
+    }
+
+    @Override
+    public Course updateCourse(Course course) {
+        Course cr = courseDao.update(course);
+        return cr;
+    }
+
+    @Override
+    public void removeCourse(String courseId) {
+        Course c = courseDao.findById(courseId);
+        if (c != null) {
+
+            courseDao.remove(c);
+        }
+
+    }
+
+    @Override
+    public List<CourseSearchResult> searchCourses(CourseSearch search) {
+        return courseDao.searchCourses(search);
     }
 
     public ProgramDAO getProgramDao() {
@@ -40,5 +79,13 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     public void setProgramDao(ProgramDAO programDao) {
         this.programDao = programDao;
+    }
+
+    public CourseDAO getCourseDao() {
+        return courseDao;
+    }
+
+    public void setCourseDao(CourseDAO courseDao) {
+        this.courseDao = courseDao;
     }
 }

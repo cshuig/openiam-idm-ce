@@ -1778,52 +1778,78 @@ public class User extends org.openiam.base.BaseObject {
 		return result;
 	}
 
-	@Override
-	public String toString() {
-		return "User{" + "userId='" + userId + '\'' + ", birthdate="
-				+ birthdate + ", companyId='" + companyId + '\''
-				+ ", companyOwnerId='" + companyOwnerId + '\''
-				+ ", createDate=" + createDate + ", createdBy='" + createdBy
-				+ '\'' + ", deptCd='" + deptCd + '\'' + ", deptName='"
-				+ deptName + '\'' + ", employeeId='" + employeeId + '\''
-				+ ", employeeType='" + employeeType + '\'' + ", firstName='"
-				+ firstName + '\'' + ", jobCode='" + jobCode + '\''
-				+ ", lastName='" + lastName + '\'' + ", lastUpdate="
-				+ lastUpdate + ", lastUpdatedBy='" + lastUpdatedBy + '\''
-				+ ", locationCd='" + locationCd + '\'' + ", locationName='"
-				+ locationName + '\'' + ", managerId='" + managerId + '\''
-				+ ", metadataTypeId='" + metadataTypeId + '\''
-				+ ", classification='" + classification + '\''
-				+ ", middleInit='" + middleInit + '\'' + ", prefix='" + prefix
-				+ '\'' + ", sex='" + sex + '\'' + ", status=" + status
-				+ ", secondaryStatus=" + secondaryStatus + ", suffix='"
-				+ suffix + '\'' + ", title='" + title + '\''
-				+ ", userTypeInd='" + userTypeInd + '\'' + ", division='"
-				+ division + '\'' + ", mailCode='" + mailCode + '\''
-				+ ", costCenter='" + costCenter + '\'' + ", startDate="
-				+ startDate + ", lastDate=" + lastDate + ", nickname='"
-				+ nickname + '\'' + ", maidenName='" + maidenName + '\''
-				+ ", passwordTheme='" + passwordTheme + '\'' + ", country='"
-				+ country + '\'' + ", bldgNum='" + bldgNum + '\''
-				+ ", streetDirection='" + streetDirection + '\'' + ", suite='"
-				+ suite + '\'' + ", address1='" + address1 + '\''
-				+ ", address2='" + address2 + '\'' + ", address3='" + address3
-				+ '\'' + ", address4='" + address4 + '\'' + ", address5='"
-				+ address5 + '\'' + ", address6='" + address6 + '\''
-				+ ", address7='" + address7 + '\'' + ", city='" + city + '\''
-				+ ", state='" + state + '\'' + ", postalCd='" + postalCd + '\''
-				+ ", email='" + email + '\'' + ", areaCd='" + areaCd + '\''
-				+ ", countryCd='" + countryCd + '\'' + ", phoneNbr='"
-				+ phoneNbr + '\'' + ", phoneExt='" + phoneExt + '\''
-				+ ", showInSearch=" + showInSearch + ", delAdmin=" + delAdmin
-				+ ", principalList=" + principalList + ", supervisor="
-				+ supervisor + ", alternateContactId='" + alternateContactId
-				+ '\'' + ", securityDomain='" + securityDomain + '\''
-				+ ", userOwnerId='" + userOwnerId + '\''
-				+ ", datePasswordChanged=" + datePasswordChanged
-				+ ", dateChallengeRespChanged=" + dateChallengeRespChanged
-				+ ", userNotes=" + userNotes + ", userAttributes="
-				+ userAttributes + ", addresses=" + addresses + ", phones="
-				+ phones + ", emailAddresses=" + emailAddresses + '}';
-	}
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", birthdate=" + birthdate +
+                ", companyId='" + companyId + '\'' +
+                ", companyOwnerId='" + companyOwnerId + '\'' +
+                ", createDate=" + createDate +
+                ", createdBy='" + createdBy + '\'' +
+                ", deptCd='" + deptCd + '\'' +
+                ", deptName='" + deptName + '\'' +
+                ", employeeId='" + employeeId + '\'' +
+                ", employeeType='" + employeeType + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", jobCode='" + jobCode + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", lastUpdate=" + lastUpdate +
+                ", lastUpdatedBy='" + lastUpdatedBy + '\'' +
+                ", locationCd='" + locationCd + '\'' +
+                ", locationName='" + locationName + '\'' +
+                ", managerId='" + managerId + '\'' +
+                ", metadataTypeId='" + metadataTypeId + '\'' +
+                ", classification='" + classification + '\'' +
+                ", middleInit='" + middleInit + '\'' +
+                ", prefix='" + prefix + '\'' +
+                ", sex='" + sex + '\'' +
+                ", status=" + status +
+                ", secondaryStatus=" + secondaryStatus +
+                ", suffix='" + suffix + '\'' +
+                ", title='" + title + '\'' +
+                ", userTypeInd='" + userTypeInd + '\'' +
+                ", division='" + division + '\'' +
+                ", mailCode='" + mailCode + '\'' +
+                ", costCenter='" + costCenter + '\'' +
+                ", startDate=" + startDate +
+                ", lastDate=" + lastDate +
+                ", nickname='" + nickname + '\'' +
+                ", maidenName='" + maidenName + '\'' +
+                ", passwordTheme='" + passwordTheme + '\'' +
+                ", country='" + country + '\'' +
+                ", bldgNum='" + bldgNum + '\'' +
+                ", streetDirection='" + streetDirection + '\'' +
+                ", suite='" + suite + '\'' +
+                ", address1='" + address1 + '\'' +
+                ", address2='" + address2 + '\'' +
+                ", address3='" + address3 + '\'' +
+                ", address4='" + address4 + '\'' +
+                ", address5='" + address5 + '\'' +
+                ", address6='" + address6 + '\'' +
+                ", address7='" + address7 + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", postalCd='" + postalCd + '\'' +
+                ", email='" + email + '\'' +
+                ", areaCd='" + areaCd + '\'' +
+                ", countryCd='" + countryCd + '\'' +
+                ", phoneNbr='" + phoneNbr + '\'' +
+                ", phoneExt='" + phoneExt + '\'' +
+                ", showInSearch=" + showInSearch +
+                ", delAdmin=" + delAdmin +
+                ", principalList=" + principalList +
+                ", supervisor=" + supervisor +
+                ", alternateContactId='" + alternateContactId + '\'' +
+                ", securityDomain='" + securityDomain + '\'' +
+                ", userOwnerId='" + userOwnerId + '\'' +
+                ", datePasswordChanged=" + datePasswordChanged +
+                ", dateChallengeRespChanged=" + dateChallengeRespChanged +
+                ", userNotes=" + userNotes +
+                ", userAttributes=" + userAttributes +
+                ", addresses=" + addresses +
+                ", phones=" + phones +
+                ", emailAddresses=" + emailAddresses +
+                '}';
+    }
 }

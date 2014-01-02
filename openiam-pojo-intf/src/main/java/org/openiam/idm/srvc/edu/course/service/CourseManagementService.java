@@ -1,6 +1,9 @@
 package org.openiam.idm.srvc.edu.course.service;
 
 
+import org.openiam.idm.srvc.edu.course.dto.Course;
+import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
+import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.dto.Program;
 
 import java.util.List;
@@ -22,5 +25,10 @@ public interface CourseManagementService {
 
     public Program updateProgram(Program program);
 
+    public Course addCourse(Course course);
+    public Course updateCourse(Course course);
+    public void removeCourse(String courseId);
+
+    public List<CourseSearchResult> searchCourses(CourseSearch search);
 
 }

@@ -30,7 +30,6 @@ import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.role.dto.Role;
 import org.openiam.idm.srvc.user.domain.ReconcileUserEntity;
 import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.res.dto.Resource;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -609,27 +608,30 @@ public class ProvisionUser extends org.openiam.idm.srvc.user.dto.User {
 		this.notifyTargetSystems = notifyTargetSystems;
 	}
 
-	@Override
-	public String toString() {
-		return "ProvisionUser{" + "memberOfGroups=" + memberOfGroups
-				+ ", memberOfRoles=" + memberOfRoles + ", userAffiliations="
-				+ userAffiliations + ", userResourceList=" + userResourceList
-				+ ", provisionModel=" + provisionModel
-				+ ", emailCredentialsToNewUsers=" + emailCredentialsToNewUsers
-				+ ", emailCredentialsToSupervisor="
-				+ emailCredentialsToSupervisor
-				+ ", addInitialPasswordToHistory="
-				+ addInitialPasswordToHistory + ", provisionOnStartDate="
-				+ provisionOnStartDate + ", requestId='" + requestId + '\''
-				+ ", sessionId='" + sessionId + '\'' + ", skipPreprocessor="
-				+ skipPreprocessor + ", skipPostProcessor=" + skipPostProcessor
-				+ ", srcSystemId='" + srcSystemId + '\''
-				+ ", notifyTargetSystems=" + notifyTargetSystems
-				+ ", passwordPolicy=" + passwordPolicy + ", password='"
-				+ password + '\'' + '}';
-	}
+    @Override
+    public String toString() {
+        return  super.toString() +   " ----> ProvisionUser{" +
+                "memberOfGroups=" + memberOfGroups +
+                ", memberOfRoles=" + memberOfRoles +
+                ", userAffiliations=" + userAffiliations +
+                ", userResourceList=" + userResourceList +
+                ", provisionModel=" + provisionModel +
+                ", emailCredentialsToNewUsers=" + emailCredentialsToNewUsers +
+                ", emailCredentialsToSupervisor=" + emailCredentialsToSupervisor +
+                ", addInitialPasswordToHistory=" + addInitialPasswordToHistory +
+                ", provisionOnStartDate=" + provisionOnStartDate +
+                ", requestId='" + requestId + '\'' +
+                ", sessionId='" + sessionId + '\'' +
+                ", skipPreprocessor=" + skipPreprocessor +
+                ", skipPostProcessor=" + skipPostProcessor +
+                ", srcSystemId='" + srcSystemId + '\'' +
+                ", notifyTargetSystems=" + notifyTargetSystems +
+                ", passwordPolicy=" + passwordPolicy +
+                ", password='" + password + '\'' +
+                '}';
+    }
 
-	public boolean isEmailCredentialsToNewUsers() {
+    public boolean isEmailCredentialsToNewUsers() {
 		return emailCredentialsToNewUsers;
 	}
 

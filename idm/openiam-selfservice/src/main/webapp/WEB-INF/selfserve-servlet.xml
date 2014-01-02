@@ -66,6 +66,7 @@
 		<property name="rightMenuGroup1" value="ACCESSCENTER" />
 		<property name="rightMenuGroup2" value="SELFCENTER" />
 		<property name="rightMenuGroup3" value="REPORTCENTER" />
+         <property name="eduMenuGroup" value="COURSECENTER" />
 		
 		<property name="userMgr" ref="userServiceClient" />
 		<property name="roleDataService" ref="roleServiceClient" />
@@ -810,10 +811,63 @@
 
     </bean>
 
+    <!-- Course Management  -->
+    <bean id="selectCourses" class="org.openiam.selfsrvc.edu.common.course.SelectCoursesController">
+        <property name="commandName" value="courseSelCmd" />
+        <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.SelectCoursesCommand" />
+        <property name="formView" value="/priv/edu/common/course/courselist" />
+        <property name="successView" value="/priv/edu/common/course/courselist" />
+
+        <!-- property name="redirectView" value="courseDetail.selfserve" / -->
+
+        <property name="orgManager" ref="orgServiceClient" />
+        <property name="courseManager" ref="courseServiceClient" />
+
+    </bean>
+
+    <bean id="courseDetail" class="org.openiam.selfsrvc.edu.common.course.CourseDetailController">
+        <property name="commandName" value="courseDetailCmd" />
+        <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.CourseDetailCommand" />
+        <property name="formView" value="/priv/edu/common/course/coursedetail" />
+        <property name="successView" value="/pub/confirm" />
+    </bean>
+
+    <bean id="programs" class="org.openiam.selfsrvc.edu.common.course.ProgramsController">
+        <property name="commandName" value="programCmd" />
+        <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.ProgramsCommand" />
+        <property name="formView" value="/priv/edu/common/course/programlist" />
+        <property name="successView" value="/priv/edu/common/course/programlist" />
+
+        <property name="orgManager" ref="orgServiceClient" />
+        <property name="courseManager" ref="courseServiceClient" />
+
+    </bean>
+
+    <bean id="terms" class="org.openiam.selfsrvc.edu.common.course.TermController">
+        <property name="commandName" value="termCmd" />
+        <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.TermCommand" />
+        <property name="formView" value="/priv/edu/common/course/termlist" />
+        <property name="successView" value="/priv/edu/common/course/termlist" />
+
+        <property name="orgManager" ref="orgServiceClient" />
+        <property name="courseManager" ref="courseServiceClient" />
+
+    </bean>
+
+    <bean id="groupContainer" class="org.openiam.selfsrvc.edu.common.course.GroupContainerController">
+        <property name="commandName" value="groupCmd" />
+        <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.GroupContainerCommand" />
+        <property name="formView" value="/priv/edu/common/course/groupcontainer" />
+        <property name="successView" value="/priv/edu/common/course/groupcontainer" />
+
+        <property name="orgManager" ref="orgServiceClient" />
+        <property name="courseManager" ref="courseServiceClient" />
+
+    </bean>
 
 
 
-     <bean id="viewResolver"  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <bean id="viewResolver"  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
      	<property name="prefix" value="/home.jsp?bodyjsp=" />
      	<property name="suffix" value=".jsp" />
      </bean>
@@ -871,6 +925,12 @@
 				<prop key="/reportList.selfserve">viewReportController</prop>
 				<!-- prop key="/viewReport.selfserve">viewReportController</prop> -->
                 <prop key="/myexample.selfserve">myexample</prop>
+
+                <prop key="/courseManagement.selfserve">selectCourses</prop>
+                <prop key="/courseDetail.selfserve">courseDetail</prop>
+                <prop key="/programs.selfserve">programs</prop>
+                <prop key="/terms.selfserve">terms</prop>
+                <prop key="/groupcontainer.selfserve">groupContainer</prop>
                 
             </props>
         </property>

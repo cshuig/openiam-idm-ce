@@ -1,30 +1,20 @@
 package org.openiam.selfsrvc.login;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openiam.base.ExtendController;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.auth.dto.Login;
-import org.openiam.idm.srvc.auth.login.LoginDataService;
+import org.openiam.idm.srvc.auth.dto.Subject;
 import org.openiam.idm.srvc.auth.service.AuthenticationConstants;
 import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
-
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.grp.ws.GroupDataWebService;
 import org.openiam.idm.srvc.menu.dto.Menu;
 import org.openiam.idm.srvc.menu.ws.NavigatorDataWebService;
-import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.org.dto.Organization;
+import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.policy.dto.PolicyAttribute;
 import org.openiam.idm.srvc.prov.request.dto.ProvisionRequest;
@@ -40,7 +30,6 @@ import org.openiam.idm.srvc.user.dto.Supervisor;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserAttribute;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
-import org.openiam.idm.srvc.auth.dto.Subject;
 import org.openiam.script.ScriptIntegration;
 import org.openiam.selfsrvc.AppConfiguration;
 import org.openiam.selfsrvc.helper.ScriptEngineUtil;
@@ -51,9 +40,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LoginController extends SimpleFormController {
 
@@ -77,6 +71,7 @@ public class LoginController extends SimpleFormController {
 	 String rightMenuGroup1;
 	 String rightMenuGroup2;
 	 String rightMenuGroup3;
+    String eduMenuGroup;
 	 
 	 protected UserDataWebService userMgr;
 	 protected GroupDataWebService groupManager;
@@ -187,7 +182,11 @@ public class LoginController extends SimpleFormController {
 
 		session.setAttribute("privateRightMenuGroup3",
 				navigationDataService.menuGroupSelectedByUser(rightMenuGroup3,userId, appConfiguration.getDefaultLang()).getMenuList());
-		
+
+        session.setAttribute("privateEduMenu",
+                navigationDataService.menuGroupSelectedByUser(eduMenuGroup,userId, appConfiguration.getDefaultLang()).getMenuList());
+
+
 		// load information to put on to the welcome screen
 		User usr = userMgr.getUserWithDependent(userId, true).getUser();
 
@@ -581,5 +580,13 @@ public class LoginController extends SimpleFormController {
 
     public void setExtendController(String extendController) {
         this.extendController = extendController;
+    }
+
+    public String getEduMenuGroup() {
+        return eduMenuGroup;
+    }
+
+    public void setEduMenuGroup(String eduMenuGroup) {
+        this.eduMenuGroup = eduMenuGroup;
     }
 }

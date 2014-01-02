@@ -31,8 +31,9 @@ System.out.println("menubar.jsp");
 
   List<Menu> privRightMenuList1 = (List<Menu>)session.getAttribute("privateRightMenuGroup1");
   List<Menu> privRightMenuList2 = (List<Menu>)session.getAttribute("privateRightMenuGroup2");
-    List<Resource> resourceList = (List<Resource>)session.getAttribute("appResources");
-  
+    List<Menu> privEduList = (List<Menu>)session.getAttribute("privateEduMenu");
+
+
   String queryString = null;
 
   if (userId != null) {
@@ -125,34 +126,42 @@ System.out.println("menubar.jsp");
 	%>
 
             <%
-                if (userId != null && resourceList != null ) {
+                if (userId != null && privEduList != null ) {
             %>
             <div class="head">
-                Enterprise Applications
+                Course Management Center
             </div>
             <ul class="menu">
 
                 <%
-                    for (Resource r: resourceList) {
-                            String url = r.getResourceProperty("URL").getPropValue();
-
+                    for (Menu m: privEduList) {
+                        if (m.getSelected()) {
+                            String url = m.getUrl();
                             if (url != null) {
                                 if (url.indexOf("?") == -1) {
-                                    url = url + "?" + queryString ;
+                                    url = url + "?" + queryString + "&menuid=" + m.getId().getMenuId() + "&l=p";
                                 } else {
-                                    url = url + "&"  + queryString ;
+                                    url = url + "&"  + queryString + "&menuid=" + m.getId().getMenuId() + "&l=p";
                                 }
+                                url = url.replace("{SELFSERVICE}", selfserviceContext);
+                                url = url.replace("{SELFSERVICE_EXT}", selfserviceExtContext);
                             }
-
                 %>
 
-                <li><a href="<%= request.getContextPath() %>/<%=url %>"><%=r.getName() %></a></li>
+                <li><a href="<%=url %>"><%=m.getMenuName() %></a></li>
 
                 <%
                 }
                 }
                 %>
             </ul>
+            <%
+                }
+
+            %>
+
+
+
             <%
                 }
             %>

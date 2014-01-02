@@ -160,6 +160,11 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         // flag to determine if we should provision this user in target systems
         boolean provInTargetSystemNow = true;
 
+        // log the incoming request
+        log.debug("-------- Incoming add user request");
+        log.debug("User: --> " + user.toString());
+        log.debug("----------------------------------");
+
         // determine if we provision now or in the future
         // if its in the future then we wont put the user in the target systems
         provInTargetSystemNow = provisionUserNow(user);
@@ -552,8 +557,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                             }
 
 
-                            log.debug("Creating identity in openiam repository:"
-                                    + resLogin.getId());
+                            log.debug("-- Calling connectors to create identity in the target systems:"  + resLogin.getId());
 
                             // validate if the identity exists in the system first
 
@@ -562,17 +566,53 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
                             // only put the identity into the openiam repository if
                             // we successfully created the identity
+                            log.debug("-- Connector success: " + connectorSuccess);
+
                             if (connectorSuccess) {
 
+
                                 if (!mngSysIdentityExists) {
+
+                                    log.debug("-- Identity does not exist. Adding Identity to OpenIAM Login table  " + resLogin.getId());
+
                                     loginManager.addLogin(resLogin);
 
                                 } else {
-                                    log.debug("Skipping the creation of identity in openiam repository. Identity already exists"
+                                    log.debug("-- Skipping the creation of identity in openiam repository. Identity already exists"
                                             + resLogin.getId());
                                 }
 
                             }
+
+                            // add the identity - remote connect has an issue and identity is not always created.
+                            /*if (connector.getConnectorInterface() != null &&
+                                    connector.getConnectorInterface().equalsIgnoreCase("REMOTE")) {
+
+                                log.debug("-- Entering the remote connector hack  " );
+
+                                // look up the identity
+                                try {
+
+
+                                    Login tLogin =  loginManager.getLogin(resLogin.getId().getDomainId(), resLogin.getId().getLogin());
+
+                                    log.debug("-- Looking  the login id   " );
+
+                                    if (tLogin == null) {
+
+                                        log.debug("-- ID was not found. Adding it to the login table.   " );
+
+                                        loginManager.addLogin(resLogin);
+                                    }
+
+                                }catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            }*/
+
+
 
                             // post processing
                             String postProcessScript = getResProperty(

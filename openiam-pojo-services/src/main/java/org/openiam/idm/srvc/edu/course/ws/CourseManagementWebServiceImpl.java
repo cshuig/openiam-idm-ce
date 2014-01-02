@@ -1,10 +1,9 @@
 package org.openiam.idm.srvc.edu.course.ws;
 
 import org.openiam.base.ws.ResponseStatus;
-import org.openiam.idm.srvc.edu.course.dto.Program;
-import org.openiam.idm.srvc.edu.course.dto.ProgramListResponse;
-import org.openiam.idm.srvc.edu.course.dto.ProgramResponse;
+import org.openiam.idm.srvc.edu.course.dto.*;
 import org.openiam.idm.srvc.edu.course.service.CourseManagementService;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -21,7 +20,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     private CourseManagementService courseService;
 
 
-    @Override
+    @Transactional(readOnly = true)
     public ProgramListResponse getAllPrograms() {
         ProgramListResponse resp = new ProgramListResponse();
         resp.setStatus(ResponseStatus.FAILURE);
@@ -37,12 +36,13 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
         return resp;
     }
 
-    @Override
+    @Transactional
     public void removeProgram(@WebParam(name = "programId", targetNamespace = "") String programId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        courseService.removeProgram(programId);
     }
 
-    @Override
+    @Transactional
     public ProgramResponse addProgram(@WebParam(name = "program", targetNamespace = "") Program program) {
         ProgramResponse resp = new ProgramResponse();
         resp.setStatus(ResponseStatus.FAILURE);
@@ -56,9 +56,73 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
         return resp;
     }
 
-    @Override
+    @Transactional
     public ProgramResponse updateProgram(@WebParam(name = "program", targetNamespace = "") Program program) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ProgramResponse resp = new ProgramResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        Program prg = courseService.updateProgram(program);
+        if (prg != null && prg.getId() != null) {
+            resp.setProgram(  prg);
+            resp.setStatus(ResponseStatus.SUCCESS);
+        }
+
+        return resp;
+
+    }
+
+    @Override
+    public CourseResponse addCourse(@WebParam(name = "course", targetNamespace = "") Course course) {
+        CourseResponse resp = new CourseResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        Course c =  courseService.addCourse(course);
+        if (c != null && c.getId() != null ) {
+            resp.setCourse(c);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+
+    }
+
+    @Override
+    public CourseResponse updateCourse(@WebParam(name = "course", targetNamespace = "") Course course) {
+        CourseResponse resp = new CourseResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        Course c =  courseService.updateCourse(course);
+        if (c != null && c.getId() != null ) {
+            resp.setCourse(c);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+
+    }
+
+    @Override
+    public void removeCourse(@WebParam(name = "courseId", targetNamespace = "") String courseId) {
+
+        courseService.removeCourse(courseId);
+
+    }
+
+    @Override
+    public CourseSearchResponse searchCourses(@WebParam(name = "search", targetNamespace = "")
+                                                CourseSearch search) {
+
+        CourseSearchResponse resp = new CourseSearchResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        List<CourseSearchResult> courseList =  courseService.searchCourses(search);
+        if (courseList != null && !courseList.isEmpty()) {
+            resp.setCourseList(courseList);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+
     }
 
     public CourseManagementService getCourseService() {

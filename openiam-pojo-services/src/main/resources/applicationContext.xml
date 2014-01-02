@@ -682,11 +682,17 @@
     <bean id="courseDataService"
           class="org.openiam.idm.srvc.edu.course.service.CourseManagementServiceImpl">
         <property name="programDao" ref="programDAO" />
+        <property name="courseDao" ref="courseDAO" />
     </bean>
 
     <bean id="programDAO" class="org.openiam.idm.srvc.edu.course.service.ProgramDAOImpl">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
+    <bean id="courseDAO" class="org.openiam.idm.srvc.edu.course.service.CourseDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="dataSource"  ref="dataSource" />
+    </bean>
+
 
 
 	<!-- Batch related beans -->
@@ -819,6 +825,8 @@
 				</value>
 
                 <value>org/openiam/idm/srvc/edu/course/service/Program.hbm.xml</value>
+                <value>org/openiam/idm/srvc/edu/course/service/Course.hbm.xml</value>
+                <value>org/openiam/idm/srvc/edu/course/service/CourseAttribute.hbm.xml</value>
 
 
 			</list>
