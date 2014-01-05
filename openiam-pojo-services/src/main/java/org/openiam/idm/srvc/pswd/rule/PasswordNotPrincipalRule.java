@@ -40,7 +40,9 @@ public class PasswordNotPrincipalRule extends AbstractPasswordRule {
 				
 		PolicyAttribute attribute = policy.getAttribute("PWD_LOGIN");
 		if (attribute.getValue1() != null && attribute.getValue1().length() > 0 ) {
-			enabled = Boolean.parseBoolean(attribute.getValue1());
+            if ("1".equalsIgnoreCase(attribute.getValue1())) {
+                enabled = true;
+            }
 
 		}
 		if (enabled) {
