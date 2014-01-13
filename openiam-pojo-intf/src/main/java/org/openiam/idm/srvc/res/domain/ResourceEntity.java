@@ -1,27 +1,17 @@
 package org.openiam.idm.srvc.res.domain;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.*;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.res.dto.Resource;
+
+import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "RES")
@@ -257,24 +247,10 @@ public class ResourceEntity {
 
     @Override
     public String toString() {
-        return "Resource{" +
+        return "ResourceEntity{" +
                 "resourceId='" + resourceId + '\'' +
-                ", resourceType=" + resourceType +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", branchId='" + branchId + '\'' +
-                ", categoryId='" + categoryId + '\'' +
-                ", displayOrder=" + displayOrder +
-                ", nodeLevel=" + nodeLevel +
-                ", sensitiveApp=" + sensitiveApp +
-                ", managedSysId='" + managedSysId + '\'' +
-                ", URL='" + URL + '\'' +
-                ", resOwnerUserId='" + resOwnerUserId + '\'' +
-                ", resOwnerGroupId='" + resOwnerGroupId + '\'' +
-                ", resourceRoles=" + resourceRoles +
                 ", resourceProps=" + resourceProps +
-                ", resourceGroups=" + resourceGroups +
-                ", entitlements=" + entitlements +
                 '}';
     }
 

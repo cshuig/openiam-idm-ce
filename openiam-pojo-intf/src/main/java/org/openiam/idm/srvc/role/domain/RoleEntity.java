@@ -1,23 +1,5 @@
 package org.openiam.idm.srvc.role.domain;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
@@ -27,6 +9,9 @@ import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.grp.domain.GroupEntity;
 import org.openiam.idm.srvc.role.dto.Role;
 import org.openiam.idm.srvc.role.dto.RoleConstant;
+
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name="ROLE")
@@ -315,4 +300,13 @@ public class RoleEntity implements Comparable<RoleEntity> {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "RoleEntity{" +
+                "roleId=" + roleId +
+                ", roleName='" + roleName + '\'' +
+                ", status='" + status + '\'' +
+                ", operation=" + operation +
+                '}';
+    }
 }

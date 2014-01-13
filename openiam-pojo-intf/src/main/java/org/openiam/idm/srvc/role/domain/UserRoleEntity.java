@@ -1,23 +1,11 @@
 package org.openiam.idm.srvc.role.domain;
 
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.res.domain.ResourceEntity;
-import org.openiam.idm.srvc.res.domain.ResourceRoleEntity;
-import org.openiam.idm.srvc.res.dto.ResourceRole;
 import org.openiam.idm.srvc.role.dto.UserRole;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="USER_ROLE")
@@ -139,4 +127,13 @@ public class UserRoleEntity {
         this.serviceId = serviceId;
     }
 
+    @Override
+    public String toString() {
+        return "UserRoleEntity{" +
+                "userRoleId='" + userRoleId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", serviceId='" + serviceId + '\'' +
+                ", roleId='" + roleId + '\'' +
+                '}';
+    }
 }

@@ -3,18 +3,14 @@ package org.openiam.idm.srvc.res.dto;
 // Generated Mar 8, 2009 12:54:32 PM by Hibernate Tools 3.2.2.GA
 
 import org.openiam.base.BaseObject;
+import org.openiam.dozer.DozerDTOCorrespondence;
+import org.openiam.idm.srvc.res.domain.ResourceEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import java.util.HashSet;
 import java.util.Set;
-import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.res.domain.ResourceEntity;
-import org.openiam.idm.srvc.res.domain.ResourceGroupEntity;
-import org.openiam.idm.srvc.res.domain.ResourcePrivilegeEntity;
-import org.openiam.idm.srvc.res.domain.ResourcePropEntity;
-import org.openiam.idm.srvc.res.domain.ResourceRoleEntity;
 
 /**
  * Resources are items that need to be managed or protected. These can be both logic and physical in nature.
@@ -244,22 +240,7 @@ public class Resource extends BaseObject implements java.io.Serializable {
                 "resourceId='" + resourceId + '\'' +
                 ", resourceType=" + resourceType +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", resourceParent='" + resourceParent + '\'' +
-                ", branchId='" + branchId + '\'' +
-                ", categoryId='" + categoryId + '\'' +
-                ", displayOrder=" + displayOrder +
-                ", nodeLevel=" + nodeLevel +
-                ", sensitiveApp=" + sensitiveApp +
-                ", managedSysId='" + managedSysId + '\'' +
-                ", URL='" + URL + '\'' +
-                ", resOwnerUserId='" + resOwnerUserId + '\'' +
-                ", resOwnerGroupId='" + resOwnerGroupId + '\'' +
                 ", resourceRoles=" + resourceRoles +
-                ", resourceProps=" + resourceProps +
-                ", childResources=" + childResources +
-                ", resourceGroups=" + resourceGroups +
-                ", entitlements=" + entitlements +
                 '}';
     }
 

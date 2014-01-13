@@ -1,12 +1,12 @@
 package org.openiam.idm.srvc.continfo.dto;
 
 import org.openiam.base.AttributeOperationEnum;
+import org.openiam.dozer.DozerDTOCorrespondence;
+import org.openiam.idm.srvc.continfo.domain.PhoneEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.continfo.domain.PhoneEntity;
 
 // Generated Jun 12, 2007 10:46:13 PM by Hibernate Tools 3.2.0.beta8
 
@@ -48,7 +48,7 @@ public class Phone implements java.io.Serializable {
 
     protected Integer isDefault = new Integer(0);
 
-    protected String parentType;
+    protected String parentType = "USER";
 
     protected String phoneExt;
 

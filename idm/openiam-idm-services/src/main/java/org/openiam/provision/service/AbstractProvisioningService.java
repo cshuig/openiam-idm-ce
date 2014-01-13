@@ -1427,7 +1427,12 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         // add roles if not part of the request
         List<Role> userRoleList = user.getMemberOfRoles();
         if ( userRoleList == null || userRoleList.isEmpty()) {
-             List<Role> curRoles = roleDataService.getUserRoles(user.getUserId());
+
+
+            List<Role> curRoles = roleDataService.getUserRoles(user.getUserId());
+
+            log.debug("addMissingUserComponents: Adding Current Roles ->" + curRoles);
+
             user.setMemberOfRoles(curRoles);
 
         }
@@ -1529,7 +1534,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
                                       ProvisionUser pUser, Login primaryIdentity,
                                       List<Role> activeRoleList, List<Role> deleteRoleList) {
 
-        log.debug("updateRoleAssociation():");
+        log.debug("--- updateRoleAssociation():");
         log.debug("-origRoleList =" + origRoleList);
         log.debug("-newRoleList=" + newRoleList);
 
@@ -1553,6 +1558,9 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
             origRoleList.addAll(newRoleList);
             // update the instance variable so that it can passed to the connector with the right operation code
             for (Role rl : newRoleList) {
+
+               log.debug("- Adding role to active role list: " + rl.getId() );
+
                 rl.setOperation(AttributeOperationEnum.ADD);
                 activeRoleList.add(rl);
 
@@ -1618,9 +1626,7 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
 
                 activeRoleList.add(r);
             }else {
-                // check if this address is in the current list
-                // if it is - see if it has changed
-                // if it is not - add it.
+
                 log.debug("Evaluate Role: " + r.getId());
 
                 Role origRole =  getRole(r.getId(), origRoleList);

@@ -10,7 +10,7 @@
         <td>
             <table width="100%">
                 <tr>
-                    <td class="pageTitle" width="70%">
+                    <td class="pageTitle" width="80%">
                         <h2 class="contentheading">Find User</h2>
                     </td>
                     <td class="tabnav" >

@@ -497,6 +497,13 @@ public class EditUserController extends CancellableFormController {
 
         for (Phone p : phoneList) {
 
+
+            // dont pass in a phone number that has no data
+            if ((p.getPhoneId() == null || p.getPhoneId().isEmpty() ) && (p.getPhoneNbr().isEmpty()))  {
+                continue;
+
+            }
+
             if ("DESK PHONE".equalsIgnoreCase(p.getName()) ) {
                 deskPhone = p;
             }

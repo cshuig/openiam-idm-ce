@@ -311,27 +311,16 @@ public class Group implements java.io.Serializable {
         this.metadataTypeId = metadataTypeId;
     }
 
-
     @Override
     public String toString() {
         return "Group{" +
                 "operation=" + operation +
                 ", grpId='" + grpId + '\'' +
                 ", grpName='" + grpName + '\'' +
-                ", createDate=" + createDate +
-                ", createdBy='" + createdBy + '\'' +
-                ", companyId='" + companyId + '\'' +
-                ", ownerId='" + ownerId + '\'' +
-                ", parentGrpId='" + parentGrpId + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", metadataTypeId='" + metadataTypeId + '\'' +
-                ", internalGroupId='" + internalGroupId + '\'' +
-                ", externalGroupName='" + externalGroupName + '\'' +
-                ", selected=" + selected +
                 ", roles=" + roles +
                 ", attributes=" + attributes +
-                ", subGroup=" + subGroup +
+                ", selected=" + selected +
+                ", status='" + status + '\'' +
                 '}';
     }
 

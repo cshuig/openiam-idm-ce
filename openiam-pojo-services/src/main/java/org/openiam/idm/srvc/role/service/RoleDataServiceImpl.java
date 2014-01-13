@@ -547,13 +547,16 @@ public class RoleDataServiceImpl implements RoleDataService {
 			updateRoleAssociation(roleList, RoleConstant.DIRECT, newRoleSet);
 		}
 
-		roleList = roleDao.findIndirectUserRoles(userId);
+        /* indirect roles are not working ..*/
+
+		/*roleList = roleDao.findIndirectUserRoles(userId);
 
 		log.debug(" - findIndirectUserRoles = " + roleList);
 
 		if (roleList != null && !roleList.isEmpty()) {
 			updateRoleAssociation(roleList, RoleConstant.INDIRECT, newRoleSet);
 		}
+		*/
 		if (newRoleSet.size() == 0) {
 			return null;
 		}
@@ -623,13 +626,17 @@ public class RoleDataServiceImpl implements RoleDataService {
 			updateRoleAssociation(roleList, RoleConstant.DIRECT, newRoleSet);
 		}
 
-		roleList = roleDao.findIndirectUserRoles(userId);
+
+        /* NOT USING INDIRECT ROLES RELATIONSHIPS */
+        /*roleList = roleDao.findIndirectUserRoles(userId);
 
 		log.debug(" - findIndirectUserRoles = " + roleList);
 
 		if (roleList != null && !roleList.isEmpty()) {
 			updateRoleAssociation(roleList, RoleConstant.INDIRECT, newRoleSet);
 		}
+        */
+
 		if (newRoleSet == null || newRoleSet.size() == 0) {
 			return null;
 		}

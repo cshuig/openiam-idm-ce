@@ -1734,8 +1734,9 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         log.debug("---DEFAULT PROVISIONING SERVICE: modifyUser called --");
 
-        log.debug("User passed in with the following Roles: "
-                + pUser.getMemberOfRoles());
+        log.debug("User passed in with the following Roles: " + pUser.getMemberOfRoles());
+
+        log.debug("-----------------------------------------------------");
 
         List<Login> newPrincipalList = pUser.getPrincipalList();
 
@@ -1788,6 +1789,10 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         List<Login> curPrincipalList = loginManager.getLoginByUser(pUser
                 .getUserId());
 
+
+        log.debug("-- Current Role List: " + curRoleList);
+        log.debug("------------------------------------");
+
         // get the current user object - update it with the new values and then
         // save it
 
@@ -1823,13 +1828,20 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         updateGroupAssociation(origUser.getUserId(), curGroupList,
                 pUser.getMemberOfGroups());
 
-        log.debug("Pending call to Update Role Association.  Roles passed in equal: "
+        log.debug("----> Pending call to Update Role Association.  At this point the user is a member of the following roles:---- "
                 + pUser.getMemberOfRoles());
+
+        log.debug("----> Active Roles:" + activeRoleList);
+        log.debug("----> Member of Role: " + pUser.getMemberOfRoles());
 
         // update the role association
         updateRoleAssociation(origUser.getUserId(), curRoleList,
                 pUser.getMemberOfRoles(), pendingLogItems, pUser,
                 curPrimaryIdentity, activeRoleList, deleteRoleList);
+
+        log.debug("-------- after update role association -----------");
+        log.debug("----> After : Active Roles:" + activeRoleList);
+        log.debug("----> After : Member of Role: " + pUser.getMemberOfRoles());
 
         updateUserOrgAffiliation(origUser.getUserId(),
                 pUser.getUserAffiliations());
@@ -1842,6 +1854,9 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         // list of resources that a person should have based on their active
         // roles
+
+        log.debug("---> Getting resources for the following active roles: " + activeRoleList );
+
         List<Resource> resourceList = getResourcesForRole(getActiveRoleList(
                 activeRoleList, deleteRoleList));
         // list of resources that are to be removed based on roles that are to
@@ -1860,6 +1875,8 @@ public class DefaultProvisioningService extends AbstractProvisioningService
         if (resourceList == null) {
             resourceList = new ArrayList<Resource>();
         }
+
+        log.debug("Resource list before applyResourceException() --- " + resourceList);
 
         applyResourceExceptions(pUser, resourceList, deleteResourceList);
 
@@ -1912,7 +1929,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
                     + origUser.getUserId());
         }
 
-        log.debug("Binding active roles to scripting");
+        log.debug("---> Binding active roles to scripting <----");
         log.debug("- role list -> " + activeRoleList);
         log.debug("- Primary Identity : " + primaryIdentity);
 
@@ -3486,8 +3503,7 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
     private void applyResourceExceptions(ProvisionUser user,
                                          List<Resource> addResourceList, List<Resource> deleteResourceList) {
-        List<UserResourceAssociation> userResAssocList = user
-                .getUserResourceList();
+        List<UserResourceAssociation> userResAssocList = user.getUserResourceList();
 
         if (userResAssocList == null || userResAssocList.isEmpty()) {
             return;

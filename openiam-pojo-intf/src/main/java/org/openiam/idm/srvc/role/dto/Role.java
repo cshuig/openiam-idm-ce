@@ -3,16 +3,13 @@ package org.openiam.idm.srvc.role.dto;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseObject;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.grp.domain.GroupEntity;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.grp.dto.GroupSet;
+import org.openiam.idm.srvc.role.domain.RoleEntity;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
-import org.openiam.idm.srvc.role.domain.RoleAttributeEntity;
-import org.openiam.idm.srvc.role.domain.RoleEntity;
-import org.openiam.idm.srvc.role.domain.RolePolicyEntity;
 
 
 /**
@@ -353,27 +350,12 @@ public class Role extends BaseObject implements Comparable<Role> {
     @Override
     public String toString() {
         return "Role{" +
-                "operation=" + operation +
-                ", createDate=" + createDate +
-                ", createdBy='" + createdBy + '\'' +
-                ", description='" + description + '\'' +
+                "id=" + id +
+                ", operation=" + operation +
                 ", groups=" + groups +
-                ", id=" + id +
-                ", provisionObjName='" + provisionObjName + '\'' +
-                ", parentRoleId='" + parentRoleId + '\'' +
                 ", roleAttributes=" + roleAttributes +
-                ", rolePolicy=" + rolePolicy +
                 ", roleName='" + roleName + '\'' +
-                ", userAssociationMethod=" + userAssociationMethod +
                 ", status='" + status + '\'' +
-                ", selected=" + selected +
-                ", metadataTypeId='" + metadataTypeId + '\'' +
-                ", ownerId='" + ownerId + '\'' +
-                ", inheritFromParent=" + inheritFromParent +
-                ", internalRoleId='" + internalRoleId + '\'' +
-                ", childRoles=" + childRoles +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
                 '}';
     }
 
