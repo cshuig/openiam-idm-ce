@@ -7,7 +7,7 @@
 
 
 
-<h4>Group Container</h4>
+<h4>Course Group</h4>
 
 <form:form commandName="groupCmd"  cssClass="user-info" >
     <fieldset>
@@ -16,7 +16,17 @@
                 <div class="col-1">
 
                     <div class="row">
-                        <label for="t-1">Group Container</label>
+                        <label for="t-1">District</label>
+
+                        <select>
+                            <option>Holland</option>
+                            <option>Hamilton</option>
+                        </select>
+
+                    </div>
+
+                    <div class="row">
+                        <label for="t-1">Course Group</label>
 
                         <select>
                             <option>Group A</option>
@@ -49,17 +59,44 @@
     <table class="resource alt">
         <tbody>
         <tr class="caption">
-            <th>Course Name </th>
-            <th>Description</th>
+            <th>Name </th>
+            <th>Course Number</th>
+            <th>Term</th>
+            <th>Section</th>
+            <th>District</th>
+            <th>School</th>
+
         </tr>
 
-                <tr>
-                    <td>Intro to Calculus</td>
-                    <td></td>
-                    <td></td>
-                </tr>
+
+
+
+        <tr>
+            <td><a href="courseDetail.selfserve?courseid=1&termid=1">Intro to Calculus</a></td>
+            <td>101</td>
+            <td>JANUARY 2014</td>
+            <td>1</td>
+            <td>HOLLAND</td>
+            <td>Holland Elementary School</td>
+        </tr>
+
+
+        <tr>
+            <td><a href="courseDetail.selfserve?courseid=1&termid=2">Intro to Calculus</a></td>
+            <td>101</td>
+            <td>JANUARY 2014</td>
+            <td>2</td>
+            <td>HOLLAND</td>
+            <td>Holland Elementary School</td>
+        </tr>
+
+
+
+
+
         </tbody>
     </table>
+
 
 
 

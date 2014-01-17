@@ -23,7 +23,7 @@
                     <div class="row">
                         <label for="t-1">District</label>
 
-                        <form:select path="search.districtId" multiple="false">
+                        <form:select path="search.districtId">
                             <form:option value="" label="-Please Select-"/>
                             <form:options items="${district}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
@@ -32,33 +32,32 @@
                     <div class="row">
                         <label for="t-1">School</label>
 
-                        <form:select path="search.schoolId" multiple="false">
+                        <form:select path="search.schoolId">
                             <form:option value="" label="-Please Select-"/>
-                            <form:options items="${district}" itemValue="orgId" itemLabel="organizationName"/>
+                            <form:options items="${school}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
                     </div>
 
                     <div class="row">
                         <label for="t-1">Teacher</label>
 
-                        <form:select path="search.instructorId" multiple="false">
+                        <form:select path="search.instructorId">
                             <form:option value="" label="-Please Select-"/>
-                            <form:options items="${district}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
                     </div>
 
                     <div class="row">
                         <label>Term</label>
-                        <form:select path="search.term" multiple="false">
+                        <form:select path="search.term">
                             <form:option value="" label="-Please Select-"/>
-                            <form:options items="${orgList}" itemValue="orgId" itemLabel="organizationName"/>
+
                         </form:select>
                     </div>
                     <div class="row">
                         <label>Program</label>
-                        <form:select path="search.program" multiple="false">
+                        <form:select path="search.program">
                             <form:option value="" label="-Please Select-"/>
-                            <form:options items="${orgList}" itemValue="orgId" itemLabel="organizationName"/>
+
                         </form:select>
                     </div>
 

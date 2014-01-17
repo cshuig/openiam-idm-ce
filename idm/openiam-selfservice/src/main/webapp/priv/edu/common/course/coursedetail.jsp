@@ -52,8 +52,7 @@
                     </div>
                     <div class="row">
                         <label for="t-1">Program Membership:</label>
-                        <select>
-                            <option>Please Select</option>
+                        <select multiple class="multiselect">
                             <option>Program 1</option>
                             <option>Program 2</option>
                             <option>Program 3</option>
@@ -62,8 +61,7 @@
 
                     <div class="row">
                         <label for="t-1">Course Group:</label>
-                        <select>
-                            <option>Please Select</option>
+                        <select multiple class="multiselect">
                             <option>Group A</option>
                             <option>Group B</option>
                         </select>
@@ -124,7 +122,6 @@
         <th>Phone</th>
         <th>Status</th>
         <th>Role</th>
-        <th>Start Date</th>
         <th></th>
     </tr>
 
@@ -138,13 +135,14 @@
         <td>(123)456-1234</td>
         <td>Active</td>
         <td>
-            <select>
-                <option>Please Select</option>
-                <option>Role A</option>
-                <option>Role B</option>
+            <select multiple class="multiselect">
+                <option>BUILDING ADMIN</option>
+                <option>COURSE ADMIN</option>
+                <option>ORG ADMIN</option>
+                <option>REPORT ONLY</option>
+                <option>TEACHER</option>
             </select>
         </td>
-        <td></td>
         <td>Remove</td>
     </tr>
 
@@ -156,13 +154,14 @@
         <td>(123)456-1235</td>
         <td>Active</td>
         <td>
-            <select>
-                <option>Please Select</option>
-                <option>Role A</option>
-                <option>Role B</option>
+            <select multiple class="multiselect">
+                <option>BUILDING ADMIN</option>
+                <option>COURSE ADMIN</option>
+                <option>ORG ADMIN</option>
+                <option>REPORT ONLY</option>
+                <option>TEACHER</option>
             </select>
         </td>
-        <td></td>
         <td>Remove</td>
     </tr>
 

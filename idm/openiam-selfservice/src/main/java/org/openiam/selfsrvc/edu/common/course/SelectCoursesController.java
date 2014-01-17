@@ -58,8 +58,10 @@ public class SelectCoursesController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<Object, Object> dataMap = new HashMap<Object, Object>();
         List<Organization> districtList =  orgManager.getOrganizationByType("districtType", null);
+        List<Organization> schoolList =  orgManager.getOrganizationByType("schoolType", null);
 
         dataMap.put("district", districtList ) ;
+        dataMap.put("school", schoolList ) ;
 
         return dataMap;
 
