@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM "classpath://hibernate-mapping-3.0.dtd" >
+
+
+<hibernate-mapping>
+    <class name="org.openiam.idm.srvc.edu.course.dto.term.Term" table="TERM" >
+        <comment></comment>
+        <id name="id" type="string">
+            <column name="TERM_ID" length="32" />
+            <generator class="uuid" />
+        </id>
+
+
+        <property name="name" type="string">
+            <column name="NAME" length="60" >
+                <comment></comment>
+            </column>
+        </property>
+
+        <property name="schoolYear" type="string">
+            <column name="SCHOOL_YEAR" length="30" >
+                <comment></comment>
+            </column>
+        </property>
+
+        <property name="districtId" type="string">
+            <column name="DISTRICT_ID" length="32" >
+                <comment></comment>
+            </column>
+        </property>
+       <property name="description" type="string">
+            <column name="PERIOD_DESCRIPTION" length="255" >
+                <comment></comment>
+            </column>
+        </property>
+
+
+    </class>
+</hibernate-mapping>
+
+

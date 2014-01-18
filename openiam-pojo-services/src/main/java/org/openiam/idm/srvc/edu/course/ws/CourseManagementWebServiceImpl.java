@@ -2,6 +2,9 @@ package org.openiam.idm.srvc.edu.course.ws;
 
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.edu.course.dto.*;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.edu.course.dto.term.TermListResponse;
+import org.openiam.idm.srvc.edu.course.dto.term.TermResponse;
 import org.openiam.idm.srvc.edu.course.service.CourseManagementService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,6 +126,59 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
         }
         return resp;
 
+    }
+
+    @Override
+    public TermResponse addTerm(Term term) {
+        TermResponse resp = new TermResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        Term t =  courseService.addTerm(term);
+        if (t != null && t.getId() != null ) {
+            resp.setTerm(t);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+
+    }
+
+    @Override
+    public TermResponse updateTerm(Term term) {
+        TermResponse resp = new TermResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        Term t =  courseService.updateTerm(term);
+        if (t != null && t.getId() != null ) {
+            resp.setTerm(t);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+    }
+
+    @Override
+    public void removeTerm(String termId) {
+        courseService.removeTerm(termId);
+    }
+
+    @Override
+    public TermListResponse getTermsByDistrict(String districtId) {
+        TermListResponse resp = new TermListResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        List<Term> termList =  courseService.getTermsByDistrict(districtId);
+        if (termList != null && !termList.isEmpty()) {
+            resp.setTermList(termList);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+    }
+
+    @Override
+    public void updateTermList(List<Term> termList) {
+        courseService.updateTermList(termList);
     }
 
     public CourseManagementService getCourseService() {

@@ -51,7 +51,11 @@ CREATE TABLE TERM (
        NAME               varchar(60) NULL,
        SCHOOL_YEAR        varchar(30) NULL,
        PERIOD_DESCRIPTION VARCHAR(255) NULL,   /* DESCRIBE WHAT PART OF YEAR  */
-       PRIMARY KEY (TERM_ID)
+       DISTRICT_ID        varchar(32) NULL,
+       PRIMARY KEY (TERM_ID),
+       CONSTRAINT FK_TERM_COMPANY
+       FOREIGN KEY (DISTRICT_ID)
+                             REFERENCES COMPANY(COMPANY_ID)
 ) ENGINE=InnoDB;
 
 

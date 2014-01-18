@@ -1,10 +1,14 @@
 package org.openiam.idm.srvc.edu.course.ws;
 
 import org.openiam.idm.srvc.edu.course.dto.*;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.edu.course.dto.term.TermListResponse;
+import org.openiam.idm.srvc.edu.course.dto.term.TermResponse;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import java.util.List;
 
 /**
  * Interface for  <code>CourseManagementWebService</code>. All course management activities are handled through
@@ -52,5 +56,11 @@ public interface CourseManagementWebService {
     public CourseSearchResponse searchCourses(
             @WebParam(name = "search", targetNamespace = "")
             CourseSearch search);
+
+    public TermResponse addTerm(Term term) ;
+    public TermResponse updateTerm(Term term) ;
+    public void removeTerm(String termId) ;
+    public TermListResponse getTermsByDistrict(String districtId) ;
+    public void updateTermList(List<Term> termList ) ;
 
 }

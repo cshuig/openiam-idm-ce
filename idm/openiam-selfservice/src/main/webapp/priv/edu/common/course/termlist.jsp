@@ -10,45 +10,63 @@
 <h4>Term Management</h4>
 
 <form:form commandName="termCmd"  cssClass="user-info" >
+    <fieldset>
+        <div class="block">
+            <div class="wrap alt">
+                <div class="col-1">
 
+                    <div class="row">
+                        <label for="t-1">District</label>
+
+                        <form:select path="districtId">
+                            <form:option value="" label="-Please Select-"/>
+                            <form:options items="${district}" itemValue="orgId" itemLabel="organizationName"/>
+                        </form:select>
+                    </div>
+                    <div class="button">
+                        <input type="submit" name="btn" value="Search" />
+                    </div>
+
+                </div>
+                <div class="col-1">
+
+
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+
+    <c:if test="${termCmd.termList != null}" >
     <table class="resource alt">
         <tbody>
         <tr class="caption">
             <th>Term Name </th>
-            <th>Description</th>
+            <th>School Year</th>
             <th></th>
         </tr>
 
-                <tr>
-                    <td><input type="text" value="September 2013" SIZE="30"></td>
-                    <td><input type="text" value="" SIZE="50">
+        <c:forEach items="${termCmd.termList}" var="termObj" varStatus="term">
 
-                    </td>
+                <tr>
+                    <td><form:hidden path="termList[${term.index}].id"/>
+                        <form:hidden path="termList[${term.index}].districtId"/>
+                        <form:input path="termList[${term.index}].name" size="20" maxlength="60"/>
+                     </td>
+                    <td><form:input path="termList[${term.index}].schoolYear" size="20" maxlength="30"/></td>
                     <td><a href="">REMOVE</a></td>
                 </tr>
-        <tr>
-            <td><input type="text" value="January 2014" SIZE="30"></td>
-            <td><input type="text" value="" SIZE="50">
-
-            </td>
-            <td><a href="">REMOVE</a></td>
-        </tr>
-
-
-        <tr>
-            <td><input type="text" value="** ADD TERM ***" SIZE="30"></td>
-            <td><td><input type="text" value="" SIZE="50">
-            <td></td>
-        </tr>
+        </c:forEach>
 
 
         </tbody>
     </table>
 
+    </c:if>
 
     <fieldset>
         <div class="button">
-            <input type="submit" value="Submit" />
+            <input type="submit" name="btn" value="Submit" />
         </div>
 
         <div class="button">

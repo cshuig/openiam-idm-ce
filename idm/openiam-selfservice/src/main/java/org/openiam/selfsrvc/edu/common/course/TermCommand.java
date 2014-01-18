@@ -1,8 +1,10 @@
 package org.openiam.selfsrvc.edu.common.course;
 
-import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Command object for the SelectCourses
@@ -11,16 +13,25 @@ import java.io.Serializable;
  */
 public class TermCommand implements Serializable {
 	 
+    private String districtId;
+    private List<Term> termList = new ArrayList<Term>();
 
-	private static final long serialVersionUID = -667408382835178231L;
-
-    CourseSearch search = new CourseSearch();
-
-    public CourseSearch getSearch() {
-        return search;
+    public TermCommand() {
     }
 
-    public void setSearch(CourseSearch search) {
-        this.search = search;
+    public List<Term> getTermList() {
+        return termList;
+    }
+
+    public void setTermList(List<Term> termList) {
+        this.termList = termList;
+    }
+
+    public String getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(String districtId) {
+        this.districtId = districtId;
     }
 }

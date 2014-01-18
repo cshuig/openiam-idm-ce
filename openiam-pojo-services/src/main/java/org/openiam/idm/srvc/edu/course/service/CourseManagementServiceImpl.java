@@ -1,10 +1,12 @@
 package org.openiam.idm.srvc.edu.course.service;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.dto.Program;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     protected ProgramDAO programDao;
     protected CourseDAO courseDao;
+    protected TermDAO termDao;
 
 
     @Override
@@ -73,6 +76,56 @@ public class CourseManagementServiceImpl implements CourseManagementService {
         return courseDao.searchCourses(search);
     }
 
+    /* Term operation */
+
+    public Term addTerm(Term term) {
+        Term t = termDao.add(term);
+        return t;
+
+    }
+
+    @Override
+    public Term updateTerm(Term term) {
+        Term t = termDao.update(term);
+        return t;
+    }
+
+    @Override
+    public void removeTerm(String termId) {
+        Term t = termDao.findById(termId);
+        if (t != null) {
+
+            termDao.remove(t);
+        }
+
+    }
+
+    @Override
+    public List<Term> getTermsByDistrict(String districtId) {
+        return termDao.getTermsByDistrict(districtId);
+    }
+
+    public void updateTermList(List<Term> termList ) {
+
+        if (termList != null && !termList.isEmpty()) {
+
+            for (Term t : termList) {
+                if (StringUtils.isEmpty(t.getId()))  {
+
+                    termDao.add(t);
+
+
+                }else {
+                    termDao.update(t);
+                }
+
+            }
+
+        }
+
+    }
+
+
     public ProgramDAO getProgramDao() {
         return programDao;
     }
@@ -87,5 +140,13 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     public void setCourseDao(CourseDAO courseDao) {
         this.courseDao = courseDao;
+    }
+
+    public TermDAO getTermDao() {
+        return termDao;
+    }
+
+    public void setTermDao(TermDAO termDao) {
+        this.termDao = termDao;
     }
 }

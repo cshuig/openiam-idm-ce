@@ -5,6 +5,7 @@ import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.dto.Program;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
 
 import java.util.List;
 
@@ -30,5 +31,13 @@ public interface CourseManagementService {
     public void removeCourse(String courseId);
 
     public List<CourseSearchResult> searchCourses(CourseSearch search);
+
+    // Terms
+
+    public Term addTerm(Term term) ;
+    public Term updateTerm(Term term) ;
+    public void removeTerm(String courseId) ;
+    public List<Term> getTermsByDistrict(String districtId) ;
+    public void updateTermList(List<Term> termList ) ;
 
 }
