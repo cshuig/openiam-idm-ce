@@ -1,10 +1,9 @@
 package org.openiam.selfsrvc.edu.common.course;
 
-import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.org.dto.Organization;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Command object for the SelectCourses
@@ -14,17 +13,9 @@ import java.util.List;
 public class TermCommand implements Serializable {
 	 
     private String districtId;
-    private List<Term> termList = new ArrayList<Term>();
+    private List<Organization> districtList;
 
     public TermCommand() {
-    }
-
-    public List<Term> getTermList() {
-        return termList;
-    }
-
-    public void setTermList(List<Term> termList) {
-        this.termList = termList;
     }
 
     public String getDistrictId() {
@@ -33,5 +24,13 @@ public class TermCommand implements Serializable {
 
     public void setDistrictId(String districtId) {
         this.districtId = districtId;
+    }
+
+    public List<Organization> getDistrictList() {
+        return districtList;
+    }
+
+    public void setDistrictList(List<Organization> districtList) {
+        this.districtList = districtList;
     }
 }

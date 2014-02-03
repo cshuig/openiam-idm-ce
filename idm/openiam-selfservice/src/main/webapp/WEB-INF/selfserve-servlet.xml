@@ -848,7 +848,19 @@
         <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.TermCommand" />
         <property name="formView" value="/priv/edu/common/course/termlist" />
         <property name="successView" value="/priv/edu/common/course/termlist" />
+        <property name="redirectView" value="editterms.selfserve?district=" />
 
+        <property name="orgManager" ref="orgServiceClient" />
+        <property name="courseManager" ref="courseServiceClient" />
+
+    </bean>
+
+    <bean id="editterms" class="org.openiam.selfsrvc.edu.common.course.EditTermController">
+        <property name="commandName" value="editTermCmd" />
+        <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.EditTermCommand" />
+        <property name="formView" value="/priv/edu/common/course/edittermlist" />
+        <property name="successView" value="/priv/edu/common/course/edittermlist" />
+        <property name="redirectView" value="editterms.selfserve?district=" />
         <property name="orgManager" ref="orgServiceClient" />
         <property name="courseManager" ref="courseServiceClient" />
 
@@ -930,6 +942,7 @@
                 <prop key="/courseDetail.selfserve">courseDetail</prop>
                 <prop key="/programs.selfserve">programs</prop>
                 <prop key="/terms.selfserve">terms</prop>
+                <prop key="/editterms.selfserve">editterms</prop>
                 <prop key="/groupcontainer.selfserve">groupContainer</prop>
                 
             </props>

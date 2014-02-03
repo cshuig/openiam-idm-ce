@@ -3,6 +3,7 @@ package org.openiam.idm.srvc.edu.course.ws;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.edu.course.dto.*;
 import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.edu.course.dto.term.TermBooleanResponse;
 import org.openiam.idm.srvc.edu.course.dto.term.TermListResponse;
 import org.openiam.idm.srvc.edu.course.dto.term.TermResponse;
 import org.openiam.idm.srvc.edu.course.service.CourseManagementService;
@@ -75,6 +76,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     }
 
     @Override
+    @Transactional
     public CourseResponse addCourse(@WebParam(name = "course", targetNamespace = "") Course course) {
         CourseResponse resp = new CourseResponse();
         resp.setStatus(ResponseStatus.FAILURE);
@@ -90,6 +92,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     }
 
     @Override
+    @Transactional
     public CourseResponse updateCourse(@WebParam(name = "course", targetNamespace = "") Course course) {
         CourseResponse resp = new CourseResponse();
         resp.setStatus(ResponseStatus.FAILURE);
@@ -105,6 +108,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     }
 
     @Override
+    @Transactional
     public void removeCourse(@WebParam(name = "courseId", targetNamespace = "") String courseId) {
 
         courseService.removeCourse(courseId);
@@ -129,6 +133,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     }
 
     @Override
+    @Transactional
     public TermResponse addTerm(Term term) {
         TermResponse resp = new TermResponse();
         resp.setStatus(ResponseStatus.FAILURE);
@@ -144,6 +149,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     }
 
     @Override
+    @Transactional
     public TermResponse updateTerm(Term term) {
         TermResponse resp = new TermResponse();
         resp.setStatus(ResponseStatus.FAILURE);
@@ -158,6 +164,7 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
     }
 
     @Override
+    @Transactional
     public void removeTerm(String termId) {
         courseService.removeTerm(termId);
     }
@@ -170,6 +177,21 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
         List<Term> termList =  courseService.getTermsByDistrict(districtId);
         if (termList != null && !termList.isEmpty()) {
             resp.setTermList(termList);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+    }
+
+
+    @Override
+    public TermBooleanResponse hasCourses(@WebParam(name = "termId", targetNamespace = "") String termId) {
+        TermBooleanResponse resp = new TermBooleanResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        boolean val =  courseService.hasCourses(termId);
+        if (val) {
+            resp.setVal(true);
             resp.setStatus(ResponseStatus.SUCCESS);
 
         }

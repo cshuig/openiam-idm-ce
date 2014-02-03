@@ -125,6 +125,10 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     }
 
+    @Override
+    public boolean hasCourses(String termId) {
+        return termDao.hasCourses(termId);
+    }
 
     public ProgramDAO getProgramDao() {
         return programDao;

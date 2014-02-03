@@ -11,12 +11,13 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 
 public class TermController extends SimpleFormController {
@@ -24,6 +25,7 @@ public class TermController extends SimpleFormController {
 	private static final Log log = LogFactory.getLog(TermController.class);
     protected OrganizationDataService orgManager;
     protected CourseManagementWebService courseManager;
+    protected String redirectView;
 
 
 	public TermController() {
@@ -39,81 +41,32 @@ public class TermController extends SimpleFormController {
 	}
 
     @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map<Object, Object> dataMap = new HashMap<Object, Object>();
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        TermCommand cmd = new TermCommand();
+
         List<Organization> districtList =  orgManager.getOrganizationByType("districtType", null);
-        dataMap.put("district", districtList ) ;
-        return dataMap;
+        cmd.setDistrictList(districtList);
+
+        return cmd;
+
 
 
     }
 
-	/*@Override
-	protected Object formBackingObject(HttpServletRequest request)
-			throws Exception {
 
-        TermCommand cmd = new TermCommand();
-		
-        // get the list of terms
-        courseManager.
-		
-		
-		return cmd;
-		
-		
-	}
-	*/
 
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TermCommand cmd =(TermCommand)command;
 
-        String submitName = request.getParameter("btn");
-
-        if (submitName.equalsIgnoreCase("Search")) {
-
-            List<Term> termList = courseManager.getTermsByDistrict(cmd.getDistrictId()).getTermList();
-            if (termList != null && !termList.isEmpty()) {
-
-                addBlankTerm(termList, cmd.getDistrictId());
-                cmd.setTermList(termList);
-
-            } else {
-
-                // termList is null
-                termList = new ArrayList<Term>();
-                addBlankTerm(termList, cmd.getDistrictId());
-                cmd.setTermList(termList);
-            }
 
 
-        }else {
-            // save the list
-
-        }
-
-
-
-        //  return new ModelAndView(new RedirectView(redirectView+"&mode=1", true));
-        ModelAndView mav = new ModelAndView(getSuccessView());
-
-        List<Organization> districtList =  orgManager.getOrganizationByType("districtType", null);
-        mav.addObject("district", districtList ) ;
-        mav.addObject("termCmd", cmd ) ;
-
-
-        return mav;
-    }
-
-
-    private void addBlankTerm(List<Term> termList, String districtId ) {
-
-        if (termList != null) {
-               termList.add(new Term(null, "**ADD TERM**",districtId));
-
-        }
+        return new ModelAndView(new RedirectView(redirectView+cmd.getDistrictId(), true));
 
     }
+
+
+
 
 
 
@@ -131,5 +84,13 @@ public class TermController extends SimpleFormController {
 
     public void setCourseManager(CourseManagementWebService courseManager) {
         this.courseManager = courseManager;
+    }
+
+    public String getRedirectView() {
+        return redirectView;
+    }
+
+    public void setRedirectView(String redirectView) {
+        this.redirectView = redirectView;
     }
 }

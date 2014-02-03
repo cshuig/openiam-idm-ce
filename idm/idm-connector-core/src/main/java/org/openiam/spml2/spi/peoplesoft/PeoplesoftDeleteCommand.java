@@ -5,7 +5,6 @@ import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.idm.srvc.res.dto.Resource;
 import org.openiam.spml2.msg.*;
 import org.openiam.spml2.spi.common.DeleteCommand;
-import org.openiam.spml2.spi.orcl.AbstractOracleCommand;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,7 +16,7 @@ import java.sql.SQLException;
  * Time: 10:46 AM
  * To change this template use File | Settings | File Templates.
  */
-public class PeoplesoftDeleteCommand extends AbstractOracleCommand implements DeleteCommand {
+public class PeoplesoftDeleteCommand extends AbstractPeoplesoftCommand implements DeleteCommand {
 
     private static final String DROP_USER = "DROP USER \"%s\"";
 

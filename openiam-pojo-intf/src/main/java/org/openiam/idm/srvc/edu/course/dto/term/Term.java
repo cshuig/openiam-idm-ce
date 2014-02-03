@@ -1,5 +1,7 @@
 package org.openiam.idm.srvc.edu.course.dto.term;
 
+import org.openiam.base.BaseObject;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -22,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
         "districtId",
         "description"}
 )
-public class Term implements java.io.Serializable {
+public class Term extends BaseObject implements java.io.Serializable   {
 
     protected String id;
     protected String name;

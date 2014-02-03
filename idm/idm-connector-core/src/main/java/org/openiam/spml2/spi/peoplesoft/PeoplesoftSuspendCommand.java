@@ -9,8 +9,8 @@ import org.openiam.spml2.msg.ResponseType;
 import org.openiam.spml2.msg.StatusCodeType;
 import org.openiam.spml2.msg.suspend.SuspendRequestType;
 import org.openiam.spml2.spi.common.SuspendCommand;
-import org.openiam.spml2.spi.orcl.AbstractOracleAccountStatusCommand;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -20,11 +20,14 @@ import java.sql.SQLException;
  * Time: 10:50 AM
  * To change this template use File | Settings | File Templates.
  */
-public class PeoplesoftSuspendCommand extends AbstractOracleAccountStatusCommand implements SuspendCommand {
+public class PeoplesoftSuspendCommand extends AbstractPeoplesoftCommand implements SuspendCommand {
     @Override
     public ResponseType suspend(final SuspendRequestType request) {
         final ResponseType response = new ResponseType();
         response.setStatus(StatusCodeType.SUCCESS);
+        Connection con = null;
+
+        schemaName =  res.getString("SCHEMA");
 
         final String principalName = request.getPsoID().getID();
 
@@ -50,7 +53,11 @@ public class PeoplesoftSuspendCommand extends AbstractOracleAccountStatusCommand
         }
 
         try {
-            changeAccountStatus(managedSys, principalName, AccountStatus.LOCKED);
+
+            con = connectionMgr.connect(managedSys);
+
+            updateUserLock(con, principalName, 1);
+
         } catch (SQLException se) {
             log.error(se);
             populateResponse(response, StatusCodeType.FAILURE, ErrorCode.SQL_ERROR, se.toString());

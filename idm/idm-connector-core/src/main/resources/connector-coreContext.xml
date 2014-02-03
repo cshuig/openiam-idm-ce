@@ -358,6 +358,7 @@
         <property name="connectionMgr" ref="jdbcConnection" />
         <property name="managedSysService" ref="managedSysService" />
         <property name="resourceDataService" ref="resourceDataService" />
+        <property name="cryptor" ref="cryptor" />
     </bean>
 
     <!-- END Peoplesoft DB connector -->

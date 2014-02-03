@@ -39,5 +39,6 @@ public interface CourseManagementService {
     public void removeTerm(String courseId) ;
     public List<Term> getTermsByDistrict(String districtId) ;
     public void updateTermList(List<Term> termList ) ;
+    public boolean hasCourses(String termId);
 
 }

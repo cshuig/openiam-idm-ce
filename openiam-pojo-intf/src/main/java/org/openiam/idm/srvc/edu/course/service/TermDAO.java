@@ -26,6 +26,8 @@ public interface TermDAO {
 
     List<Term> getTermsByDistrict(String districtId);
 
+    boolean hasCourses(String termId);
+
 
 
 

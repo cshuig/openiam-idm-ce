@@ -2632,9 +2632,9 @@ public abstract class AbstractProvisioningService  implements MuleContextAware, 
         req.setOperation("SET_PASSWORD");
         req.setPassword(passwordSync.getPassword());
 
-        org.openiam.connector.type.ResponseType respType = remoteConnectorAdapter.setPasswordRequest(mSys, req, connector, muleContext);
-
         req.setScriptHandler(mSys.getPasswordHandler());
+
+        org.openiam.connector.type.ResponseType respType = remoteConnectorAdapter.setPasswordRequest(mSys, req, connector, muleContext);
 
         auditHelper.addLog("SET PASSWORD IDENTITY", passwordSync.getRequestorDomain(), passwordSync.getRequestorLogin(),
                 "IDM SERVICE", null, "PASSWORD", "PASSWORD", null, null, respType.getStatus().toString(), "NA", null,

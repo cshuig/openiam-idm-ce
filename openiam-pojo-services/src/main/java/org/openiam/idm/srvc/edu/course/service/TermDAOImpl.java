@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -23,6 +24,7 @@ public class TermDAOImpl implements TermDAO {
 
     private SessionFactory sessionFactory;
     private DataSource dataSource;
+    private JdbcTemplate jdbcTemplateObject;
 
 
 
@@ -113,6 +115,26 @@ public class TermDAOImpl implements TermDAO {
 
     }
 
+    public boolean hasCourses(String termId) {
+
+        System.out.println("Searching for courses linked to a term");
+
+
+        String sql = "SELECT count(COURSE_ID) FROM openiam.COURSE_TERM WHERE TERM_ID = ?" ;
+
+
+        Integer total = jdbcTemplateObject.queryForObject(sql, new Object[] {termId}, Integer.class);
+
+        if (total > 0) {
+            return true;
+        }
+
+        return false;
+
+
+
+
+    }
 
 
 
@@ -123,6 +145,7 @@ public class TermDAOImpl implements TermDAO {
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.jdbcTemplateObject = new JdbcTemplate(dataSource);
 
     }
 }

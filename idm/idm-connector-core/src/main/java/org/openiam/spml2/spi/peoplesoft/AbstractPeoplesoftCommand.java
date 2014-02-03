@@ -1,8 +1,10 @@
 package org.openiam.spml2.spi.peoplesoft;
 
 import org.mule.util.StringUtils;
+import org.openiam.exception.EncryptionException;
 import org.openiam.idm.srvc.mngsys.dto.ManagedSys;
 import org.openiam.spml2.spi.common.jdbc.AbstractJDBCCommand;
+import org.openiam.util.encrypt.Cryptor;
 
 import java.sql.*;
 import java.util.ResourceBundle;
@@ -18,6 +20,7 @@ import java.util.ResourceBundle;
  */
 public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
+    private Cryptor cryptor;
     private static final String EMPTY_STRING = "";
     private static final String BLANK_SPACE_STRING = " ";
 
@@ -62,6 +65,9 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
             " SET OPRDEFNDESC = ?, EMAILID = ?, ACCTLOCK = ? ,LASTUPDDTTM = SYSDATE, LASTUPDOPRID='AUTO_IDM' " +
             " WHERE OPRID = ?" ;
 
+    private static final String UPDATE_LOCK = "UPDATE %sPSOPRDEFN " +
+            " SET ACCTLOCK = ?, LASTUPDDTTM = SYSDATE, LASTUPDOPRID='AUTO_IDM' " +
+            " WHERE OPRID = ?" ;
 
 
     private static final String INSERT_ADD_ROLE = "INSERT INTO %sPSROLEUSER (ROLEUSER, ROLENAME, DYNAMIC_SW ) VALUES (?, ?, ?)";
@@ -347,6 +353,34 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
     }
 
+    protected void updateUserLock(final Connection connection, final String principalName, int status) throws SQLException {
+
+
+
+        if (connection != null) {
+            if (StringUtils.isNotBlank(principalName)) {
+                String sql = String.format(UPDATE_LOCK, schemaName);
+
+                log.debug("Update User Lock SQL:"  + sql);
+                log.debug("Status:" + status);
+                log.debug("principalName:" + principalName);
+
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setInt(1,status);
+                statement.setString(2, principalName);
+
+                int result = statement.executeUpdate();
+                if (result == 0) {
+                    return ;
+                }
+
+
+
+            }
+        }
+
+    }
+
     protected void updateEmail(final Connection connection, final String principalName, final String email) throws SQLException {
 
         if (connection != null) {
@@ -374,6 +408,17 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                                  final String password, int version,
                                  int status ) throws SQLException {
         boolean exists = false;
+
+
+        String encPassword = null;
+        try {
+
+            encPassword =  encryptPassword( password );
+        }catch (EncryptionException e) {
+            e.printStackTrace();
+        }
+
+
         if (connection != null) {
             if (StringUtils.isNotBlank(principalName)) {
                 String sql = String.format(INSERT_ADD_USER, schemaName);
@@ -386,7 +431,7 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 statement.setInt(6, version);
                 statement.setString(7, "HCDPALL");   //OPRCLASS
                 statement.setString(8, "HCDPALL");   //ROWSECCLASS
-                statement.setString(9, password);   //OPERPSWD
+                statement.setString(9, encPassword);   //OPERPSWD
                 statement.setInt(10, 1);             //ENCRYPTED
                 statement.setString(11, "ENG");     //LANGUAGE_CD
                 statement.setInt(12, 0);             //MULTILANG
@@ -520,7 +565,12 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
 
             final PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(2, principalName);
-            statement.setString(1, password);
+            try {
+                statement.setString(1, encryptPassword( password ));
+            }catch(EncryptionException e) {
+                e.printStackTrace();
+
+            }
             int result = statement.executeUpdate();
             return result != 0;
 
@@ -529,5 +579,20 @@ public abstract class AbstractPeoplesoftCommand extends AbstractJDBCCommand {
                 connection.close();
             }
         }
+    }
+
+    public String encryptPassword(String password ) throws EncryptionException {
+        if (password != null) {
+            return cryptor.encrypt(password);
+        }
+        return null;
+    }
+
+    public Cryptor getCryptor() {
+        return cryptor;
+    }
+
+    public void setCryptor(Cryptor cryptor) {
+        this.cryptor = cryptor;
     }
 }

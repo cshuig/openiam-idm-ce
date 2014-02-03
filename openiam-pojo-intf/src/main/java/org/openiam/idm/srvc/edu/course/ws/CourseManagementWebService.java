@@ -2,6 +2,7 @@ package org.openiam.idm.srvc.edu.course.ws;
 
 import org.openiam.idm.srvc.edu.course.dto.*;
 import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.edu.course.dto.term.TermBooleanResponse;
 import org.openiam.idm.srvc.edu.course.dto.term.TermListResponse;
 import org.openiam.idm.srvc.edu.course.dto.term.TermResponse;
 
@@ -57,10 +58,32 @@ public interface CourseManagementWebService {
             @WebParam(name = "search", targetNamespace = "")
             CourseSearch search);
 
-    public TermResponse addTerm(Term term) ;
-    public TermResponse updateTerm(Term term) ;
-    public void removeTerm(String termId) ;
-    public TermListResponse getTermsByDistrict(String districtId) ;
-    public void updateTermList(List<Term> termList ) ;
+    @WebMethod
+    public TermResponse addTerm(
+            @WebParam(name = "term", targetNamespace = "")
+            Term term) ;
+    @WebMethod
+    public TermResponse updateTerm(
+            @WebParam(name = "term", targetNamespace = "")
+            Term term) ;
+    @WebMethod
+    public void removeTerm(
+            @WebParam(name = "termId", targetNamespace = "")
+            String termId) ;
+    @WebMethod
+    public TermListResponse getTermsByDistrict(
+            @WebParam(name = "districtId", targetNamespace = "")
+            String districtId) ;
+
+    @WebMethod
+    public void updateTermList(
+            @WebParam(name = "termList", targetNamespace = "")
+            List<Term> termList ) ;
+
+    @WebMethod
+    public TermBooleanResponse hasCourses(
+            @WebParam(name = "termId", targetNamespace = "")
+            String termId);
+
 
 }
