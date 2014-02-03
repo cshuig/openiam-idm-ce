@@ -1,8 +1,10 @@
 package org.openiam.selfsrvc.edu.common.course;
 
-import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
+
+import org.openiam.idm.srvc.edu.course.dto.Program;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Command object for the SelectCourses
@@ -14,13 +16,13 @@ public class ProgramsCommand implements Serializable {
 
 	private static final long serialVersionUID = -667408382835178231L;
 
-    CourseSearch search = new CourseSearch();
+    List<Program> programList;
 
-    public CourseSearch getSearch() {
-        return search;
+    public List<Program> getProgramList() {
+        return programList;
     }
 
-    public void setSearch(CourseSearch search) {
-        this.search = search;
+    public void setProgramList(List<Program> programList) {
+        this.programList = programList;
     }
 }

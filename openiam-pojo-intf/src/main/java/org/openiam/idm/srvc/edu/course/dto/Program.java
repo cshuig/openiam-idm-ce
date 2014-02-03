@@ -1,6 +1,7 @@
 package org.openiam.idm.srvc.edu.course.dto;
 
 import org.openiam.base.AttributeOperationEnum;
+import org.openiam.base.BaseObject;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,10 +22,9 @@ import javax.xml.bind.annotation.XmlType;
         "id",
         "status",
         "name",
-        "selected",
         "operation"}
 )
-public class Program implements java.io.Serializable {
+public class Program extends BaseObject implements java.io.Serializable {
 
     protected String id;
 
@@ -32,7 +32,6 @@ public class Program implements java.io.Serializable {
 
     protected String name;
 
-    protected Boolean selected = Boolean.FALSE;
     protected AttributeOperationEnum operation;
 
 
@@ -43,6 +42,12 @@ public class Program implements java.io.Serializable {
      * default constructor
      */
     public Program() {
+    }
+
+    public Program(String name) {
+
+        this.name = name;
+        this.id = null;
     }
 
     public String getId() {
@@ -70,13 +75,6 @@ public class Program implements java.io.Serializable {
     }
 
 
-    public Boolean getSelected() {
-        return selected;
-    }
-
-    public void setSelected(Boolean selected) {
-        this.selected = selected;
-    }
 
     public AttributeOperationEnum getOperation() {
         return operation;

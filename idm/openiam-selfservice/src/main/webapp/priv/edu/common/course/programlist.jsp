@@ -14,31 +14,36 @@
     <table class="resource alt">
         <tbody>
         <tr class="caption">
+            <th></th>
             <th>Program Name </th>
             <th>Status</th>
             <th></th>
         </tr>
 
-                <tr>
-                    <td><input type="text" value="Program 1" SIZE="30"></td>
-                    <td>
-                        <select>
-                            <option>ACTIVE</option>
-                            <option>DISABLED</option>
-                        </select>
-                    </td>
-                    <td><a href="">REMOVE</a></td>
-                </tr>
-        <tr>
-            <td><input type="text" value="** ADD PROGRAM ***" SIZE="30"></td>
-            <td>
-                <select>
-                    <option>ACTIVE</option>
-                    <option>DISABLED</option>
-                </select>
-            </td>
-            <td></td>
-        </tr>
+
+        <c:if test="${programCmd.programList != null}" >
+
+        <c:forEach items="${programCmd.programList}" var="prgObj" varStatus="program">
+
+            <tr>
+                <td><form:checkbox  path="programList[${program.index}].selected" /></td>
+                <td>
+                    <form:hidden path="programList[${program.index}].id"/>
+                    <form:input path="programList[${program.index}].name" size="30" maxlength="60"/>
+                </td>
+                <td><form:select path="programList[${program.index}].status">
+                        <form:option value="ACTIVE" label="ACTIVE"/>
+                        <form:option value="DISABLED" label="DISABLED"/>
+                    </form:select>
+                </td>
+            </tr>
+        </c:forEach>
+
+
+        </tbody>
+
+        </c:if>
+
 
 
         </tbody>
@@ -47,7 +52,11 @@
 
     <fieldset>
         <div class="button">
-            <input type="submit" value="Submit" />
+            <input type="submit" name="btn" value="Delete" />
+        </div>
+
+        <div class="button">
+            <input type="submit"  name="btn" value="Submit" />
         </div>
 
         <div class="button">
