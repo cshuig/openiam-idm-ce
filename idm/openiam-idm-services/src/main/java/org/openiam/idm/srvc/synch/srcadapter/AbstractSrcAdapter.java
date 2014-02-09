@@ -88,6 +88,7 @@ public abstract class AbstractSrcAdapter implements SourceAdapter {
         msgPropMap.put("SERVICE_HOST", serviceHost);
         msgPropMap.put("SERVICE_CONTEXT", serviceContext);
 
+        log.debug("ModifyUser() called asynchronously....");
 
         try {
             //Create the client with the context
@@ -97,9 +98,12 @@ public abstract class AbstractSrcAdapter implements SourceAdapter {
         }catch(MuleException me) {
 
             log.error(me.getMessage());
+        }catch (Exception e) {
+            log.error("Error occurred during modify user. " + e.getMessage());
+            log.error(e);
         }
         long endTime = System.currentTimeMillis();
-        log.debug("--ModifyUser:SynchAdapter execution time=" + (endTime-startTime));
+        log.debug("-- ModifyUser:SynchAdapter execution time=" + (endTime-startTime));
     }
 
     /**

@@ -1734,9 +1734,6 @@ public class DefaultProvisioningService extends AbstractProvisioningService
 
         log.debug("---DEFAULT PROVISIONING SERVICE: modifyUser called --");
 
-        log.debug("User passed in with the following Roles: " + pUser.getMemberOfRoles());
-
-        log.debug("-----------------------------------------------------");
 
         List<Login> newPrincipalList = pUser.getPrincipalList();
 

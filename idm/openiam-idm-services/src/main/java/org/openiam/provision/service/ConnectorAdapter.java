@@ -95,7 +95,7 @@ public class ConnectorAdapter {
 			return respType;
 
 		} catch (Exception e) {
-			// log.error(e);
+			log.error(e);
 			respType.setError(ErrorCode.OTHER_ERROR);
 			respType.addErrorMessage(e.toString());
 			return respType;

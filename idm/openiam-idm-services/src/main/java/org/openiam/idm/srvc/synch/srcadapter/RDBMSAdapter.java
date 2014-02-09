@@ -81,12 +81,13 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
     public SyncResponse startSynch(final SynchConfig config) {
         int THREAD_COUNT = Integer.parseInt(res.getString("rdbmsvadapter.thread.count"));
         int THREAD_DELAY_BEFORE_START = Integer.parseInt(res.getString("rdbmsvadapter.thread.delay.beforestart"));
-        //TODO [Workaround] We set this delay for ActiveDirectory, it needs delay for import module
+
+
         THREAD_DELAY_BEFORE_SECOUNR_RECORD_EXECUTION = Integer.parseInt(res.getString("rdbmsvadapter.thread.delay.workaround_for_ad"));
 
         final ProvisionService provService = (ProvisionService) ac.getBean("defaultProvision");
 
-        log.debug("RDBMS SYNCH STARTED ^^^^^^^^");
+        log.debug("^^^^^^^^ RDBMS SYNCH STARTED ^^^^^^^^");
 
         String requestId = UUIDGen.getUUID();
 
@@ -131,8 +132,8 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
             }
 
 
-            log.debug("-SYNCH SQL=" + sql.toString());
-            log.debug("-last processed record =" + lastExec);
+            log.debug(" - SYNCH SQL= " + sql.toString());
+            log.debug(" - Last processed record =" + lastExec);
 
 
             PreparedStatement ps = con.prepareStatement(sql.toString());
@@ -154,7 +155,8 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
             }
 
             // test
-            log.debug("Result set contains following number of columns : " + rowHeader.getColumnMap().size());
+            log.debug(" - Number of records being processed for the synch:" + results.size());
+            log.debug(" - Result set contains following number of columns : " + rowHeader.getColumnMap().size());
 
 
             final ValidationScript validationScript = StringUtils.isNotEmpty(config.getValidationRule()) ? SynchScriptFactory.createValidationScript(config.getValidationRule()) : null;
@@ -170,7 +172,7 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
                     threadCoount++;
                 }
                 log.debug("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
-                System.out.println("Thread count = " + threadCoount + "; Rows in one thread = " + rowsInOneExecutors + "; Remains rows = " + remains);
+
                 List<Future> threadResults = new LinkedList<Future>();
                 // store the latest processed record by thread indx
                 final Map<String, Timestamp> recentRecordByThreadInx = new HashMap<String, Timestamp>();
@@ -275,7 +277,7 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
             auditHelper.logEvent(synchEndLog);
         }
 
-        log.debug("RDBMS SYNCH COMPLETE.^^^^^^^^");
+        log.debug("^^^^^^^^ RDBMS SYNCH COMPLETE.^^^^^^^^");
 
 
         closeConnection();
@@ -286,6 +288,11 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
     private Timestamp proccess(SynchConfig config, ProvisionService provService, IdmAuditLog synchStartLog, List<LineObject> part, final ValidationScript validationScript, final TransformScript transformScript, int ctr) throws ClassNotFoundException {
         Timestamp mostRecentRecord = null;
         int rowCounter = 0;
+
+        if ( part != null ) {
+            log.debug(" - In Process(). Number of lineObjects in part = " + part.size());
+        }
+
         for (LineObject rowObj : part) {
             rowCounter ++;
             if(rowCounter == 2) {
@@ -365,7 +372,7 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
                     log.debug("- Transform result=" + retval);
 
                     // show the user object
-                    log.debug("- User After Transformation =" + pUser);
+                    //log.debug("- User After Transformation =" + pUser);
                     log.debug("- User = " + pUser.getUserId() + "-" + pUser.getFirstName() + " " + pUser.getLastName());
                     log.debug("- User Attributes = " + pUser.getUserAttributes());
                 }
@@ -380,16 +387,15 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
                         // call synch
                         if (retval != TransformScript.DELETE) {
 
-                            log.debug("-Provisioning user=" + pUser.getLastName());
 
                             if (usr != null) {
-                                log.debug("-updating existing user...systemId=" + pUser.getUserId());
+                                log.debug("- Calling ModifyUser for existing user...UserID=" + pUser.getUserId());
                                 pUser.setUserId(usr.getUserId());
 
                                 modifyUser(pUser);
 
                             } else {
-                                log.debug("-adding new user...");
+                                log.debug("- adding new user...");
 
                                 pUser.setUserId(null);
                                 addUser(pUser);

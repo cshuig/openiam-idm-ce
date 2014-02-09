@@ -93,6 +93,9 @@ public class RemoteConnectorAdapter {
     private UserResponse send(String eventName, UserRequest request, ProvisionConnector connector, MuleContext muleContext){
         UserResponse resp = new UserResponse();
         resp.setStatus(StatusCodeType.FAILURE);
+
+        log.debug("Calling send().." + eventName);
+
         MuleMessage msg = getService(connector, request, connector.getServiceUrl(), eventName, muleContext);
         if (msg != null) {
             log.debug("***Payload=" + msg.getPayload());
