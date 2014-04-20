@@ -1,6 +1,6 @@
 package org.openiam.idm.srvc.edu.course.service;
 
-import org.openiam.idm.srvc.edu.course.dto.Course;
+import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 
@@ -18,14 +18,14 @@ public interface CourseDAO {
      *
      * @param id
      */
-    Course findById(String id);
+    CourseEntity findById(String id);
 
-    Course add(Course instance);
+    void add(CourseEntity instance);
 
-    Course update(Course instance);
+    void update(CourseEntity instance);
 
-    void remove(Course instance);
-    List<Course> getAllCourses();
+    void remove(CourseEntity instance);
+    List<CourseEntity> getAllCourses();
 
     List<CourseSearchResult> searchCourses(CourseSearch search);
     public CourseSearchResult getCourseByTerm(String courseId, String termId);

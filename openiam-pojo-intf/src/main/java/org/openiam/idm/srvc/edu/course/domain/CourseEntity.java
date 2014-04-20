@@ -1,67 +1,66 @@
-package org.openiam.idm.srvc.edu.course.dto;
+package org.openiam.idm.srvc.edu.course.domain;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
+import org.openiam.idm.srvc.edu.course.dto.Course;
+import org.openiam.idm.srvc.edu.course.dto.CourseAttribute;
+import org.openiam.idm.srvc.edu.course.dto.CourseTerm;
+import org.openiam.idm.srvc.edu.course.dto.Program;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * <p/>
- * Java class for Program complex type.
- * <p/>
- * <p/>
- * The following schema fragment specifies the expected content contained within
- * this class.
- * <p/>
- * </pre>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Course", propOrder = {
-        "id",
-        "status",
-        "name",
-        "courseNumber",
-        "districtId",
-        "courseFolder",
-        "courseAttributes",
-        "selected",
-        "operation",
-        "schoolId",
-        "schoolName",
-        "districtName",
-"programMembership",
-"courseTerms"}
-)
-@XmlRootElement(name = "Course")
-@DozerDTOCorrespondence(CourseEntity.class)
-public class Course implements java.io.Serializable {
+@Entity
+@Table(name = "COURSE")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@DozerDTOCorrespondence(Course.class)
+public class CourseEntity implements java.io.Serializable {
 
+    @Id
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name="COURSE_ID", length=32)
     protected String id;
+
+    @Column(name="STATUS",length=20)
     protected String status;
+
+    @Column(name="NAME",length=60)
     protected String name;
 
+    @Column(name="COURSE_NUMBER",length=60)
     protected String courseNumber;
+
     // organization
+    @Column(name="DISTRICT_ID",length=32)
     protected String districtId;
+
+    @Column(name="SCHOOL_ID",length=32)
     protected String schoolId;
 
+    @Column(name="COURSE_FOLDER",length=255)
     protected String courseFolder;
 
+    @Transient
     protected Boolean selected = Boolean.FALSE;
+    @Transient
     protected AttributeOperationEnum operation;
 
+    @Transient
     protected Set<CourseAttribute> courseAttributes = new HashSet<CourseAttribute>();
+    @Transient
     protected Set<Program> programMembership = new HashSet<Program>();
+    @Transient
     protected Set<CourseTerm> courseTerms = new HashSet<CourseTerm>();
 
-
+    @Transient
     protected String schoolName;
+    @Transient
     protected String districtName;
 
 
@@ -70,7 +69,7 @@ public class Course implements java.io.Serializable {
     /**
      * default constructor
      */
-    public Course() {
+    public CourseEntity() {
     }
 
     public Set<CourseAttribute> getCourseAttributes() {
@@ -190,9 +189,9 @@ public class Course implements java.io.Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Course)) return false;
+        if (!(o instanceof CourseEntity)) return false;
 
-        Course course = (Course) o;
+        CourseEntity course = (CourseEntity) o;
 
         if (courseFolder != null ? !courseFolder.equals(course.courseFolder) : course.courseFolder != null)
             return false;

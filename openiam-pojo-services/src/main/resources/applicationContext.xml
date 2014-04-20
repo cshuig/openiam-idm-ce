@@ -832,7 +832,7 @@
 				</value>
 
                 <value>org/openiam/idm/srvc/edu/course/service/Program.hbm.xml</value>
-                <value>org/openiam/idm/srvc/edu/course/service/Course.hbm.xml</value>
+                <!--value>org/openiam/idm/srvc/edu/course/service/Course.hbm.xml</value -->
                 <value>org/openiam/idm/srvc/edu/course/service/CourseAttribute.hbm.xml</value>
                 <value>org/openiam/idm/srvc/edu/course/service/Term.hbm.xml</value>
 
@@ -870,6 +870,7 @@
                                                org.openiam.idm.srvc.role.domain*,
                                                org.openiam.idm.srvc.grp.domain*,
                                                org.openiam.idm.srvc.msg.domain*,
+                                               org.openiam.idm.srvc.edu.course.domain*,
                                                org.openiam.idm.srvc.report.domain*" />
 	</bean>
 

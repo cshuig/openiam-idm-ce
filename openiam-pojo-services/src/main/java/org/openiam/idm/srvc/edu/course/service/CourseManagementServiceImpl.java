@@ -2,11 +2,16 @@ package org.openiam.idm.srvc.edu.course.service;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.openiam.dozer.converter.CourseDozerConverter;
+import org.openiam.exception.data.DataException;
+import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.dto.Program;
 import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +21,8 @@ public class CourseManagementServiceImpl implements CourseManagementService {
     protected CourseDAO courseDao;
     protected TermDAO termDao;
 
+    @Autowired
+    private CourseDozerConverter courseDozerConverter;
 
     @Override
     public List<Program> getAllPrograms() {
@@ -47,23 +54,53 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     }
 
-
-    @Override
+    @Transactional
     public Course addCourse(Course course) {
-       Course cr = courseDao.add(course);
-        return cr;
+        if (course == null) {
+            throw new NullPointerException("Course is null");
 
+        }
+        try {
+
+            CourseEntity entity = courseDozerConverter.convertToEntity(course, true);
+            courseDao.add(entity);
+            course.setId(entity.getId());
+            return course;
+
+        }catch (Exception e) {
+            throw new DataException(e.getMessage(), e.getCause());
+        }
     }
 
-    @Override
+    @Transactional
     public Course updateCourse(Course course) {
-        Course cr = courseDao.update(course);
-        return cr;
+        if (course == null) {
+            throw new NullPointerException("Course is null");
+
+        }
+        try {
+
+            CourseEntity entity = courseDozerConverter.convertToEntity(course, true);
+            courseDao.update(entity);
+            course.setId(entity.getId());
+            return course;
+
+        }catch (Exception e) {
+            throw new DataException(e.getMessage(), e.getCause());
+        }
     }
 
-    @Override
+
+
+
+    @Transactional
     public void removeCourse(String courseId) {
-        Course c = courseDao.findById(courseId);
+        if (courseId == null) {
+            throw new NullPointerException("Course is null");
+
+        }
+
+        CourseEntity c = courseDao.findById(courseId);
         if (c != null) {
 
             courseDao.remove(c);

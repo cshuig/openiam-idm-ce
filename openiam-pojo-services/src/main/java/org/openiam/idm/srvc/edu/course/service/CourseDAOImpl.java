@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.mule.util.StringUtils;
+import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
@@ -48,10 +49,10 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
 
-    public Course findById(String id) {
+    public CourseEntity findById(String id) {
         try {
-            Course instance = (Course) sessionFactory
-                    .getCurrentSession().get(Course.class, id);
+            CourseEntity instance = (CourseEntity) sessionFactory
+                    .getCurrentSession().get(CourseEntity.class, id);
             if (instance == null) {
                 log.debug("get successful, no instance found");
             } else {
@@ -67,15 +68,12 @@ public class CourseDAOImpl implements CourseDAO {
 
 
     @Override
-    public Course add(Course program) {
-        log.debug("persisting Program instance");
+    public void add(CourseEntity program) {
+        log.debug("persisting CourseEntity instance");
         try {
 
             Session session = sessionFactory.getCurrentSession();
             session.persist(program);
-
-            log.debug("persist successful");
-            return program;
 
         } catch (RuntimeException re) {
             log.error("persist failed", re);
@@ -85,7 +83,7 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public void remove(Course instance) {
+    public void remove(CourseEntity instance) {
         log.debug("deleting Address instance");
         try {
             sessionFactory.getCurrentSession().delete(instance);
@@ -96,10 +94,12 @@ public class CourseDAOImpl implements CourseDAO {
         }
     }
 
-    public Course update(Course instance) {
+    public void update(CourseEntity instance) {
         log.debug("merging Organization instance");
+
         try {
-            return (Course) sessionFactory.getCurrentSession().merge(instance);
+            sessionFactory.getCurrentSession().merge(instance);
+
         } catch (RuntimeException re) {
             log.error("merge failed", re);
             throw re;
@@ -107,13 +107,13 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public List<Course> getAllCourses() {
+    public List<CourseEntity> getAllCourses() {
         Session session = sessionFactory.getCurrentSession();
         Criteria criteria = session.createCriteria(Course.class)
                 .addOrder(Order.asc("name"))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-        List<Course> results = (List<Course>)criteria.list();
+        List<CourseEntity> results = (List<CourseEntity>)criteria.list();
         return results;
     }
 
