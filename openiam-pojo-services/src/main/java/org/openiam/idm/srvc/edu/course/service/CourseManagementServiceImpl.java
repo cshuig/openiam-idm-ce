@@ -3,8 +3,10 @@ package org.openiam.idm.srvc.edu.course.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.openiam.dozer.converter.CourseDozerConverter;
+import org.openiam.dozer.converter.ProgramDozerConverter;
 import org.openiam.exception.data.DataException;
 import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
+import org.openiam.idm.srvc.edu.course.domain.ProgramEntity;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
@@ -23,34 +25,65 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     @Autowired
     private CourseDozerConverter courseDozerConverter;
+    @Autowired
+    private ProgramDozerConverter programDozerConverter;
 
-    @Override
+    @Transactional(readOnly = true)
     public List<Program> getAllPrograms() {
 
-        return programDao.getAllPrograms();
+        return programDozerConverter.convertToDTOList( programDao.getAllPrograms(), false);
+
 
     }
 
-    @Override
+    @Transactional
     public void removeProgram(String programId) {
-        Program prg = programDao.findById(programId);
-        if (prg != null) {
-
-            programDao.remove(prg);
+        if (programId == null) {
+            throw new NullPointerException("programId is null");
         }
+
+        ProgramEntity pe = programDao.findById(programId);
+        if (pe != null) {
+            programDao.remove(pe);
+        }
+
     }
 
-    @Override
+    @Transactional
     public Program addProgram(Program program) {
+        if (program == null) {
+            throw new NullPointerException("Program is null");
 
-        Program prg = programDao.add(program);
-        return prg;
+        }
+        try {
+            ProgramEntity pe = programDozerConverter.convertToEntity(program,true);
+            programDao.add(pe);
+
+            program.setId(pe.getId());
+            return program;
+
+        }catch (Exception e) {
+            throw new DataException(e.getMessage(), e.getCause());
+        }
+
+
     }
 
-    @Override
+    @Transactional
     public Program updateProgram(Program program) {
-        Program prg = programDao.update(program);
-        return prg;
+        if (program == null) {
+            throw new NullPointerException("Program is null");
+
+        }
+        try {
+            ProgramEntity pe = programDozerConverter.convertToEntity(program,true);
+            programDao.update(pe);
+
+            return program;
+
+        }catch (Exception e) {
+            throw new DataException(e.getMessage(), e.getCause());
+        }
 
     }
 

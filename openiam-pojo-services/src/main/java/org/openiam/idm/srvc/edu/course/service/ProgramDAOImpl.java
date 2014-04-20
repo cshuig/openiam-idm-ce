@@ -7,7 +7,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
-import org.openiam.idm.srvc.edu.course.dto.Program;
+import org.openiam.idm.srvc.edu.course.domain.ProgramEntity;
 
 import javax.naming.InitialContext;
 import java.util.List;
@@ -38,10 +38,10 @@ public class ProgramDAOImpl implements ProgramDAO {
     }
 
 
-    public Program findById(String id) {
+    public ProgramEntity findById(String id) {
         try {
-            Program instance = (Program) sessionFactory
-                    .getCurrentSession().get(Program.class, id);
+            ProgramEntity instance = (ProgramEntity) sessionFactory
+                    .getCurrentSession().get(ProgramEntity.class, id);
             if (instance == null) {
                 log.debug("get successful, no instance found");
             } else {
@@ -57,15 +57,13 @@ public class ProgramDAOImpl implements ProgramDAO {
 
 
     @Override
-    public Program add(Program program) {
+    public void add(ProgramEntity program) {
         log.debug("persisting Program instance");
         try {
 
             Session session = sessionFactory.getCurrentSession();
             session.persist(program);
 
-            log.debug("persist successful");
-            return program;
 
         } catch (RuntimeException re) {
             log.error("persist failed", re);
@@ -75,7 +73,7 @@ public class ProgramDAOImpl implements ProgramDAO {
     }
 
     @Override
-    public void remove(Program instance) {
+    public void remove(ProgramEntity instance) {
         log.debug("deleting Address instance");
         try {
             sessionFactory.getCurrentSession().delete(instance);
@@ -86,10 +84,10 @@ public class ProgramDAOImpl implements ProgramDAO {
         }
     }
 
-    public Program update(Program instance) {
+    public void update(ProgramEntity instance) {
         log.debug("merging Organization instance");
         try {
-            return (Program) sessionFactory.getCurrentSession().merge(instance);
+            sessionFactory.getCurrentSession().merge(instance);
         } catch (RuntimeException re) {
             log.error("merge failed", re);
             throw re;
@@ -97,13 +95,13 @@ public class ProgramDAOImpl implements ProgramDAO {
     }
 
     @Override
-    public List<Program> getAllPrograms() {
+    public List<ProgramEntity> getAllPrograms() {
         Session session = sessionFactory.getCurrentSession();
-        Criteria criteria = session.createCriteria(Program.class)
+        Criteria criteria = session.createCriteria(ProgramEntity.class)
                 .addOrder(Order.asc("name"))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);;
 
-        List<Program> results = (List<Program>)criteria.list();
+        List<ProgramEntity> results = (List<ProgramEntity>)criteria.list();
         return results;
     }
 }

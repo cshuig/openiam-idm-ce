@@ -1,6 +1,6 @@
 package org.openiam.idm.srvc.edu.course.service;
 
-import org.openiam.idm.srvc.edu.course.dto.Program;
+import org.openiam.idm.srvc.edu.course.domain.ProgramEntity;
 
 import java.util.List;
 
@@ -16,14 +16,14 @@ public interface ProgramDAO {
      *
      * @param id
      */
-    Program findById(String id);
+    ProgramEntity findById(String id);
 
-    Program add(Program instance);
+    void add(ProgramEntity instance);
 
-    Program update(Program instance);
+    void update(ProgramEntity instance);
 
-    void remove(Program instance);
-    List<Program> getAllPrograms();
+    void remove(ProgramEntity instance);
+    List<ProgramEntity> getAllPrograms();
 
 
 

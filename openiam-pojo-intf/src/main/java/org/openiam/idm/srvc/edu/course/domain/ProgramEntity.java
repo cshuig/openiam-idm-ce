@@ -1,42 +1,36 @@
-package org.openiam.idm.srvc.edu.course.dto;
+package org.openiam.idm.srvc.edu.course.domain;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseObject;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.edu.course.domain.ProgramEntity;
+import org.openiam.idm.srvc.edu.course.dto.Program;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.persistence.*;
 
-/**
- * <p/>
- * Java class for Program complex type.
- * <p/>
- * <p/>
- * The following schema fragment specifies the expected content contained within
- * this class.
- * <p/>
- * </pre>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Program", propOrder = {
-        "id",
-        "status",
-        "name",
-        "operation"}
-)
-@XmlRootElement(name = "Program")
-@DozerDTOCorrespondence(ProgramEntity.class)
-public class Program extends BaseObject implements java.io.Serializable {
 
+@Entity
+@Table(name = "PROGRAM")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@DozerDTOCorrespondence(Program.class)
+public class ProgramEntity extends BaseObject implements java.io.Serializable {
+
+    @Id
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name="PROGRAM_ID", length=32)
     protected String id;
 
+    @Column(name="STATUS",length=20)
     protected String status;
 
+    @Column(name="NAME",length=60)
     protected String name;
 
+    @Transient
     protected AttributeOperationEnum operation;
 
 
@@ -46,10 +40,10 @@ public class Program extends BaseObject implements java.io.Serializable {
     /**
      * default constructor
      */
-    public Program() {
+    public ProgramEntity() {
     }
 
-    public Program(String name) {
+    public ProgramEntity(String name) {
 
         this.name = name;
         this.id = null;
@@ -94,9 +88,9 @@ public class Program extends BaseObject implements java.io.Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Program)) return false;
+        if (!(o instanceof ProgramEntity)) return false;
 
-        Program program = (Program) o;
+        ProgramEntity program = (ProgramEntity) o;
 
         if (id != null ? !id.equals(program.id) : program.id != null) return false;
         if (name != null ? !name.equals(program.name) : program.name != null) return false;
