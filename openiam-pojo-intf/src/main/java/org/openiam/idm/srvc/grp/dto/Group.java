@@ -4,6 +4,7 @@ package org.openiam.idm.srvc.grp.dto;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.grp.domain.GroupEntity;
+import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.role.dto.Role;
 
 import javax.xml.bind.annotation.*;
@@ -40,12 +41,14 @@ import java.util.*;
         "ownerId",
         "internalGroupId",
         "externalGroupName",
-        "operation"
+        "operation",
+        "organizations"
 })
 @XmlRootElement(name = "Group")
 @XmlSeeAlso({
         Role.class,
-        GroupAttribute.class
+        GroupAttribute.class,
+        Organization.class
 })
 @DozerDTOCorrespondence(GroupEntity.class)
 public class Group implements java.io.Serializable {
@@ -91,6 +94,8 @@ public class Group implements java.io.Serializable {
     protected Map<String, org.openiam.idm.srvc.grp.dto.GroupAttribute> attributes = new HashMap<String, GroupAttribute>(0);
 
     protected List<Group> subGroup = new ArrayList<Group>(0);
+
+    protected Set<Organization> organizations = new HashSet<Organization>();
 
 
     // Constructors
@@ -440,6 +445,14 @@ public class Group implements java.io.Serializable {
 
     public void setExternalGroupName(String externalGroupName) {
         this.externalGroupName = externalGroupName;
+    }
+
+    public Set<Organization> getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(Set<Organization> organizations) {
+        this.organizations = organizations;
     }
 }
 

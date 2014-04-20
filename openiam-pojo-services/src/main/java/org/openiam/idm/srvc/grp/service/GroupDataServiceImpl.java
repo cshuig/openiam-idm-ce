@@ -672,6 +672,46 @@ public class GroupDataServiceImpl implements GroupDataService {
         return groupDozerConverter.convertToDTOList(entities, false);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Group> getGroupsByOrg(String orgId) {
+        if (orgId == null) {
+            throw new NullPointerException("orgId is null");
+        }
+        List<GroupEntity> entities =  groupDao.getGroupsByOrg(orgId);
+        return groupDozerConverter.convertToDTOList(entities, false);
+
+    }
+
+
+    @Override
+    @Transactional
+    public void addOrgToGroup(String orgId, String groupId) {
+        if (orgId == null) {
+            throw new NullPointerException("orgId is null");
+        }
+        if (groupId == null) {
+            throw new NullPointerException("groupId is null");
+        }
+
+        groupDao.addOrgToGroup(orgId, groupId);
+
+    }
+
+    @Override
+    @Transactional
+    public void removeOrgFromGroup(String orgId, String groupId) {
+        if (orgId == null) {
+            throw new NullPointerException("orgId is null");
+        }
+        if (groupId == null) {
+            throw new NullPointerException("groupId is null");
+        }
+
+        groupDao.removeOrgFromGroup(orgId,groupId);
+
+    }
+
     /*--  Spring framework related getters and setters. ---*/
 
     /*

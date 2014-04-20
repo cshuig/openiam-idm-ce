@@ -21,13 +21,14 @@
  */
 package org.openiam.idm.srvc.batch;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.mule.api.MuleContext;
+import org.mule.api.MuleMessage;
+import org.mule.api.context.MuleContextAware;
+import org.mule.module.client.MuleClient;
 import org.openiam.base.id.UUIDGen;
 import org.openiam.idm.srvc.audit.service.AuditHelper;
 import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
@@ -58,13 +59,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.net.ConnectException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Job bean that is called by quartz to kick off the nightly tasks.
  * 
  * @author suneet
  * 
  */
-public class NightlyTask implements ApplicationContextAware {
+public class NightlyTask implements ApplicationContextAware, MuleContextAware {
 
 	private static final Log log = LogFactory.getLog(NightlyTask.class);
 
@@ -88,10 +93,18 @@ public class NightlyTask implements ApplicationContextAware {
 	protected BatchDataService batchService;
 	protected String scriptEngine;
 	protected AuditHelper auditHelper;
-	
+
+    protected MuleContext muleContext;
+
 	static protected ResourceBundle res = ResourceBundle
 			.getBundle("datasource");
-	boolean isPrimary = Boolean.parseBoolean(res.getString("IS_PRIMARY"));
+
+    static boolean isPrimary = Boolean.parseBoolean(res.getString("IS_PRIMARY"));
+    static boolean isDisabled = Boolean.parseBoolean(res.getString("IS_DISABLED"));
+
+
+    static String serviceHost = res.getString("PRIMARY_HOST");
+    static String serviceContext = res.getString("openiam.idm.ws.path");
 
 	// used to inject the application context into the groovy scripts
 	public static ApplicationContext ac;
@@ -103,12 +116,22 @@ public class NightlyTask implements ApplicationContextAware {
 		Map<String, Object> bindingMap = new HashMap<String, Object>();
 		bindingMap.put("context", ac);
 
-		if (!isPrimary) {
-			log.debug("Scheduler: Not primary instance");
-			return;
-		}
 
-		try {
+        if (isDisabled) {
+            return;
+        }
+
+        if (!isPrimary) {
+            log.debug("Scheduler: Not primary instance");
+
+            if (isAlive()) {
+                log.debug("Primary is alive.");
+                return;
+            }
+        }
+
+
+        try {
 			se = ScriptFactory.createModule(this.scriptEngine);
 		} catch (Exception e) {
 			log.error(e);
@@ -274,6 +297,39 @@ public class NightlyTask implements ApplicationContextAware {
 			}
 		}
 	}
+
+
+
+    private boolean isAlive() {
+        Map<String, String> msgPropMap = new HashMap<String, String>();
+        msgPropMap.put("SERVICE_HOST", serviceHost);
+        msgPropMap.put("SERVICE_CONTEXT", serviceContext);
+
+        log.debug("Heartbeat values in Nightly Task: " + serviceHost + " / " + serviceContext);
+
+        //Create the client with the context
+        try {
+
+            MuleClient client = new MuleClient(muleContext);
+            MuleMessage muleMessage = client.send("vm://heartBeatIsAlive", "", msgPropMap);
+
+        } catch(Exception  ce) {
+            log.error(ce.toString());
+
+            if (ce instanceof ConnectException) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    public void setMuleContext(MuleContext ctx) {
+
+        log.debug("** Setting MuleContext for NightlyTask **");
+
+        muleContext = ctx;
+    }
 
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {

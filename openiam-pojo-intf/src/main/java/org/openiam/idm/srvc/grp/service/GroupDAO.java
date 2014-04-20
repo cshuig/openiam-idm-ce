@@ -113,5 +113,8 @@ public interface GroupDAO {
 
     public List<GroupEntity> search(GroupSearch search);
 
+    public List<GroupEntity> getGroupsByOrg(String orgId);
+    void addOrgToGroup(String orgId, String groupId) ;
+    void removeOrgFromGroup(String orgId, String groupId);
 
 }

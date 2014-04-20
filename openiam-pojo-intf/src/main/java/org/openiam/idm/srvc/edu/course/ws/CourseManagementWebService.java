@@ -59,6 +59,14 @@ public interface CourseManagementWebService {
             CourseSearch search);
 
     @WebMethod
+    CourseSearchResponse getCourseByTerm(
+            @WebParam(name = "courseId", targetNamespace = "")
+            String courseId,
+            @WebParam(name = "termId", targetNamespace = "")
+            String termId);
+
+
+    @WebMethod
     public TermResponse addTerm(
             @WebParam(name = "term", targetNamespace = "")
             Term term) ;

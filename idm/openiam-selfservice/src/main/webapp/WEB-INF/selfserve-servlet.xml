@@ -830,6 +830,9 @@
         <property name="commandClass" value="org.openiam.selfsrvc.edu.common.course.CourseDetailCommand" />
         <property name="formView" value="/priv/edu/common/course/coursedetail" />
         <property name="successView" value="/pub/confirm" />
+        <property name="orgManager" ref="orgServiceClient" />
+        <property name="courseManager" ref="courseServiceClient" />
+
     </bean>
 
     <bean id="programs" class="org.openiam.selfsrvc.edu.common.course.ProgramsController">

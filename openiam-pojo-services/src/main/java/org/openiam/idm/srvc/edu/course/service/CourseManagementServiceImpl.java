@@ -76,6 +76,11 @@ public class CourseManagementServiceImpl implements CourseManagementService {
         return courseDao.searchCourses(search);
     }
 
+    public CourseSearchResult getCourseByTerm(String courseId, String termId) {
+        return courseDao.getCourseByTerm(courseId, termId);
+    }
+
+
     /* Term operation */
 
     public Term addTerm(Term term) {

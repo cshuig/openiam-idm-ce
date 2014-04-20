@@ -1,13 +1,7 @@
 package org.openiam.idm.srvc.batch;
 
-import java.util.*;
-
-import java.net.ConnectException;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.mule.api.MuleContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.context.MuleContextAware;
@@ -24,6 +18,10 @@ import org.openiam.script.ScriptIntegration;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.net.ConnectException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -56,6 +54,8 @@ public class IntervalTask  implements ApplicationContextAware, MuleContextAware 
 
     static boolean isPrimary = Boolean.parseBoolean(res.getString("IS_PRIMARY"));
 
+    static boolean isDisabled = Boolean.parseBoolean(res.getString("IS_DISABLED"));
+
     static String serviceHost = res.getString("PRIMARY_HOST");
     static String serviceContext = res.getString("openiam.idm.ws.path");
 
@@ -68,6 +68,10 @@ public class IntervalTask  implements ApplicationContextAware, MuleContextAware 
 
 	public void execute(String frequencyMeasure) 
 	{
+        if (isDisabled) {
+            return;
+        }
+
         if (!isPrimary) {
             log.debug("Scheduler: Not primary instance");
 
@@ -161,6 +165,9 @@ public class IntervalTask  implements ApplicationContextAware, MuleContextAware 
         Map<String, String> msgPropMap = new HashMap<String, String>();
         msgPropMap.put("SERVICE_HOST", serviceHost);
         msgPropMap.put("SERVICE_CONTEXT", serviceContext);
+
+
+        log.debug("Heartbeat values in Interval Task: " + serviceHost + " / " + serviceContext);
 
 
         //Create the client with the context

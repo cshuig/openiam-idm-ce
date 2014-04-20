@@ -2,7 +2,9 @@ package org.openiam.idm.srvc.grp.service;
 
 // Generated Jun 12, 2007 10:46:15 PM by Hibernate Tools 3.2.0.beta8
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.naming.InitialContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +23,10 @@ import org.openiam.idm.srvc.grp.domain.GroupEntity;
 import org.openiam.idm.srvc.grp.domain.UserGroupEntity;
 import org.openiam.idm.srvc.grp.dto.GroupSearch;
 
+import org.openiam.idm.srvc.org.domain.OrganizationEntity;
+import org.openiam.idm.srvc.org.service.OrganizationDAO;
+import org.openiam.idm.srvc.role.domain.RoleEmbeddableId;
+import org.openiam.idm.srvc.role.domain.RoleEntity;
 import org.openiam.idm.srvc.user.service.UserDAO;
 /**
  * Data access object interface for Group. 
@@ -30,6 +36,7 @@ import org.openiam.idm.srvc.user.service.UserDAO;
 public class GroupDAOImpl implements org.openiam.idm.srvc.grp.service.GroupDAO {
 
 	protected UserDAO userDao;
+    protected OrganizationDAO orgDao;
 
 	private static final Log log = LogFactory.getLog(GroupDAOImpl.class);
 
@@ -268,8 +275,71 @@ public class GroupDAOImpl implements org.openiam.idm.srvc.grp.service.GroupDAO {
 		
 	}
 
+    public List<GroupEntity> getGroupsByOrg(String orgId) {
+
+        Session session = sessionFactory.getCurrentSession();
+        Query qry = session
+                .createQuery(" select g from org.openiam.idm.srvc.grp.domain.GroupEntity g "
+                        + "		 join g.organizations as org "
+                        + " where org.orgId = :orgId "
+                        + " order by g.grpName asc");
+
+        qry.setString("orgId", orgId);
+
+        List<GroupEntity> results = (List<GroupEntity>) qry.list();
+        if (results == null || results.size() == 0)
+            return null;
+        return results;
 
 
+    }
+
+
+
+    public void addOrgToGroup(String orgId, String groupId) {
+
+        GroupEntity ge = findById(groupId,true);
+        OrganizationEntity oe =  orgDao.findById(orgId);
+
+        ge.getOrganizations().add(oe);
+
+        try {
+            sessionFactory.getCurrentSession().save(ge);
+            log.debug("persist user to group successful");
+        } catch (HibernateException re) {
+            re.printStackTrace();
+            log.error("persist failed", re);
+            throw re;
+        }
+
+
+
+    }
+
+    public void removeOrgFromGroup(String orgId, String groupId) {
+        GroupEntity ge = findById(groupId,true);
+
+        if (ge == null) {
+            throw new ObjectNotFoundException();
+        }
+
+        Set<OrganizationEntity> orgs =  ge.getOrganizations();
+        if (orgs != null && !orgs.isEmpty()) {
+
+            Iterator<OrganizationEntity> it = orgs.iterator();
+            while ( it.hasNext() ) {
+                OrganizationEntity oe = it.next();
+                if (oe.getOrgId().equals(orgId))  {
+                    it.remove();
+                }
+
+            }
+
+        }
+
+
+
+    }
 
 
 	public UserDAO getUserDao() {
@@ -287,7 +357,14 @@ public class GroupDAOImpl implements org.openiam.idm.srvc.grp.service.GroupDAO {
 	public void setMaxResultSetSize(Integer maxResultSetSize) {
 		this.maxResultSetSize = maxResultSetSize;
 	}
-	
+
+    public OrganizationDAO getOrgDao() {
+        return orgDao;
+    }
+
+    public void setOrgDao(OrganizationDAO orgDao) {
+        this.orgDao = orgDao;
+    }
 }
 
 

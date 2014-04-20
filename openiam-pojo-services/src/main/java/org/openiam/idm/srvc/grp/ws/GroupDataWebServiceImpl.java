@@ -336,9 +336,32 @@ public class GroupDataWebServiceImpl implements GroupDataWebService {
 		return resp;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openiam.idm.srvc.grp.ws.GroupDataWebService#updateAttribute(org.openiam.idm.srvc.grp.dto.GroupAttribute)
-	 */
+    @Override
+    public GroupListResponse getGroupsByOrg(@WebParam(name = "orgId", targetNamespace = "") String orgId) {
+        GroupListResponse resp = new GroupListResponse(ResponseStatus.SUCCESS);
+        List<Group> grpList = groupManager.getGroupsByOrg(orgId);
+        if (grpList == null || grpList.isEmpty()) {
+            resp.setStatus(ResponseStatus.FAILURE);
+            return resp;
+        }
+        resp.setGroupList(grpList);
+        return resp;
+
+    }
+
+    @Override
+    public void addOrgToGroup(@WebParam(name = "orgId", targetNamespace = "") String orgId, @WebParam(name = "groupId", targetNamespace = "") String groupId) {
+        groupManager.addOrgToGroup(orgId, groupId);
+    }
+
+    @Override
+    public void removeOrgFromGroup(@WebParam(name = "orgId", targetNamespace = "") String orgId, @WebParam(name = "groupId", targetNamespace = "") String groupId) {
+        groupManager.removeOrgFromGroup(orgId, groupId);
+    }
+
+    /* (non-Javadoc)
+      * @see org.openiam.idm.srvc.grp.ws.GroupDataWebService#updateAttribute(org.openiam.idm.srvc.grp.dto.GroupAttribute)
+      */
 	public Response updateAttribute(GroupAttribute attribute) {
 		groupManager.updateAttribute(attribute); 
 		return  new Response(ResponseStatus.SUCCESS);

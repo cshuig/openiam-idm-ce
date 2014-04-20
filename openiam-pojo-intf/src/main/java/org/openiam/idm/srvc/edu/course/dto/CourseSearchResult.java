@@ -15,20 +15,36 @@ import java.io.Serializable;
         "schoolName",
         "termName",
         "sectionNbr",
-        "courseTermId"}
+        "courseTermId",
+"districtId",
+"schoolId"}
 )
 public class CourseSearchResult implements Serializable{
 
-    String courseId;
-    String name;
-    String courseNumber;
-    String districtName;
-    String schoolName;
-    String termName;
-    String sectionNbr;
-    String courseTermId;
+    private String courseId;
+    private String name;
+    private String courseNumber;
+    private String districtName;
+    private String schoolName;
+    private String termName;
+    private String sectionNbr;
+    private String courseTermId;
+    private String districtId;
+    private  String schoolId;
 
     public CourseSearchResult() {
+    }
+
+    public Course getCourse() {
+        Course c = new Course();
+        c.setId(courseId);
+        c.setCourseNumber(courseNumber);
+        c.setDistrictId(districtId);
+        c.setDistrictName(districtName);
+        c.setName(name);
+        c.setSchoolId(schoolId);
+        c.setSchoolName(schoolName);
+        return c;
     }
 
     public String getCourseId() {
@@ -95,6 +111,22 @@ public class CourseSearchResult implements Serializable{
         this.courseTermId = courseTermId;
     }
 
+    public String getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(String districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(String schoolId) {
+        this.schoolId = schoolId;
+    }
+
     @Override
     public String toString() {
         return "CourseSearchResult{" +
@@ -106,6 +138,8 @@ public class CourseSearchResult implements Serializable{
                 ", termName='" + termName + '\'' +
                 ", sectionNbr='" + sectionNbr + '\'' +
                 ", courseTermId='" + courseTermId + '\'' +
+                ", districtId='" + districtId + '\'' +
+                ", schoolId='" + schoolId + '\'' +
                 '}';
     }
 }

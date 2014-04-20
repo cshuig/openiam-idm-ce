@@ -15,10 +15,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class SelectCoursesController extends SimpleFormController {
@@ -44,12 +41,35 @@ public class SelectCoursesController extends SimpleFormController {
 	protected Object formBackingObject(HttpServletRequest request)
 			throws Exception {
 		
-		SelectCoursesCommand rptIncidentCmd = new SelectCoursesCommand();
-		
+		SelectCoursesCommand coursesCommand = new SelectCoursesCommand();
 
-		
-		
-		return rptIncidentCmd;
+        List<Organization> districtList =  orgManager.getOrganizationByType("districtType", null);
+
+        coursesCommand.setDistrictList(districtList);
+
+        List<Organization> schoolList = new LinkedList<Organization>();
+
+        for (Organization org : districtList) {
+
+            // build the list of schools so that we in the name we can show the district-> schoolname
+            List<Organization> childOrgList =  orgManager.getOrganizationList(org.getOrgId(), "ACTIVE") ;
+            if (childOrgList != null && !childOrgList.isEmpty()) {
+
+                for (Organization cOrg : childOrgList) {
+                    cOrg.setOrganizationName( org.getOrganizationName() + " - " + cOrg.getOrganizationName());
+                    schoolList.add(cOrg);
+                }
+
+
+            }
+
+
+        }
+        coursesCommand.setSchoolList(schoolList);
+        coursesCommand.setProgramList(courseManager.getAllPrograms().getProgramList());
+
+
+		return coursesCommand;
 		
 		
 	}

@@ -25,7 +25,7 @@
 
                         <form:select path="search.districtId">
                             <form:option value="" label="-Please Select-"/>
-                            <form:options items="${district}" itemValue="orgId" itemLabel="organizationName"/>
+                            <form:options items="${courseSelCmd.districtList}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
                     </div>
 
@@ -34,7 +34,7 @@
 
                         <form:select path="search.schoolId">
                             <form:option value="" label="-Please Select-"/>
-                            <form:options items="${school}" itemValue="orgId" itemLabel="organizationName"/>
+                            <form:options items="${courseSelCmd.schoolList}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
                     </div>
 
@@ -57,6 +57,7 @@
                         <label>Program</label>
                         <form:select path="search.program">
                             <form:option value="" label="-Please Select-"/>
+                            <form:options items="${courseSelCmd.programList}" itemValue="id" itemLabel="name"/>
 
                         </form:select>
                     </div>

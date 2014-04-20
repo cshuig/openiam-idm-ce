@@ -8,6 +8,10 @@
 <h4>Course Detail </h4>
 
 <form:form commandName="courseDetailCmd" cssClass="user-info">
+    <form:hidden path="course.id"  />
+    <form:hidden path="course.districtId"  />
+    <form:hidden path="course.schoolId"  />
+
     <fieldset>
 
 
@@ -16,47 +20,43 @@
                 <div class="col-1">
 
                     <div class="row">
-                        <label for="t-1">District</label>
-                        Holland
+                        <label for="t-1">District:</label>
+                        ${courseDetailCmd.course.districtName}
                     </div>
                     <div class="row">
                         <label for="t-1">School</label>
-                        Holland
+                            ${courseDetailCmd.course.schoolName}
                     </div>
 
                     <div class="row">
                         <label for="t-1">Course Name</label>
-                        <input type=text value="Intro to Calculus">
+                        <form:input path="course.name" maxlength="30"  />
                     </div>
                     <div class="row">
                         <label for="t-1">Course #</label>
-                        <input type=text value="101">
+                        <form:input path="course.courseNumber" maxlength="30"  />
                     </div>
 
                     <div class="row">
                         <label for="t-1">Select Term</label>
-                        <select>
-                            <option>Please Select</option>
-                        </select>
+                        <form:select path="termId">
+                            <form:option value="" label="-Please Select-"/>
+                            <form:options items="${courseDetailCmd.termList}" itemValue="id" itemLabel="name"/>
+                        </form:select>
                     </div>
 
                     <div class="row">
                         <label for="t-1">Section</label>
-                        <select>
-                            <option>Please Select</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                        </select>
+                        <form:input path="section" maxlength="30"  />
+
                     </div>
                     <div class="row">
                         <label for="t-1">Program Membership:</label>
-                        <select multiple class="multiselect">
-                            <option>Program 1</option>
-                            <option>Program 2</option>
-                            <option>Program 3</option>
-                        </select>
+                        <form:select path="course.programMembership" multiple="true" cssClass="multiselect">
+                            <form:option value="" label="-Please Select-"/>
+                            <form:options items="${courseDetailCmd.programList}" itemValue="id" itemLabel="name"/>
+
+                        </form:select>
                     </div>
 
                     <div class="row">

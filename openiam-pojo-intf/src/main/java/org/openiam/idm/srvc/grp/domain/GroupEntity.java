@@ -1,15 +1,17 @@
 package org.openiam.idm.srvc.grp.domain;
 
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.grp.dto.Group;
+import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 import org.openiam.idm.srvc.role.dto.Role;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.*;
 
 @Entity
@@ -81,6 +83,13 @@ public class GroupEntity {
     @JoinColumn(name="GRP_ID", referencedColumnName="GRP_ID")
     @MapKeyColumn(name="name")
     private Map<String, GroupAttributeEntity> attributes = new HashMap<String, GroupAttributeEntity>(0);
+
+    @ManyToMany(cascade= CascadeType.ALL,fetch= FetchType.EAGER)
+    @JoinTable(name="GRP_ORG",
+            joinColumns={@JoinColumn(name="GRP_ID")},
+            inverseJoinColumns={@JoinColumn(name="COMPANY_ID")})
+    @Fetch(FetchMode.SELECT)
+    private Set<OrganizationEntity> organizations = new HashSet<OrganizationEntity>(0);
 
     @Transient
     private List<GroupEntity> subGroup = new LinkedList<GroupEntity>();
@@ -234,6 +243,14 @@ public class GroupEntity {
 
     public void setAttributes(Map<String, GroupAttributeEntity> attributes) {
         this.attributes = attributes;
+    }
+
+    public Set<OrganizationEntity> getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(Set<OrganizationEntity> organizations) {
+        this.organizations = organizations;
     }
 
     public List<GroupEntity> getSubGroup() {

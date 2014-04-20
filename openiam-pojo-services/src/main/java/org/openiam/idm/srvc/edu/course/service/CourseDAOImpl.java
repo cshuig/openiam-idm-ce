@@ -7,6 +7,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.mule.util.StringUtils;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -121,15 +123,50 @@ public class CourseDAOImpl implements CourseDAO {
         System.out.println("Searching for courses...in dao");
 
 
-        String sql = "SELECT COURSE_ID, NAME, COURSE_NUMBER, DISTRICT_NAME, SCHOOL_NAME, TERM_NAME, SECTION_NBR, COURSE_TERM_ID " +
-                " FROM course_summary_vw";
+        StringBuilder sql = new StringBuilder("SELECT COURSE_ID, NAME, COURSE_NUMBER, DISTRICT_NAME, SCHOOL_NAME, TERM_NAME, SECTION_NBR, " +
+                " COURSE_TERM_ID, DISTRICT_ID, SCHOOL_ID " +
+                " FROM course_summary_vw ") ;
+
+        List<Object> queryParam = new ArrayList<Object>();
+
+        if (StringUtils.isNotEmpty(search.getDistrictId())) {
+            sql.append(" WHERE DISTRICT_ID = ? " );
+            queryParam.add(search.getDistrictId());
+        }
+
+        if (StringUtils.isNotEmpty(search.getSchoolId())) {
+            sql.append(" WHERE SCHOOL_ID = ? " );
+            queryParam.add(search.getSchoolId());
+        }
 
 
-        List<CourseSearchResult> result  = jdbcTemplateObject.query(sql, new BeanPropertyRowMapper(CourseSearchResult.class));
 
+        List<CourseSearchResult> result  = jdbcTemplateObject.query(sql.toString(),
+                queryParam.toArray() ,
+                new BeanPropertyRowMapper(CourseSearchResult.class));
 
 
         return result;
+
+    }
+
+    public CourseSearchResult getCourseByTerm(String courseId, String termId) {
+        StringBuilder sql = new StringBuilder("SELECT COURSE_ID, NAME, COURSE_NUMBER, DISTRICT_NAME, SCHOOL_NAME, TERM_NAME, SECTION_NBR, " +
+                " COURSE_TERM_ID, DISTRICT_ID, SCHOOL_ID " +
+                " FROM course_summary_vw " +
+                " WHERE COURSE_ID = ? AND COURSE_TERM_ID = ? ") ;
+
+        List<Object> queryParam = new ArrayList<Object>();
+        queryParam.add(courseId);
+        queryParam.add(termId);
+
+
+        CourseSearchResult result  = (CourseSearchResult)jdbcTemplateObject.queryForObject (sql.toString(),
+                queryParam.toArray() ,
+                new BeanPropertyRowMapper(CourseSearchResult.class));
+
+        return result;
+
 
     }
 

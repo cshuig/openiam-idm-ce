@@ -131,6 +131,27 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
         return resp;
 
     }
+    @Override
+    public CourseSearchResponse getCourseByTerm(
+            @WebParam(name = "courseId", targetNamespace = "")
+            String courseId,
+            @WebParam(name = "termId", targetNamespace = "")
+            String termId) {
+
+        CourseSearchResponse resp = new CourseSearchResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        CourseSearchResult course =  courseService.getCourseByTerm(courseId,termId);
+        if (course != null ) {
+            resp.setCourse(course);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+        return resp;
+
+
+    }
+
 
     @Override
     @Transactional

@@ -1,5 +1,6 @@
 package org.openiam.idm.srvc.grp.service;
 
+import org.openiam.idm.srvc.grp.domain.GroupEntity;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.grp.dto.GroupAttribute;
 import org.openiam.idm.srvc.grp.dto.GroupSearch;
@@ -307,5 +308,9 @@ public interface GroupDataService {
      * @return
      */
     public List<Group> search(GroupSearch search);
+
+    public List<Group> getGroupsByOrg(String orgId);
+    void addOrgToGroup(String orgId, String groupId) ;
+    void removeOrgFromGroup(String orgId, String groupId);
 
 }

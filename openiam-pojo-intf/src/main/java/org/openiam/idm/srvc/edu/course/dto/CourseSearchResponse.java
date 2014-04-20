@@ -35,11 +35,13 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CourseSearchResponse", propOrder = {
-    "courseList"
+    "courseList",
+    "course"
 })
 public class CourseSearchResponse extends Response  {
 
     protected List<CourseSearchResult> courseList;
+    protected CourseSearchResult course;
 
 
 	public CourseSearchResponse() {
@@ -52,5 +54,13 @@ public class CourseSearchResponse extends Response  {
 
     public void setCourseList(List<CourseSearchResult> courseList) {
         this.courseList = courseList;
+    }
+
+    public CourseSearchResult getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseSearchResult course) {
+        this.course = course;
     }
 }

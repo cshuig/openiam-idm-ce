@@ -129,6 +129,7 @@
 
 	<bean id="groupDAO" class="org.openiam.idm.srvc.grp.service.GroupDAOImpl">
 		<property name="userDao" ref="userDAO" />
+        <property name="orgDao" ref="orgDAO" />
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="maxResultSetSize" value="100" />
 	</bean>

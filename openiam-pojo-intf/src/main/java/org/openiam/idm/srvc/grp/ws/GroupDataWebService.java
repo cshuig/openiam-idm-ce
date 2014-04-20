@@ -380,4 +380,25 @@ public interface GroupDataWebService {
             @WebParam(name = "search", targetNamespace = "")
             GroupSearch search);
 
+    @WebMethod
+    public GroupListResponse getGroupsByOrg(
+            @WebParam(name = "orgId", targetNamespace = "")
+            String orgId);
+
+
+    @WebMethod
+    void addOrgToGroup(
+            @WebParam(name = "orgId", targetNamespace = "")
+            String orgId,
+            @WebParam(name = "groupId", targetNamespace = "")
+            String groupId) ;
+
+    @WebMethod
+    void removeOrgFromGroup(
+            @WebParam(name = "orgId", targetNamespace = "")
+            String orgId,
+            @WebParam(name = "groupId", targetNamespace = "")
+            String groupId
+                );
+
 }

@@ -28,6 +28,7 @@ public interface CourseDAO {
     List<Course> getAllCourses();
 
     List<CourseSearchResult> searchCourses(CourseSearch search);
+    public CourseSearchResult getCourseByTerm(String courseId, String termId);
 
 
 

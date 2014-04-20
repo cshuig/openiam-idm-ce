@@ -1,6 +1,7 @@
 package org.openiam.idm.srvc.edu.course.dto;
 
 import org.openiam.base.AttributeOperationEnum;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -27,7 +28,12 @@ import java.util.Set;
         "courseFolder",
         "courseAttributes",
         "selected",
-        "operation"}
+        "operation",
+        "schoolId",
+        "schoolName",
+        "districtName",
+"programMembership",
+"courseTerms"}
 )
 public class Course implements java.io.Serializable {
 
@@ -38,13 +44,20 @@ public class Course implements java.io.Serializable {
     protected String courseNumber;
     // organization
     protected String districtId;
+    protected String schoolId;
+
     protected String courseFolder;
 
     protected Boolean selected = Boolean.FALSE;
     protected AttributeOperationEnum operation;
 
-    protected Set<CourseAttribute> courseAttributes = new HashSet<CourseAttribute>(0);
+    protected Set<CourseAttribute> courseAttributes = new HashSet<CourseAttribute>();
+    protected Set<Program> programMembership = new HashSet<Program>();
+    protected Set<CourseTerm> courseTerms = new HashSet<CourseTerm>();
 
+
+    protected String schoolName;
+    protected String districtName;
 
 
     // Constructors
@@ -128,6 +141,47 @@ public class Course implements java.io.Serializable {
         this.operation = operation;
     }
 
+
+    public String getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(String schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
+    }
+
+    public Set<Program> getProgramMembership() {
+        return programMembership;
+    }
+
+    public void setProgramMembership(Set<Program> programMembership) {
+        this.programMembership = programMembership;
+    }
+
+    public Set<CourseTerm> getCourseTerms() {
+        return courseTerms;
+    }
+
+    public void setCourseTerms(Set<CourseTerm> courseTerms) {
+        this.courseTerms = courseTerms;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -142,6 +196,7 @@ public class Course implements java.io.Serializable {
         if (districtId != null ? !districtId.equals(course.districtId) : course.districtId != null) return false;
         if (id != null ? !id.equals(course.id) : course.id != null) return false;
         if (name != null ? !name.equals(course.name) : course.name != null) return false;
+        if (schoolId != null ? !schoolId.equals(course.schoolId) : course.schoolId != null) return false;
         if (selected != null ? !selected.equals(course.selected) : course.selected != null) return false;
         if (status != null ? !status.equals(course.status) : course.status != null) return false;
 
@@ -155,11 +210,11 @@ public class Course implements java.io.Serializable {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (courseNumber != null ? courseNumber.hashCode() : 0);
         result = 31 * result + (districtId != null ? districtId.hashCode() : 0);
+        result = 31 * result + (schoolId != null ? schoolId.hashCode() : 0);
         result = 31 * result + (courseFolder != null ? courseFolder.hashCode() : 0);
         result = 31 * result + (selected != null ? selected.hashCode() : 0);
         return result;
     }
-
 
     @Override
     public String toString() {
@@ -169,10 +224,13 @@ public class Course implements java.io.Serializable {
                 ", name='" + name + '\'' +
                 ", courseNumber='" + courseNumber + '\'' +
                 ", districtId='" + districtId + '\'' +
+                ", schoolId='" + schoolId + '\'' +
                 ", courseFolder='" + courseFolder + '\'' +
                 ", selected=" + selected +
                 ", operation=" + operation +
                 ", courseAttributes=" + courseAttributes +
+                ", schoolName='" + schoolName + '\'' +
+                ", districtName='" + districtName + '\'' +
                 '}';
     }
 }

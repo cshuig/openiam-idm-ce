@@ -31,6 +31,7 @@ public interface CourseManagementService {
     public void removeCourse(String courseId);
 
     public List<CourseSearchResult> searchCourses(CourseSearch search);
+    public CourseSearchResult getCourseByTerm(String courseId, String termId);
 
     // Terms
 
