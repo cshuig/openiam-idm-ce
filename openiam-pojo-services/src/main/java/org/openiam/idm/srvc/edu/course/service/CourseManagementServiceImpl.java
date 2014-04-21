@@ -4,9 +4,11 @@ package org.openiam.idm.srvc.edu.course.service;
 import org.apache.commons.lang.StringUtils;
 import org.openiam.dozer.converter.CourseDozerConverter;
 import org.openiam.dozer.converter.ProgramDozerConverter;
+import org.openiam.dozer.converter.TermDozerConverter;
 import org.openiam.exception.data.DataException;
 import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
 import org.openiam.idm.srvc.edu.course.domain.ProgramEntity;
+import org.openiam.idm.srvc.edu.course.domain.TermEntity;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
@@ -28,10 +30,14 @@ public class CourseManagementServiceImpl implements CourseManagementService {
     @Autowired
     private ProgramDozerConverter programDozerConverter;
 
+    @Autowired
+    private TermDozerConverter termDozerConverter;
+
+
     @Transactional(readOnly = true)
     public List<Program> getAllPrograms() {
 
-        return programDozerConverter.convertToDTOList( programDao.getAllPrograms(), false);
+        return programDozerConverter.convertToDTOList(programDao.getAllPrograms(), false);
 
 
     }
@@ -153,21 +159,51 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     /* Term operation */
 
+    @Transactional
     public Term addTerm(Term term) {
-        Term t = termDao.add(term);
-        return t;
+        if (term == null) {
+            throw new NullPointerException("Term is null");
+
+        }
+        try {
+
+            TermEntity entity = termDozerConverter.convertToEntity(term, true);
+            termDao.add(entity);
+
+            term.setId(entity.getId());
+            return term;
+
+        }catch (Exception e) {
+            throw new DataException(e.getMessage(), e.getCause());
+        }
+
+
+
 
     }
 
-    @Override
+    @Transactional
     public Term updateTerm(Term term) {
-        Term t = termDao.update(term);
-        return t;
+        if (term == null) {
+            throw new NullPointerException("Term is null");
+
+        }
+        try {
+
+            TermEntity entity = termDozerConverter.convertToEntity(term, true);
+            termDao.update(entity);
+
+            return term;
+
+        }catch (Exception e) {
+            throw new DataException(e.getMessage(), e.getCause());
+        }
+
     }
 
-    @Override
+    @Transactional
     public void removeTerm(String termId) {
-        Term t = termDao.findById(termId);
+        TermEntity t = termDao.findById(termId);
         if (t != null) {
 
             termDao.remove(t);
@@ -175,9 +211,10 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     }
 
-    @Override
+    @Transactional(readOnly = true)
     public List<Term> getTermsByDistrict(String districtId) {
-        return termDao.getTermsByDistrict(districtId);
+        return termDozerConverter.convertToDTOList(termDao.getTermsByDistrict(districtId), false);
+
     }
 
     public void updateTermList(List<Term> termList ) {
@@ -185,13 +222,16 @@ public class CourseManagementServiceImpl implements CourseManagementService {
         if (termList != null && !termList.isEmpty()) {
 
             for (Term t : termList) {
-                if (StringUtils.isEmpty(t.getId()))  {
 
-                    termDao.add(t);
+                TermEntity entity = termDozerConverter.convertToEntity(t, true);
+
+                if (StringUtils.isEmpty(entity.getId()))  {
+
+                    termDao.add(entity);
 
 
                 }else {
-                    termDao.update(t);
+                    termDao.update(entity);
                 }
 
             }

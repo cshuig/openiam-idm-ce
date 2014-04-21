@@ -832,9 +832,9 @@
 				</value>
 
                 <!--value>org/openiam/idm/srvc/edu/course/service/Program.hbm.xml</value>
-                 <value>org/openiam/idm/srvc/edu/course/service/Course.hbm.xml</value -->
+                 <value>org/openiam/idm/srvc/edu/course/service/Course.hbm.xml</value>
                 <value>org/openiam/idm/srvc/edu/course/service/CourseAttribute.hbm.xml</value>
-                <value>org/openiam/idm/srvc/edu/course/service/Term.hbm.xml</value>
+                <value>org/openiam/idm/srvc/edu/course/service/Term.hbm.xml</value -->
 
 
 			</list>

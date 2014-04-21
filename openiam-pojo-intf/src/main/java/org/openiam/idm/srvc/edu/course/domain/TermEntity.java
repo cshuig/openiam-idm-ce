@@ -1,47 +1,43 @@
-package org.openiam.idm.srvc.edu.course.dto.term;
+package org.openiam.idm.srvc.edu.course.domain;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 import org.openiam.base.BaseObject;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.edu.course.domain.TermEntity;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.persistence.*;
 
-/**
- * <p/>
- * Java class for Program complex type.
- * <p/>
- * <p/>
- * The following schema fragment specifies the expected content contained within
- * this class.
- * <p/>
- * </pre>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Term", propOrder = {
-        "id",
-        "name",
-        "schoolYear",
-        "districtId",
-        "description"}
-)
-@XmlRootElement(name = "Term")
-@DozerDTOCorrespondence(TermEntity.class)
-public class Term extends BaseObject implements java.io.Serializable   {
+@Entity
+@Table(name = "TERM")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@DozerDTOCorrespondence(Term.class)
+public class TermEntity extends BaseObject implements java.io.Serializable   {
 
+    @Id
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name="TERM_ID", length=32)
     protected String id;
+
+    @Column(name="NAME",length=60)
     protected String name;
 
+    @Column(name="SCHOOL_YEAR",length=60)
     protected String schoolYear;
+
+    @Column(name="PERIOD_DESCRIPTION",length=255)
     protected String description;
+
+    @Column(name="DISTRICT_ID",length=32)
     protected String districtId;
 
-    public Term() {
+    public TermEntity() {
     }
 
-    public Term(String id, String name, String districtId) {
+    public TermEntity(String id, String name, String districtId) {
         this.id = id;
         this.name = name;
         this.districtId = districtId;
@@ -101,9 +97,9 @@ public class Term extends BaseObject implements java.io.Serializable   {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Term)) return false;
+        if (!(o instanceof TermEntity)) return false;
 
-        Term term = (Term) o;
+        TermEntity term = (TermEntity) o;
 
         if (description != null ? !description.equals(term.description) : term.description != null) return false;
         if (districtId != null ? !districtId.equals(term.districtId) : term.districtId != null) return false;

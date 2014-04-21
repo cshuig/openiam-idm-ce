@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.edu.course.domain.TermEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.naming.InitialContext;
@@ -44,10 +44,10 @@ public class TermDAOImpl implements TermDAO {
     }
 
 
-    public Term findById(String id) {
+    public TermEntity findById(String id) {
         try {
-            Term instance = (Term) sessionFactory
-                    .getCurrentSession().get(Term.class, id);
+            TermEntity instance = (TermEntity) sessionFactory
+                    .getCurrentSession().get(TermEntity.class, id);
             if (instance == null) {
                 log.debug("get successful, no instance found");
             } else {
@@ -63,15 +63,13 @@ public class TermDAOImpl implements TermDAO {
 
 
     @Override
-    public Term add(Term program) {
+    public void add(TermEntity program) {
         log.debug("persisting Program instance");
         try {
 
             Session session = sessionFactory.getCurrentSession();
             session.persist(program);
 
-            log.debug("persist successful");
-            return program;
 
         } catch (RuntimeException re) {
             log.error("persist failed", re);
@@ -81,7 +79,7 @@ public class TermDAOImpl implements TermDAO {
     }
 
     @Override
-    public void remove(Term instance) {
+    public void remove(TermEntity instance) {
         log.debug("deleting Address instance");
         try {
             sessionFactory.getCurrentSession().delete(instance);
@@ -92,10 +90,10 @@ public class TermDAOImpl implements TermDAO {
         }
     }
 
-    public Term update(Term instance) {
+    public void update(TermEntity instance) {
         log.debug("merging Organization instance");
         try {
-            return (Term) sessionFactory.getCurrentSession().merge(instance);
+            sessionFactory.getCurrentSession().merge(instance);
         } catch (RuntimeException re) {
             log.error("merge failed", re);
             throw re;
@@ -103,14 +101,14 @@ public class TermDAOImpl implements TermDAO {
     }
 
     @Override
-    public List<Term> getTermsByDistrict(String districtId) {
+    public List<TermEntity> getTermsByDistrict(String districtId) {
         Session session = sessionFactory.getCurrentSession();
-        Criteria criteria = session.createCriteria(Term.class)
+        Criteria criteria = session.createCriteria(TermEntity.class)
                 .add(Restrictions.eq("districtId", districtId))
                 .addOrder(Order.asc("name"))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-        List<Term> results = (List<Term>)criteria.list();
+        List<TermEntity> results = (List<TermEntity>)criteria.list();
         return results;
 
     }

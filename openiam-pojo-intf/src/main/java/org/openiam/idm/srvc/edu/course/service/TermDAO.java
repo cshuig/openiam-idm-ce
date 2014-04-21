@@ -1,6 +1,6 @@
 package org.openiam.idm.srvc.edu.course.service;
 
-import org.openiam.idm.srvc.edu.course.dto.term.Term;
+import org.openiam.idm.srvc.edu.course.domain.TermEntity;
 
 import java.util.List;
 
@@ -16,15 +16,15 @@ public interface TermDAO {
      *
      * @param id
      */
-    Term findById(String id);
+    TermEntity findById(String id);
 
-    Term add(Term instance);
+    void add(TermEntity instance);
 
-    Term update(Term instance);
+    void update(TermEntity instance);
 
-    void remove(Term instance);
+    void remove(TermEntity instance);
 
-    List<Term> getTermsByDistrict(String districtId);
+    List<TermEntity> getTermsByDistrict(String districtId);
 
     boolean hasCourses(String termId);
 
