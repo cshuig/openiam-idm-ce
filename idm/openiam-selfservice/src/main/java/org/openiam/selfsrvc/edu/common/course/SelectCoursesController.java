@@ -45,6 +45,11 @@ public class SelectCoursesController extends SimpleFormController {
 
         List<Organization> districtList =  orgManager.getOrganizationByType("districtType", null);
 
+        if ( districtList == null) {
+            districtList = new LinkedList<Organization>();
+
+        }
+
         coursesCommand.setDistrictList(districtList);
 
         List<Organization> schoolList = new LinkedList<Organization>();

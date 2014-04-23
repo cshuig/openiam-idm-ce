@@ -3,6 +3,7 @@ package org.openiam.idm.srvc.edu.course.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.openiam.dozer.converter.CourseDozerConverter;
+import org.openiam.dozer.converter.CourseTermDozerConverter;
 import org.openiam.dozer.converter.ProgramDozerConverter;
 import org.openiam.dozer.converter.TermDozerConverter;
 import org.openiam.exception.data.DataException;
@@ -24,6 +25,7 @@ public class CourseManagementServiceImpl implements CourseManagementService {
     protected ProgramDAO programDao;
     protected CourseDAO courseDao;
     protected TermDAO termDao;
+    protected CourseTermDAO courseTermDAO;
 
     @Autowired
     private CourseDozerConverter courseDozerConverter;
@@ -32,6 +34,10 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     @Autowired
     private TermDozerConverter termDozerConverter;
+
+    @Autowired
+    private CourseTermDozerConverter courseTermDozerMapper;
+
 
 
     @Transactional(readOnly = true)
@@ -267,5 +273,13 @@ public class CourseManagementServiceImpl implements CourseManagementService {
 
     public void setTermDao(TermDAO termDao) {
         this.termDao = termDao;
+    }
+
+    public CourseTermDAO getCourseTermDAO() {
+        return courseTermDAO;
+    }
+
+    public void setCourseTermDAO(CourseTermDAO courseTermDAO) {
+        this.courseTermDAO = courseTermDAO;
     }
 }

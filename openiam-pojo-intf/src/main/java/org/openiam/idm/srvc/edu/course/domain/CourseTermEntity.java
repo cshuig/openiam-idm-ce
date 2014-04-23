@@ -1,32 +1,34 @@
-package org.openiam.idm.srvc.edu.course.dto;
+package org.openiam.idm.srvc.edu.course.domain;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.openiam.dozer.DozerDTOCorrespondence;
-import org.openiam.idm.srvc.edu.course.domain.CourseTermEntity;
+import org.openiam.idm.srvc.edu.course.dto.CourseTerm;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.persistence.*;
 
-/**
- * Terms that are course is offered in
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CourseTerm", propOrder = {
-        "id",
-        "status",
-        "termId",
-        "courseId",
-        "section"}
-)
-@XmlRootElement(name = "CourseTerm")
-@DozerDTOCorrespondence(CourseTermEntity.class)
-public class CourseTerm {
 
+
+@Entity
+@Table(name = "COURSE_TERM")
+@DozerDTOCorrespondence(CourseTerm.class)
+public class CourseTermEntity {
+
+    @Id
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name="COURSE_TERM_ID", length=32)
     private String id;
+
+    @Column(name="TERM_ID",length=32)
     private String termId;
+
+    @Column(name="COURSE_ID",length=32)
     private String courseId;
+
+    @Column(name="SECTION_NBR",length=40)
     private String section;
+
+    @Column(name="STATUS",length=20)
     private String status;
 
 

@@ -49,6 +49,11 @@
 		<class-b>org.openiam.idm.srvc.grp.dto.GroupAttribute</class-b>
 	</mapping>
 
+    <mapping>
+        <class-a>org.openiam.idm.srvc.edu.course.domain.CourseTermEntity</class-a>
+        <class-b>org.openiam.idm.srvc.edu.course.dto.CourseTerm</class-b>
+    </mapping>
+
  	<mapping>
 		<class-a>org.openiam.idm.srvc.grp.domain.UserGroupEntity</class-a>
 		<class-b>org.openiam.idm.srvc.grp.dto.UserGroup</class-b>

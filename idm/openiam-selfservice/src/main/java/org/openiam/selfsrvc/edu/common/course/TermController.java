@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -45,6 +46,12 @@ public class TermController extends SimpleFormController {
         TermCommand cmd = new TermCommand();
 
         List<Organization> districtList =  orgManager.getOrganizationByType("districtType", null);
+
+        if ( districtList == null) {
+            districtList = new LinkedList<Organization>();
+
+        }
+
         cmd.setDistrictList(districtList);
 
         return cmd;

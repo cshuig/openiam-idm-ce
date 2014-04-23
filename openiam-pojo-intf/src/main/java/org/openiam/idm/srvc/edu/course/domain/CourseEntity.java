@@ -7,7 +7,6 @@ import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.edu.course.dto.Course;
 import org.openiam.idm.srvc.edu.course.dto.CourseAttribute;
-import org.openiam.idm.srvc.edu.course.dto.CourseTerm;
 import org.openiam.idm.srvc.edu.course.dto.Program;
 
 import javax.persistence.*;
@@ -55,8 +54,11 @@ public class CourseEntity implements java.io.Serializable {
     protected Set<CourseAttribute> courseAttributes = new HashSet<CourseAttribute>();
     @Transient
     protected Set<Program> programMembership = new HashSet<Program>();
-    @Transient
-    protected Set<CourseTerm> courseTerms = new HashSet<CourseTerm>();
+
+    @OneToMany(cascade= CascadeType.ALL,fetch= FetchType.EAGER)
+    @JoinColumn(name="COURSE_ID", referencedColumnName="COURSE_ID")
+    @MapKeyColumn(name="termId")
+    protected Set<CourseTermEntity> courseTerms = new HashSet<CourseTermEntity>();
 
     @Transient
     protected String schoolName;
@@ -178,13 +180,7 @@ public class CourseEntity implements java.io.Serializable {
         this.programMembership = programMembership;
     }
 
-    public Set<CourseTerm> getCourseTerms() {
-        return courseTerms;
-    }
 
-    public void setCourseTerms(Set<CourseTerm> courseTerms) {
-        this.courseTerms = courseTerms;
-    }
 
     @Override
     public boolean equals(Object o) {
