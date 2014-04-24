@@ -142,4 +142,14 @@
             <b>childRoles</b>
         </field-exclude>
     </mapping>
+
+    <mapping>
+        <class-a>org.openiam.idm.srvc.edu.course.domain.CourseEntity</class-a>
+        <class-b>org.openiam.idm.srvc.edu.course.dto.Course</class-b>
+        <field-exclude>
+            <a>courseTerms</a>
+            <b>courseTerms</b>
+        </field-exclude>
+    </mapping>
+
 </mappings>

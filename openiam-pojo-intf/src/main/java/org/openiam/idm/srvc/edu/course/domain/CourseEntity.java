@@ -180,7 +180,13 @@ public class CourseEntity implements java.io.Serializable {
         this.programMembership = programMembership;
     }
 
+    public Set<CourseTermEntity> getCourseTerms() {
+        return courseTerms;
+    }
 
+    public void setCourseTerms(Set<CourseTermEntity> courseTerms) {
+        this.courseTerms = courseTerms;
+    }
 
     @Override
     public boolean equals(Object o) {
