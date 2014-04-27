@@ -43,6 +43,9 @@
 
                         <form:select path="search.instructorId">
                             <form:option value="" label="-Please Select-"/>
+                            <c:forEach items="${courseSelCmd.teacherList}" var="teacher">
+                                <form:option value="${teacher.userId}" label="${teacher.deptCd} -> ${teacher.firstName} ${teacher.lastName}" />
+                            </c:forEach>
                         </form:select>
                     </div>
 

@@ -822,6 +822,7 @@
 
         <property name="orgManager" ref="orgServiceClient" />
         <property name="courseManager" ref="courseServiceClient" />
+        <property name="userMgr" ref="userServiceClient" />
 
     </bean>
 
@@ -832,6 +833,7 @@
         <property name="successView" value="/pub/confirm" />
         <property name="orgManager" ref="orgServiceClient" />
         <property name="courseManager" ref="courseServiceClient" />
+        <property name="userMgr" ref="userServiceClient" />
 
     </bean>
 

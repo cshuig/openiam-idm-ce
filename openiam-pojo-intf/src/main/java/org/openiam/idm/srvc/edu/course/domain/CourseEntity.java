@@ -45,6 +45,9 @@ public class CourseEntity implements java.io.Serializable {
     @Column(name="COURSE_FOLDER",length=255)
     protected String courseFolder;
 
+    @Column(name="EXTERNAL_COURSE_ID",length=50)
+    protected String externalCourseId;
+
     @Transient
     protected Boolean selected = Boolean.FALSE;
     @Transient
@@ -59,6 +62,12 @@ public class CourseEntity implements java.io.Serializable {
     @JoinColumn(name="COURSE_ID", referencedColumnName="COURSE_ID")
     @MapKeyColumn(name="termId")
     protected Set<CourseTermEntity> courseTerms = new HashSet<CourseTermEntity>();
+
+
+    @OneToMany(cascade= CascadeType.ALL,fetch= FetchType.EAGER)
+    @JoinColumn(name="COURSE_ID", referencedColumnName="COURSE_ID")
+    @MapKeyColumn(name="userId")
+    protected Set<CourseTermUserEntity> courseTermUsers = new HashSet<CourseTermUserEntity>();
 
     @Transient
     protected String schoolName;
@@ -188,6 +197,14 @@ public class CourseEntity implements java.io.Serializable {
         this.courseTerms = courseTerms;
     }
 
+    public Set<CourseTermUserEntity> getCourseTermUsers() {
+        return courseTermUsers;
+    }
+
+    public void setCourseTermUsers(Set<CourseTermUserEntity> courseTermUsers) {
+        this.courseTermUsers = courseTermUsers;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -207,6 +224,14 @@ public class CourseEntity implements java.io.Serializable {
         if (status != null ? !status.equals(course.status) : course.status != null) return false;
 
         return true;
+    }
+
+    public String getExternalCourseId() {
+        return externalCourseId;
+    }
+
+    public void setExternalCourseId(String externalCourseId) {
+        this.externalCourseId = externalCourseId;
     }
 
     @Override

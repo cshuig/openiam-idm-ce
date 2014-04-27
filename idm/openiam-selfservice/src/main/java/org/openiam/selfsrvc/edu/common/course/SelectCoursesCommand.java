@@ -3,6 +3,7 @@ package org.openiam.selfsrvc.edu.common.course;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.edu.course.dto.Program;
+import org.openiam.idm.srvc.user.dto.User;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -23,6 +24,9 @@ public class SelectCoursesCommand implements Serializable {
     List<Organization> districtList = new LinkedList<Organization>();
     List<Organization> schoolList = new LinkedList<Organization>();
     List<Program> programList = new LinkedList<Program>();
+
+    List<User> teacherList = new LinkedList<User>();
+
 
     public CourseSearch getSearch() {
         return search;
@@ -54,5 +58,13 @@ public class SelectCoursesCommand implements Serializable {
 
     public void setProgramList(List<Program> programList) {
         this.programList = programList;
+    }
+
+    public List<User> getTeacherList() {
+        return teacherList;
+    }
+
+    public void setTeacherList(List<User> teacherList) {
+        this.teacherList = teacherList;
     }
 }

@@ -8,6 +8,7 @@ import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.dto.term.Term;
 import org.openiam.idm.srvc.edu.course.ws.CourseManagementWebService;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
+import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +26,7 @@ public class CourseDetailController extends SimpleFormController {
 
     protected OrganizationDataService orgManager;
     protected CourseManagementWebService courseManager;
+    protected UserDataWebService userMgr;
 
 	public CourseDetailController() {
 		super();
@@ -110,5 +112,13 @@ public class CourseDetailController extends SimpleFormController {
 
     public void setCourseManager(CourseManagementWebService courseManager) {
         this.courseManager = courseManager;
+    }
+
+    public UserDataWebService getUserMgr() {
+        return userMgr;
+    }
+
+    public void setUserMgr(UserDataWebService userMgr) {
+        this.userMgr = userMgr;
     }
 }

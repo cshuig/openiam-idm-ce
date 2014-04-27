@@ -130,12 +130,14 @@ public class CourseDAOImpl implements CourseDAO {
         List<Object> queryParam = new ArrayList<Object>();
 
         if (StringUtils.isNotEmpty(search.getDistrictId())) {
-            sql.append(" WHERE DISTRICT_ID = ? " );
+            addWhere(sql);
+            sql.append(" DISTRICT_ID = ? " );
             queryParam.add(search.getDistrictId());
         }
 
         if (StringUtils.isNotEmpty(search.getSchoolId())) {
-            sql.append(" WHERE SCHOOL_ID = ? " );
+            addWhere(sql);
+            sql.append(" SCHOOL_ID = ? " );
             queryParam.add(search.getSchoolId());
         }
 
@@ -147,6 +149,17 @@ public class CourseDAOImpl implements CourseDAO {
 
 
         return result;
+
+    }
+
+    private void addWhere(StringBuilder sql) {
+
+        String s = sql.toString();
+        if (!s.contains("WHERE")) {
+             sql.append(" WHERE ");
+        }else {
+            sql.append (" AND ");
+        }
 
     }
 

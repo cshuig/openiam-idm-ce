@@ -150,6 +150,11 @@
             <a>courseTerms</a>
             <b>courseTerms</b>
         </field-exclude>
+        <field-exclude>
+            <a>courseTermUsers</a>
+            <b>courseTermUsers</b>
+        </field-exclude>
+
     </mapping>
 
 </mappings>

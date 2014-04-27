@@ -3,6 +3,7 @@ package org.openiam.idm.srvc.edu.course.dto;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
+import org.openiam.idm.srvc.edu.course.domain.CourseTermUserEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -36,13 +37,18 @@ import java.util.Set;
         "schoolName",
         "districtName",
 "programMembership",
-"courseTerms"}
+"courseTerms",
+"externalCourseId",
+"courseTermUsers"}
 )
 @XmlRootElement(name = "Course")
 @DozerDTOCorrespondence(CourseEntity.class)
 public class Course implements java.io.Serializable {
 
     protected String id;
+
+    protected String externalCourseId;
+
     protected String status;
     protected String name;
 
@@ -58,8 +64,9 @@ public class Course implements java.io.Serializable {
 
     protected Set<CourseAttribute> courseAttributes = new HashSet<CourseAttribute>();
     protected Set<Program> programMembership = new HashSet<Program>();
-    protected Set<CourseTerm> courseTerms = new HashSet<CourseTerm>();
 
+    protected Set<CourseTerm> courseTerms = new HashSet<CourseTerm>();
+    protected Set<CourseTermUserEntity> courseTermUsers = new HashSet<CourseTermUserEntity>();
 
     protected String schoolName;
     protected String districtName;
@@ -185,6 +192,22 @@ public class Course implements java.io.Serializable {
 
     public void setCourseTerms(Set<CourseTerm> courseTerms) {
         this.courseTerms = courseTerms;
+    }
+
+    public String getExternalCourseId() {
+        return externalCourseId;
+    }
+
+    public void setExternalCourseId(String externalCourseId) {
+        this.externalCourseId = externalCourseId;
+    }
+
+    public Set<CourseTermUserEntity> getCourseTermUsers() {
+        return courseTermUsers;
+    }
+
+    public void setCourseTermUsers(Set<CourseTermUserEntity> courseTermUsers) {
+        this.courseTermUsers = courseTermUsers;
     }
 
     @Override

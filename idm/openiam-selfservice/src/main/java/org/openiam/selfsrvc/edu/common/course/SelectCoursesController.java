@@ -8,6 +8,8 @@ import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.ws.CourseManagementWebService;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
+import org.openiam.idm.srvc.user.dto.UserSearch;
+import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +25,8 @@ public class SelectCoursesController extends SimpleFormController {
 	private static final Log log = LogFactory.getLog(SelectCoursesController.class);
     protected OrganizationDataService orgManager;
     protected CourseManagementWebService courseManager;
+    protected UserDataWebService userMgr;
+
 
 	
 	public SelectCoursesController() {
@@ -73,8 +77,21 @@ public class SelectCoursesController extends SimpleFormController {
         coursesCommand.setSchoolList(schoolList);
         coursesCommand.setProgramList(courseManager.getAllPrograms().getProgramList());
 
+        // get all teachers -
+        UserSearch search = new UserSearch();
+        String roleId = "TEACHER";
+        String domainId = "USR_SEC_DOMAIN";
+        List<String> roleList = new ArrayList<String>();
+        roleList.add(roleId);
+        search.setRoleIdList(roleList);
+        search.setDomainId(domainId);
+        List userList = userMgr.search(search).getUserList();
 
-		return coursesCommand;
+
+        coursesCommand.setTeacherList(userList);
+
+
+        return coursesCommand;
 		
 		
 	}
@@ -131,5 +148,13 @@ public class SelectCoursesController extends SimpleFormController {
 
     public void setCourseManager(CourseManagementWebService courseManager) {
         this.courseManager = courseManager;
+    }
+
+    public UserDataWebService getUserMgr() {
+        return userMgr;
+    }
+
+    public void setUserMgr(UserDataWebService userMgr) {
+        this.userMgr = userMgr;
     }
 }
