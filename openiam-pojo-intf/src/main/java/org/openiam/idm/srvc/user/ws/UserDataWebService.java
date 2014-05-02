@@ -112,6 +112,11 @@ public interface UserDataWebService {
             String orgId);
 
     @WebMethod
+    public UserListResponse findUserByAffiliation(
+            @WebParam(name = "orgId", targetNamespace = "")
+            String orgId);
+
+    @WebMethod
     public UserListResponse findUsersByStatus(
             @WebParam(name = "status", targetNamespace = "")
             String status);

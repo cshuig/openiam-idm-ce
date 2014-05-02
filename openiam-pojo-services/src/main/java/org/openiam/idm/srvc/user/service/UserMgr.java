@@ -18,6 +18,7 @@ import org.openiam.idm.srvc.continfo.dto.Phone;
 import org.openiam.idm.srvc.continfo.service.AddressDAO;
 import org.openiam.idm.srvc.continfo.service.EmailAddressDAO;
 import org.openiam.idm.srvc.continfo.service.PhoneDAO;
+import org.openiam.idm.srvc.org.service.UserAffiliationDAO;
 import org.openiam.idm.srvc.user.domain.*;
 import org.openiam.idm.srvc.user.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,8 @@ public class UserMgr implements UserDataService {
 	private SupervisorDAO supervisorDao;
 	protected LoginDAO loginDao;
 	protected SysConfiguration sysConfiguration;
+
+    private UserAffiliationDAO userAffiliationDAO;
 
 	private static final Log log = LogFactory.getLog(UserMgr.class);
 
@@ -89,13 +92,20 @@ public class UserMgr implements UserDataService {
 		return userDozerConverter.convertToDTO(entity, true);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openiam.idm.srvc.user.service.UserDataService#getUser(java.lang.String
-	 * , boolean)
-	 */
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findUsersByAffiliationOrg(final String orgId) {
+        List<UserEntity> userEntities = userAffiliationDAO.findUsersByOrg(orgId);
+        return userDozerConverter.convertToDTOList(userEntities, false);
+    }
+
+    /*
+         * (non-Javadoc)
+         *
+         * @see
+         * org.openiam.idm.srvc.user.service.UserDataService#getUser(java.lang.String
+         * , boolean)
+         */
 	@Transactional(readOnly = true)
 	public User getUserWithDependent(String id, boolean dependants) {
 
@@ -1684,7 +1694,15 @@ public class UserMgr implements UserDataService {
 		return sysConfiguration;
 	}
 
-	public void setSysConfiguration(SysConfiguration sysConfiguration) {
+    public UserAffiliationDAO getUserAffiliationDAO() {
+        return userAffiliationDAO;
+    }
+
+    public void setUserAffiliationDAO(UserAffiliationDAO userAffiliationDAO) {
+        this.userAffiliationDAO = userAffiliationDAO;
+    }
+
+    public void setSysConfiguration(SysConfiguration sysConfiguration) {
 		this.sysConfiguration = sysConfiguration;
 	}
 

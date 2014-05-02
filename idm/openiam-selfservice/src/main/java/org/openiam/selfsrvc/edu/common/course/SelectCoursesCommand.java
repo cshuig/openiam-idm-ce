@@ -19,6 +19,7 @@ public class SelectCoursesCommand implements Serializable {
 
 	private static final long serialVersionUID = -667408382835178231L;
 
+    private String submitType;
     CourseSearch search = new CourseSearch();
 
     List<Organization> districtList = new LinkedList<Organization>();
@@ -66,5 +67,13 @@ public class SelectCoursesCommand implements Serializable {
 
     public void setTeacherList(List<User> teacherList) {
         this.teacherList = teacherList;
+    }
+
+    public String getSubmitType() {
+        return submitType;
+    }
+
+    public void setSubmitType(String submitType) {
+        this.submitType = submitType;
     }
 }

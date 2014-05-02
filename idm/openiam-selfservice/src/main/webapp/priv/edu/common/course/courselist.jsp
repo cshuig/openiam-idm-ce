@@ -4,42 +4,51 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<script type="text/javascript">
+    var changeRequestForm = function(obj,action) {
+        var selectOption = $(obj).find('option:selected').val();
+        if(selectOption != '-1') {
+            jQuery('#actionType').val(action);
+            jQuery('form#courseSelCmd').submit();
+        }
+        return false;
+    }
 
-
+</script>
 
 <h4>Course Management - Select Courses</h4>
 
 <form:form commandName="courseSelCmd"  cssClass="user-info" >
-
+    <form:hidden id="actionType" path="submitType" />
     <fieldset>
         <div class="block">
             <div class="wrap alt">
                 <div class="col-1">
                     <div class="row">
-                        <label for="t-1">Name</label>
+                        <label>Name</label>
                         <form:input path="search.name" size="40" maxlength="40"  />
                     </div>
 
                     <div class="row">
-                        <label for="t-1">District</label>
+                        <label>District</label>
 
-                        <form:select path="search.districtId">
-                            <form:option value="" label="-Please Select-"/>
+                        <form:select path="search.districtId" onchange="return changeRequestForm(this, 'SELECT_DISTRICT')">
+                            <form:option value="-1" label="-Please Select-"/>
                             <form:options items="${courseSelCmd.districtList}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
                     </div>
 
                     <div class="row">
-                        <label for="t-1">School</label>
+                        <label>School</label>
 
-                        <form:select path="search.schoolId">
-                            <form:option value="" label="-Please Select-"/>
+                        <form:select path="search.schoolId" onchange="return changeRequestForm(this, 'SELECT_SCHOOL')">
+                            <form:option value="-1" label="-Please Select-"/>
                             <form:options items="${courseSelCmd.schoolList}" itemValue="orgId" itemLabel="organizationName"/>
                         </form:select>
                     </div>
 
                     <div class="row">
-                        <label for="t-1">Teacher</label>
+                        <label>Teacher</label>
 
                         <form:select path="search.instructorId">
                             <form:option value="" label="-Please Select-"/>

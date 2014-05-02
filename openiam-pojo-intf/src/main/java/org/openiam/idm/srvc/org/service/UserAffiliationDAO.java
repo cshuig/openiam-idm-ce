@@ -23,6 +23,7 @@ package org.openiam.idm.srvc.org.service;
 
 import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 import org.openiam.idm.srvc.org.domain.UserAffiliationEntity;
+import org.openiam.idm.srvc.user.domain.UserEntity;
 
 import java.util.List;
 
@@ -61,4 +62,6 @@ public interface UserAffiliationDAO {
      */
     List<OrganizationEntity> findOrgAffiliationsByUser(String userId);
 
+
+    List<UserEntity> findUsersByOrg(String orgId);
 }

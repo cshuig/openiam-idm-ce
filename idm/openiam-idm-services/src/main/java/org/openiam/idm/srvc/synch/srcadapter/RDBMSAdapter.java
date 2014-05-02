@@ -132,9 +132,8 @@ public class RDBMSAdapter extends AbstractSrcAdapter {
             }
 
 
-            log.debug(" - SYNCH SQL= " + sql.toString());
-            log.debug(" - Last processed record =" + lastExec);
-
+            log.debug("-RDBMS SYNCH SQL=" + sql.toString());
+            log.debug("-last processed record =" + lastExec);
 
             PreparedStatement ps = con.prepareStatement(sql.toString());
             if (config.getSynchType().equalsIgnoreCase("INCREMENTAL") && (lastExec != null)) {

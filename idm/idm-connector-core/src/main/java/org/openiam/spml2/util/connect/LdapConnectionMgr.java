@@ -74,16 +74,16 @@ public class LdapConnectionMgr implements ConnectionMgr {
 		 * Protocol is defined in the url - ldaps vs ldap This is not necessary
 		 * if (managedSys.getCommProtocol() != null &&
 		 * managedSys.getCommProtocol().equalsIgnoreCase("SSL")) {
-		 * envDC.put(Context.SECURITY_PROTOCOL, managedSys.getCommProtocol()); }
-		 */
+        */
+        try {
 
-		try {
+            ldapContext = new InitialLdapContext(envDC, null);
 
-			ldapContext = new InitialLdapContext(envDC, null);
+        } catch (CommunicationException ce) {
+            // check if there is a secondary connection linked to this
+            String secondarySysID = managedSys.getSecondaryRepositoryId();
+             envDC.put(Context.SECURITY_PROTOCOL, managedSys.getCommProtocol());
 
-		} catch (CommunicationException ce) {
-			// check if there is a secondary connection linked to this
-			String secondarySysID = managedSys.getSecondaryRepositoryId();
 
 			log.debug("Secondary Sys ID is " + secondarySysID);
 

@@ -169,6 +169,7 @@
 		<property name="supervisorDao" ref="supervisorDAO" />
 		<property name="loginDao" ref="loginDAO" />
 		<property name="sysConfiguration" ref="sysConfiguration" />
+        <property name="userAffiliationDAO" ref="orgAffiliationDAO" />
 	</bean>
 
 

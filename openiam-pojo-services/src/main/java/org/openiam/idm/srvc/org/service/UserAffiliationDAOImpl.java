@@ -8,9 +8,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 import org.openiam.idm.srvc.org.domain.UserAffiliationEntity;
+import org.openiam.idm.srvc.user.domain.UserEntity;
 
 
 import javax.naming.InitialContext;
@@ -153,4 +155,10 @@ public class UserAffiliationDAOImpl implements UserAffiliationDAO {
 		qry.executeUpdate();			
 	}
 
+    @Override
+    public List<UserEntity> findUsersByOrg(String orgId) {
+        Session session = sessionFactory.getCurrentSession();
+        List<UserEntity> result =  session.createCriteria(UserAffiliationEntity.class).add(Restrictions.eq("organization.orgId", orgId)).setProjection(Projections.property("user")).list();
+        return result;
+    }
 }

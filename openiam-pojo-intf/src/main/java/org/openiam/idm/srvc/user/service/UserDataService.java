@@ -119,6 +119,7 @@ public interface UserDataService {
 
 	public List<User> searchByDelegationProperties(DelegationFilterSearch search);
 
+    public List<User> findUsersByAffiliationOrg(String orgId);
 	/*
 	 * (non-Javadoc)
 	 * 

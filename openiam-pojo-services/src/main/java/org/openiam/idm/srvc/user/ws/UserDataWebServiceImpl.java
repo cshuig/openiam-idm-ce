@@ -225,9 +225,22 @@ public class UserDataWebServiceImpl implements UserDataWebService {
 		return resp;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openiam.idm.srvc.user.ws.UserDataWebService#findUsersByLastUpdateRange(java.util.Date, java.util.Date)
-	 */
+    @Override
+    @Transactional(readOnly = true)
+    public UserListResponse findUserByAffiliation(@WebParam(name = "orgId", targetNamespace = "") String orgId) {
+        UserListResponse resp = new UserListResponse(ResponseStatus.SUCCESS);
+        List<User> userList = userManager.findUsersByAffiliationOrg(orgId);
+        if (userList == null || userList.isEmpty() ) {
+            resp.setStatus(ResponseStatus.FAILURE);
+        }else {
+            resp.setUserList(userList);
+        }
+        return resp;
+    }
+
+    /* (non-Javadoc)
+         * @see org.openiam.idm.srvc.user.ws.UserDataWebService#findUsersByLastUpdateRange(java.util.Date, java.util.Date)
+         */
     @Transactional(readOnly = true)
 	public UserListResponse findUsersByLastUpdateRange(Date startDate,
 			Date endDate) {

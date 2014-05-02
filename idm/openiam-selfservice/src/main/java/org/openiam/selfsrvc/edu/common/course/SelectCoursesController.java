@@ -8,6 +8,7 @@ import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
 import org.openiam.idm.srvc.edu.course.ws.CourseManagementWebService;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
+import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserSearch;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -25,7 +26,7 @@ public class SelectCoursesController extends SimpleFormController {
 	private static final Log log = LogFactory.getLog(SelectCoursesController.class);
     protected OrganizationDataService orgManager;
     protected CourseManagementWebService courseManager;
-    protected UserDataWebService userMgr;
+    protected UserDataWebService userDataWebService;
 
 
 	
@@ -85,7 +86,7 @@ public class SelectCoursesController extends SimpleFormController {
         roleList.add(roleId);
         search.setRoleIdList(roleList);
         search.setDomainId(domainId);
-        List userList = userMgr.search(search).getUserList();
+        List userList = userDataWebService.search(search).getUserList();
 
 
         coursesCommand.setTeacherList(userList);
@@ -112,23 +113,27 @@ public class SelectCoursesController extends SimpleFormController {
 
     @Override
 	protected ModelAndView onSubmit(Object command) throws Exception {
-
+        ModelAndView mav = new ModelAndView(getSuccessView());
 		SelectCoursesCommand coursesCommand =(SelectCoursesCommand)command;
+        if("SELECT_DISTRICT".equalsIgnoreCase(coursesCommand.getSubmitType())
+                || "SELECT_SCHOOL".equalsIgnoreCase(coursesCommand.getSubmitType())) {
+            List<Organization> schoolList =  orgManager.getOrganizationByType("schoolType", coursesCommand.getSearch().getDistrictId());
+            coursesCommand.setSchoolList(schoolList);
 
+            List<User> userList = userDataWebService.findUserByAffiliation(coursesCommand.getSearch().getSchoolId()).getUserList();
+            coursesCommand.setTeacherList(userList);
+        } else {
         // get the list of course
+            CourseSearch search =  coursesCommand.getSearch();
 
-        CourseSearch search =  coursesCommand.getSearch();
+            List<CourseSearchResult> courseList = courseManager.searchCourses(search).getCourseList();
+            mav.addObject("courseList",courseList);
 
-        List<CourseSearchResult> courseList = courseManager.searchCourses(search).getCourseList();
-
-
-        System.out.println("Courses: " + courseList);
-
+            System.out.println("Courses: " + courseList);
+        }
       //  return new ModelAndView(new RedirectView(redirectView+"&mode=1", true));
-		ModelAndView mav = new ModelAndView(getSuccessView());
-		mav.addObject("courseList",courseList);
+
         mav.addObject("courseSelCmd", coursesCommand);
-		
 		
 		return mav;
 	}
@@ -151,10 +156,10 @@ public class SelectCoursesController extends SimpleFormController {
     }
 
     public UserDataWebService getUserMgr() {
-        return userMgr;
+        return userDataWebService;
     }
 
     public void setUserMgr(UserDataWebService userMgr) {
-        this.userMgr = userMgr;
+        this.userDataWebService = userMgr;
     }
 }
