@@ -1,8 +1,6 @@
 package org.openiam.idm.srvc.org.service;
 
 
-import java.util.List;
-import javax.naming.InitialContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -10,13 +8,14 @@ import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
-
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-
-
+import org.openiam.base.SysConfiguration;
 import org.openiam.idm.srvc.org.domain.OrganizationEntity;
-import org.openiam.idm.srvc.org.dto.*;
+import org.openiam.idm.srvc.org.dto.OrgClassificationEnum;
+
+import javax.naming.InitialContext;
+import java.util.List;
 
 /**
  * Data access object implementation for Organization.
@@ -26,6 +25,7 @@ public class OrganizationDAOImpl implements OrganizationDAO {
     private static final Log log = LogFactory.getLog(OrganizationDAOImpl.class);
 
     private SessionFactory sessionFactory;
+    private SysConfiguration sysConfiguration;
 
 
     public void setSessionFactory(SessionFactory session) {
@@ -258,12 +258,27 @@ public class OrganizationDAOImpl implements OrganizationDAO {
         if (status != null) {
             criteria.add(Restrictions.eq("status", status));
         }
-        criteria.add(Restrictions.eq("classification", OrgClassificationEnum.ORGANIZATION));
+        //criteria.add(Restrictions.eq("classification", OrgClassificationEnum.ORGANIZATION));
+
+        criteria.add(Restrictions.eq("classification",getClassification(sysConfiguration.getOrganization())));
         criteria.setFetchMode("attributes", FetchMode.JOIN);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return criteria.list();
 
     }
 
+    private OrgClassificationEnum getClassification(String orgClass) {
 
+        return OrgClassificationEnum.valueOf(orgClass);
+
+
+    }
+
+    public SysConfiguration getSysConfiguration() {
+        return sysConfiguration;
+    }
+
+    public void setSysConfiguration(SysConfiguration sysConfiguration) {
+        this.sysConfiguration = sysConfiguration;
+    }
 }

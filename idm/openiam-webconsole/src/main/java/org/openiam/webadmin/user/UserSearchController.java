@@ -21,7 +21,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -41,6 +43,7 @@ public class UserSearchController extends CancellableFormController {
 
     private String resourceType;
     private String redirectView;
+
 
 
     private static final Log log = LogFactory.getLog(UserSearchController.class);

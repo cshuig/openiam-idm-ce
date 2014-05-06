@@ -10,6 +10,7 @@ import java.rmi.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
+import org.openiam.base.SysConfiguration;
 import org.openiam.dozer.converter.OrganizationAttributeDozerConverter;
 import org.openiam.dozer.converter.OrganizationDozerConverter;
 import org.openiam.dozer.converter.UserAffiliationDozerConverter;
@@ -43,6 +44,8 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
 
     private OrganizationAttributeDAO orgAttrDao;
     private UserAffiliationDAO orgAffiliationDao;
+    private SysConfiguration sysConfiguration;
+
 
     @Autowired
     private UserDAO userDAO;
@@ -125,12 +128,20 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
 
     @Transactional(readOnly = true)
     public List<Organization> allDepartments(String parentId) {
-        return getOrganizationByClassification(parentId, OrgClassificationEnum.DEPARTMENT);
+
+        OrgClassificationEnum c = getClassification(sysConfiguration.getDivision());
+
+        return getOrganizationByClassification(parentId, c);
     }
 
     @Transactional(readOnly = true)
     public List<Organization> allDivisions(String parentId) {
-        return getOrganizationByClassification(parentId, OrgClassificationEnum.DIVISION);
+
+
+
+        OrgClassificationEnum c = getClassification(sysConfiguration.getDivision());
+
+        return getOrganizationByClassification(parentId, c);
     }
 
 
@@ -480,5 +491,20 @@ public class OrganizationDataServiceImpl implements OrganizationDataService {
 
     public void setOrgAffiliationDao(UserAffiliationDAO orgAffiliationDao) {
         this.orgAffiliationDao = orgAffiliationDao;
+    }
+
+    private OrgClassificationEnum getClassification(String orgClass) {
+
+        return OrgClassificationEnum.valueOf(orgClass);
+
+
+    }
+
+    public SysConfiguration getSysConfiguration() {
+        return sysConfiguration;
+    }
+
+    public void setSysConfiguration(SysConfiguration sysConfiguration) {
+        this.sysConfiguration = sysConfiguration;
     }
 }

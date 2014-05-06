@@ -66,7 +66,10 @@
 
 	<bean id="sysConfiguration" class="org.openiam.base.SysConfiguration">
 		<property name="defaultManagedSysId" value="${openiam.default_managed_sys}" />
-		<property name="defaultSecurityDomain" value="${openiam.default_sec_domain}" />
+        <property name="defaultSecurityDomain" value="${openiam.default_sec_domain}" />
+		<property name="organization" value="${ORGANIZATION}" />
+        <property name="division" value="${DIVISION}" />
+        <property name="dept" value="${DEPARTMENT}" />
 	</bean>
 
 	<!-- HEARTBEAT Beans -->
@@ -213,10 +216,12 @@
 		<property name="orgDao" ref="orgDAO" />
 		<property name="orgAttrDao" ref="orgAttrDAO" />
 		<property name="orgAffiliationDao" ref="orgAffiliationDAO" />
+        <property name="sysConfiguration" ref="sysConfiguration" />
 	</bean>
 
 	<bean id="orgDAO" class="org.openiam.idm.srvc.org.service.OrganizationDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
+        <property name="sysConfiguration" ref="sysConfiguration" />
 	</bean>
 
 	<bean id="orgAttrDAO"

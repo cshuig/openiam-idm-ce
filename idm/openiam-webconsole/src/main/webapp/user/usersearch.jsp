@@ -1,8 +1,14 @@
+<%@ page import="java.util.ResourceBundle" %>
+<%@ page import="org.mule.util.StringUtils" %>
 <%@ page language="java" contentType="text/html; charset=utf-8"     pageEncoding="utf-8"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<%
+    ResourceBundle secres = ResourceBundle.getBundle("securityconf");
+%>
 
 
 <table  width="1000pt">
@@ -43,7 +49,7 @@
                                         <form:errors path="lastName" cssClass="error" />
                                     </td>
 
-                                    <td><label for="username" class="attribute">Organization</label></td>
+                                    <td><label for="username" class="attribute"><%=secres.getString("ORGANIZATION")%></label></td>
                                     <td  class="userformInput" for="username" class="labelValue">
                                         <form:select path="organizationId" multiple="false">
                                             <form:option value="" label="-Please Select-"/>
@@ -66,20 +72,32 @@
                                 </tr>
 
                                 <tr>
-                                    <td><label for="username" class="attribute">Division</label></td>
+                                    <td><label for="username" class="attribute"><%=secres.getString("DIVISION")%></label></td>
                                     <td  class="userformInput" for="username" class="labelValue">
+                                        <%
+                                            if (StringUtils.isNotBlank( secres.getString("DIVISION")) ) {
+                                        %>
                                         <form:select path="division" multiple="false">
                                             <form:option value="" label="-Please Select-"/>
                                             <form:options items="${userSearchCmd.divList}" itemValue="orgId" itemLabel="organizationName"/>
                                         </form:select>
+                                        <%
+                                            }
+                                        %>
                                     </td>
 
-                                    <td><label for="username" class="attribute">Department</label></td>
+                                    <td><label for="username" class="attribute"><%=secres.getString("DEPARTMENT")%></label></td>
                                     <td  class="userformInput" for="username" class="labelValue">
+                                        <%
+                                            if (StringUtils.isNotBlank( secres.getString("DEPARTMENT")) ) {
+                                        %>
                                         <form:select path="deptId" multiple="false">
                                             <form:option value="" label="-Please Select-"/>
                                             <form:options items="${userSearchCmd.deptList}" itemValue="orgId" itemLabel="organizationName"/>
                                         </form:select>
+                                        <%
+                                            }
+                                        %>
 
                                     </td>
                                 </tr>
