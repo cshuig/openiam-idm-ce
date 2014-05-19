@@ -162,6 +162,13 @@ public class CourseManagementServiceImpl implements CourseManagementService {
         return courseDao.getCourseByTerm(courseId, termId);
     }
 
+    @Override
+    public Course getCourseByExternalId(String courseCode) {
+        CourseEntity entity = courseDao.findByExternalCourseId(courseCode);
+
+        return courseDozerConverter.convertToDTO(entity,true);
+
+    }
 
     /* Term operation */
 

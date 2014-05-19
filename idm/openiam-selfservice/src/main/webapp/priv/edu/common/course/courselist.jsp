@@ -51,9 +51,9 @@
                         <label>Teacher</label>
 
                         <form:select path="search.instructorId">
-                            <form:option value="" label="-Please Select-"/>
+                            <form:option value="-1" label="-Please Select-"/>
                             <c:forEach items="${courseSelCmd.teacherList}" var="teacher">
-                                <form:option value="${teacher.userId}" label="${teacher.deptCd} -> ${teacher.firstName} ${teacher.lastName}" />
+                                <form:option value="${teacher.userId}" label="${teacher.firstName} ${teacher.lastName}" />
                             </c:forEach>
                         </form:select>
                     </div>
@@ -61,14 +61,16 @@
                     <div class="row">
                         <label>Term</label>
                         <form:select path="search.term">
-                            <form:option value="" label="-Please Select-"/>
+                            <form:option value="-1" label="-Please Select-"/>
+                            <form:options items="${courseSelCmd.termList}" itemValue="id" itemLabel="name"/>
 
                         </form:select>
+
                     </div>
                     <div class="row">
                         <label>Program</label>
                         <form:select path="search.program">
-                            <form:option value="" label="-Please Select-"/>
+                            <form:option value="-1" label="-Please Select-"/>
                             <form:options items="${courseSelCmd.programList}" itemValue="id" itemLabel="name"/>
 
                         </form:select>
@@ -84,10 +86,7 @@
     </fieldset>
     <fieldset>
         <div class="button">
-            <input type="submit" value="Submit" />
-        </div>
-        <div class="button">
-            <input type="submit" value="Add Course" />
+            <input type="submit" name="saveBtn" value="Search"/>
         </div>
 
         <div class="button">

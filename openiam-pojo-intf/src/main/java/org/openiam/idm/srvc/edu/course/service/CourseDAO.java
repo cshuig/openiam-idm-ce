@@ -31,6 +31,7 @@ public interface CourseDAO {
     public CourseSearchResult getCourseByTerm(String courseId, String termId);
 
 
+    CourseEntity findByExternalCourseId(String courseCode);
 
 
 

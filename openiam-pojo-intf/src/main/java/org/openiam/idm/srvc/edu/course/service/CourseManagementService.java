@@ -33,6 +33,7 @@ public interface CourseManagementService {
     public List<CourseSearchResult> searchCourses(CourseSearch search);
     public CourseSearchResult getCourseByTerm(String courseId, String termId);
 
+    public Course getCourseByExternalId (String courseCode);
     // Terms
 
     public Term addTerm(Term term) ;

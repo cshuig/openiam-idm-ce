@@ -7,6 +7,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.mule.util.StringUtils;
 import org.openiam.idm.srvc.edu.course.domain.CourseEntity;
 import org.openiam.idm.srvc.edu.course.dto.Course;
@@ -65,7 +66,22 @@ public class CourseDAOImpl implements CourseDAO {
         }
     }
 
+    @Override
+    public CourseEntity findByExternalCourseId(String courseCode) {
 
+        Session session = sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria(CourseEntity.class)
+                .add(Restrictions.eq("externalCourseId", courseCode))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        List<CourseEntity> results = (List<CourseEntity>)criteria.list();
+        if (results == null || results.isEmpty()) {
+            return null;
+        }
+        return results.get(0);
+
+
+    }
 
     @Override
     public void add(CourseEntity program) {
@@ -122,24 +138,39 @@ public class CourseDAOImpl implements CourseDAO {
 
         System.out.println("Searching for courses...in dao");
 
+        StringBuilder where = new StringBuilder();
 
-        StringBuilder sql = new StringBuilder("SELECT COURSE_ID, NAME, COURSE_NUMBER, DISTRICT_NAME, SCHOOL_NAME, TERM_NAME, SECTION_NBR, " +
-                " COURSE_TERM_ID, DISTRICT_ID, SCHOOL_ID " +
-                " FROM course_summary_vw ") ;
+        StringBuilder sql = new StringBuilder("SELECT csv.COURSE_ID, csv.NAME, csv.COURSE_NUMBER, csv.DISTRICT_NAME, csv.SCHOOL_NAME, csv.TERM_NAME, csv.SECTION_NBR, " +
+                " csv.COURSE_TERM_ID, csv.DISTRICT_ID, csv.SCHOOL_ID " +
+                " FROM course_summary_vw csv ") ;
 
         List<Object> queryParam = new ArrayList<Object>();
 
-        if (StringUtils.isNotEmpty(search.getDistrictId())) {
-            addWhere(sql);
-            sql.append(" DISTRICT_ID = ? " );
+        if (StringUtils.isNotEmpty(search.getDistrictId()) && !"-1".equals(search.getDistrictId())) {
+            addWhere(where);
+            where.append(" DISTRICT_ID = ? " );
             queryParam.add(search.getDistrictId());
         }
 
-        if (StringUtils.isNotEmpty(search.getSchoolId())) {
-            addWhere(sql);
-            sql.append(" SCHOOL_ID = ? " );
+        if (StringUtils.isNotEmpty(search.getSchoolId())  && !"-1".equals(search.getSchoolId() ) ) {
+            addWhere(where);
+            where.append(" SCHOOL_ID = ? " );
             queryParam.add(search.getSchoolId());
         }
+        if (StringUtils.isNotEmpty(search.getTerm())  && !"-1".equals(search.getTerm() ) ) {
+            addWhere(where);
+            where.append(" COURSE_TERM_ID = ? " );
+            queryParam.add(search.getTerm() );
+        }
+
+        if (StringUtils.isNotEmpty(search.getInstructorId())  && !"-1".equals(search.getInstructorId() ) ) {
+            sql.append(" LEFT JOIN COURSE_TERM_USER ctu ON (csv.COURSE_TERM_ID = csv.COURSE_TERM_ID) ");
+            addWhere(where);
+            where.append(" ctu.USER_ID = ? ");
+            queryParam.add(search.getInstructorId());
+        }
+
+        sql.append(where);
 
 
 

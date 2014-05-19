@@ -65,6 +65,11 @@ public interface CourseManagementWebService {
             @WebParam(name = "termId", targetNamespace = "")
             String termId);
 
+    @WebMethod
+    CourseResponse getCourseByExternalId (
+            @WebParam(name = "courseId", targetNamespace = "")
+            String courseCode);
+
 
     @WebMethod
     public TermResponse addTerm(

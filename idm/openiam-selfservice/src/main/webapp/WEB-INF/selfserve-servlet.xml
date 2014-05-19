@@ -818,8 +818,6 @@
         <property name="formView" value="/priv/edu/common/course/courselist" />
         <property name="successView" value="/priv/edu/common/course/courselist" />
 
-        <!-- property name="redirectView" value="courseDetail.selfserve" / -->
-
         <property name="orgManager" ref="orgServiceClient" />
         <property name="courseManager" ref="courseServiceClient" />
         <property name="userMgr" ref="userServiceClient" />

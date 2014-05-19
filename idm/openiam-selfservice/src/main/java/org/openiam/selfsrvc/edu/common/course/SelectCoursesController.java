@@ -3,20 +3,23 @@ package org.openiam.selfsrvc.edu.common.course;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.util.StringUtils;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearch;
 import org.openiam.idm.srvc.edu.course.dto.CourseSearchResult;
+import org.openiam.idm.srvc.edu.course.dto.term.Term;
 import org.openiam.idm.srvc.edu.course.ws.CourseManagementWebService;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.user.dto.User;
-import org.openiam.idm.srvc.user.dto.UserSearch;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -75,7 +78,7 @@ public class SelectCoursesController extends SimpleFormController {
 
 
         }
-        coursesCommand.setSchoolList(schoolList);
+       /* coursesCommand.setSchoolList(schoolList);
         coursesCommand.setProgramList(courseManager.getAllPrograms().getProgramList());
 
         // get all teachers -
@@ -90,7 +93,7 @@ public class SelectCoursesController extends SimpleFormController {
 
 
         coursesCommand.setTeacherList(userList);
-
+       */
 
         return coursesCommand;
 		
@@ -112,6 +115,70 @@ public class SelectCoursesController extends SimpleFormController {
     }
 
     @Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+        ModelAndView mav = new ModelAndView(getSuccessView());
+        SelectCoursesCommand coursesCommand =(SelectCoursesCommand)command;
+
+        String btnName =  request.getParameter("saveBtn");
+        if (!StringUtils.isBlank(btnName)) {
+             if ("Search".equalsIgnoreCase(btnName)) {
+                 CourseSearch search =  coursesCommand.getSearch();
+
+                 List<CourseSearchResult> courseList = courseManager.searchCourses(search).getCourseList();
+                 mav.addObject("courseList",courseList);
+
+                 // pre-fill the drop downs that we can
+
+                 if ( !StringUtils.isBlank(search.getDistrictId()) ) {
+                     populateSchools(coursesCommand, search.getDistrictId());
+
+                 }
+                 if ( !StringUtils.isBlank(search.getSchoolId()) ) {
+                     populateTeachers(coursesCommand,search.getSchoolId() );
+                 }
+
+             }
+            mav.addObject("courseSelCmd", coursesCommand);
+
+
+
+
+            return mav;
+        }
+
+        if("SELECT_DISTRICT".equalsIgnoreCase(coursesCommand.getSubmitType())
+                || "SELECT_SCHOOL".equalsIgnoreCase(coursesCommand.getSubmitType())) {
+            List<Organization> schoolList =  orgManager.getOrganizationByType("schoolType", coursesCommand.getSearch().getDistrictId());
+            coursesCommand.setSchoolList(schoolList);
+
+            List<User> userList = userDataWebService.findUserByAffiliation(coursesCommand.getSearch().getSchoolId()).getUserList();
+            coursesCommand.setTeacherList(userList);
+
+            // set the terms
+            List<Term> termList = courseManager.getTermsByDistrict(coursesCommand.getSearch().getDistrictId()).getTermList();
+            coursesCommand.setTermList(termList);
+
+            mav.addObject("courseSelCmd", coursesCommand);
+
+        }
+
+
+
+        return mav;
+    }
+
+    private void populateSchools(SelectCoursesCommand coursesCommand, String districtId) {
+        List<Organization> schoolList =  orgManager.getOrganizationByType("schoolType", districtId);
+        coursesCommand.setSchoolList(schoolList);
+
+    }
+    private void populateTeachers(SelectCoursesCommand coursesCommand, String schools) {
+        List<User> userList = userDataWebService.findUserByAffiliation(schools).getUserList();
+        coursesCommand.setTeacherList(userList);
+
+    }
+
+   /* @Override
 	protected ModelAndView onSubmit(Object command) throws Exception {
         ModelAndView mav = new ModelAndView(getSuccessView());
 		SelectCoursesCommand coursesCommand =(SelectCoursesCommand)command;
@@ -122,6 +189,12 @@ public class SelectCoursesController extends SimpleFormController {
 
             List<User> userList = userDataWebService.findUserByAffiliation(coursesCommand.getSearch().getSchoolId()).getUserList();
             coursesCommand.setTeacherList(userList);
+
+            // set the terms
+            List<Term> termList = courseManager.getTermsByDistrict(coursesCommand.getSearch().getDistrictId()).getTermList();
+            coursesCommand.setTermList(termList);
+
+
         } else {
         // get the list of course
             CourseSearch search =  coursesCommand.getSearch();
@@ -138,6 +211,7 @@ public class SelectCoursesController extends SimpleFormController {
 		return mav;
 	}
 
+*/
 
     public OrganizationDataService getOrgManager() {
         return orgManager;

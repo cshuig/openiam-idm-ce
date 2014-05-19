@@ -80,7 +80,8 @@ CREATE TABLE COURSE_TERM_USER (
   COURSE_ID               VARCHAR(32) NOT NULL,
   USER_ID                 VARCHAR(32) NOT NULL,
   USER_TYPE               VARCHAR(30) NULL DEFAULT 'STUDENT',
-   ROLE_ID                VARCHAR(32) NULL,
+  ROLE_ID                 VARCHAR(32) NULL,
+  COURSE_TERM_ID          VARCHAR(32) NOT NULL,
   START_DATE              DATETIME,
   END_DATE                DATETIME,
   PRIMARY KEY (COURSE_TERM_USER_ID)
@@ -88,7 +89,8 @@ CREATE TABLE COURSE_TERM_USER (
 
 
 CREATE VIEW `course_summary_vw` AS
-select c.COURSE_ID, c.NAME, c.COURSE_NUMBER, district.COMPANY_ID as DISTRICT_ID, district.COMPANY_NAME AS DISTRICT_NAME, c.SCHOOL_ID = school.COMPANY_ID AS SCHOOL_ID,
+select c.COURSE_ID, c.NAME, c.COURSE_NUMBER, district.COMPANY_ID as DISTRICT_ID, district.COMPANY_NAME AS DISTRICT_NAME,
+    school.COMPANY_ID AS SCHOOL_ID,
     school.COMPANY_NAME AS SCHOOL_NAME,
 	ct.TERM_ID, t.NAME as TERM_NAME, ct.SECTION_NBR, ct.COURSE_TERM_ID
 FROM COURSE c, COMPANY district, COMPANY school, COURSE_TERM ct, TERM t
@@ -108,11 +110,15 @@ insert into CATEGORY_TYPE (category_id, type_id) values('ORG_TYPE','schoolType')
 
 insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, display_order, PUBLIC_URL) values('COURSECENTER','SELFSERVICE','Course Management Center', 'Course Management Center', null, 'en', '3',0);
 
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('COURSE_MANAGEMENT','COURSECENTER','Course Management','Course Management','{SELFSERVICE}courseManagement.selfserve', 'en',1);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('PROGRAM_MANAGEMENT','COURSECENTER','Program Management','Program Management','{SELFSERVICE}programManagement.selfserve', 'en',2);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('TERM_MANAGEMENT','COURSECENTER','Term Management','Term Management','{SELFSERVICE}programManagement.selfserve', 'en',3);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('GROUP_CONTAINER','COURSECENTER','Course Group','Course Group','{SELFSERVICE}programManagement.selfserve', 'en',5);
-insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('SYNC_COURSE','COURSECENTER','Synch Course','Synch Course','{SELFSERVICE}synchCourse.selfserve', 'en',6);
+delete from MENU WHERE MENU_GROUP = 'COURSECENTER';
+
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('COURSE_MANAGEMENT','COURSECENTER','Find Course','Find Course','{SELFSERVICE}courseManagement.selfserve', 'en',1);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('CREATE_COURSE','COURSECENTER','Create Course','Create Course','{SELFSERVICE}courseDetail.selfserve', 'en',2);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('PROGRAM_MANAGEMENT','COURSECENTER','Program Management','Program Management','{SELFSERVICE}programs.selfserve', 'en',3);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('TERM_MANAGEMENT','COURSECENTER','Term Management','Term Management','{SELFSERVICE}terms.selfserve', 'en',4);
+insert into MENU (menu_id, menu_group, menu_name,menu_desc,url,LANGUAGE_CD, DISPLAY_ORDER) values('GROUP_CONTAINER','COURSECENTER','Course Group','Course Group','{SELFSERVICE}groupcontainer.selfserve', 'en',5);
+
+
 
 
 
@@ -138,6 +144,7 @@ insert into CATEGORY_TYPE (category_id, type_ID) values('USER_TYPE','STUDENT');
 insert into CATEGORY_TYPE (category_id, type_ID) values('USER_TYPE','STAFF');
 
 
+delete from PERMISSIONS WHERE ROLE_ID = 'FACULTY';
 
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('SELF_USERSUMMARY','FACULTY','USR_SEC_DOMAIN');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('SELF_USERIDENTITY','FACULTY','USR_SEC_DOMAIN');
@@ -159,7 +166,7 @@ INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('COURSE_MANAGEMENT',
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('PROGRAM_MANAGEMENT','FACULTY','USR_SEC_DOMAIN');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('TERM_MANAGEMENT','FACULTY','USR_SEC_DOMAIN');
 INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('GROUP_CONTAINER','FACULTY','USR_SEC_DOMAIN');
-INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('SYNC_COURSE','FACULTY','USR_SEC_DOMAIN');
+INSERT INTO PERMISSIONS(MENU_ID,ROLE_ID, SERVICE_ID) VALUES('CREATE_COURSE','FACULTY','USR_SEC_DOMAIN');
 
 
 insert into USERS (user_id,first_name, last_name, STATUS, COMPANY_ID ) values('4000','faculty','','ACTIVE','100');

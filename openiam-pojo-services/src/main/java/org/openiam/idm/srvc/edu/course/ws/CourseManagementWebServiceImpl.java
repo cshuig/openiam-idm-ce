@@ -154,6 +154,21 @@ public class CourseManagementWebServiceImpl implements CourseManagementWebServic
 
 
     @Override
+    public CourseResponse getCourseByExternalId( String courseCode) {
+        CourseResponse resp = new CourseResponse();
+        resp.setStatus(ResponseStatus.FAILURE);
+
+        Course c = courseService.getCourseByExternalId(courseCode);
+        if ( c != null ) {
+            resp.setCourse(c);
+            resp.setStatus(ResponseStatus.SUCCESS);
+
+        }
+
+        return resp;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     @Transactional
     public TermResponse addTerm(Term term) {
         TermResponse resp = new TermResponse();
