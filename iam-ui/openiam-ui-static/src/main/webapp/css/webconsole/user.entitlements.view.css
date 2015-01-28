@@ -1,0 +1,79 @@
+/*
+#tree-key .group, #tree .group {
+	background: none repeat scroll 0 0 #B5C0A2;
+}
+
+#tree-key .role, #tree .role {
+	background: none repeat scroll 0 0 #DDDCCC;
+}
+
+#tree-key .resource, #tree .resource {
+	background: none repeat scroll 0 0 #DEC39E;
+}
+
+#tree-key ul {
+	
+}
+
+#tree-key ul li {
+	display: inline-block;
+    list-style: none outside none;
+}
+
+#tree-key ul li label {
+	
+}
+*/
+
+#menu-container {
+	clear:both;
+}
+#entityAutocomplete {
+	width:400px;
+}
+
+#entityAutocomplete[disabled="disabled"] {
+	
+}
+
+.highlight {
+    background-color: #FFFF88;
+}
+
+#entitlementInformation {
+	background: none repeat scroll 0 0 #F6F6F6;
+    border: 1px solid #CCCCCC;
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 5px 3px 12px #888888;
+    padding: 10px;
+    position: fixed;
+    right: 10px;
+    top: 50px;
+    width: 257px;
+}
+
+#fixedEntitlementInformationContainer {
+	height: 450px;
+}
+
+#entitlementInformation #entitlementMetadata label {
+	font-weight: bold;
+}
+
+#entitlementInformation .entitlementInfoTitle {
+	border-bottom: 1px solid #DDDDDD;
+}
+
+#entitlementInformation .entitlementMetadata {
+	border-bottom: 1px solid #DDDDDD;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+#entitlementInformation .entitlementMetadata .title {
+	font-size: 114%;
+}
+
+#tree {
+	clear:both;
+}

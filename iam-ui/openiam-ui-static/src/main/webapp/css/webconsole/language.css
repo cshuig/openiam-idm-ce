@@ -1,0 +1,8 @@
+.locale-delete {
+	display: none !important;
+}
+
+.locale-row {
+	display: block;
+	min-height: 32px;
+}

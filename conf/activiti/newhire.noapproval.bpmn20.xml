@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="definitions"
+  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:activiti="http://activiti.org/bpmn" 
+  targetNamespace="NewHireWithNoApproval">
+
+  <process id="newHireWithNoApproval">
+
+    <startEvent id="start" />
+    
+    
+    <sequenceFlow id="flow1" sourceRef="start" targetRef="createUser" />
+    	<serviceTask id="createUser" activiti:class="org.openiam.bpm.activiti.delegate.user.newuser.CreateNewUser" />
+    
+    <sequenceFlow id="flow2" sourceRef="createUser" targetRef="sendNewUserNotification" />
+    	<serviceTask id="sendNewUserNotification" activiti:class="org.openiam.bpm.activiti.delegate.user.newuser.AcceptProfileProvisionDelegate" />
+	
+	<sequenceFlow id="flow3" sourceRef="sendNewUserNotification" targetRef="finish" />
+	<endEvent id="finish" />
+	
+  </process>
+
+</definitions>

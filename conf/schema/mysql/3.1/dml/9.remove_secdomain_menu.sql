@@ -1,0 +1,25 @@
+use openiam;
+
+DELETE FROM RESOURCE_USER where RESOURCE_ID like 'SECDOMAIN%';
+DELETE FROM RESOURCE_PROP where RESOURCE_ID like 'SECDOMAIN%';
+DELETE FROM RESOURCE_PRIVILEGE where RESOURCE_ID like 'SECDOMAIN%';
+DELETE FROM RESOURCE_GROUP where RESOURCE_ID like 'SECDOMAIN%';
+DELETE FROM res_to_res_membership where RESOURCE_ID like 'SECDOMAIN%' or MEMBER_RESOURCE_ID like 'SECDOMAIN%';
+DELETE FROM RESOURCE_ROLE where RESOURCE_ID like 'SECDOMAIN%';
+DELETE FROM RES where RESOURCE_ID like 'SECDOMAIN%';
+
+
+
+DELETE FROM ATTRIBUTE_MAP
+WHERE ATTRIBUTE_POLICY_ID in (SELECT RECON_RES_ATTR_MAP_ID FROM RECON_RES_ATTR_MAP
+WHERE ATTR_POLICY_ID in (select POLICY_ID from POLICY
+WHERE RULE_SRC_URL = 'provision/primaryDomain.groovy'
+      OR RULE_SRC_URL = 'provision/secDomain.groovy'));
+
+DELETE FROM RECON_RES_ATTR_MAP
+WHERE ATTR_POLICY_ID in (select POLICY_ID from POLICY
+WHERE RULE_SRC_URL = 'provision/primaryDomain.groovy'
+      OR RULE_SRC_URL = 'provision/secDomain.groovy');
+
+DELETE FROM POLICY WHERE RULE_SRC_URL = 'provision/primaryDomain.groovy'
+                         OR RULE_SRC_URL = 'provision/secDomain.groovy';

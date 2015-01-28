@@ -1,0 +1,14 @@
+.tableContainer {
+	border-bottom: 1px solid #DDDDDD;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    width: 100%;
+}
+
+.tableContainer .containerTitle {
+	color: #D95B44;
+    font-family: opensans;
+    font-size: 117%;
+    font-weight: bold;
+    text-align: left;
+}

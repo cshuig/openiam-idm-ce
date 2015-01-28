@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+	    <groupId>org.openiam</groupId>
+	    <artifactId>openiam-auth-manager</artifactId>
+		<version>3.2.6.RELEASE</version>
+	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.openiam</groupId>
+    <artifactId>openiam-auth-manager-intf</artifactId>
+    <name>openiam-auth-manager-common</name>
+    <packaging>jar</packaging>
+    <version>3.2.6.RELEASE</version>
+    <description>OpenIAM Authorization Manager Common</description>
+
+    <dependencies>
+    	<dependency>
+    		<groupId>org.openiam</groupId>
+        	<artifactId>openiam-pojo-intf</artifactId>
+		</dependency>
+		
+		<dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        
+       <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        
+		 <dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.9</version>
+		</dependency>
+            
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.9.9</version>
+		</dependency>
+            
+        <!-- Testing -->
+        <dependency>
+		    <groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.1.1</version>
+			<scope>test</scope>
+		</dependency>
+    </dependencies>
+
+    <developers>
+        <developer>
+            <id>lev_bornovalov</id>
+            <name>Lev Bornovalov</name>
+            <email>lev.bornovalov@openiam.com</email>
+        </developer>
+    </developers>
+    <reporting>
+
+    </reporting>
+
+    <build>
+        <finalName>openiam-authorization-manager-common</finalName>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									pl.project13.maven
+        								</groupId>
+        								<artifactId>
+        									git-commit-id-plugin
+        								</artifactId>
+        								<versionRange>
+        									[2.0.3,)
+        								</versionRange>
+        								<goals>
+        									<goal>revision</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
+    </build>
+</project>

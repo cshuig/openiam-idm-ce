@@ -1,0 +1,5 @@
+import org.openiam.idm.srvc.org.service.AbstractOrganizationServicePrePostProcessor
+
+public class OrganizationServicePreProcessor extends AbstractOrganizationServicePrePostProcessor {
+
+}

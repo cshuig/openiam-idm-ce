@@ -1,0 +1,16 @@
+ddl/1.user_collections_drop_columns.sql
+dml/1.remove_unused_menus.sql
+dml/2.edit_policy.sql
+ddl/2.alter_managed_sys.sql
+ddl/3.alter_groups.sql
+dml/3.edit_policy.sql
+dml/4.add_report_icon.sql
+ddl/4.add_audit_tables.sql
+dml/5.selfservice_org_menu.sql
+dml/6.remove_unused_managed_systems.sql
+dml/7.log_menus.sql
+ddl/5.alter_roles.sql
+dml/8.fix_org_menu.sql
+ddl/6.alter_resources.sql
+dml/9.db_fixes.sql
+dml/10.fix_linux_attribute_map.sql

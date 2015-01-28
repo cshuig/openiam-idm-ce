@@ -1,0 +1,12 @@
+table.yui input.full {
+	float:none;
+}
+
+table.yui thead td {
+	border-right: none;
+	text-align: center;
+}
+
+.full, select {
+	float: none;
+}

@@ -1,0 +1,138 @@
+use openiam;
+
+SET NAMES 'UTF8';
+
+DELETE FROM RESOURCE_GROUP WHERE RESOURCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+DELETE FROM RESOURCE_USER WHERE RESOURCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+DELETE FROM RESOURCE_ROLE WHERE RESOURCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+DELETE FROM RESOURCE_PROP WHERE RESOURCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+DELETE FROM res_to_res_membership WHERE MEMBER_RESOURCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+DELETE FROM LANGUAGE_MAPPING WHERE REFERENCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+DELETE FROM RES WHERE RESOURCE_ID IN ('USER_INFO_PAGE', 'RESET_ACCOUNT', 'RESET_CHALLENGE_RESPONSE', 'DEACTIVATE_USER', 'REMOVE_USER', 'ENABLE_USER', 'DISABLE_USER', 'ACTIVE_USER', 'USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP', 'USER_GROUPS_MEMBERSHIP', 'USER_RES_MEMBERSHIP', 'USER_ORG_MEMBERSHIP');
+
+INSERT INTO RES (RESOURCE_ID, RESOURCE_TYPE_ID, NAME, DESCRIPTION, DISPLAY_ORDER, IS_PUBLIC, URL) VALUES
+  ('USER_INFO_PAGE', 'MENU_ITEM', 'USER_INFO_PAGE', 'User Info Page', 1, 'Y', null),
+  ('RESET_ACCOUNT', 'MENU_ITEM', 'RESET_ACCOUNT', 'Reset Account Button', 1, 'Y', '/webconsole/rest/api/prov/resetUser'),
+  ('RESET_CHALLENGE_RESPONSE', 'MENU_ITEM', 'RESET_CHALLENGE_RESPONSE', 'Reset Challenge Response Button', 2, 'Y', '/webconsole/resetSecurityQuestions.html'),
+  ('DEACTIVATE_USER', 'MENU_ITEM', 'DEACTIVATE_USER', 'DeActivate User Button', 3, 'Y', '/webconsole/rest/api/prov/deleteUser'),
+  ('REMOVE_USER', 'MENU_ITEM', 'REMOVE_USER', 'Remove User Button', 4, 'Y', '/webconsole/rest/api/prov/removeUser'),
+  ('ENABLE_USER', 'MENU_ITEM', 'ENABLE_USER', 'Enable User Button', 5, 'Y', '/webconsole/rest/api/prov/enableUser'),
+  ('DISABLE_USER', 'MENU_ITEM', 'DISABLE_USER', 'Disable User Button', 6, 'Y', '/webconsole/rest/api/prov/disableUser'),
+  ('ACTIVE_USER', 'MENU_ITEM', 'ACTIVE_USER', 'Active User Button', 7, 'Y', '/webconsole/rest/api/prov/activateUser'),
+  ('USER_ENTITLEMENTS_PAGE', 'MENU_ITEM', 'USER_ENTITLEMENTS_PAGE', 'User Entitlements Page', 1, 'Y', null),
+  ('USER_ROLES_MEMBERSHIP', 'MENU_ITEM', 'USER_ROLES_MEMBERSHIP', 'Member of Roles Button', 1, 'Y', '/webconsole/userEntitlementsRoles.html'),
+  ('USER_GROUPS_MEMBERSHIP', 'MENU_ITEM', 'USER_GROUPS_MEMBERSHIP', 'Member of Groups Button', 2, 'Y', '/webconsole/userEntitlementsGroups.html'),
+  ('USER_RES_MEMBERSHIP', 'MENU_ITEM', 'USER_RES_MEMBERSHIP', 'Entitled to Resources Button', 3, 'Y', '/webconsole/userEntitlementsResources.html'),
+  ('USER_ORG_MEMBERSHIP', 'MENU_ITEM', 'USER_ORG_MEMBERSHIP', 'Member of Organizations Button', 4, 'Y', '/webconsole/userEntitlementsOrganizations.html');
+
+INSERT INTO RESOURCE_PROP (RESOURCE_PROP_ID, RESOURCE_ID, NAME, ATTR_VALUE) VALUES 
+  ('USER_INFO_PAGE_VIS', 'USER_INFO_PAGE', 'IS_VISIBLE', 'true'),
+  ('RESET_ACCOUNT_VIS', 'RESET_ACCOUNT' , 'IS_VISIBLE', 'true'),
+  ('RESET_CHALLENGE_RESPONSE_VIS', 'RESET_CHALLENGE_RESPONSE', 'IS_VISIBLE', 'true'),
+  ('DEACTIVATE_USER_VIS', 'DEACTIVATE_USER', 'IS_VISIBLE', 'true'),
+  ('REMOVE_USER_VIS', 'REMOVE_USER', 'IS_VISIBLE', 'true'),
+  ('ENABLE_USER_VIS', 'ENABLE_USER', 'IS_VISIBLE', 'true'),
+  ('DISABLE_USER_VIS', 'DISABLE_USER', 'IS_VISIBLE', 'true'),
+  ('ACTIVE_USER_VIS', 'ACTIVE_USER', 'IS_VISIBLE', 'true'),
+  ('USER_ENTITLEMENTS_PAGE_VIS', 'USER_ENTITLEMENTS_PAGE', 'IS_VISIBLE', 'true'),
+  ('USER_ROLES_MEMBERSHIP_VIS', 'USER_ROLES_MEMBERSHIP', 'IS_VISIBLE', 'true'),
+  ('USER_GROUPS_MEMBERSHIP_VIS', 'USER_GROUPS_MEMBERSHIP', 'IS_VISIBLE', 'true'),
+  ('USER_RES_MEMBERSHIP_VIS', 'USER_RES_MEMBERSHIP', 'IS_VISIBLE', 'true'),
+  ('USER_ORG_MEMBERSHIP_VIS', 'USER_ORG_MEMBERSHIP', 'IS_VISIBLE', 'true');
+
+INSERT INTO res_to_res_membership (RESOURCE_ID, MEMBER_RESOURCE_ID) VALUES
+  ('USER_INFO_PAGE', 'RESET_ACCOUNT'),
+  ('USER_INFO_PAGE', 'RESET_CHALLENGE_RESPONSE'),
+  ('USER_INFO_PAGE', 'DEACTIVATE_USER'),
+  ('USER_INFO_PAGE', 'REMOVE_USER'),
+  ('USER_INFO_PAGE', 'ENABLE_USER'),
+  ('USER_INFO_PAGE', 'DISABLE_USER'),
+  ('USER_INFO_PAGE', 'ACTIVE_USER'),
+  ('USER_ENTITLEMENTS_PAGE', 'USER_ROLES_MEMBERSHIP'),
+  ('USER_ENTITLEMENTS_PAGE', 'USER_GROUPS_MEMBERSHIP'),
+  ('USER_ENTITLEMENTS_PAGE', 'USER_RES_MEMBERSHIP'),
+  ('USER_ENTITLEMENTS_PAGE', 'USER_ORG_MEMBERSHIP');
+
+INSERT INTO RESOURCE_ROLE (ROLE_ID, RESOURCE_ID) VALUES
+  ('9','USER_INFO_PAGE'), ('9','RESET_ACCOUNT'), ('9','RESET_CHALLENGE_RESPONSE'), ('9','DEACTIVATE_USER'), ('9','REMOVE_USER'), ('9','ENABLE_USER'), ('9','DISABLE_USER'), 
+  ('9','ACTIVE_USER'), ('9','USER_ENTITLEMENTS_PAGE'), ('9','USER_ROLES_MEMBERSHIP'), ('9','USER_GROUPS_MEMBERSHIP'), ('9','USER_RES_MEMBERSHIP'), ('9','USER_ORG_MEMBERSHIP');
+
+INSERT INTO LANGUAGE_MAPPING(ID, LANGUAGE_ID, REFERENCE_TYPE, REFERENCE_ID, TEXT_VALUE) VALUES
+  ('EN_USER_INFO_PAGE_DESC', '1', 'ResourceEntity.displayNameMap', 'USER_INFO_PAGE', 'User Info Page'),
+  ('DE_USER_INFO_PAGE_DESC', '2', 'ResourceEntity.displayNameMap', 'USER_INFO_PAGE', 'Benutzer Info Seite'),
+  ('ES_USER_INFO_PAGE_DESC', '4', 'ResourceEntity.displayNameMap', 'USER_INFO_PAGE', 'Página Información de Usuario'),
+  ('RU_USER_INFO_PAGE_DESC', '8', 'ResourceEntity.displayNameMap', 'USER_INFO_PAGE', 'Страница Информация о пользователе'),
+  ('JP_USER_INFO_PAGE_DESC', '9', 'ResourceEntity.displayNameMap', 'USER_INFO_PAGE', 'ユーザー情報ページ'),
+  ('ZH_USER_INFO_PAGE_DESC', '10','ResourceEntity.displayNameMap', 'USER_INFO_PAGE', '用户信息網頁'),
+  ('EN_RESET_ACCOUNT_DESC', '1', 'ResourceEntity.displayNameMap', 'RESET_ACCOUNT', 'Reset Account'),
+  ('DE_RESET_ACCOUNT_DESC', '2', 'ResourceEntity.displayNameMap', 'RESET_ACCOUNT', 'Konto zurücksetzen'),
+  ('ES_RESET_ACCOUNT_DESC', '4', 'ResourceEntity.displayNameMap', 'RESET_ACCOUNT', 'Restaurar Cuenta'),
+  ('RU_RESET_ACCOUNT_DESC', '8', 'ResourceEntity.displayNameMap', 'RESET_ACCOUNT', 'Сбросить аккаунт'),
+  ('JP_RESET_ACCOUNT_DESC', '9', 'ResourceEntity.displayNameMap', 'RESET_ACCOUNT', 'アカウントをリセット'),
+  ('ZH_RESET_ACCOUNT_DESC', '10','ResourceEntity.displayNameMap', 'RESET_ACCOUNT', '重置账号'),
+  ('EN_RESET_CHALLENGE_RESPONSE_DESC', '1', 'ResourceEntity.displayNameMap', 'RESET_CHALLENGE_RESPONSE', 'Reset Challenge Response'),
+  ('DE_RESET_CHALLENGE_RESPONSE_DESC', '2', 'ResourceEntity.displayNameMap', 'RESET_CHALLENGE_RESPONSE', 'Zurücksetzen von Anfrage/Antwort'),
+  ('ES_RESET_CHALLENGE_RESPONSE_DESC', '4', 'ResourceEntity.displayNameMap', 'RESET_CHALLENGE_RESPONSE', 'Restablecer respuesta de la Pregunta de Seguridad'),
+  ('RU_RESET_CHALLENGE_RESPONSE_DESC', '8', 'ResourceEntity.displayNameMap', 'RESET_CHALLENGE_RESPONSE', 'Сбросить контрольные вопросы'),
+  ('JP_RESET_CHALLENGE_RESPONSE_DESC', '9', 'ResourceEntity.displayNameMap', 'RESET_CHALLENGE_RESPONSE', 'チャレンジレスポンスをリセット'),
+  ('ZH_RESET_CHALLENGE_RESPONSE_DESC', '10','ResourceEntity.displayNameMap', 'RESET_CHALLENGE_RESPONSE', '重置安全问题答案'),
+  ('EN_DEACTIVATE_USER_DESC', '1', 'ResourceEntity.displayNameMap', 'DEACTIVATE_USER', 'DeActivate'),
+  ('DE_DEACTIVATE_USER_DESC', '2', 'ResourceEntity.displayNameMap', 'DEACTIVATE_USER', 'Deaktivieren'),
+  ('ES_DEACTIVATE_USER_DESC', '4', 'ResourceEntity.displayNameMap', 'DEACTIVATE_USER', 'Baja'),
+  ('RU_DEACTIVATE_USER_DESC', '8', 'ResourceEntity.displayNameMap', 'DEACTIVATE_USER', 'Пометить как "удаленый"'),
+  ('JP_DEACTIVATE_USER_DESC', '9', 'ResourceEntity.displayNameMap', 'DEACTIVATE_USER', '非アクティブ化'),
+  ('ZH_DEACTIVATE_USER_DESC', '10','ResourceEntity.displayNameMap', 'DEACTIVATE_USER', '使用户无效'),
+  ('EN_REMOVE_USER_DESC', '1', 'ResourceEntity.displayNameMap', 'REMOVE_USER', 'Delete'),
+  ('DE_REMOVE_USER_DESC', '2', 'ResourceEntity.displayNameMap', 'REMOVE_USER', 'Löschen'),
+  ('ES_REMOVE_USER_DESC', '4', 'ResourceEntity.displayNameMap', 'REMOVE_USER', 'Borrar'),
+  ('RU_REMOVE_USER_DESC', '8', 'ResourceEntity.displayNameMap', 'REMOVE_USER', 'Удалить'),
+  ('JP_REMOVE_USER_DESC', '9', 'ResourceEntity.displayNameMap', 'REMOVE_USER', '削除'),
+  ('ZH_REMOVE_USER_DESC', '10','ResourceEntity.displayNameMap', 'REMOVE_USER', '删除'),
+  ('EN_ENABLE_USER_DESC', '1', 'ResourceEntity.displayNameMap', 'ENABLE_USER', 'Enable'),
+  ('DE_ENABLE_USER_DESC', '2', 'ResourceEntity.displayNameMap', 'ENABLE_USER', 'Aktivieren'),
+  ('ES_ENABLE_USER_DESC', '4', 'ResourceEntity.displayNameMap', 'ENABLE_USER', 'Desbloquear'),
+  ('RU_ENABLE_USER_DESC', '8', 'ResourceEntity.displayNameMap', 'ENABLE_USER', 'Включить'),
+  ('JP_ENABLE_USER_DESC', '9', 'ResourceEntity.displayNameMap', 'ENABLE_USER', '有効'),
+  ('ZH_ENABLE_USER_DESC', '10','ResourceEntity.displayNameMap', 'ENABLE_USER', '启用'),
+  ('EN_DISABLE_USER_DESC', '1', 'ResourceEntity.displayNameMap', 'DISABLE_USER', 'Disable'),
+  ('DE_DISABLE_USER_DESC', '2', 'ResourceEntity.displayNameMap', 'DISABLE_USER', 'Deaktivieren'),
+  ('ES_DISABLE_USER_DESC', '4', 'ResourceEntity.displayNameMap', 'DISABLE_USER', 'Bloquear'),
+  ('RU_DISABLE_USER_DESC', '8', 'ResourceEntity.displayNameMap', 'DISABLE_USER', 'Отключить'),
+  ('JP_DISABLE_USER_DESC', '9', 'ResourceEntity.displayNameMap', 'DISABLE_USER', '無効'),
+  ('ZH_DISABLE_USER_DESC', '10','ResourceEntity.displayNameMap', 'DISABLE_USER', '禁用'),
+  ('EN_ACTIVE_USER_DESC', '1', 'ResourceEntity.displayNameMap', 'ACTIVE_USER', 'Active'),
+  ('DE_ACTIVE_USER_DESC', '2', 'ResourceEntity.displayNameMap', 'ACTIVE_USER', 'Aktiv'),
+  ('ES_ACTIVE_USER_DESC', '4', 'ResourceEntity.displayNameMap', 'ACTIVE_USER', 'Activar'),
+  ('RU_ACTIVE_USER_DESC', '8', 'ResourceEntity.displayNameMap', 'ACTIVE_USER', 'Активировать'),
+  ('JP_ACTIVE_USER_DESC', '9', 'ResourceEntity.displayNameMap', 'ACTIVE_USER', 'アクティブ'),
+  ('ZH_ACTIVE_USER_DESC', '10','ResourceEntity.displayNameMap', 'ACTIVE_USER', '有效'),
+  ('EN_USER_ENTITLEMENTS_PAGE_DESC', '1', 'ResourceEntity.displayNameMap', 'USER_ENTITLEMENTS_PAGE', 'User Entitlements Page'),
+  ('DE_USER_ENTITLEMENTS_PAGE_DESC', '2', 'ResourceEntity.displayNameMap', 'USER_ENTITLEMENTS_PAGE', 'Benutzer Berechtigungen Seite'),
+  ('ES_USER_ENTITLEMENTS_PAGE_DESC', '4', 'ResourceEntity.displayNameMap', 'USER_ENTITLEMENTS_PAGE', 'Página Derechos de Usuario'),
+  ('RU_USER_ENTITLEMENTS_PAGE_DESC', '8', 'ResourceEntity.displayNameMap', 'USER_ENTITLEMENTS_PAGE', 'Страница Разрешения пользователя'),
+  ('JP_USER_ENTITLEMENTS_PAGE_DESC', '9', 'ResourceEntity.displayNameMap', 'USER_ENTITLEMENTS_PAGE', 'ユーザーの権限ページ'),
+  ('ZH_USER_ENTITLEMENTS_PAGE_DESC', '10','ResourceEntity.displayNameMap', 'USER_ENTITLEMENTS_PAGE', '用户权利網頁'),
+  ('EN_USER_ROLES_MEMBERSHIP_DESC', '1', 'ResourceEntity.displayNameMap', 'USER_ROLES_MEMBERSHIP', 'Member of Roles'),
+  ('DE_USER_ROLES_MEMBERSHIP_DESC', '2', 'ResourceEntity.displayNameMap', 'USER_ROLES_MEMBERSHIP', 'Rollenmitglieder'),
+  ('ES_USER_ROLES_MEMBERSHIP_DESC', '4', 'ResourceEntity.displayNameMap', 'USER_ROLES_MEMBERSHIP', 'Roles Vinculados'),
+  ('RU_USER_ROLES_MEMBERSHIP_DESC', '8', 'ResourceEntity.displayNameMap', 'USER_ROLES_MEMBERSHIP', 'Участник ролей'),
+  ('JP_USER_ROLES_MEMBERSHIP_DESC', '9', 'ResourceEntity.displayNameMap', 'USER_ROLES_MEMBERSHIP', 'ロースのメンバー'),
+  ('ZH_USER_ROLES_MEMBERSHIP_DESC', '10','ResourceEntity.displayNameMap', 'USER_ROLES_MEMBERSHIP', '角色成员'),
+  ('EN_USER_GROUPS_MEMBERSHIP_DESC', '1', 'ResourceEntity.displayNameMap', 'USER_GROUPS_MEMBERSHIP', 'Member of Groups'),
+  ('DE_USER_GROUPS_MEMBERSHIP_DESC', '2', 'ResourceEntity.displayNameMap', 'USER_GROUPS_MEMBERSHIP', 'Gruppenmitglieder'),
+  ('ES_USER_GROUPS_MEMBERSHIP_DESC', '4', 'ResourceEntity.displayNameMap', 'USER_GROUPS_MEMBERSHIP', 'Grupos Vinculados'),
+  ('RU_USER_GROUPS_MEMBERSHIP_DESC', '8', 'ResourceEntity.displayNameMap', 'USER_GROUPS_MEMBERSHIP', 'Участник группы'),
+  ('JP_USER_GROUPS_MEMBERSHIP_DESC', '9', 'ResourceEntity.displayNameMap', 'USER_GROUPS_MEMBERSHIP', 'グループのメンバー'),
+  ('ZH_USER_GROUPS_MEMBERSHIP_DESC', '10','ResourceEntity.displayNameMap', 'USER_GROUPS_MEMBERSHIP', '群组成员'),
+  ('EN_USER_RES_MEMBERSHIP_DESC', '1', 'ResourceEntity.displayNameMap', 'USER_RES_MEMBERSHIP', 'Entitled to Resources'),
+  ('DE_USER_RES_MEMBERSHIP_DESC', '2', 'ResourceEntity.displayNameMap', 'USER_RES_MEMBERSHIP', 'Berechtigt für Ressourcen'),
+  ('ES_USER_RES_MEMBERSHIP_DESC', '4', 'ResourceEntity.displayNameMap', 'USER_RES_MEMBERSHIP', 'Recursos Vinculados'),
+  ('RU_USER_RES_MEMBERSHIP_DESC', '8', 'ResourceEntity.displayNameMap', 'USER_RES_MEMBERSHIP', 'Распределенные ресурсы'),
+  ('JP_USER_RES_MEMBERSHIP_DESC', '9', 'ResourceEntity.displayNameMap', 'USER_RES_MEMBERSHIP', 'リソースへの権限'),
+  ('ZH_USER_RES_MEMBERSHIP_DESC', '10','ResourceEntity.displayNameMap', 'USER_RES_MEMBERSHIP', '关联资源'),
+  ('EN_USER_ORG_MEMBERSHIP_DESC', '1', 'ResourceEntity.displayNameMap', 'USER_ORG_MEMBERSHIP', 'Member of Organizations'),
+  ('DE_USER_ORG_MEMBERSHIP_DESC', '2', 'ResourceEntity.displayNameMap', 'USER_ORG_MEMBERSHIP', 'Organisationsmitglied'),
+  ('ES_USER_ORG_MEMBERSHIP_DESC', '4', 'ResourceEntity.displayNameMap', 'USER_ORG_MEMBERSHIP', 'Organizaciones Vinculadas'),
+  ('RU_USER_ORG_MEMBERSHIP_DESC', '8', 'ResourceEntity.displayNameMap', 'USER_ORG_MEMBERSHIP', 'Член организаций'),
+  ('JP_USER_ORG_MEMBERSHIP_DESC', '9', 'ResourceEntity.displayNameMap', 'USER_ORG_MEMBERSHIP', '組織のメンバー'),
+  ('ZH_USER_ORG_MEMBERSHIP_DESC', '10','ResourceEntity.displayNameMap', 'USER_ORG_MEMBERSHIP', '组织成员');

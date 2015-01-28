@@ -1,0 +1,4 @@
+use openiam;
+
+insert into SYNCH_CONFIG(SYNCH_CONFIG_ID,NAME,STATUS,SYNCH_SRC,FILE_NAME,MANAGED_SYS_ID,SYNCH_TYPE,PROCESS_RULE,VALIDATION_RULE,TRANSFORMATION_RULE,MATCH_FIELD_NAME,CUSTOM_MATCH_ATTR,USE_POLICY_MAP,USE_TRANSFORM_SCRIPT,POLICY_MAP_BEFORE_TRANSFORM,USE_SYSTEM_PATH,SEARCH_SCOPE) 
+ values('csv_users_sample_id','CSV to IDM Users Sample','ACTIVE','CSV','test-user.csv','0','FULL','USER','sync/idmapps/csv/CSVSampleValidationScript.groovy','sync/idmapps/csv/CSVSampleTransformationScript.groovy','EMPLOYEE_ID','EMPLOYEE_ID','N','Y','Y','Y','2'); 

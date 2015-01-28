@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="definitions"
+  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:activiti="http://activiti.org/bpmn" 
+  targetNamespace="AddResource2Resource">
+
+  <process id="addResource2Resource">
+
+    <startEvent id="start" name="Initialize Process" />
+    
+    <sequenceFlow id="subProcessFlow" sourceRef="start" targetRef="subProcess" />
+		<subProcess id="subProcess" name="Start Approval Flow">
+			<multiInstanceLoopCharacteristics isSequential="true">
+	    		<loopDataInputRef>ApproverCardindality</loopDataInputRef>
+    			<inputDataItem name="cardinalityObject" />
+    			<completionCondition>${!IsTaskApproved}</completionCondition>
+	  		</multiInstanceLoopCharacteristics>
+			
+	  		<startEvent id="subProcessStart" />
+			
+			<sequenceFlow id="subProcessStartFlow" sourceRef="subProcessStart" targetRef="sendRequests" />
+		    	<serviceTask id="sendRequests" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.BasicEntitlementsRequestDelegate" name="Send Requests to Candidate Users" />
+		    
+		    <sequenceFlow id="makeRequestDecisionFlow" sourceRef="sendRequests" targetRef="makeRequestDecision" />
+		    	<userTask id="makeRequestDecision" name="Make Decision">
+		    		<extensionElements>
+						<activiti:taskListener event="create" class="org.openiam.bpm.activiti.tasklistener.BasicCandidateTaskListener" />
+					</extensionElements>
+		    	</userTask>
+		   
+		   	<sequenceFlow id="preSubProcessEnd" sourceRef="makeRequestDecision" targetRef="subProcessEnd" />
+		   
+	  		<endEvent id="subProcessEnd" />
+	 	</subProcess>
+ 	
+ 	<sequenceFlow id="afterSubProcess" sourceRef="subProcess" targetRef="approveOrRequestGateway" />
+		<exclusiveGateway id="approveOrRequestGateway" name="Perform Service task based on Decision" />
+			<sequenceFlow id="gateflow1" sourceRef="approveOrRequestGateway" targetRef="entitlementsOperation">
+				<conditionExpression xsi:type="tFormalExpression">
+					${IsTaskApproved}
+				</conditionExpression>
+			</sequenceFlow>
+			<serviceTask id="entitlementsOperation" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.EntityMembershipDelegate" name="Task Accepted - Entitle User to Resource" />
+			
+			<sequenceFlow id="gateflow2" sourceRef="approveOrRequestGateway" targetRef="rejectRequest">
+				<conditionExpression xsi:type="tFormalExpression">
+					${!IsTaskApproved}
+				</conditionExpression>
+			</sequenceFlow>
+			<serviceTask id="rejectRequest" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.RejectEntitlementsNotifierDelegate" name="Task Rejected" />
+		
+		<sequenceFlow id="acceptRequestJoin" sourceRef="entitlementsOperation" targetRef="notifyAccepted" />
+			<serviceTask id="notifyAccepted" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.AcceptEntitlementsNotifierDelegate" name="Send Notifications" />
+		
+	<sequenceFlow id="rejectRequestJoin" sourceRef="rejectRequest" targetRef="finish" />
+	<sequenceFlow id="afterNotifyAccepted" sourceRef="notifyAccepted" targetRef="finish" />
+ 	
+	<endEvent id="finish" name="Task Completed" />
+	
+  </process>
+
+</definitions>

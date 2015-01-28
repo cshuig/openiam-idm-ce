@@ -1,0 +1,1 @@
+output="SELECT * FROM DBA_USERS";

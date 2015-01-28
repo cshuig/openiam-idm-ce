@@ -1,0 +1,1 @@
+output = user.groups?: attributeDefaultValue

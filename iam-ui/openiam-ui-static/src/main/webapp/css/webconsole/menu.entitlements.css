@@ -1,0 +1,108 @@
+#menuArea  {
+	clear: both;
+	width: 300px;
+}
+
+#actionDescription {
+	clear: both;
+}
+
+#saveBtn {
+	clear: both;
+	margin-top: 20px;
+}
+
+#menuArea .dynatree-icon {
+	width: 20px;
+	height: 20px;
+	background-image: url("../../images/webconsole/common/entitlement.types.png");
+	cursor: pointer;
+}
+
+.none .dynatree-icon {
+	background-position: 0 0;
+}
+
+.explicit .dynatree-icon {
+	background-position: -63px 0;
+}
+
+.implicit .dynatree-icon {
+	background-position: -42px 0;
+}
+
+.public .dynatree-icon {
+	background-position: -21px 0;
+}
+
+
+.explicit.implicit .dynatree-icon {
+	background-position: -0px -21px;
+}
+
+.explicit.public .dynatree-icon {
+	background-position: -21px -21px;
+}
+
+.implicit.public .dynatree-icon {
+	background-position: -42px -21px;
+}
+
+.explicit.implicit.public .dynatree-icon {
+	background-position: -63px -21px;
+}
+
+#legend {
+	clear:both;
+}
+
+#legend ul {
+	list-style: none;
+}
+
+#legend ul li {
+}
+
+#legend .bubble {
+	width: 20px;
+	height: 20px;
+	background-image: url("../../images/webconsole/common/entitlement.types.png");
+	float: left;
+	clear: both;
+}
+
+#legend li.label {
+	height: 20px;
+}
+
+#legend .bubble.none {
+	background-position: 0 0;
+}
+
+#legend .bubble.explicit {
+	background-position: -63px 0;
+}
+
+#legend .bubble.implicit {
+	background-position: -42px 0;
+}
+
+#legend .bubble.public {
+	background-position: -21px 0;
+}
+
+#legend .bubble.explicit.implicit {
+	background-position: -0px -21px;
+}
+
+#legend .bubble.explicit.public {
+	background-position: -21px -21px;
+}
+
+#legend .bubble.implicit.public {
+	background-position: -42px -21px;
+}
+
+#legend .bubble.implicit.explicit.public {
+	background-position: -63px -21px;
+}

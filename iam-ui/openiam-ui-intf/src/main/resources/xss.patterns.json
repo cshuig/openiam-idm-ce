@@ -1,0 +1,10 @@
+{
+	"processors" : {
+		"/selfservice/language/languageSupport.html" : {
+			"ignoreXSS" : "true"
+		},
+		"/idp/SAMLLogin.html" : {
+			"ignoreXSS" : "true"
+		}
+	}
+}

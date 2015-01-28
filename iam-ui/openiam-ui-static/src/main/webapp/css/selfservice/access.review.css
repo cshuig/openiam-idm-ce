@@ -1,0 +1,40 @@
+#fixedIdentityInformationContainer {
+}
+#identityInformation {
+    background: none repeat scroll 0 0 #F6F6F6;
+    border: 1px solid #CCCCCC;
+    border-radius: 10px;
+    box-shadow: 5px 3px 12px #888888;
+    padding: 10px;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    width: 350px;
+}
+
+#identityInformation .identityInfoTitle {
+    border-bottom: 1px solid #DDDDDD;
+}
+
+#identityInformation .identityInfoTitle .title {
+    float: left;
+}
+#identityInformation .identityInfoTitle .openiam-close-icon {
+    float: right;
+    cursor: pointer;
+}
+
+#identityInformation #identityMetadata {
+}
+
+#identityInformation #identityMetadata label {
+    font-weight: bold;
+}
+
+#identityInformation #identityMetadata span {
+}
+
+#exceptionsTitle{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

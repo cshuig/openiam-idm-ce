@@ -1,0 +1,15 @@
+#loginSearchForm label{
+    float: left;
+    width: 130px;
+    padding-top: 6px;
+    text-align: left;
+}
+
+#loginSearchForm select {
+    width: 225px;
+}
+
+#loginSearchForm button {
+    float: right;
+    margin-right: 13px;
+}

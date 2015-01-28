@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+    <view-state id="claimEmployee" view="/pub/claimEmployee">
+        <transition on="next" to="reviewEmployee">
+            <evaluate expression="employeeService.validateEmployee(flowRequestContext)" />
+        </transition>
+        <transition on="cancel" to="endAccountClaim" history="invalidate" />
+    </view-state>
+
+    <action-state id="reviewEmployee">
+        <evaluate expression="employeeService.reviewEmployee(flowRequestContext)" />
+        <transition on="yes" to="answerChallengeQuestions" />
+        <transition on="no" to="claimEmployee" />
+    </action-state>
+
+    <view-state id="answerChallengeQuestions" view="/pub/answerChallengeQuestions">
+        <on-entry>
+            <evaluate expression="employeeService.getChallengeQuestionsNum(flowRequestContext)" result="viewScope.challengeQuestionsNum" />
+            <evaluate expression="employeeService.getChallengeQuestions(flowRequestContext)" result="viewScope.challengeQuestions" />
+            <evaluate expression="employeeService.isSecureAnswers()" result="viewScope.secureAnswers" />
+        </on-entry>
+        <transition on="next" to="enterPassword">
+            <evaluate expression="employeeService.validateAndSaveChallengeQuestions(flowRequestContext)" />
+        </transition>
+        <transition on="cancel" to="endAccountClaim" history="invalidate" />
+    </view-state>
+
+    <view-state id="enterPassword" view="/pub/enterPassword">
+        <on-entry>
+            <evaluate expression="employeeService.getLoginID(flowRequestContext)" result="viewScope.loginID" />
+        </on-entry>
+        <transition on="next" to="reviewITPolicy">
+            <evaluate expression="employeeService.validateAndSavePassword(flowRequestContext)" />
+        </transition>
+        <transition on="cancel" to="endAccountClaim" history="invalidate" />
+    </view-state>
+
+    <action-state id="reviewITPolicy">
+        <evaluate expression="employeeService.reviewITPolicy(flowRequestContext)" />
+        <transition on="yes" to="confirmITPolicy" />
+        <transition on="no" to="showResult" />
+    </action-state>
+
+    <view-state id="confirmITPolicy" view="/pub/confirmITPolicy">
+        <on-entry>
+            <evaluate expression="employeeService.getITPolicy(flowRequestContext)" result="viewScope.itPolicy" />
+        </on-entry>
+        <transition on="next" to="showResult">
+            <evaluate expression="employeeService.validateAndConfirmITPolicy(flowRequestContext)" />
+        </transition>
+        <transition on="cancel" to="endAccountClaim" history="invalidate" />
+    </view-state>
+
+    <view-state id="showResult" view="/pub/showResult">
+        <on-entry>
+            <evaluate expression="employeeService.getLoginID(flowRequestContext)" result="viewScope.loginID" />
+            <evaluate expression="employeeService.claimAccount(flowRequestContext)" />
+        </on-entry>
+        <transition on="finish" to="endAccountClaim" history="invalidate" />
+    </view-state>
+
+    <end-state id="endAccountClaim" view="externalRedirect:contextRelative:/" />
+
+</flow>

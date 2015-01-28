@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <parent>
+        <groupId>org.openiam</groupId>
+        <artifactId>openiam-webconsole</artifactId>
+        <version>3.2.6.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.openiam</groupId>
+    <artifactId>openiam-webconsole-intf</artifactId>
+    <name>openiam-webconsole-intf</name>
+    <version>3.2.6.RELEASE</version>
+    <description>OpenIAM Webconsole Interfaces and DTOs</description>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/test/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openiam</groupId>
+            <artifactId>openiam-ui-intf</artifactId>
+        </dependency>
+        <dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+    </dependencies>
+
+</project>

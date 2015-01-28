@@ -1,0 +1,818 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.openiam</groupId>
+	<artifactId>openiam-ui</artifactId>
+	<packaging>pom</packaging>
+	<version>3.2.6.RELEASE</version>
+
+	<name>OpenIAM Identity Manager</name>
+	<description>openiam is open source Identity and access Management Project</description>
+	<url>http://www.openiam.org</url>
+
+	<inceptionYear>2008</inceptionYear>
+	<developers>
+		<developer>
+			<name>Ameet Shah</name>
+			<id>ameet_shah</id>
+			<email>ameet_shah@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Arun Shah</name>
+			<id>arun.shah</id>
+			<email>arun_shah@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Suneet Shah</name>
+			<id>suneet_shah</id>
+			<email>suneet_shah@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Lev Bornovalov</name>
+			<id>lev.bornovalov</id>
+			<email>lev.bornovalov@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>OpenIAM LLC</name>
+		<url>http://www.openiam.com/</url>
+	</organization>
+
+	<!-- source configuration management system -->
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://jira.openiam.org</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:https://svn2.hosted-projects.com/openiam/idm//java-opensaml2/</connection>
+		<developerConnection>scm:https://svn2.hosted-projects.com/openiam/idm//</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://svn2.hosted-projects.com/openiam/idm/</url>
+	</scm>
+
+	<modules>
+		<module>openiam-reportviewer</module>
+		<module>openiam-ui-intf</module>
+		<module>openiam-rest-client</module>
+		<module>openiam-ui-static</module>
+		<module>openiam-selfservice</module>
+		<module>openiam-webconsole</module>
+		<module>openiam-idp</module>
+        <module>openiam-selfservice-ext</module>
+        <module>openiam-ear</module>
+	</modules>
+
+	<properties>
+		<mule.version>3.3.0</mule.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
+		<spring.webflow.version>2.4.0.RELEASE</spring.webflow.version>
+		<cxf.version>2.5.1</cxf.version>
+		<groovy.version>1.8.6</groovy.version>
+		<log4j.version>1.2.16</log4j.version>
+		<slf4j.version>1.6.1</slf4j.version>
+		<jstl.version>1.2</jstl.version>
+		<commons.collections.version>3.2.1</commons.collections.version>
+		<commons.pool.version>1.5.3</commons.pool.version>
+		<commons.io.version>1.3.1</commons.io.version>
+		<commons.codec.version>1.6</commons.codec.version>
+		<cglib.version>2.1_3</cglib.version>
+		<apache.commons.csv.version>1.4.1</apache.commons.csv.version>
+		<aspectj.version>1.5.4</aspectj.version>
+		<junit.version>4.9</junit.version>
+		<aopalliance.version>1.0</aopalliance.version>
+		<asm.version>2.2.3</asm.version>
+		<javax.servlet.jsp.version>2.1</javax.servlet.jsp.version>
+		<javax.servlet.api.version>2.5</javax.servlet.api.version>
+		<javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
+		<quartz.version>1.5.2</quartz.version>
+		<openiam.esb.version>3.2.6.RELEASE</openiam.esb.version>
+		<jackson.version>1.9.12</jackson.version>
+		<tuckey.version>4.0.4</tuckey.version>
+		<spring.security.version>3.1.3.RELEASE</spring.security.version>
+		<dozer.version>5.3.2</dozer.version>
+		<validation-api.version>1.0.0.GA</validation-api.version>
+		<hibernate-validator.version>4.3.0.Final</hibernate-validator.version>
+		<opensaml.version>2.4.1</opensaml.version>
+		<ehcache.version>2.6.2</ehcache.version>
+		<apache.lang.version>2.6</apache.lang.version>
+		<commons.fileupload.version>1.2.2</commons.fileupload.version>
+		<bountycastle.version>140</bountycastle.version>
+		<httpclient.version>4.3.1</httpclient.version>
+        <confpath.pom>/data/openiam</confpath.pom>
+
+
+        <maven.javadoc.plugin.version>2.9.1</maven.javadoc.plugin.version>
+
+		<maven.build.timestamp.format>yyyy/MM/dd HH:mm Z</maven.build.timestamp.format>
+
+        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>2.16</maven.surefire.plugin.version>
+        <git.commit.id.plugin.version>2.1.9</git.commit.id.plugin.version>
+        <maven.jar.plugin.version>2.2</maven.jar.plugin.version>
+        <maven.war.plugin.version>2.2</maven.war.plugin.version>
+        <maven.replacer.plugin.version>1.5.1</maven.replacer.plugin.version>
+        <maven.lifecycle.plugin.version>1.0.0</maven.lifecycle.plugin.version>
+
+        <jsoup.version>1.7.2</jsoup.version>
+		<openid4java.version>0.9.8</openid4java.version>
+
+        <jsp.script.version.token>(script.*?src="|script.*?src=')(.*?)("|'.*)</jsp.script.version.token>
+        <jsp.css.version.token>(link.*?href="|link.*?href=')(.*?)("|'.*?)</jsp.css.version.token>
+        <js.script.version.token>(script.src = "|script.src = ')(.*?)("|'.*)</js.script.version.token>
+        <js.script.version.token2>(script.src="|script.src=')(.*?)("|'.*)</js.script.version.token2>
+        <js.script.version.value>$1$2?${project.version}$3</js.script.version.value>
+        <jsp.css.version.value>$1$2?${project.version}$3</jsp.css.version.value>
+		<!-- <xerces.version>2.10.0</xerces.version> <xerces.groupId>xerces</xerces.groupId> -->
+		<javaee.web.api.version>6.0</javaee.web.api.version>
+		<esapi.version>2.1.0</esapi.version>
+	</properties>
+
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.javadoc.plugin.version}</version>
+				<configuration>
+					<doctitle>OpenIAM Identity Manager API v2</doctitle>
+					<windowtitle>OpenIAM Java Documentation</windowtitle>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</reporting>
+
+	<build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                    <configuration>
+                        <reportFormat>brief</reportFormat>
+                        <useFile>false</useFile>
+                        <includes>
+                            <include>**/*Test.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>${git.commit.id.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <dateFormat>${maven.build.timestamp.format}</dateFormat>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven.jar.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>service</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Organization>${project.organization.name}</Organization>
+                                <Project>${project.name}</Project>
+                                <Project-Version>${project.version}.${git.commit.id.abbrev}</Project-Version>
+                                <Project-Git-Hash>${git.commit.id}</Project-Git-Hash>
+                                <Project-Git-Branch>${git.branch}</Project-Git-Branch>
+                                <Last-Commit-Timestamp>${git.commit.time}</Last-Commit-Timestamp>
+                                <Built-Timestamp>${git.build.time}</Built-Timestamp>
+                                <Built-By>${git.build.user.name}, ${git.build.user.email}</Built-By>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven.war.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>exploded</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>default-war</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>war</goal>
+                            </goals>
+                            <configuration>
+                                <warSourceDirectory>${project.build.directory}/${project.build.finalName}</warSourceDirectory>
+                                <failOnMissingWebXml>false</failOnMissingWebXml>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Organization>${project.organization.name}</Organization>
+                                <Project>${project.name}</Project>
+                                <Project-Version>${project.version}.${git.commit.id.abbrev}</Project-Version>
+                                <Project-Git-Hash>${git.commit.id}</Project-Git-Hash>
+                                <Project-Git-Branch>${git.branch}</Project-Git-Branch>
+                                <Last-Commit-Timestamp>${git.commit.time}</Last-Commit-Timestamp>
+                                <Built-Timestamp>${git.build.time}</Built-Timestamp>
+                                <Built-By>${git.build.user.name}, ${git.build.user.email}</Built-By>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.google.code.maven-replacer-plugin</groupId>
+                    <artifactId>replacer</artifactId>
+                    <version>${maven.replacer.plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>${maven.lifecycle.plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.1</version>
+                    <configuration>
+                        <includes>
+                            <include>org.openiam:*</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+	</build>
+
+	<repositories>
+		<repository>
+			<id>codehaus</id>
+			<name>Codehaus Maven 2.x Release Repository</name>
+			<url>http://repository.codehaus.org</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>codehaus-snapshots</id>
+			<name>Codehaus Maven 2.x Snapshots Repository</name>
+			<url>http://snapshots.repository.codehaus.org</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss Repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+		</repository>
+		<repository>
+			<id>mule-deps</id>
+			<name>Mule Dependencies</name>
+			<url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>openiam01.managed.contegix.com</id>
+			<name>openiam01.managed.contegix.com-releases</name>
+			<url>http://artifactory.openiam.org/artifactory/libs-release-local</url>
+		</repository>
+
+		<repository>
+			<id>org.activiti</id>
+			<name>Activiti Maven Repo</name>
+			<url>https://maven.alfresco.com/nexus/content/groups/public</url>
+		</repository>
+
+		<repository>
+			<id>repo2</id>
+			<name>Maven Repository 2</name>
+			<url>http://repo2.maven.org/maven2</url>
+		</repository>
+
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>central</id>
+			<url>http://repo1.maven.org/maven2/</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>apache-incubating</id>
+			<name>Apache Incubating Repository</name>
+			<url>http://people.apache.org/repo/m2-incubating-repository/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>mavenrepository</id>
+			<name>Maven Repository for Maven1</name>
+			<url>http://repo.marketcetera.org/maven</url>
+		</repository>
+
+		<repository>
+			<id>shibboleth-release</id>
+			<name>Shibboleth</name>
+			<url>https://build.shibboleth.net/nexus/content/repositories/releases</url>
+		</repository>
+
+		<repository>
+			<id>mandubian-mvn</id>
+			<url>http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>http://repo1.maven.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+		<pluginRepository>
+			<id>codehaus-plugins</id>
+			<url>http://dist.codehaus.org</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+		<pluginRepository>
+			<id>apache.incubating</id>
+			<name>Apache Incubating Repository</name>
+			<url>http://people.apache.org/repo/m2-incubating-repository</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>java.net</id>
+			<name>Java.net Repository for Maven2</name>
+			<url>http://download.java.net/maven/1</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>mavenrepository</id>
+			<name>Maven Repository for Maven1</name>
+			<url>http://ftp.cica.es/mirrors/maven2</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>eviwarePluginRepository</id>
+			<url>http://www.eviware.com/repository/maven2/</url>
+		</pluginRepository>
+
+		<pluginRepository>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Repository Group</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+
+
+	</pluginRepositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>${aopalliance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-web-api</artifactId>
+				<version>${javaee.web.api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>${javax.servlet.jstl.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.dozer</groupId>
+                <artifactId>dozer</artifactId>
+                <version>${dozer.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openiam</groupId>
+                <artifactId>openiam-auth-manager-service</artifactId>
+                <version>${openiam.esb.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-jdk14</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openiam</groupId>
+                <artifactId>openiam-idm-intf</artifactId>
+                <version>${openiam.esb.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-jdk14</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openiam</groupId>
+                <artifactId>openiam-am-intf</artifactId>
+                <version>${openiam.esb.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-jdk14</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openiam</groupId>
+                <artifactId>openiam-ui-intf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openiam</groupId>
+                <artifactId>openiam-rest-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openiam</groupId>
+                <artifactId>openiam-webconsole-intf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${groovy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>quartz</groupId>
+                <artifactId>quartz</artifactId>
+                <version>1.5.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-core</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-common-utilities</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxws</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.tuckey</groupId>
+                <artifactId>urlrewritefilter</artifactId>
+                <version>${tuckey.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>atg.taglib.json</groupId>
+                <artifactId>json-taglib</artifactId>
+                <version>0.4.1</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jms</artifactId>
+                        <groupId>javax.jms</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jmxri</artifactId>
+                        <groupId>com.sun.jmx</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jmxtools</artifactId>
+                        <groupId>com.sun.jdmk</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons.fileupload.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.50</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>${javax.servlet.jsp.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${apache.lang.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openid4java</groupId>
+                <artifactId>openid4java</artifactId>
+                <version>${openid4java.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>bouncycastle</groupId>
+                <artifactId>bcprov-jdk15</artifactId>
+                <version>${bountycastle.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml</artifactId>
+                <version>${opensaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xalan</groupId>
+                <artifactId>serializer</artifactId>
+                <version>2.7.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache-core</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

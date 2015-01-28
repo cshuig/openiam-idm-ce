@@ -1,0 +1,47 @@
+select.short {
+	width: 100% !important;
+	min-width: 80px;
+}
+
+.search-select {
+	display: inline-block;
+	width: 160px !important;
+	float: none !important;
+}
+
+.search-text {
+	width: 140px !important;
+}
+
+.case {
+	text-align: left !important;
+	width: 200px !important;
+	text-align: left !important;
+}
+
+thead {
+	text-align: left;
+}
+
+label {
+	display: inline-block;
+	margin-right: 5px;
+	width: 120px;
+	/* 	font-weight: bold; */
+}
+
+div.search-separator {
+	margin-top: 5px;
+}
+
+tr.tr-disable {
+	color: #7F7F7F;
+}
+
+th {
+	line-height: 15px;
+}
+
+table.yui .pagedisplay {
+	width: 50px !important;
+}

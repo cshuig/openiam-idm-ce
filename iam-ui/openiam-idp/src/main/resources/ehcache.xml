@@ -1,0 +1,21 @@
+<ehcache>
+      <diskStore path="java.io.tmpdir"/>
+      <cache name="org.openiam.SAML_PROVIDER_CACHE"
+           maxElementsInMemory="1000"
+     		eternal="false"
+     		overflowToDisk="false"
+     		memoryStoreEvictionPolicy="LRU"/>
+     		
+		<cache name="org.openiam.SAML_PROVIDER_ID_CACHE"
+           maxElementsInMemory="1000"
+     		eternal="false"
+     		overflowToDisk="false"
+     		memoryStoreEvictionPolicy="LRU"/>
+     		
+     		
+     	<cache name="org.openiam.SAML_SP_CACHE"
+           maxElementsInMemory="1000"
+     		eternal="false"
+     		overflowToDisk="false"
+     		memoryStoreEvictionPolicy="LRU"/>
+</ehcache>

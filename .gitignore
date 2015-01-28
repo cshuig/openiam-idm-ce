@@ -2,6 +2,7 @@ Thumbs.db
 *.iml
 *.ipr
 *.iws
+*.war
 target
 .project
 .idea

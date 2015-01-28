@@ -1,0 +1,16 @@
+.languageLable, .languageInput{ display: block; float: left;}
+.languageLable{padding-top: 5px; width: 75px;}
+.languageInput{margin-bottom: 5px; width: 320px;}
+.languageInput:after{content: "";clear: both; display: block;}
+
+#optionsList ul {list-style: none outside none;margin: 0;padding-left: 10px;}
+#optionsList ul li .languageName, #optionList ul li .languageValue{display: block; float: left;margin-bottom: 2px;}
+#optionsList ul li .languageName{width: 75px; margin-right: 10px;}
+#optionsList ul li .languageValue:after{content: "";clear: both; display: block;}
+#optionsList .defaultFlag, #optionsList .action{text-align: center;}
+.translateButton{float: left; background: url("/openiam-ui-static/images/common/translate.png") no-repeat scroll 0 0 / 100% auto transparent;
+                 cursor: pointer;height: 21px;width: 21px;}
+
+
+#editDialog input[type="text"], #editDialog select {margin-right: 40px !important;}
+#editDialog .mapElement .mapInput input {float: left;margin-right: 10px !important;}

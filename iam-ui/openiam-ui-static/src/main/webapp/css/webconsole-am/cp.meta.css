@@ -1,0 +1,28 @@
+label.required:after {
+    content: "*";
+    color: red;
+}
+
+select, input {
+    float: none !important;
+}
+
+#dataType {
+    width: 100px;
+}
+
+#valueType {
+    width: 150px;
+}
+
+#userValue {
+    width: 170px;
+}
+
+#propertyName {
+    width: 150px;
+}
+
+td, th {
+    word-wrap: break-word;
+}

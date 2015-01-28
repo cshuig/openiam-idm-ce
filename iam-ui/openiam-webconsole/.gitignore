@@ -1,0 +1,12 @@
+Thumbs.db
+*.iml
+*.ipr
+*.iws
+target
+.project
+.idea
+/*WEB-INF/lib/*
+/*.sh
+*/bin/*
+.settings
+.classpath

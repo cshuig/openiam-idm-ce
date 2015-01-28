@@ -1,0 +1,64 @@
+use openiam;
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS DROP_SEC_DOMAIN_TABLE$$
+CREATE PROCEDURE DROP_SEC_DOMAIN_TABLE()
+	BEGIN
+		IF EXISTS (select table_name from information_schema.KEY_COLUMN_USAGE
+                where table_schema = 'openiam' and referenced_table_name = 'SECURITY_DOMAIN') THEN
+
+      delete from PWD_HISTORY where  LOGIN_ID in (select LOGIN_ID from LOGIN where SERVICE_ID<>'USR_SEC_DOMAIN');
+
+      delete from LOGIN where SERVICE_ID<>'USR_SEC_DOMAIN';
+
+      ALTER TABLE LOGIN DROP FOREIGN KEY FK_LOGIN_SERVICE;
+      ALTER TABLE LOGIN DROP INDEX UNIQUE_LOGIN,
+                        DROP INDEX FK_LOGIN_SERVICE;
+
+      ALTER TABLE LOGIN DROP COLUMN SERVICE_ID;
+      ALTER TABLE LOGIN ADD UNIQUE INDEX UNIQUE_LOGIN (LOGIN ASC, MANAGED_SYS_ID ASC);
+
+
+
+      ALTER TABLE ROLE DROP FOREIGN KEY FK_ROLE_SERVICE;
+      ALTER TABLE ROLE DROP COLUMN SERVICE_ID,
+                       DROP INDEX FK_ROLE_SERVICE;
+
+
+      ALTER TABLE MANAGED_SYS DROP COLUMN DOMAIN_ID;
+
+
+      DROP TABLE IF EXISTS SECURITY_DOMAIN;
+
+    END IF;
+
+	END$$
+DELIMITER ;
+
+call DROP_SEC_DOMAIN_TABLE();
+DROP PROCEDURE DROP_SEC_DOMAIN_TABLE;
+
+drop view IF EXISTS USER_PSWD_EXPIRED_YESTERDAY_VW;
+
+CREATE
+OR REPLACE ALGORITHM = UNDEFINED
+  SQL SECURITY DEFINER
+VIEW USER_PSWD_EXPIRED_YESTERDAY_VW AS
+  select
+    l.LOGIN AS LOGIN,
+    l.MANAGED_SYS_ID AS MANAGED_SYS_ID,
+    l.USER_ID AS USER_ID,
+    l.GRACE_PERIOD AS EXPIRATION_DATE,
+    u.FIRST_NAME AS FIRST_NAME,
+    u.LAST_NAME AS LAST_NAME,
+    u.STATUS AS STATUS
+  from LOGIN l
+    join USERS u
+  where
+    ((l.USER_ID = u.USER_ID)
+     and (l.MANAGED_SYS_ID = 0)
+     and (((l.GRACE_PERIOD is not null)
+           and (cast(l.GRACE_PERIOD as date) = (curdate() - 1)))
+          or ((l.PWD_EXP is not null)
+              and isnull(l.GRACE_PERIOD)
+              and (cast(l.PWD_EXP as date) = (curdate() - 1)))));

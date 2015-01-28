@@ -1,0 +1,40 @@
+.ui-dialog table.search {
+	height: 100px;
+}
+
+.ui-dialog table.search td.pager {
+	text-align: center;
+}
+
+.ui-dialog table.search td.pager input {
+	width: 100px;
+	border: none;
+	background: none;
+	text-align: center;
+}
+
+.ui-dialog table.search td.pager .prev {
+	cursor:pointer;
+}
+
+.ui-dialog table.search td.pager .prev.disabled {
+	cursor:default;
+	opacity: 0.5;
+}
+
+.ui-dialog table.search td.pager .next {
+	cursor:pointer;
+}
+
+.ui-dialog table.search td:nth-child(1) {
+	
+}
+
+.ui-dialog table.search td:nth-child(2) {
+	text-align: right;
+}
+
+.ui-dialog table.search td.pager .next.disabled {
+	cursor:default;
+	opacity: 0.5;
+}

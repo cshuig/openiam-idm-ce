@@ -1,0 +1,20 @@
+.loading {
+	background: none repeat scroll 0 0 #D6D6D6;
+	position: relative;
+	height:200px;	
+	border-radius: 10px;
+}
+
+.loading .loader {
+	background-image: url("/openiam-ui-static/images/webconsole/common/ajax_table_loader.gif");
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 45px;
+    left: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    text-align: center;
+    top: 40%;
+    width: 45px;
+}

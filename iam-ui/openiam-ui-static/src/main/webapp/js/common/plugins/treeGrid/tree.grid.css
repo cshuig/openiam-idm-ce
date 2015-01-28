@@ -1,0 +1,40 @@
+.openiam-treegrid-indent, .openiam-treegrid-expander, .openiam-treegrid-icon{
+    display: inline-block;
+    height:16px;
+    width:16px;
+    margin: 0 auto;
+}
+.openiam-treegrid-value{
+    display: inline-block;
+    margin-left: 5px;
+    position: relative;
+    top: -2px;
+}
+.openiam-treegrid-icon{
+    background-repeat: no-repeat;
+    margin-left: 5px;
+}
+.openiam-treegrid-expander{
+    background: url("../../../../images/common/icons/expand.png") scroll 0px 0px no-repeat;
+    cursor: pointer;
+}
+.openiam-treegrid-expanded .openiam-treegrid-expander{
+    background: url("../../../../images/common/icons/collapse.png") scroll 0px 0px no-repeat;
+}
+.treegrid-first-column{
+    width: 40%;
+}
+.checkCell{
+    width: 24px;
+}
+table.yui .even.openiam-treegrid-exception{
+    background-color: #FEEFAC;
+}
+table.yui .odd.openiam-treegrid-exception{
+    background-color: #eadb98;
+}
+
+table.yui .openiam-treegrid-terminated{
+    text-decoration: line-through;
+    font-style: italic;
+}

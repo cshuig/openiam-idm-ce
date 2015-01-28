@@ -1,0 +1,4 @@
+import org.openiam.provision.service.AbstractResourceOrderProcessor
+
+public class ProvisionServiceResourceOrderProcessor extends AbstractResourceOrderProcessor {
+}

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <artifactId>openiam-webconsole</artifactId>
+    <groupId>org.openiam</groupId>
+    <version>3.2.6.RELEASE</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.openiam</groupId>
+  <artifactId>openiam-webconsole-web</artifactId>
+  <packaging>war</packaging>
+  <name>Webconsole Web</name>
+  <version>3.2.6.RELEASE</version>
+  <description>Webconsole Web WAR</description>
+  <ciManagement>
+    <system>idm</system>
+    <url>http://build.openiam.org:8085/idm/</url>
+    <notifiers>
+      <notifier>
+        <configuration>
+          <address>suneet_shah@openiam.com</address>
+          <address>arun_shah@openiam.com</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+  <developers>
+  	<developer>
+  		<id>arun_shah</id>
+  		<name>Arun Shah</name>
+  		<email>arun_shah@openiam.com</email>
+  		<organization>OpenIAM LLC</organization>
+  		<organizationUrl>www.openiam.com</organizationUrl>
+  		<timezone>GMT-5</timezone>
+  		<roles>
+  			<role>Developer</role>
+  		</roles>
+  	</developer>
+  </developers>
+  <build>
+    <finalName>webconsole</finalName>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    		</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>target/${project.build.finalName}/WEB-INF/**/*.jsp</include>
+                    </includes>
+                    <regex>true</regex>
+                    <replacements>
+                        <replacement>
+                            <token>${jsp.script.version.token}</token>
+                            <value>${js.script.version.value}</value>
+                        </replacement>
+                        <replacement>
+                            <token>${jsp.css.version.token}</token>
+                            <value>${jsp.css.version.value}</value>
+                        </replacement>
+                    </replacements>
+
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-appJsp</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/webconsole/WEB-INF</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>../../openiam-ui-intf/src/main/resources/META-INF</directory>
+                                    <includes>
+                                        <include>**/*.tld</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+  </build>
+
+  <dependencies>
+	<dependency>
+		<groupId>aopalliance</groupId>
+		<artifactId>aopalliance</artifactId>
+    </dependency>
+    <dependency>
+		<groupId>aspectj</groupId>
+		<artifactId>aspectjrt</artifactId>
+    </dependency>
+
+    <dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<scope>test</scope>
+    </dependency>
+
+    <dependency>
+		<groupId>javax</groupId>
+		<artifactId>javaee-web-api</artifactId>
+		<scope>provided</scope>
+	</dependency>
+    <dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>jstl</artifactId>
+    </dependency>
+    
+	<dependency>
+		<groupId>net.sf.dozer</groupId>
+		<artifactId>dozer</artifactId>
+	</dependency>
+    <dependency>
+        <groupId>org.openiam</groupId>
+        <artifactId>openiam-auth-manager-service</artifactId>
+    </dependency>
+    
+	<dependency>
+		<groupId>org.openiam</groupId>
+		<artifactId>openiam-idm-intf</artifactId>
+	</dependency>
+    
+    <dependency>
+    	<groupId>org.openiam</groupId>
+    	<artifactId>openiam-ui-intf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openiam</groupId>
+      <artifactId>openiam-rest-client</artifactId>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.openiam</groupId>
+    	<artifactId>openiam-webconsole-intf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>quartz</groupId>
+      <artifactId>quartz</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-common-utilities</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+    </dependency>
+
+
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-mapper-asl</artifactId>
+	</dependency>
+            
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-core-asl</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.tuckey</groupId>
+		<artifactId>urlrewritefilter</artifactId>
+	</dependency>
+	
+	
+	<dependency>
+    	<groupId>atg.taglib.json</groupId>
+    	<artifactId>json-taglib</artifactId>
+	</dependency>
+
+ 	<dependency>
+    	<groupId>org.springframework.security</groupId>
+    	<artifactId>spring-security-core</artifactId>
+ 	</dependency>
+ 	<dependency>
+    	<groupId>org.springframework.security</groupId>
+    	<artifactId>spring-security-web</artifactId>
+  	</dependency>
+  	<dependency>
+    	<groupId>org.springframework.security</groupId>
+    	<artifactId>spring-security-config</artifactId>
+  	</dependency>
+
+    <dependency>
+      <groupId>org.springframework.webflow</groupId>
+      <artifactId>spring-webflow</artifactId>
+      <version>${spring.webflow.version}</version>
+    </dependency>
+
+	 <dependency>
+	  <groupId>log4j</groupId>
+	  <artifactId>log4j</artifactId>
+	</dependency>
+	
+	  <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-validator</artifactId>
+      </dependency>
+  </dependencies>
+</project>

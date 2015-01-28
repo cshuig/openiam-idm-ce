@@ -1,0 +1,52 @@
+#searchFormButtons a:hover {
+	text-decoration: none;
+}
+
+#userSearchForm {
+	width: 100%;
+	position: relative;
+}
+
+#userSearchFormResultsArea table.yui {
+	border-top: none;
+}
+
+.ui-dialog #userSearchForm {
+	width: 835px;
+}
+
+#userSearchForm label{
+   float: left;
+   width: 130px;
+   padding-top: 6px;
+   text-align: left;
+}
+
+#userSearchForm select {
+    width: 225px;
+}
+
+#userSearchForm button {
+    float: right;
+    margin-right: 13px;
+}
+
+#userSearchForm .ui-multiselect {
+	position: absolute;
+    right: 5px;
+    top: 26px;
+    z-index: 100;
+}
+
+.ie8 #userSearchForm .whiteBtn {
+	/*vertical-align: 11px;*/ /* IE8 has problems with aligning the white button relative to the red button */
+}
+
+
+.ui-selected-container {
+	padding-left: 122px;
+}
+
+#editUserForm .ui-selected-container {
+	padding-left: 0px;
+}

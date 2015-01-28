@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.openiam</groupId>
+	<artifactId>iam-scripts</artifactId>
+	<packaging>pom</packaging>
+	<version>3.0.0</version>
+
+	<name>OpenIAM Groovy Scripts</name>
+	<description>groovy scripts for OpenIAM - just a dummy pom.xml requires by jenkins</description>
+	<url>http://www.openiam.com</url>
+
+	<inceptionYear>2012</inceptionYear>
+	<developers>
+		<developer>
+			<name>Ameet Shah</name>
+			<id>ameet_shah</id>
+			<email>ameet_shah@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Arun Shah</name>
+			<id>arun.shah</id>
+			<email>arun_shah@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Suneet Shah</name>
+			<id>suneet_shah</id>
+			<email>suneet_shah@openiam.com</email>
+			<roles>
+				<role>developer</role>
+				<role>documentation</role>
+			</roles>
+		</developer>
+        <developer>
+            <name>Alexander Duckardt</name>
+            <id>alexander.duckardt</id>
+            <email>alexander.duckardt@openiam.com</email>
+            <roles>
+                <role>developer</role>
+                <role>documentation</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Lars Nilsen</name>
+            <id>Lars.nilsen</id>
+            <email>lars.nilsent@openiam.com</email>
+            <roles>
+                <role>developer</role>
+                <role>documentation</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Lev bornovalov</name>
+            <id>lev.bornovalov</id>
+            <email>lev.bornovalov@openiam.com</email>
+            <roles>
+                <role>developer</role>
+                <role>documentation</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Vitaly Yakunin</name>
+            <id>vitaly.yakunin</id>
+            <email>vitaly.yakunin@openiam.com</email>
+            <roles>
+                <role>developer</role>
+                <role>documentation</role>
+            </roles>
+        </developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>OpenIAM LLC</name>
+		<url>http://www.openiam.com/</url>
+	</organization>
+
+	<!--  source configuration management system  -->
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://jira.openiam.com</url>
+	</issueManagement>
+</project>

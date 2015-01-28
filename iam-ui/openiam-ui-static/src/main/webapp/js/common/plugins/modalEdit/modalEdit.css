@@ -1,0 +1,15 @@
+#editDialog label{float: left; padding-right: 10px;}
+#editDialog label.required:after{content: "*";color: red;}
+#editDialog ul.formControls{ margin-top: 20px;}
+#editDialog input[type="checkbox"],#editDialog input[type="radio"] {margin-left: 5px;}
+#editDialog .buttonContainer{margin-bottom: 10px;}
+#editDialog .buttonContainer ul.formControls li {float: right; margin-right: 5px;}
+#editDialog .buttonContainer ul.formControls:after{content: "";clear: both;display: block;}
+#editDialog .mapElement{float: left; margin-left: 53px;}
+#editDialog .mapElement .mapLabel, #editDialog .mapElement .mapInput {display: block;float: left;}
+#editDialog .mapElement .mapLabel{ padding-top: 5px;width: 75px;}
+#editDialog .mapElement .mapInput {margin-bottom: 5px;}
+#editDialog .mapElement .mapInput:after {clear: both;content: "";display: block;}
+#editDialog .multiElement {float: left;}
+#editDialog .multiPlusBtn, #editDialog .multiMinusBtn {margin-left: -10px; cursor: pointer; cursor: hand;}
+

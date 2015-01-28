@@ -1,0 +1,4 @@
+#editUserForm label{float: left;}
+#editUserForm label.required:after{content: "*";color: red;}
+#editUserForm .title,#editUserForm ul.formControls{ margin-top: 20px; line-height: 20pt;}
+#editUserForm .subTitle {color: #D95B44;  font-family: OpenSans; font-size: 14px; text-decoration: underline;}

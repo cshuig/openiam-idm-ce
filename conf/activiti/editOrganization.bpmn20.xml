@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="definitions"
+  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:activiti="http://activiti.org/bpmn" 
+  targetNamespace="EditOrganization">
+
+  <process id="editOrganization">
+
+    <startEvent id="start" name="Initialize Process" />
+    
+	<sequenceFlow id="postPreprocess" sourceRef="start" targetRef="postPreprocessGateway" />
+		<exclusiveGateway id="postPreprocessGateway" name="Perform Service task based on CRUD Preprocessor" />
+			<sequenceFlow id="nonAdminGateway" sourceRef="postPreprocessGateway" targetRef="subProcess">
+				<conditionExpression xsi:type="tFormalExpression">
+					${!IsAdmin}
+				</conditionExpression>
+			</sequenceFlow>
+				<subProcess id="subProcess" name="Start Approval Flow">
+					<multiInstanceLoopCharacteristics isSequential="true">
+		    			<loopDataInputRef>ApproverCardindality</loopDataInputRef>
+	    				<inputDataItem name="cardinalityObject" />
+	    				<completionCondition>${!IsTaskApproved}</completionCondition>
+		  			</multiInstanceLoopCharacteristics>
+				
+		  			<startEvent id="subProcessStart" />
+				
+					<sequenceFlow id="subProcessStartFlow" sourceRef="subProcessStart" targetRef="sendRequests" />
+			    		<serviceTask id="sendRequests" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.BasicEntitlementsRequestDelegate" name="Send Requests to Candidate Users">
+			    			<extensionElements>
+			    				<activiti:field name="targetVariable">
+				    				<activiti:string>
+			          					REQUESTOR
+			      					</activiti:string>
+			    				</activiti:field>
+			  				</extensionElements>
+			    		</serviceTask>
+			    		
+					<sequenceFlow id="setDisplayVariableFlow" sourceRef="sendRequests" targetRef="setDisplayVariables" />
+						<serviceTask id="setDisplayVariables" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.displaymapper.OrganizationDisplayMapper" />
+			    
+			    	<sequenceFlow id="makeRequestDecisionFlow" sourceRef="setDisplayVariables" targetRef="makeRequestDecision" />
+			    		<userTask id="makeRequestDecision" name="Make Decision">
+			    			<extensionElements>
+								<activiti:taskListener event="create" class="org.openiam.bpm.activiti.tasklistener.RequestorCandiateTaskListener" />
+							</extensionElements>
+			    		</userTask>
+			   
+			   		<sequenceFlow id="preSubProcessEnd" sourceRef="makeRequestDecision" targetRef="subProcessEnd" />
+			   
+		  			<endEvent id="subProcessEnd" />
+		 		</subProcess>
+		 	<sequenceFlow id="adminGateway" sourceRef="postPreprocessGateway" targetRef="entitlementsOperation">
+				<conditionExpression xsi:type="tFormalExpression">
+					${IsAdmin}
+				</conditionExpression>
+			</sequenceFlow>
+ 	
+ 	<sequenceFlow id="afterSubProcess" sourceRef="subProcess" targetRef="approveOrRequestGateway" />
+		<exclusiveGateway id="approveOrRequestGateway" name="Perform Service task based on Decision" />
+			<sequenceFlow id="gateflow1" sourceRef="approveOrRequestGateway" targetRef="entitlementsOperation">
+				<conditionExpression xsi:type="tFormalExpression">
+					${IsTaskApproved}
+				</conditionExpression>
+			</sequenceFlow>
+			
+			<sequenceFlow id="gateflow2" sourceRef="approveOrRequestGateway" targetRef="rejectRequest">
+				<conditionExpression xsi:type="tFormalExpression">
+					${!IsTaskApproved}
+				</conditionExpression>
+			</sequenceFlow>
+			
+		<serviceTask id="rejectRequest" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.RejectEntitlementsNotifierDelegate" name="Task Rejected">
+			<extensionElements>
+	  			<activiti:field name="targetVariable">
+		    		<activiti:string>
+		       			REQUESTOR
+		    		</activiti:string>
+		    	</activiti:field>
+			</extensionElements>
+		</serviceTask>
+		
+		<serviceTask id="entitlementsOperation" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.SaveOrganizationDelegate" name="Task Accepted - Save Organization" />
+		<sequenceFlow id="acceptRequestJoin" sourceRef="entitlementsOperation" targetRef="notifyAccepted" />
+			<serviceTask id="notifyAccepted" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.AcceptEntitlementsNotifierDelegate" name="Send Notifications">
+				<extensionElements>
+	    			<activiti:field name="targetVariable">
+						<activiti:string>
+							REQUESTOR
+						</activiti:string>
+					</activiti:field>
+	  			</extensionElements>
+			</serviceTask>
+		
+	<sequenceFlow id="rejectRequestJoin" sourceRef="rejectRequest" targetRef="finish" />
+	<sequenceFlow id="afterNotifyAccepted" sourceRef="notifyAccepted" targetRef="finish" />
+ 	
+	<endEvent id="finish" name="Task Completed" />
+	
+  </process>
+
+</definitions>

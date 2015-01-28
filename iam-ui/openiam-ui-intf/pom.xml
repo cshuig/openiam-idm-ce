@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<parent>
+		<groupId>org.openiam</groupId>
+		<artifactId>openiam-ui</artifactId>
+		<version>3.2.6.RELEASE</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openiam</groupId>
+	<artifactId>openiam-ui-intf</artifactId>
+	<name>openiam-ui-intf</name>
+	<version>3.2.6.RELEASE</version>
+	<description>OpenIAM UI Interfaces and DTOs</description>
+ 
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<!-- <excludes> <exclude>**/*.properties</exclude> </excludes> -->
+			</resource>
+			<resource>
+				<directory>src/test/resources</directory>
+				<!-- <excludes> <exclude>**/*.properties</exclude> </excludes> -->
+			</resource>
+		</resources>
+        <!--<pluginManagement>-->
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>prepare-package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal></goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>target/**/*.jsp</include>
+                    </includes>
+                    <regex>true</regex>
+                    <replacements>
+                        <replacement>
+                            <token>${jsp.script.version.token}</token>
+                            <value>${js.script.version.value}</value>
+                        </replacement>
+                        <replacement>
+                            <token>${jsp.css.version.token}</token>
+                            <value>${jsp.css.version.value}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+        </plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<scope>provided</scope>
+    	</dependency>
+    	<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+            
+            
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openid4java</groupId>
+			<artifactId>openid4java</artifactId>
+		</dependency>
+
+        <dependency>
+            <groupId>org.openiam</groupId>
+            <artifactId>openiam-rest-client</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.openiam</groupId>
+			<artifactId>openiam-idm-intf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openiam</groupId>
+			<artifactId>openiam-am-intf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openiam</groupId>
+			<artifactId>openiam-auth-manager-service</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.dozer</groupId>
+			<artifactId>dozer</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.owasp.esapi</groupId>
+			<artifactId>esapi</artifactId>
+			<version>${esapi.version}</version>
+		</dependency>
+
+	</dependencies>
+
+</project>

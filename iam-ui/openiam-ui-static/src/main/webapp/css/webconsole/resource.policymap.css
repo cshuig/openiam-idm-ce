@@ -1,0 +1,64 @@
+.error,.success {
+	clear: both;
+	float: none;
+	margin-left: auto;
+	margin-right: auto;
+	width: 310px;
+}
+
+select.short {
+	width: 90px !important;
+}
+
+input.short {
+	width: 90px !important;
+}
+
+#addRow {
+	cursor: pointer;
+}
+
+#addRow p {
+	line-height: 0px;
+}
+
+#addRow:hover {
+	background-color: #4d79a6;
+}
+
+#policyMapTable thead tr .header {
+	text-align: left;
+	background-repeat: no-repeat;
+	background-image: url(../../images/webconsole/common/bg.gif);
+	background-position: center right;
+	cursor: pointer;
+}
+
+#policyMapTable thead tr .headerSortUp {
+	background-image: url(../../images/webconsole/common/asc.gif);
+}
+
+#policyMapTable thead tr .headerSortDown {
+	background-image: url(../../images/webconsole/common/desc.gif);
+}
+
+#policyMapTable tr:hover {
+	
+}
+
+tr.invalid {
+	background-color: #FFDDDD !important;
+}
+
+#policyMapTable input:not([type='submit']),select {
+	font-size: x-small !important;
+    padding: 3px;
+}
+
+#policyMapTable .hide {
+	display: none;
+}
+
+#policyMapTable .show {
+	display: block;
+}

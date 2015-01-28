@@ -1,0 +1,80 @@
+tr td label {
+	display: table-cell;
+    float: left;
+    padding-right: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+tr td input[type='text'], tr td select, tr td input[type='password'], tr td input[type='checkbox'], tr td input[type='radio'] {
+	float: left;
+}
+
+tr td input[type='password'] {
+	background: none repeat scroll 0 0 #F9F9F9;
+    border: 1px solid #CCCCCC;
+    padding: 3px 10px;
+}
+
+.ui-single-group-container {
+	clear: both;
+}
+
+.ui-group-container {
+	clear: both;
+	max-width:200px;
+}
+
+.ui-datewidget {
+	position: relative;
+}
+
+.ui-datewidget button {
+	position: absolute;
+}
+
+div.ui-datewidget button.ui-datepicker-trigger {
+    position: relative;
+    margin: 3px 0px 0px -30px;
+}
+
+button.ui-datepicker-trigger{
+    margin: 3px 0px 0px -30px;
+}
+
+table.yui td {
+	max-width: 100px;
+    word-break: normal;
+    word-wrap: break-word;
+}
+
+table.profileTable, .contactInformation {
+	border-bottom: 1px solid #DDDDDD;
+    width: 100%;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+table.profileTable thead tr th label {
+	color: #D95B44;
+    float: left;
+    font-family: opensans;
+    font-size: 117%;
+    text-align: left;
+}
+
+.contactInformation .profileTableLabel {
+	text-align:left;
+	font-weight: bold;
+	color: #D95B44;
+	font-family: opensans;
+    font-size: 117%;
+}
+
+.ui-selected-container {
+	padding-left:0px;
+}
+
+#uiTemplateTable tbody tr td {
+	vertical-align: top;
+}

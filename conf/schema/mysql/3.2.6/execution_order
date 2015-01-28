@@ -1,0 +1,5 @@
+dml/1.user_pages_menus.sql
+ddl/1.fix_fields_length.sql
+ddl/2.alter_identity.sql
+ddl/3.alter_man_sys.sql
+dml/2.Add_metadata_type_localization.sql

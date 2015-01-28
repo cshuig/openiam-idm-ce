@@ -1,0 +1,12 @@
+table.activiti-requestinfo thead label {
+	font-weight: bold;
+}
+
+table.activiti-requestinfo tbody tr td label {
+	padding-left: 50px;
+	font-weight: bold;
+}
+
+.jOrgChart .node {
+	width:300px;
+}

@@ -1,0 +1,95 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:s="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<s:global-method-security secured-annotations="enabled" />
+	<s:http security="none" pattern="/login.html" />
+	<s:http security="none" pattern="/changePassword.html" />
+	<s:http security="none" pattern="/unlockPassword.html"/>
+	<s:http security="none" pattern="/logout.html"/>
+	<s:http security="none" pattern="/SAMLMetadata.html"/>
+	<s:http security="none" pattern="/unlockPasswordQuestions.html"/>
+	<s:http security="none" pattern="/unlockUserResetPasswordForm.html"/>
+	<s:http security="none" pattern="/selfRegistration.html"/>
+	<s:http security="none" pattern="/clearContext.html"/>
+	<s:http security="none" pattern="/openID/**"/>
+	<s:http security="none" pattern="/sp/**"/>
+    <s:http security="none" pattern="/pub/**"/>
+    <s:http security="none" pattern="/language/languageSupport.html"/>
+    <s:http security="none" pattern="/forgotUsername.html"/>
+    
+    <s:http security="none" pattern="/rest/api/metadata/organizationMetadata"/>
+    <s:http security="none" pattern="/rest/api/entitlements/searchOrganizations"/>
+    
+    <s:http security="none" pattern="/rest/api/metadata/roleMetadata"/>
+	<s:http security="none" pattern="/rest/api/entitlements/searchRoles"/>
+
+	<s:http security="none" pattern="/rest/api/metadata/groupMetadata"/>
+	<s:http security="none" pattern="/rest/api/entitlements/searchGroups"/>
+	<s:http security="none" pattern="/rest/api/password/validation/**"/>
+	
+	<s:http auto-config="false" 
+			entry-point-ref="openiamAuthenticationEntryPoint"
+			access-decision-manager-ref="accessDecisionManager">
+		<!-- <s:form-login login-page="/login.html" login-processing-url="/login.html" /> -->
+		<!-- <s:logout logout-url="/logout.html" success-handler-ref="logoutSuccessHandler" /> -->
+		<s:anonymous enabled="false" />
+		<s:intercept-url pattern="/**" access="ROLE_USER" />
+		<s:custom-filter position="PRE_AUTH_FILTER" ref="openiamPreAuthFilter"/>
+        <s:custom-filter position="LAST" ref="postAuthFilter" />
+  	</s:http>
+
+    <bean id="postAuthFilter" class="org.openiam.ui.security.OpenIAMPostAuthFilter" />
+
+  	<bean id="logoutSuccessHandler" class="org.openiam.ui.security.OpenIAMLogoutSuccessHandler">
+  		<property name="loginURL" value="${openiam.ui.loginurl}" />
+  	</bean>
+  	
+  	<bean id="openiamAuthenticationEntryPoint" class="org.openiam.ui.security.OpenIAMAuthenticationEntryPoint">
+  		<property name="loginURL" value="${openiam.ui.loginurl}" />
+  		<property name="postURIsToConvertToGet">
+  			<set>
+  				<value>/idp/SAMLLogin.html</value>
+  			</set>
+  		</property>
+  	</bean>
+  	
+  	<bean id="authenticationDetailsSource" class="org.openiam.ui.security.OpenIAMAuthenticationDetailsSource" />
+  	
+  	<bean id="openiamPreAuthFilter" class="org.openiam.ui.security.OpenIAMPreAuthFilter">
+  		<property name="authenticationDetailsSource" ref="authenticationDetailsSource" />
+  		<property name="authenticationManager" ref="authenticationManager" />
+  	</bean>
+  	
+  	<bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
+  	<bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter" />
+  	<!--
+  	<bean id="anonymousAuthenticationFilter" class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+  		<property name="authenticationDetailsSource" ref="authenticationDetailsSource" />
+  		<property name="key" value="default" />
+  		<property name="userAttribute" value="ROLE_USER" />
+  	</bean>
+  	-->
+  	
+  	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+		<property name="decisionVoters">
+			<list>
+				<ref bean="authenticatedVoter" />
+				<ref bean="roleVoter" />
+			</list>
+		</property>
+	</bean>
+	
+	<s:authentication-manager alias="authenticationManager">
+		<s:authentication-provider ref="openiamAuthenticationManager" />
+	</s:authentication-manager>
+	
+	<bean id="openiamAuthenticationManager" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+		<property name="preAuthenticatedUserDetailsService">
+			<bean class="org.openiam.ui.security.OpenIAMAuthenticationUserDetailsService" />
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,155 @@
+
+body {
+	margin:0;
+	padding:0;
+	font-family:Arial;
+	font-size:12px;
+	background:#333;
+}
+
+.error {
+	width:210px;
+}
+
+.authError {
+	float: left;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-top: 20%;
+    text-align: center;
+}
+
+
+#llogo{
+	float:left;
+	width:100%;
+	text-align:center;
+}
+
+#credentials{
+    float: left;
+    margin-bottom: 25px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+#login-form, #unlock-form, #forgot-principal-form {
+	float:left;
+	width:300px;
+	margin:0 auto;
+	padding:0 40px;
+}
+
+.lrow{
+    text-align: right;
+	width:100%;
+	margin-top:20px;
+}
+
+.lrow a{
+	width:50%;
+	line-height:50px;
+}
+
+#login .lrow a {
+	line-height: 30px;
+}
+
+.lrow .login-options {
+	float: left;
+}
+
+.lrow input{
+	text-align:right;
+}
+
+#lbuttons{
+	float:left;
+	width:300px;
+	padding:20px 40px;
+	margin-top:25px;
+}
+
+#lbuttons li {
+	list-style: none;
+	margin-right: 17px;
+	float: left;
+	width: 132px;
+}
+
+#credentials {
+	background-color: #E4F4FA;
+    border: 1px solid #BBDBE0;
+    border-radius: 5px 5px 5px 5px;
+    color: #54A3C7;
+    float: left;
+    font-style: italic;
+    margin-bottom: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    text-align: center;
+    width: 80%;
+}
+
+/* the below two fields are !important b/c the general css can override these values using input[type='*'] */
+.loginField, .emailField {
+	/*float:left !important;*/
+	width:260px !important;
+	background:url(../../images/common/loginid.png) no-repeat !important;
+	height:29px !important;
+	padding:5px 20px !important;
+	border:0 !important;
+	margin-bottom:10px !important;
+	padding-left:35px !important;
+}
+
+.passwordField {
+	/*float:left !important;*/
+	width:260px !important;
+	background:url(../../images/common/input-pw.png) no-repeat !important;
+	height:29px !important;
+	padding:5px 20px !important;
+	border:0 !important;
+	margin-bottom:20px !important;
+	padding-left:35px !important;
+}
+
+#login, #password{
+	margin:0 auto;
+	width:380px;
+	min-height:538px;
+	background:url(../../images/common/loginbg.png) no-repeat;
+	padding:20px 26px;
+	padding-bottom:0;
+}
+
+.infoLink {
+	float: left;
+    margin-bottom: 10px;
+    margin-left: 40px;
+}
+
+.infoLink a {
+	color: #54A3C7;
+    font-weight: bold;
+}
+
+#password .skipThis a {
+	color: #54A3C7;
+    font-weight: bold;
+}
+
+#password .skipThis a:hover {
+	text-decoration: underline;
+}
+
+.loginBtn {
+	padding: 15px 40px;
+}
+
+.placeholderOn {
+	color: grey;
+}

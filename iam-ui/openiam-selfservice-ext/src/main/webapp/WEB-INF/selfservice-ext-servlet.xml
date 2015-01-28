@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	   	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+	   	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	   	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+	   	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config.xsd">
+	<mvc:annotation-driven validator="validator" />
+	<!-- Placeholders are applicationContext-scored. webconsole-servlet is in 
+		a diff. appcontext than the main appContext, so this must be defined here 
+		as well for @Value injection to work propertly -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>file:${confpath}/conf/securityconf.properties</value>
+				<value>classpath:datasource.properties</value>
+				<value>classpath:openiam.ui.properties</value>
+				<value>file:${confpath}/conf/selfservice.ext.ui.properties</value>
+				<value>file:${confpath}/conf/datasource.properties</value>
+                <value>classpath:selfservice.ext.ui.properties</value>
+                <value>file:${confpath}/conf/openiam.ui.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+
+	<context:annotation-config />
+	<context:component-scan
+		base-package="org.openiam.ui.selfservice.ext.web.mvc,
+					  org.openiam.ui.web.mvc" />
+
+    <import resource="classpath:abstract-web-context.xml" />
+
+
+    <bean id="handlerMapping"
+          class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <!--<property name="interceptors">-->
+            <!--<ref bean="localeChangeInterceptor" />-->
+        <!--</property>-->
+        <property name="order" value="1" />
+    </bean>
+
+    <bean id="viewResolver" class="org.openiam.ui.spring.OpeniamInternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <lang:groovy id="employeeService" proxy-target-class="true" script-source="/WEB-INF/groovy/EmployeeService.groovy">
+        <lang:property name="defaultManagedSysId" value="${org.openiam.defaultManagedSysId}"/>
+        <lang:property name="challengeResponseGroup" value="${org.openiam.selfservice.challenge.response.group}"/>
+        <lang:property name="secureAnswers" value="${org.openiam.ui.challenge.answers.secured}"/>
+    </lang:groovy>
+    <lang:groovy proxy-target-class="true" script-source="/WEB-INF/groovy/ExampleController.groovy" refresh-check-delay="5000" />
+
+    <!-- Web Flow Setup -->
+
+    <webflow:flow-registry id="flowRegistry" flow-builder-services="flowBuilderServices">
+        <webflow:flow-location path="/WEB-INF/flows/pub/accountClaim.xml" id="pub/accountClaim" />
+    </webflow:flow-registry>
+
+    <webflow:flow-executor id="flowExecutor" />
+
+    <!-- Enables FlowHandler URL mapping -->
+    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
+        <property name="flowExecutor" ref="flowExecutor" />
+    </bean>
+
+    <!-- Maps request paths to flows in the flowRegistry -->
+    <bean id="flowHandlerMapping" class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+        <property name="flowRegistry" ref="flowRegistry"/>
+        <property name="order" value="0"/>
+    </bean>
+
+    <webflow:flow-builder-services id="flowBuilderServices" view-factory-creator="mvcViewFactoryCreator" validator="validator" />
+
+    <bean id="mvcViewFactoryCreator" class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
+        <property name="viewResolvers" ref="viewResolver"/>
+    </bean>
+
+</beans>

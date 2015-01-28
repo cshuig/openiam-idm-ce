@@ -1,0 +1,2 @@
+ddl/1.recon_config_updates.sql
+ddl/2.openiam_log_attr_updates.sql

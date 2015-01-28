@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+    <var name="bulkOperationBean" class="org.openiam.ui.webconsole.web.model.BulkOperationBean" />
+    <var name="test" class="org.openiam.ui.webconsole.web.model.BulkOperationBean" />
+    <on-start>
+        <set name="flowScope.bulkOperationBean" value="bulkOperationBean" />
+        <evaluate expression="bulkOperationService.getRequesterId()" result="flowScope.bulkOperationBean.userSearchBean.requesterId" />
+    </on-start>
+    <view-state id="chooseUsers" view="bulkOperations/chooseUsers">
+        <on-entry>
+            <evaluate expression="bulkOperationService.getAllUserStatuses()" result="viewScope.userStatuses" />
+            <evaluate expression="bulkOperationService.getAllAccountStatuses()" result="viewScope.accountStatuses" />
+            <evaluate expression="bulkOperationService.getAllJobCodes()" result="viewScope.jobCodes" />
+            <evaluate expression="bulkOperationService.getAllEmployeeTypes()" result="viewScope.employeeTypes" />
+            <evaluate expression="bulkOperationService.getAllApplications()" result="viewScope.applications" />
+            <evaluate expression="bulkOperationService.getAllSearchCriteriaItems()" result="viewScope.searchCriteriaItems" />
+        </on-entry>
+        <on-render>
+            <evaluate expression="bulkOperationService.getPageSizeList()" result="viewScope.pageSizeList" />
+            <evaluate expression="bulkOperationService.getUserList(flowRequestContext, bulkOperationBean)" result="viewScope.userList" />
+        </on-render>
+        <transition on="chooseOperations" to="chooseOperations">
+            <evaluate expression="bulkOperationService.updateSelectedUserIds(flowRequestContext, bulkOperationBean, userList)" />
+        </transition>
+        <transition on="searchUsers">
+            <evaluate expression="bulkOperationService.updateSelectedUserIds(flowRequestContext, bulkOperationBean, userList)" />
+            <evaluate expression="bulkOperationService.updateSearchUsersCriteria(flowRequestContext, bulkOperationBean)" />
+            <evaluate expression="bulkOperationService.updateUsersNum(bulkOperationBean)" />
+            <evaluate expression="bulkOperationService.updatePageSize(flowRequestContext, bulkOperationBean)" result="viewScope.pageDisplay" />
+        </transition>
+        <transition on="firstResults">
+            <evaluate expression="bulkOperationService.firstPage(bulkOperationBean)" />
+            <evaluate expression="bulkOperationService.updateSelectedUserIds(flowRequestContext, bulkOperationBean, userList)" />
+            <evaluate expression="bulkOperationService.updatePageSize(flowRequestContext, bulkOperationBean)" result="viewScope.pageDisplay" />
+        </transition>
+        <transition on="nextResults">
+            <evaluate expression="bulkOperationService.nextPage(bulkOperationBean)" />
+            <evaluate expression="bulkOperationService.updateSelectedUserIds(flowRequestContext, bulkOperationBean, userList)" />
+            <evaluate expression="bulkOperationService.updatePageSize(flowRequestContext, bulkOperationBean)" result="viewScope.pageDisplay" />
+        </transition>
+        <transition on="prevResults">
+            <evaluate expression="bulkOperationService.prevPage(bulkOperationBean)" />
+            <evaluate expression="bulkOperationService.updateSelectedUserIds(flowRequestContext, bulkOperationBean, userList)" />
+            <evaluate expression="bulkOperationService.updatePageSize(flowRequestContext, bulkOperationBean)" result="viewScope.pageDisplay" />
+        </transition>
+        <transition on="lastResults">
+            <evaluate expression="bulkOperationService.lastPage(bulkOperationBean)" />
+            <evaluate expression="bulkOperationService.updateSelectedUserIds(flowRequestContext, bulkOperationBean, userList)" />
+            <evaluate expression="bulkOperationService.updatePageSize(flowRequestContext, bulkOperationBean)" result="viewScope.pageDisplay" />
+        </transition>
+        <transition on="cancel" to="endBulkOperations" history="invalidate" />
+    </view-state>
+
+    <view-state id="chooseOperations" model="operationBean" view="bulkOperations/chooseOperations">
+        <var name="operationBean" class="org.openiam.idm.srvc.prov.request.dto.OperationBean" />
+        <on-entry>
+            <evaluate expression="bulkOperationService.getObjectTypes()" result="viewScope.objectTypes" />
+            <set name="viewScope.operationBean" value="operationBean" />
+            <evaluate expression="bulkOperationService.getObjectOperationsAsJson()" result="viewScope.objectOperationsAsJson" />
+        </on-entry>
+        <transition on="addOperation">
+            <evaluate expression="bulkOperationService.addOperation(flowRequestContext, operationBean, bulkOperationBean)" />
+        </transition>
+        <transition on="deleteOperations">
+            <evaluate expression="bulkOperationService.deleteOperations(flowRequestContext, bulkOperationBean)" />
+        </transition>
+        <transition on="back" to="chooseUsers" />
+        <transition on="cancel" to="endBulkOperations" history="invalidate" />
+        <transition on="start" to="endBulkOperations" history="invalidate">
+            <evaluate expression="bulkOperationService.startBulkOperation(bulkOperationBean)" />
+        </transition>
+    </view-state>
+
+    <end-state id="endBulkOperations" />
+
+</flow>

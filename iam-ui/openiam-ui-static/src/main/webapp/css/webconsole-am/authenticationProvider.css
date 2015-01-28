@@ -1,0 +1,23 @@
+.publicKeyProperties {
+	width: 300px;
+    word-wrap: break-word;
+    font-size: 80%;
+}
+
+.publicKeyProperties .publicKeyTitle {
+	font-weight: bold;
+    text-align: center;
+}
+
+.publicKeyProperties .property {
+	
+}
+
+.publicKeyProperties .property label {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.publicKeyProperties .property span {
+	
+}

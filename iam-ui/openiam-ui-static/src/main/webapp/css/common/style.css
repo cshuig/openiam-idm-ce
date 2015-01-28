@@ -1,0 +1,1329 @@
+@font-face {
+    font-family: 'OpenSans';
+    src: url(fonts/OpenSans-Semibold.ttf);
+}
+
+.clear {
+    clear: both;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: OpenSans;
+    font-size: 12px;
+    background: url(../../images/common/middlebg.jpg) repeat;
+
+}
+
+p {
+    font-family: OpenSans;
+}
+
+a img {
+    border: none;
+}
+
+a {
+    text-decoration: none;
+    color: #333333;
+}
+
+h1 {
+    font-family: OpenSans;
+}
+
+h2 {
+    font-family: OpenSans;
+}
+
+h3 {
+    font-family: OpenSans;
+}
+
+h4 {
+    font-family: OpenSans;
+}
+
+.title {
+    font-family: OpenSans;
+    font-size: 20px;
+    color: #d95b44;
+}
+
+.subTitle {
+    font-family: OpenSans;
+    font-size: 14px;
+    color: #d95b44;
+}
+
+#top {
+    background: url(../../images/common/topbg.jpg) repeat-x;
+    width: 100%;
+    min-height: 243px;
+    margin-bottom: 10px;
+}
+
+.logo {
+    display: block;
+    overflow: hidden;
+    text-indent: -999px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.llogo {
+    background-image: url(/openiam-ui-static/images/common/llogo.png);
+    width: 273px;
+    height: 114px;
+}
+
+.slogo {
+    background-image: url(/openiam-ui-static/images/common/logo.png);
+    width: 110px;
+    height: 41px;
+}
+
+#top.standalone {
+    margin-bottom: 0;
+    min-height: 88px;
+}
+
+#middle {
+    background: url(../../images/common/middlebg.jpg) repeat;
+    width: 100%;
+    min-height: 400px;
+    float: left;
+    position: relative;
+}
+
+#bottom {
+    background: url(../../images/common/footbg.jpg) repeat-x;
+    width: 100%;
+    min-height: 172px;
+    float: left;
+
+}
+
+.active {
+    background: #d85841 !important;
+}
+
+.wrapper {
+    margin: 0 auto;
+    width: 930px;
+    position: relative;
+}
+
+.ie8 .wrapper {
+    /*z-index: 10;*/
+    /* otherwise menus get hidden behind 'id=middle' element in LTE IE8 */
+}
+
+#header {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+    min-height: 75px;
+    position: relative;
+}
+
+#logo {
+    float: left;
+    /*width:30%;*/
+}
+
+#right-header {
+    float: right;
+    width: 70%;
+    text-align: right;
+    color: #5d5d5d;
+}
+
+#lang-header {
+    display: block;
+    float: right;
+    /*margin-right: 15px;*/
+    /*margin-top: 16px;*/
+    overflow: auto;
+    width: 200px;
+    /*
+    bottom: 0;
+    position: absolute;
+    right: 0;
+    */
+}
+
+#lang, #lang ul {
+    float: right;
+    list-style: none outside none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    width: 110px;
+}
+
+#lang {
+    margin-right: 7px;
+    margin-top: 4px;
+}
+
+#lang li ul {
+    display: none;
+    position: absolute;
+    left: auto;
+    z-index: 100;
+}
+
+#lang a {
+    /*background: url("//i.picasion.com/images/icons.png") no-repeat scroll 90px -177px #FFFFFF;*/
+    border: 1px solid #CCCCCC;
+    display: block;
+    padding: 3px 5px 4px;
+}
+
+#lang a span {
+    background: url("../../images/common/countries.flags.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border: medium none;
+    display: block;
+    float: left;
+    margin-top: 3px;
+    padding-right: 5px;
+    vertical-align: middle;
+    height: 14px;
+    width: 13px;
+}
+
+#lang li:hover ul {
+    display: block;
+}
+
+#lang a:hover, #lang li:hover a, #lang li.over a {
+    /*background:#fff url(//i.picasion.com/images/icons.png) no-repeat 90px -197px;*/
+    border: 1px solid #fff;
+    color: #333;
+}
+
+#lang li:hover li a, #lang li.over li a {
+    width: 98px;
+    background: #fff;
+}
+
+#lang li li a:hover {
+    background: #f0f8ff;
+}
+
+#lang a span.flag_US {
+    background-position: -3281px 0;
+}
+
+#lang a span.flag_GB {
+    background-position: -1156px 0;
+}
+
+#lang a span.flag_ES {
+    background-position: -986px 0;
+}
+
+#lang a span.flag_RU {
+    background-position: -2686px 0;
+}
+
+#right-header a {
+    text-decoration: none;
+    color: #5d5d5d;
+}
+
+#notification {
+    float: left;
+    width: 550px;
+    text-align: right;
+}
+
+#notification .row {
+    float: left;
+    width: 100%;
+    padding: 0;
+}
+
+#logout {
+    float: left;
+    width: 101px;
+    padding-top: 5px;
+}
+
+#logout a {
+    /*background-image: url("/openiam-ui-static/images/common/logout.jpg");*/
+    width: 75px;
+    height: 20px;
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
+    text-align: center;
+    color: #ffffff;
+    /*text-indent: -999px;*/
+}
+
+#nav {
+    float: left;
+    width: 100%;
+    display: block;
+}
+
+#nav ul {
+    list-style: none;
+    margin: 0;
+    background: url(../../images/common/nav-bg.jpg) repeat-x;
+    float: left;
+    width: 100%;
+    padding: 0;
+    height: 89px;
+}
+
+#nav ul li {
+    float: left;
+    position: relative;
+    border-right: 1px solid #000;
+    text-align: center;
+    width: 115px;
+}
+
+#nav ul li a {
+    display: block;
+    padding: 0;
+    text-decoration: none;
+    border: none;
+    height: 65px;
+    padding: 12px 10px;
+    color: #fff;
+    font-size: 11px;
+}
+
+a .icon {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+    height: 35px;
+}
+
+#nav ul ul {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 0 solid #CCCCCC;
+    display: none;
+    float: left;
+    left: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    position: absolute;
+    top: 88px;
+    width: 200px;
+    z-index: 99999;
+    text-align: left;
+    border: 1px solid #ccc;
+    min-height: 100px;
+    height: auto;
+}
+
+#nav ul ul li {
+    float: left;
+    width: 180px;
+    border: none !important;
+    display: inline-block;
+    padding: 1px 10px;
+    text-align: left;
+}
+
+#nav ul ul ul {
+    left: 100%;
+    top: 0;
+}
+
+#nav ul ul a {
+    background: #000;
+    line-height: 20px;
+    padding: 5px 10px;
+    height: 20px;
+    margin: 0 10px 0 0;
+    color: #fff;
+}
+
+#nav li:hover > a,
+#nav ul ul :hover > a {
+    background: #d85841;
+    color: #fff;
+}
+
+#nav ul li:hover > ul {
+    display: block;
+}
+
+#submenu {
+    width: 180px;
+    left: -185px;
+    top: 0;
+    position: absolute;
+    background: url("../../images/common/menubg.jpg") repeat scroll 0 0 transparent;
+    border-radius: 10px;
+}
+
+#submenu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    float: left;
+    width: 100%;
+}
+
+#submenu ul li {
+    /*margin-right:10px;*/
+    border-radius: 10px;
+}
+
+#submenu ul li:hover {
+    cursor: pointer;
+}
+
+#usermenu {
+    float: right;
+    text-align: right;
+}
+
+#usermenu ul {
+    margin: 0;
+}
+
+#usermenu li {
+    list-style: none;
+    display: inline;
+    margin-left: 10px;
+}
+
+#usermenu li a {
+    background: url(../../images/common/buttonbg.jpg) repeat-x;
+    padding: 8px 10px;
+    color: #000;
+    border: 1px solid #c1c1c1;
+    font-size: 11px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+#submenu ul li a {
+    /*background:url(../../images/common/menubg.jpg) repeat-x;*/
+    padding: 8px 12px;
+    color: #fff;
+    line-height: 35px;
+    border-radius: 5px;
+}
+
+#usermenu a.active {
+    background: url(../../images/common/hoverbg.jpg) repeat-x;
+    border: none;
+    color: #fff;
+}
+
+#submenu ul li a:hover, #submenu ul li:hover {
+    background: url(../../images/common/hoverbg.jpg) repeat-x;
+}
+
+#breadcrumb {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#content {
+    background: none repeat scroll 0 0 #F6F6F6;
+    float: left;
+    margin: -30px 0;
+    min-height: 408px;
+    padding: 30px;
+    position: relative;
+    width: 868px;
+    z-index: 10;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    overflow-y: hidden;
+}
+
+#leftshadow {
+    background: url("../../images/common/shadow_left.png") no-repeat scroll 0 0 transparent;
+    float: left;
+    left: -23px;
+    min-height: 415px;
+    position: absolute;
+    top: -33px;
+    width: 32px;
+}
+
+#rightshadow {
+    background: url("../../images/common/shadow_right.png") no-repeat scroll 0 0 transparent;
+    float: left;
+    right: -23px;
+    min-height: 415px;
+    position: absolute;
+    top: -33px;
+    width: 32px;
+}
+
+#footer {
+    float: left;
+    margin-top: 50px;
+    width: 100%;
+}
+
+#copy {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#copy-header {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#nav-header {
+    float: left;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+
+#log-header{
+    margin: 0px auto;
+    width: 432px;
+    color: #fff;
+}
+
+#log-header a {
+    color: #fff;
+}
+
+
+#footnav {
+    float: left;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#pagebg {
+    background: #333;
+    width: 100%;
+    padding-top: 60px;
+}
+
+#log-foot {
+    margin: 0px auto;
+    width: 432px;
+    color: #fff;
+}
+
+#log-foot a {
+    color: #fff;
+}
+
+#breadcrumb a {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#breadcrumb img {
+    float: left;
+    margin-right: 5px;
+}
+
+#form {
+    float: left;
+    width: 100%;
+    margin: 20px 0;
+
+}
+
+#left {
+    float: left;
+    width: 50%;
+}
+
+#form li {
+    list-style: none;
+    display: block;
+}
+
+#left li {
+    float: left;
+    width: 100%;
+    margin: 10px 0;
+}
+
+#left label {
+    float: left;
+    width: 100px;
+}
+
+#right {
+    float: left;
+    width: 50%;
+}
+
+#right li {
+    float: left;
+    width: 100%;
+    margin: 10px 0;
+}
+
+#right label {
+    float: left;
+    width: 100px;
+}
+
+.fleft {
+    float: left;
+    width: 50%;
+}
+
+.fright {
+    float: left;
+    width: 50%;
+
+}
+
+.fright .title,
+.fleft .title {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.fleft li {
+    float: left;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.fright li {
+    line-height: 15px;
+    list-style: none;
+    float: left;
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.error {
+    background: #ffc8c6;
+    border: 1px solid #efb6b5;
+    color: #ad5b5f;
+    min-height: 20px;
+    line-height: 20px;
+    margin: 10px 0;
+    padding: 10px 20px 10px 50px;
+    background: #ffc8c6 url(../../images/common/error.png) no-repeat left;
+    border-radius: 5px;
+}
+
+.success {
+    background: #dff0bb;
+    border: 1px solid #c5dc99;
+    color: #8dbd5b;
+    min-height: 20px;
+    line-height: 20px;
+    margin: 10px 0;
+    padding: 10px 20px 10px 50px;
+    background: #dff0bb url(../../images/common/success.png) no-repeat left;
+    border-radius: 5px;
+}
+
+.info {
+    background: #b9e4f7;
+    border: 1px solid #aedaed;
+    color: #5298c0;
+    min-height: 20px;
+    line-height: 20px;
+    margin: 10px 0;
+    padding: 10px 20px 10px 50px;
+    background: #b9e4f7 url(../../images/common/info.png) no-repeat left;
+    border-radius: 5px;
+}
+
+.warning {
+    background: #feefac;
+    border: 1px solid #eadb98;
+    color: #a8902c;
+    min-height: 20px;
+    line-height: 20px;
+    margin: 10px 0;
+    padding: 10px 20px 10px 50px;
+    background: #feefac url(../../images/common/warning.png) no-repeat left;
+    border-radius: 5px;
+}
+
+input[type="text"], input[type="file"], input[type="password"] {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+}
+
+textarea {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    min-height: 90px;
+}
+
+select {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    width: 220px;
+}
+
+.tforth {
+    width: 60px;
+    float: left;
+    margin-right: 10px;
+}
+
+.forth {
+    width: 110px;
+    float: left;
+    margin-right: 10px;
+}
+
+.third {
+    width: 50px;
+    float: left;
+    margin-right: 5px;
+}
+
+.full {
+    width: 200px;
+    /*float:left;*/
+    margin-right: 10px;
+}
+
+#contentFrame {
+    border: none;
+    width: 100%;
+    min-height: 400px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.frameContentDivider {
+    border-bottom: 1px solid #CCCCCC;
+    border-top: 1px solid #CCCCCC;
+    margin: 20px 0;
+    padding: 20px 0;
+}
+
+.frameContentDivider .userSearchCell {
+    width: 50%;
+    float: left;
+    display: inline-block;
+    height: 32px;
+}
+
+.frameSubcontentDivider {
+    margin: 20px 0;
+    padding: 20px 0;
+    border-top: 1px solid #CCCCCC;
+}
+
+ul.formControls {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 34px;
+}
+
+ul.formControls li {
+    display: inline;
+}
+
+ul.formControls li.leftBtn {
+    position: relative;
+    display: inline-block;
+    float: left;
+    margin: 9px 0 0 3px;
+}
+
+ul.formControls li.rightBtn {
+    position: relative;
+    display: inline-block;
+    float: right;
+    margin: 9px 0 0 3px;
+}
+
+ul.formControls li.rightBtn input, ul.formControls li.leftBtn input {
+    margin-top: -8px;
+}
+
+ul.formControls li.rightBtn input {
+    margin: -9px 0 0 0;
+}
+
+.redBtn {
+    font-weight: bold;
+    padding: 8px 10px;
+    text-decoration: none;
+    background-color: #D95D45;
+    border: medium none;
+    color: #FFFFFF;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ui-widget-content a.redBtn {
+    color: #FFFFFF;
+}
+
+.whiteBtn {
+    background: url("../../images/common/buttonbg.jpg") repeat-x scroll 0 0 transparent;
+    border: 1px solid #C1C1C1;
+    color: #000000;
+    padding: 8px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input.rounded, select.rounded, textarea.rounded {
+    border-radius: 5px;
+}
+
+input[disabled="disabled"] {
+    cursor: no-drop;
+}
+
+.ui-dialog .modal-inputs {
+    clear: both;
+    text-align: center;
+}
+
+.ui-dialog .modal-inputs label {
+    margin-right: 20px;
+    vertical-align: top;
+}
+
+.ui-dialog .modal-inputs textarea {
+
+}
+
+.ui-dialog .modal-buttons {
+    clear: both;
+    text-align: center;
+}
+
+.ui-dialog .modal-buttons ul {
+    display: inline-block;
+    list-style-image: none;
+    list-style-type: none;
+    padding: 20px 0 0;
+    text-align: center;
+}
+
+.ui-dialog .modal-buttons ul li {
+    display: inline;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.input-holder {
+    position: relative;
+}
+
+.input-default {
+    color: #888888;
+    position: absolute;
+    top: 1px;
+    left: 40px;
+    width: 99%;
+}
+
+.required:after {
+    color: red;
+    content: "*";
+}
+
+a.blue {
+    color: blue;
+}
+
+.openiam-loading {
+    background: none repeat scroll 0 0 #DDDDDD;
+    border-radius: 10px 10px 10px 10px;
+    height: 100%;
+    left: 0;
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 2147483647;
+}
+
+.openiam-loader {
+    background-image: url("../../images/common/ajax-loader.gif");
+    background-repeat: no-repeat;
+    height: 19px;
+    left: 41%;
+    position: fixed;
+    top: 0;
+    width: 220px;
+    z-index: 2147483647;
+}
+
+.openiam-loading .openiam-loader {
+
+}
+
+.openiam-filter-icon {
+    background-image: url("../../images/common/filter.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    margin: 0 auto;
+}
+input.date {
+    margin-right: 10px;
+}
+.openiam-edit-icon {
+    background-image: url("../../images/common/edit.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    margin: 0 auto;
+}
+
+div.alt-icon span {
+    display: none;
+}
+
+div.alt-icon:hover span {
+    display: block;
+    position: absolute;
+    font-decoration: bold;
+    font-size: 16px;
+    width: 100px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-left: -80px;
+    margin-top: 25px;
+    border: 1px solid #aaaaaa;
+    background-color: #fff;
+    color: #d95b44;
+    text-align: center;
+    z-index: 9999999;
+}
+
+.openiam-add-icon {
+    background-image: url("../../images/common/add.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    margin: 0 auto;
+}
+
+.openiam-info-icon {
+    background-image: url("../../images/common/information.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    magin-left: 20px;
+    margin: 0 auto;
+    float: left;
+}
+
+.openiam-prov-icon {
+    background-image: url("../../images/common/prov.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    magin-left: 20px;
+    margin: 0 auto;
+    float: left;
+}
+
+.openiam-deprov-icon {
+    background-image: url("../../images/common/deprov.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    magin-left: 20px;
+    margin: 0 auto;
+    float: left;
+}
+
+.openiam-delete-icon {
+    background-image: url("../../images/common/delete.png");
+    background-repeat: no-repeat;
+    height: 24px;
+    width: 24px;
+    margin: 0 auto;
+}
+
+.openiam-check-icon {
+    background-image: url("../../images/common/check.png");
+    background-repeat: no-repeat;
+    height: 22px;
+    width: 22px;
+    margin: 0 auto;
+}
+
+.openiam-sortable {
+    cursor: pointer;
+}
+
+.openiam-expandable {
+    height: 22px;
+    width: 22px;
+    margin: 0 auto;
+}
+
+.openiam-expand {
+    background: url("../../images/common/icons/expand.png") scroll 7px 7px no-repeat;
+}
+
+.openiam-collapse {
+    background: url("../../images/common/icons/collapse.png") scroll 7px 7px no-repeat;
+}
+
+table.yui tr.parentRow {
+    border-bottom: 1px solid #7F7F7F;
+}
+
+.clear-input {
+    background-image: url("../../images/common/red_x.png");
+    background-repeat: no-repeat;
+    height: 22px;
+    left: 200px;
+    margin: 0 auto;
+    position: absolute;
+    top: 17px;
+    width: 22px;
+    cursor: pointer;
+}
+
+a.ui-dialog-back-btn {
+    float: right;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.ui-required {
+    background-color: #FFEBF7 !important;
+}
+
+.role {
+    background-image: url("../../images/common/icons/role.png");
+}
+
+.group {
+    background-image: url("../../images/common/icons/group.png");
+}
+
+.organization {
+    background-image: url("../../images/common/icons/organization.png");
+}
+
+.entity-link {
+    background-repeat: no-repeat;
+    padding-left: 20px;
+}
+
+.icon-link {
+    background-repeat: no-repeat;
+    margin-left: 4px;
+}
+
+.search16 {
+    padding-left: 16px;
+    background-image: url("../../images/common/icons/search_16.png");
+}
+
+.search24 {
+    padding-left: 24px;
+    background-image: url("../../images/common/icons/search_24.png");
+}
+
+.delete16 {
+    padding-left: 16px;
+    background-image: url("../../images/common/icons/delete_16.png");
+}
+
+.delete24 {
+    padding-left: 24px;
+    background-image: url("../../images/common/icons/delete_24.png");
+}
+
+.add16 {
+    padding-left: 16px;
+    background-image: url("../../images/common/icons/add_16.png");
+}
+
+.add24 {
+    padding-left: 24px;
+    background-image: url("../../images/common/icons/add_24.png");
+}
+
+.check16 {
+    padding-left: 16px;
+    background-image: url("../../images/common/icons/check_16.png");
+}
+
+.check24 {
+    padding-left: 24px;
+    background-image: url("../../images/common/icons/check_24.png");
+}
+
+.info16 {
+    padding-left: 16px;
+    background-image: url("../../images/common/icons/info_16.png");
+}
+
+.info24 {
+    padding-left: 24px;
+    background-image: url("../../images/common/icons/info_24.png");
+}
+
+.help16 {
+    padding-left: 16px;
+    background-image: url("../../images/common/icons/help_16.png");
+}
+
+.help24 {
+    padding-left: 24px;
+    background-image: url("../../images/common/icons/help_24.png");
+}
+
+.approver-search {
+    color: blue !important;
+}
+
+.openiam-close-icon {
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+    margin: 0 auto;
+    background: url("../../images/common/close.png") scroll 0px 0px no-repeat;
+}
+
+.ui-selected-container .ui-removable {
+    clear: both;
+}
+
+.ui-selected-container .ui-icon-closethick {
+    float: left;
+    cursor: pointer;
+}
+
+.ui-selected-container .ui-removeable-text {
+    float: left;
+}
+
+select.grant {
+    width: 82px;
+    float: right;
+}
+
+.languageMapItem {
+    margin-top: 3px;
+    width: 340px;
+}
+
+.languageName, .languageValue {
+    display: block;
+    float: left;
+}
+
+.languageName {
+    padding-top: 2px;
+    margin-right: 10px;
+    width: 75px;
+}
+
+/*.languageInput{margin-bottom: 5px; width: 320px;}*/
+/*.languageInput:after{content: "";clear: both; display: block;}*/
+
+.translateButton {
+    float: left;
+    background: url("../../images/common/translate.png") no-repeat scroll 0 0 / 100% auto transparent;
+    cursor: pointer;
+    height: 21px;
+    width: 21px;
+}
+
+.translateButton:after {
+    content: "";
+    clear: both;
+    display: block;
+}
+
+.openiam-ui-divider {
+    border-bottom: 1px solid #DDDDDD;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.openiam-ui-divider .title {
+    font-size: 114%;
+}
+
+.ui-dialog-content .pager {
+    text-align: center;
+}
+
+.ui-dialog-content .pager input {
+    width: 100px;
+    border: none;
+    background: none;
+    text-align: center;
+}
+
+.ui-dialog-content .pager .prev {
+    cursor: pointer;
+}
+
+.ui-dialog-content .pager .prev.disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.ui-dialog-content .pager .next {
+    cursor: pointer;
+}
+
+.ui-dialog-content .pager .next.disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.multi-choices {
+    background-color: #FFFFFF;
+    background-image: -moz-linear-gradient(center bottom, #FFFFFF 85%, #EEEEEE 99%);
+    border: 1px solid #AAAAAA;
+    cursor: text;
+    height: auto !important;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+}
+
+.multi-choices li {
+    list-style: none outside none;
+}
+
+.multi-choices .choice {
+    background-clip: padding-box;
+    background-color: #E4E4E4;
+    background-image: -moz-linear-gradient(center bottom, #E4E4E4 0%, #EEEEEE 70%);
+    border: 1px solid #B4B4B4;
+    border-radius: 3px;
+    color: #333333;
+    line-height: 13px;
+    margin: 3px 5px;
+    padding: 3px 19px 3px 6px;
+    position: relative;
+}
+
+.multi-choices .choice .choice-close {
+    display: block;
+    font-size: 1px;
+    position: absolute;
+    right: 3px;
+    top: 2px;
+}
+
+.searchable-link {
+    color: blue;
+}
+
+.field-notification.modified {
+    background-color: #DFF0BB !important;
+}
+
+.fieldset .full {
+    width: 360px;
+    margin-right: 0
+}
+
+.fieldset select {
+    width: 380px;
+    margin-right: 0
+}
+
+.fieldset .languageMapItem {
+    width: 420px;
+}
+
+.fieldset .languageMapItem .full {
+    width: 275px;
+}
+
+.fieldset .languageMap .full {
+    width: 285px;
+}
+
+.fieldset tfoot td {
+    padding-top: 15px
+}
+
+.fieldset .pair {
+    width: 165px;
+}
+
+.fieldset select.pair {
+    width: 185px;
+}
+
+.pair {
+    width: 85px;
+}
+
+select.pair {
+    width: 105px;
+}
+
+.center {
+    text-align: center;
+}
+
+#passwordRules {
+    padding-left: 38px;
+}
+
+#passwordRules div[data-role='password-rule'], .tooltipster-base div[data-role='password-rule'] {
+    margin: 2px 0;
+    width: 380px;
+}
+
+.radioContainer {
+	width: 380px;
+}
+
+div.policyContent {
+    width: 700px;
+    height: 500px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #B4B4B4;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+}
+
+div.policyContent ul li {
+    list-style-type: lower-alpha;
+}
+
+div.policyContent ul li ul li {
+    list-style-type: circle;
+}
