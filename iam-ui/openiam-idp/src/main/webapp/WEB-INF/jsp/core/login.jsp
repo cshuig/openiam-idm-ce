@@ -61,10 +61,10 @@
                 </c:if>
             </c:if>
             <input type="text" autocomplete="off" name="login" id="principal" class="loginField"
-                   placeholder="Enter Login ID" initialized="${! empty requestScope.login}"
+                   placeholder="${requestScope.loginPlaceholder}" initialized="${! empty requestScope.login}"
                    <c:if test="${! empty requestScope.login}">value="${requestScope.login}"</c:if> />
             <input type="password" autocomplete="off" name="password" id="input_password" class="passwordField"
-                   placeholder="Enter your password" value="" initialized="false"/>
+                   placeholder="${requestScope.passwordPlaceholder}" value="" initialized="false"/>
 
             <c:if test="${! empty requestScope.hiddenAttributes}">
                 <c:forEach var="hiddenField" items="${requestScope.hiddenAttributes}">
@@ -88,14 +88,12 @@
                     </c:if>
                     <c:if test="${requestScope.forgotUsernameEnabled}">
                         <div>
-                            <a id="forgotUsername" href="forgotUsername.html"><fmt:message
-                                    key="openiam.idp.forgot.username"/></a>
+                            <a id="forgotUsername" href="forgotUsername.html">${requestScope.forgotUsernameLabel}</a>
                         </div>
                     </c:if>
                     <c:if test="${requestScope.passwordUnlockEnabled}">
                         <div>
-                            <a id="unlockPswd" href="unlockPassword.html"><fmt:message
-                                    key="openiam.idp.forgot.password"/></a>
+                            <a id="unlockPswd" href="unlockPassword.html">${requestScope.forgotPasswordLabel}</a>
                         </div>
                     </c:if>
                 </div>

@@ -70,6 +70,7 @@ public class ReportViewController extends AbstractController {
                 request.setAttribute("reportInfo", reportInfo);
                 request.setAttribute("reportParameters", getOrderedParameters(reportInfo.getReportParams()));
                 request.setAttribute("managedSystems", getManagedSystemsAsKeyNameBeans());
+                request.setAttribute("resourceTypes", getResourceTypesAsKeyNameBeans());
                 request.setAttribute("userStatuses", getUserStatusList());
                 request.setAttribute("secondaryStatuses", getUserSecondaryStatusList());
 				request.setAttribute("riskList", getResourceRiskAsKeyNameBeans());

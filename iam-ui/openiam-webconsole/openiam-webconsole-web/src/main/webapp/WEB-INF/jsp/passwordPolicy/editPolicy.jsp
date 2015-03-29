@@ -98,7 +98,7 @@
     <table id="changeRuleAttributes" align="center" cellpadding="8px">
     </table>
     <p>
-        <b><fmt:message key="openiam.ui.webconsole.policy.password.note"/>:- **</b><fmt:message
+        <b><fmt:message key="openiam.ui.webconsole.policy.password.note"/>: </b><fmt:message
             key="openiam.ui.webconsole.policy.password.denotes.mandatoryoptional"/>
     </p>
 

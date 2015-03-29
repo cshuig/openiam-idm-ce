@@ -140,6 +140,19 @@ console.warn = window.console.warn || function() {};
 			privateMethods.boostrap.call($this);
 			privateMethods.bind.call($this);
 		},
+        revert : function() {
+            var $this = this;
+            var $options = $this.data("searchResultOptions");
+            $options.beans = {};
+            privateMethods.boostrap.call($this);
+            if($options.initialBeans != null && $options.initialBeans != undefined) {
+                $.each($options.initialBeans, function(idx, bean) {
+                    if(bean.id != null && bean.id != undefined) {
+                        methods.add.call($this, bean, true);
+                    }
+                });
+            }
+        },
 		size : function() {
 			var $this = this;
 			var $options = $this.data("searchResultOptions");

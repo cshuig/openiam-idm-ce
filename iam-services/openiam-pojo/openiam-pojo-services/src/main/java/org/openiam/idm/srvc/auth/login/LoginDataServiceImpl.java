@@ -21,6 +21,7 @@ import org.openiam.idm.srvc.msg.dto.NotificationParam;
 import org.openiam.idm.srvc.msg.dto.NotificationRequest;
 import org.openiam.idm.srvc.msg.service.MailService;
 import org.openiam.idm.srvc.msg.service.MailTemplateParameters;
+import org.openiam.idm.srvc.policy.dto.PasswordPolicyAssocSearchBean;
 import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.policy.dto.PolicyAttribute;
 import org.openiam.idm.srvc.policy.service.PolicyDataService;
@@ -222,8 +223,10 @@ public class LoginDataServiceImpl implements LoginDataService {
         Calendar cal = Calendar.getInstance();
         Calendar expCal = Calendar.getInstance();
         LoginEntity lg = getLoginByManagedSys(login, sysId);
-
-        Policy plcy = passwordPolicyProvider.getPasswordPolicyByUser(lg.getUserId());
+        PasswordPolicyAssocSearchBean searchBean = new PasswordPolicyAssocSearchBean();
+        searchBean.setUserId(lg.getUserId());
+        searchBean.setManagedSystemId(sysId);
+        Policy plcy = passwordPolicyProvider.getPasswordPolicyByUser(searchBean);
 
         String pswdExpValue = getPolicyAttribute(plcy.getPolicyAttributes(), "PWD_EXPIRATION");
         //String changePswdOnReset = getPolicyAttribute( plcy.getPolicyAttributes(), "CHNG_PSWD_ON_RESET");
@@ -280,12 +283,21 @@ public class LoginDataServiceImpl implements LoginDataService {
     @Override
     @Transactional
     public boolean resetPassword(String login, String sysId, String password) {
+        return this.resetPassword(login, sysId, password, true);
+    }
+
+
+    @Override
+    @Transactional
+    public boolean resetPassword(String login, String sysId, String password, boolean isActivate) {
 
         LoginEntity lg = getLoginByManagedSys(login, sysId);
-        UserEntity user = userDao.findById(lg.getUserId());
 
 
-        Policy plcy = passwordPolicyProvider.getPasswordPolicyByUser(user);
+        PasswordPolicyAssocSearchBean searchBean = new PasswordPolicyAssocSearchBean();
+        searchBean.setUserId(lg.getUserId());
+        searchBean.setManagedSystemId(sysId);
+        Policy plcy = passwordPolicyProvider.getPasswordPolicyByUser(searchBean);
 
         String pswdExpValue = getPolicyAttribute(plcy.getPolicyAttributes(),
                 "NUM_DAYS_FORGET_PWD_TOKEN_VALID");
@@ -294,8 +306,11 @@ public class LoginDataServiceImpl implements LoginDataService {
         String gracePeriod = getPolicyAttribute(plcy.getPolicyAttributes(),
                 "PWD_EXP_GRACE");
 
-        user.setSecondaryStatus(null);
-        userDao.update(user);
+        if (isActivate) {
+            UserEntity user = userDao.findById(lg.getUserId());
+            user.setSecondaryStatus(null);
+            userDao.update(user);
+        }
 
         lg.setPassword(password);
         // set the other properties of a password based on policy
@@ -344,7 +359,7 @@ public class LoginDataServiceImpl implements LoginDataService {
     }
 
     @Override
-	@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public String decryptPassword(String userId, String password)
             throws Exception {
         if (password != null) {

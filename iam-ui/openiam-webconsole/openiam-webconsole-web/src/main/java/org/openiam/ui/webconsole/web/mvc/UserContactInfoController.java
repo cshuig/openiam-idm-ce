@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -13,20 +14,26 @@ import org.apache.commons.lang.StringUtils;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.idm.searchbeans.RoleSearchBean;
 import org.openiam.idm.searchbeans.UserSearchBean;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 import org.openiam.idm.srvc.continfo.dto.Phone;
+import org.openiam.idm.srvc.loc.dto.Location;
 import org.openiam.idm.srvc.meta.domain.MetadataTypeGrouping;
+import org.openiam.idm.srvc.meta.dto.MetadataType;
+import org.openiam.idm.srvc.role.dto.Role;
+import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.provision.dto.ProvisionUser;
+import org.openiam.ui.rest.api.model.LocationBean;
+import org.openiam.ui.util.WSUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.util.messages.SuccessMessage;
 import org.openiam.ui.util.messages.SuccessToken;
 import org.openiam.ui.web.model.BasicAjaxResponse;
 import org.openiam.ui.web.model.BeanResponse;
-import org.openiam.ui.webconsole.util.WSUtils;
 import org.openiam.ui.webconsole.validator.UserContactInfoValidator;
 import org.openiam.ui.rest.api.model.AddressBean;
 import org.openiam.ui.rest.api.model.EmailBean;
@@ -116,6 +123,26 @@ public class UserContactInfoController extends BaseUserController {
         return new BeanResponse(beanList, count);
     }
 
+
+    @RequestMapping(value = "/getLocationsForUser", method = RequestMethod.GET)
+    public @ResponseBody
+    BeanResponse getLocationsForUser(final @RequestParam(required = true, value = "id") String userId,
+                                    final @RequestParam(required = true, value = "from") Integer from,
+                                    final @RequestParam(required = true, value = "size") Integer size) {
+        List<Location> locations = organizationDataService.getLocationListByPageForUser(userId, from, size);
+
+        final List<LocationBean> beanList = new LinkedList<LocationBean>();
+        int cnt = 0;
+        if (locations != null && locations.size() > 0) {
+            cnt = locations.size();
+            for (final Location locationEl : locations) {
+                beanList.add(new LocationBean(locationEl));
+            }
+        }
+
+        return new BeanResponse(beanList, cnt);
+    }
+
     @RequestMapping(value = "/getPhonesForUser", method = RequestMethod.GET)
     public @ResponseBody
     BeanResponse getPhonesForUser(final @RequestParam(required = true, value = "id") String userId, final @RequestParam(required = true,
@@ -130,6 +157,71 @@ public class UserContactInfoController extends BaseUserController {
             }
         }
         return new BeanResponse(beanList, count);
+    }
+
+    @RequestMapping(value = "/copyLocationToAddress", method = RequestMethod.POST)
+    public String copyLocationToAddress(final HttpServletRequest request,
+                                        final @RequestParam(required = true, value = "locationId") String locationId,
+                                        final @RequestParam(required = true, value = "userId") String userId) {
+        final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
+        ErrorToken errorToken = null;
+        SuccessToken successToken = null;
+
+        try {
+            Location location = organizationDataService.getLocationById(locationId);
+            SuccessMessage successMessage = SuccessMessage.USER_ADDRESS_SAVED;
+
+            Response wsResponse = null;
+            if (location != null) {
+                Address newAddress = locationToAddress(location);
+                newAddress.setParentId(userId);
+                newAddress.setMetadataTypeId("OFFICE_ADDRESS");
+                wsResponse = userDataWebService.addAddress(newAddress);
+            }
+
+            WSUtils.setWSClientTimeout(provisionService, 360000L);
+
+
+            if (wsResponse.getStatus() == ResponseStatus.SUCCESS) {
+                successToken = new SuccessToken(successMessage);
+                RoleSearchBean rsb = new RoleSearchBean();
+                rsb.setName(location.getName());
+                List<Role> roles = roleServiceClient.findBeans(rsb, null, 0, Integer.MAX_VALUE);
+                if ((roles != null) && (roles.size() > 0)) {
+                    roleServiceClient.addUserToRole(roles.get(0).getId(), userId, null);
+                }
+
+            } else {
+                errorToken = new ErrorToken(Errors.CANNOT_SAVE_USER_ADDRESS);
+                if (wsResponse.getErrorCode() != null) {
+                    switch (wsResponse.getErrorCode()) {
+                        case ADDRESS_TYPE_DUPLICATED:
+                            errorToken = new ErrorToken(Errors.ADDRESS_TYPE_DUPLICATED);
+                            break;
+                        case ADDRESS_TYPE_REQUIRED:
+                            errorToken = new ErrorToken(Errors.ADDRESS_TYPE_REQUIRED);
+                            break;
+                        default:
+                            errorToken = new ErrorToken(Errors.INTERNAL_ERROR);
+                            break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            errorToken = new ErrorToken(Errors.INTERNAL_ERROR);
+
+        } finally {
+            if (errorToken != null) {
+                ajaxResponse.setStatus(500);
+                ajaxResponse.addError(errorToken);
+            } else {
+                ajaxResponse.setSuccessToken(successToken);
+                ajaxResponse.setStatus(200);
+            }
+        }
+        request.setAttribute("response", ajaxResponse);
+        return "common/basic.ajax.response";
     }
 
     @RequestMapping(value = "/saveOrRemoveUserAddress", method = RequestMethod.POST)
@@ -464,5 +556,22 @@ public class UserContactInfoController extends BaseUserController {
         return result;
     }
 
+    private Address locationToAddress(Location location) {
+        Address result = new Address();
+        result.setBldgNumber(location.getBldgNum());
+        result.setCountry(location.getCountry());
+        result.setCity(location.getCity());
+        result.setState(location.getState());
+        result.setDescription(location.getDescription());
+        result.setStreetDirection(location.getStreetDirection());
+        result.setAddress1(location.getAddress1());
+        result.setAddress2(location.getAddress2());
+        result.setAddress3(location.getAddress3());
+        result.setPostalCd(location.getPostalCd());
+        result.setName(location.getName());
+        result.setLocationId(location.getLocationId());
+
+        return result;
+    }
 
 }

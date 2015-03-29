@@ -25,9 +25,6 @@ OPENIAM.EditProfileBootstrap.findUsers = function(onEntityClick) {
                                 url : "rest/api/users/search",
                                 emptyFormText : localeManager["openiam.ui.common.user.search.empty"],
                                 emptyResultsText : localeManager["openiam.ui.common.user.search.no.results"],
-                                columnHeaders : [ localeManager["openiam.ui.common.name"], localeManager["openiam.ui.common.phone.number"],
-                                        localeManager["openiam.ui.common.email.address"], localeManager["openiam.ui.webconsole.user.status"],
-                                        localeManager["openiam.ui.webconsole.user.accountStatus"] ],
                                 onAppendDone : function() {
 
                                 },
@@ -91,8 +88,8 @@ $(document).ready(function() {
             obj.startDateAsStr = $("#startDate").val();
 
             obj.roleIds = [];
-            if ($("#role").length > 0 && $("#role").selectableSearchResult("getId") != null) {
-                obj.roleIds.push($("#role").selectableSearchResult("getId"));
+            if ($("#role").length > 0 && $("#role").selectableSearchResult("getIds") != null) {
+                obj.roleIds = $("#role").selectableSearchResult("getIds");
             }
 
             obj.groupIds = [];
@@ -204,9 +201,9 @@ $(document).ready(function() {
     }
     
     $("#role").selectableSearchResult({
-		singleSearch : true,
+		singleSearch : false,
 		noneSelectedText : localeManager["openiam.ui.shared.role.search"],
-		addMoreText : localeManager["openiam.ui.common.role.change"],
+		addMoreText : localeManager["openiam.ui.common.role.add.another"],
 		onClick : function($that) {
 			$("#editDialog").roleDialogSearch({
 				closedDialogOnSelect : true,

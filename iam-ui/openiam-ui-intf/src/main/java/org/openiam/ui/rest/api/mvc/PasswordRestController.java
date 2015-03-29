@@ -2,9 +2,11 @@ package org.openiam.ui.rest.api.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.exception.ObjectNotFoundException;
+import org.openiam.idm.searchbeans.LoginSearchBean;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.pswd.dto.Password;
@@ -39,8 +41,11 @@ public class PasswordRestController extends AbstractPasswordController {
         }
         Policy policy = this.getAuthentificationPolicy();
         String internalLogin = this.buildLoginAccordingAuthPolicy(policy, principal);
-        String managedSystemId = this.getAuthentificationManagedSystem(policy);
-        final SetPasswordToken token = validatePassword(internalLogin, managedSystemId, null,  bean.isForgotPassword());
+        String managedSystemId = bean.getManagedSystemId();
+        if (StringUtils.isBlank(bean.getManagedSystemId())) {
+            managedSystemId = this.getAuthentificationManagedSystem(policy);
+        }
+        final SetPasswordToken token = validatePassword(internalLogin, managedSystemId, null, bean.isForgotPassword());
         token.addRule(new ErrorToken(Errors.PASSWORDS_NOT_EQUAL));
         token.process(localeResolver, messageSource, request);
         return token;
@@ -58,8 +63,11 @@ public class PasswordRestController extends AbstractPasswordController {
         }
         Policy policy = this.getAuthentificationPolicy();
         String internalLogin = this.buildLoginAccordingAuthPolicy(policy, principal);
-        String managedSystemId = this.getAuthentificationManagedSystem(policy);
-        final SetPasswordToken token = validatePassword(internalLogin, managedSystemId,  bean.getPassword(),bean.isForgotPassword());
+        String managedSystemId = bean.getManagedSystemId();
+        if (StringUtils.isBlank(bean.getManagedSystemId())) {
+            managedSystemId = this.getAuthentificationManagedSystem(policy);
+        }
+        final SetPasswordToken token = validatePassword(internalLogin, managedSystemId, bean.getPassword(), bean.isForgotPassword());
         token.process(localeResolver, messageSource, request);
 
         if (StringUtils.isBlank(bean.getConfirmPassword()) || !StringUtils.equals(bean.getPassword(), bean.getConfirmPassword())) {

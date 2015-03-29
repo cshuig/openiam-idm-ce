@@ -45,6 +45,7 @@ response.setDateHeader ("Expires", -1);
         <script type="text/javascript" src="/openiam-ui-static/js/common/plugins/modalEdit/modalEdit.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/js/common/plugins/persistentTable/persistent.table.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/js/common/search/role.search.js"></script>
+        <script type="text/javascript" src="/openiam-ui-static/js/common/search/group.search.js"></script>
 		<script type="text/javascript">
 			OPENIAM = window.OPENIAM || {};
 			OPENIAM.ENV = window.OPENIAM.ENV || {};
@@ -255,6 +256,9 @@ response.setDateHeader ("Expires", -1);
                                	</div>
                             </td>
                             <td>
+                                <div>
+                                    <a id="userGroupId" href="javascript:void(0);" class="entity-link group ui-search-enabled"></a>
+                                </div>
                             </td>
                             <td>
                             </td>

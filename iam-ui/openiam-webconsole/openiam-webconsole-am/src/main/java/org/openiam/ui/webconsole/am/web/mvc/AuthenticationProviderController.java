@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -78,6 +79,34 @@ public class AuthenticationProviderController extends AbstractController {
 		for(final SsoAttributeType type : SsoAttributeType.values()) {
 			attributeTypeMap.put(type, type.getDisplayName());
 		}
+	}
+	
+	@RequestMapping("/authprovider/idp/file")
+	public @ResponseBody BasicAjaxResponse importIDP(final HttpServletRequest request,
+													 final @RequestParam("file") MultipartFile file) {
+		final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
+		try {
+			
+		} catch(Throwable e) {
+			LOG.error("Can't upload file", e);
+		} finally {
+			ajaxResponse.process(localeResolver, messageSource, request);
+		}
+		return ajaxResponse;
+	}
+	
+	@RequestMapping("/authprovider/sp/file")
+	public @ResponseBody BasicAjaxResponse importSP(final HttpServletRequest request,
+													final @RequestParam("file") MultipartFile file) {
+		final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
+		try {
+			
+		} catch(Throwable e) {
+			LOG.error("Can't upload file", e);
+		} finally {
+			ajaxResponse.process(localeResolver, messageSource, request);
+		}
+		return ajaxResponse;
 	}
 	
 	@RequestMapping("/getAuthenticationProviders.html")

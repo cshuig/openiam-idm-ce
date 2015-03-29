@@ -1,7 +1,10 @@
 package org.openiam.ui.web.mvc;
 
 import org.apache.commons.collections.CollectionUtils;
+
+import org.apache.commons.lang.StringUtils;
 import org.openiam.base.ws.ResponseCode;
+import org.openiam.base.ws.ResponseStatus;
 import org.openiam.exception.EsbErrorToken;
 import org.openiam.exception.ObjectNotFoundException;
 import org.openiam.idm.srvc.pswd.dto.Password;
@@ -11,6 +14,7 @@ import org.openiam.idm.srvc.pswd.rule.PasswordRuleException;
 import org.openiam.idm.srvc.pswd.rule.PasswordRuleViolation;
 import org.openiam.idm.srvc.pswd.ws.PasswordWebService;
 import org.openiam.provision.dto.PasswordSync;
+import org.openiam.provision.resp.PasswordResponse;
 import org.openiam.provision.service.ProvisionService;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
@@ -78,15 +82,22 @@ public abstract class AbstractPasswordController extends AbstractLoginController
     protected SetPasswordToken attemptResetPassword(final HttpServletRequest request,
                                                     final String password,
                                                     final String userId,
-                                                    final boolean preventChangeCountIncrement) {
+                                                    final boolean preventChangeCountIncrement,
+                                                    final boolean forceReset) {
         final PasswordSync passwordSync = new PasswordSync();
         passwordSync.setManagedSystemId(null); // reset all identities for user
         passwordSync.setPassword(password);
         passwordSync.setUserId(userId);
         passwordSync.setPassThruAttributes(false);
         passwordSync.setRequestClientIP(request.getRemoteAddr());
+        String requestorId = getRequesterId(request);
+        passwordSync.setRequestorId(StringUtils.isEmpty(requestorId) ? "3000" : requestorId);
         passwordSync.setPreventChangeCountIncrement(preventChangeCountIncrement);
-        return attemptResetPassword(passwordSync);
+        if (forceReset) {
+            return forceResetPassword(passwordSync);
+        } else {
+            return attemptResetPassword(passwordSync);
+        }
     }
 
     protected SetPasswordToken attemptResetPassword(final PasswordSync passwordSync) {
@@ -113,6 +124,18 @@ public abstract class AbstractPasswordController extends AbstractLoginController
                     }
                 }
             }
+        }
+        return token;
+    }
+
+    protected SetPasswordToken forceResetPassword(final PasswordSync passwordSync) {
+        final SetPasswordToken token = new SetPasswordToken();
+        if (passwordSync.getRequestorId() == null) {
+            passwordSync.setRequestorId("3000");
+        }
+        final PasswordResponse setPasswordResponse = provisionService.resetPassword(passwordSync);
+        if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
+            token.addError(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
         }
         return token;
     }
@@ -473,4 +496,5 @@ public abstract class AbstractPasswordController extends AbstractLoginController
 
         public ErrorToken getRule(final PasswordRule rule);
     }
+
 }

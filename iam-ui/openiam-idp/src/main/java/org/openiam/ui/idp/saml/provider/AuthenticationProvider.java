@@ -19,8 +19,7 @@ import org.openiam.idm.srvc.res.dto.Resource;
 	"description",
 	"resource",
 	"amAttributes",
-	"hasAMAttributes",
-	"signResponse"
+	"hasAMAttributes"
 })
 public abstract class AuthenticationProvider implements Serializable {
 	
@@ -31,8 +30,16 @@ public abstract class AuthenticationProvider implements Serializable {
 	private Resource resource;
 	private List<AuthResourceAttributeMap> amAttributes;
 	private boolean hasAMAttributes;
-	private boolean signResponse;
+	private boolean sign;
 	
+	public boolean isSign() {
+		return sign;
+	}
+
+	public void setSign(boolean sign) {
+		this.sign = sign;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -87,14 +94,5 @@ public abstract class AuthenticationProvider implements Serializable {
 
 	public void setHasAMAttributes(boolean hasAMAttributes) {
 		this.hasAMAttributes = hasAMAttributes;
-	}
-	
-
-	public boolean isSignResponse() {
-		return signResponse;
-	}
-
-	public void setSignResponse(boolean signResponse) {
-		this.signResponse = signResponse;
 	}
 }

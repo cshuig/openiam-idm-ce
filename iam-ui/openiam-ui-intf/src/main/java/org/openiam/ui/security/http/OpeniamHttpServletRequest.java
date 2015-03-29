@@ -1,6 +1,7 @@
 package org.openiam.ui.security.http;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.openiam.ui.security.model.XSSPatternProcessor;
 import org.openiam.ui.security.model.XSSPatternRule;
+import org.openiam.ui.util.OpenIAMConstants;
 import org.openiam.ui.util.XSSUtils;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.errors.ValidationException;
@@ -178,7 +180,14 @@ public class OpeniamHttpServletRequest extends SecurityWrapperRequest {
 		} else if(processor != null) {
 			return processor.process(getHttpServletRequest().getParameter(name));
 		} else {
-			return super.getParameter(name);
+			final String orig = getHttpServletRequest().getParameter(name);
+	        String clean = null;
+	        try {
+	            clean = ESAPI.validator().getValidInput("HTTP parameter name: " + name, orig, "HTTPParameterValue", 2000, true, false);
+	        } catch (ValidationException e) {
+	            
+	        }
+	        return clean;
 		}
 	}
 	
@@ -205,7 +214,15 @@ public class OpeniamHttpServletRequest extends SecurityWrapperRequest {
                 	} else if(processor != null) {
                 		cleanValue = processor.process(value[j]);
                 	} else {
-                		cleanValue = ESAPI.validator().getValidInput("HTTP parameter value: " + value[j], value[j], "HTTPParameterValue", 2000, true);
+
+                		//Lev Bornovalov
+                		//ESAPI.validator().getValidInput() will actually DECODE the value.  
+                		//This means that the value is actually double-decoded, which is not what we want
+                		//To avoid this, we have to re-endode the value.
+                		//We COULD pass 'false' as the last argument.  However, if you look at the ESAPI SecurityWrapper,
+                		//you will see that they will still double-encode our parameters in the super() methods, which
+                		//is absolutely retarded
+                		cleanValue = ESAPI.validator().getValidInput("HTTP parameter value: " + value[j], value[j], "HTTPParameterValue", 2000, true, false);
                 	}
                     cleanValues[j] = cleanValue;
                 }
@@ -227,7 +244,20 @@ public class OpeniamHttpServletRequest extends SecurityWrapperRequest {
 		} else if(processor != null) {
 			values = processor.process(getHttpServletRequest().getParameterValues(name));
 		} else {
-			values = super.getParameterValues(name);
+			values = getHttpServletRequest().getParameterValues(name);
+
+			if(values != null) {
+				final List<String> newValues = new ArrayList<String>();
+		        for (final String value : values) {
+		            try {
+		                final String cleanValue = ESAPI.validator().getValidInput("HTTP parameter value: " + value, value, "HTTPParameterValue", 2000, true, false);
+		                newValues.add(cleanValue);
+		            } catch (ValidationException e) {
+		                LOG.warn("Failure", e);
+		            }
+		        }
+		        values = newValues.toArray(new String[newValues.size()]);
+			}
 		}
 		return values;
 	}

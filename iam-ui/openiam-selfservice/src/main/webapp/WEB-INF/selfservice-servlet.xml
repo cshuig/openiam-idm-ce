@@ -36,10 +36,14 @@
 
     <import resource="classpath:abstract-web-context.xml" />
 
-
 	<bean id="viewResolver" class="org.openiam.ui.spring.OpeniamInternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
       	<property name="prefix" value="WEB-INF/jsp/"/>
       	<property name="suffix" value=".jsp"/>
   	</bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 5 MB -->
+        <property name="maxUploadSize" value="5120000"/>
+    </bean>
 </beans>

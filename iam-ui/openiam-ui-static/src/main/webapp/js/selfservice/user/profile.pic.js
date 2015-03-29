@@ -114,12 +114,20 @@ OPENIAM.ProfilePic.Form = {
                 errorList : data.errorList
             });
         }
+    },
+    isAjaxUploadSupported: function() {
+        var myNav = navigator.userAgent.toLowerCase();
+        return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) > 9 : true;
     }
 };
 
 $(document).ready(function() {
     $("#uploadProfilePic").bind('change', function(e) {
-        OPENIAM.ProfilePic.Form.processProfilePic();
+        if (OPENIAM.ProfilePic.Form.isAjaxUploadSupported()) {
+            OPENIAM.ProfilePic.Form.processProfilePic();
+        } else {
+            $("#uploadForm").submit(); // submit form with pic
+        }
         return false;
     });
     $("#showProfilePic").click(function() {

@@ -15,9 +15,12 @@ import org.openiam.connector.type.ConnectorDataException;
 import org.openiam.connector.type.constant.ErrorCode;
 import org.openiam.connector.type.constant.StatusCodeType;
 import org.openiam.connector.type.request.CrudRequest;
+import org.openiam.connector.type.request.LookupRequest;
 import org.openiam.connector.type.request.PasswordRequest;
+import org.openiam.connector.type.request.SuspendResumeRequest;
 import org.openiam.connector.type.response.ObjectResponse;
 import org.openiam.connector.type.response.ResponseType;
+import org.openiam.connector.type.response.SearchResponse;
 import org.openiam.dozer.converter.*;
 import org.openiam.exception.ObjectNotFoundException;
 import org.openiam.idm.srvc.audit.constant.AuditAction;
@@ -61,6 +64,7 @@ import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.service.OrganizationDataService;
 import org.openiam.idm.srvc.org.service.OrganizationService;
+import org.openiam.idm.srvc.policy.dto.PasswordPolicyAssocSearchBean;
 import org.openiam.idm.srvc.policy.dto.Policy;
 import org.openiam.idm.srvc.pswd.dto.Password;
 import org.openiam.idm.srvc.pswd.dto.PasswordValidationResponse;
@@ -113,6 +117,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     public static final String MATCH_PARAM = "matchParam";
     public static final String TARGET_SYSTEM_IDENTITY_STATUS = "targetSystemIdentityStatus";
     public static final String TARGET_SYSTEM_IDENTITY = "targetSystemIdentity";
+    public static final String TARGET_SYSTEM_USER_EXISTS = "targetSystemUserExists";
     public static final String TARGET_SYSTEM_ATTRIBUTES = "targetSystemAttributes";
 
     public static final String TARGET_SYS_RES_ID = "resourceId";
@@ -136,8 +141,8 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     private KeyManagementService keyManagementService;
     @Autowired
     protected ManagedSystemObjectMatchDozerConverter objectMatchDozerConverter;
-	@Autowired
-	protected ProvisionConnectorService connectorService;
+    @Autowired
+    protected ProvisionConnectorService connectorService;
     @Autowired
     protected ResourceService resourceService;
     @Autowired
@@ -146,8 +151,6 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     protected UserDataService userMgr;
     @Autowired
     protected LoginDataService loginManager;
-    @Autowired
-    protected ManagedSystemService managedSysDaoService;
     @Autowired
     protected ManagedSystemWebService managedSysService;
     @Autowired
@@ -231,25 +234,25 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     private ManagedSystemObjectMatchDozerConverter managedSystemObjectMatchDozerConverter;
 
     protected void checkAuditingAttributes(ProvisionUser pUser) {
-        if ( pUser.getRequestClientIP() == null || pUser.getRequestClientIP().isEmpty() ) {
+        if (pUser.getRequestClientIP() == null || pUser.getRequestClientIP().isEmpty()) {
             pUser.setRequestClientIP("NA");
         }
-        if ( pUser.getRequestorLogin() == null || pUser.getRequestorLogin().isEmpty() ) {
+        if (pUser.getRequestorLogin() == null || pUser.getRequestorLogin().isEmpty()) {
             pUser.setRequestorLogin("NA");
         }
         //if ( pUser.getRequestorDomain() == null || pUser.getRequestorDomain().isEmpty() ) {
         //    pUser.setRequestorDomain("NA");
         //}
-        if ( pUser.getCreatedBy() == null || pUser.getCreatedBy().isEmpty() ) {
+        if (pUser.getCreatedBy() == null || pUser.getCreatedBy().isEmpty()) {
             pUser.setCreatedBy("NA");
         }
     }
 
     protected String getDecryptedPassword(ManagedSysDto managedSys) throws ConnectorDataException {
         String result = null;
-        if( managedSys.getPswd()!=null){
+        if (managedSys.getPswd() != null) {
             try {
-                result = cryptor.decrypt(keyManagementService.getUserKey(systemUserId, KeyName.password.name()),managedSys.getPswd());
+                result = cryptor.decrypt(keyManagementService.getUserKey(systemUserId, KeyName.password.name()), managedSys.getPswd());
             } catch (Exception e) {
                 log.error(e);
                 throw new ConnectorDataException(ErrorCode.CONNECTOR_ERROR, e.getMessage());
@@ -257,11 +260,12 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         }
         return result;
     }
+
     protected String getDecryptedPassword(final String userId, final String encodedPassword) {
         String result = null;
-        if(StringUtils.isNotEmpty(encodedPassword)) {
+        if (StringUtils.isNotEmpty(encodedPassword)) {
             try {
-                result = cryptor.decrypt(keyManagementService.getUserKey(userId, KeyName.password.name()),encodedPassword);
+                result = cryptor.decrypt(keyManagementService.getUserKey(userId, KeyName.password.name()), encodedPassword);
             } catch (Exception e) {
                 log.error(e);
                 e.printStackTrace();
@@ -269,6 +273,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         }
         return result;
     }
+
     protected void sendResetPasswordToUser(LoginEntity identity, String password) {
         try {
             MuleClient client = new MuleClient(MuleContextProvider.getCtx());
@@ -285,7 +290,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             Map<String, String> msgProp = new HashMap<String, String>();
             msgProp.put("SERVICE_HOST", serviceHost);
             msgProp.put("SERVICE_CONTEXT", serviceContext);
-            NotificationRequest  notificationRequest = new NotificationRequest();
+            NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setUserId(user.getId());
             notificationRequest.setParamList(msgParams);
             notificationRequest.setNotificationType(PASSWORD_EMAIL_NOTIFICATION);
@@ -316,7 +321,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             Map<String, String> msgProp = new HashMap<String, String>();
             msgProp.put("SERVICE_HOST", serviceHost);
             msgProp.put("SERVICE_CONTEXT", serviceContext);
-            NotificationRequest  notificationRequest = new NotificationRequest();
+            NotificationRequest notificationRequest = new NotificationRequest();
             notificationRequest.setUserId(user.getId());
             notificationRequest.setParamList(msgParams);
             notificationRequest.setNotificationType(NEW_USER_EMAIL_NOTIFICATION);
@@ -351,7 +356,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             notificationRequest.setUserId(user.getId());
             notificationRequest.setNotificationType(NEW_USER_EMAIL_SUPERVISOR_NOTIFICATION);
             notificationRequest.setParamList(msgParams);
-            client.sendAsync("vm://notifyUserByEmailMessage",notificationRequest, msgProp);
+            client.sendAsync("vm://notifyUserByEmailMessage", notificationRequest, msgProp);
 
         } catch (MuleException me) {
             log.error(me.toString());
@@ -376,28 +381,39 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             primaryIdentity.setManagedSysId(sysConfiguration.getDefaultManagedSysId());
             primaryIdentity.setProvStatus(ProvLoginStatusEnum.CREATED);
             try {
+                AttributeMap primaryIdentityRule = null;
+                AttributeMap primaryPasswordRule = null;
+
                 for (AttributeMap attr : policyAttrMap) {
-                    if("INACTIVE".equalsIgnoreCase(attr.getStatus())) {
-                       continue;
+                    if ("INACTIVE".equalsIgnoreCase(attr.getStatus())) {
+                        continue;
                     }
-                    String output = (String)ProvisionServiceUtil.getOutputFromAttrMap(
-                            attr, bindingMap, se);
                     String objectType = attr.getMapForObjectType();
                     if (objectType != null) {
                         if (PolicyMapObjectTypeOptions.PRINCIPAL.name().equalsIgnoreCase(objectType)) {
                             if (attr.getAttributeName().equalsIgnoreCase("PRINCIPAL")) {
-                                primaryIdentity.setLogin(output);
+                                primaryIdentityRule = attr;
+                            } else if (attr.getAttributeName().equalsIgnoreCase("PASSWORD")) {
+                                primaryPasswordRule = attr;
                             }
-                            if (attr.getAttributeName().equalsIgnoreCase("PASSWORD")) {
-                                primaryIdentity.setPassword(output);
-                            }
-//                            if (attr.getAttributeName().equalsIgnoreCase("DOMAIN")) {
-//                                primaryIdentity.setDomainId(output);
-//                            }
                         }
                     }
                 }
-            } catch(Exception e) {
+                // We must be sure that Identity exists in BindingMap before
+                // all other scripts like as Password will be processed.
+                // Primary identity must be generated first and must be put into BindingMap first.
+                if(primaryIdentityRule != null && primaryPasswordRule != null) {
+                    String identityOutput = (String) ProvisionServiceUtil.getOutputFromAttrMap(
+                            primaryIdentityRule, bindingMap, se);
+                    primaryIdentity.setLogin(identityOutput);
+                    bindingMap.put(TARGET_SYSTEM_IDENTITY,identityOutput);
+
+                    String passwordOutput = (String) ProvisionServiceUtil.getOutputFromAttrMap(
+                            primaryPasswordRule, bindingMap, se);
+                    primaryIdentity.setPassword(passwordOutput);
+
+                }
+            } catch (Exception e) {
                 log.error(e);
             }
 
@@ -436,7 +452,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     }
 
     protected void buildPrimaryIDPassword(Login primaryIdentity, Map<String, Object> bindingMap,
-                                                 ScriptIntegration se) {
+                                          ScriptIntegration se) {
         log.debug("setPrimaryIDPassword() ");
         ManagedSysEntity defaultManagedSys = managedSystemService.getManagedSysById(sysConfiguration.getDefaultManagedSysId());
         List<AttributeMapEntity> amEList = managedSystemService.getResourceAttributeMaps(defaultManagedSys.getResourceId());
@@ -445,7 +461,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             log.debug("- policyAttrMap IS NOT null");
             try {
                 for (AttributeMap attr : policyAttrMap) {
-                    String output = (String)ProvisionServiceUtil.getOutputFromAttrMap(attr, bindingMap, se);
+                    String output = (String) ProvisionServiceUtil.getOutputFromAttrMap(attr, bindingMap, se);
                     String objectType = attr.getMapForObjectType();
                     if (objectType != null) {
                         if (PolicyMapObjectTypeOptions.PRINCIPAL.name().equalsIgnoreCase(objectType)) {
@@ -455,7 +471,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                         }
                     }
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log.error(e);
             }
         } else {
@@ -469,10 +485,10 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             ProvisionServiceResourceOrderProcessor script =
                     (ProvisionServiceResourceOrderProcessor) scriptRunner.instantiateClass(bindingMap, resourceOrderProcessor);
             if ("ADD".equalsIgnoreCase(operation)) {
-                return script.orderProvisionResources (pUser, resources, bindingMap);
+                return script.orderProvisionResources(pUser, resources, bindingMap);
 
             } else if ("DELETE".equalsIgnoreCase(operation)) {
-                return script.orderDeprovisionResources (pUser, resources, bindingMap);
+                return script.orderDeprovisionResources(pUser, resources, bindingMap);
 
             }
         } catch (Exception ce) {
@@ -482,43 +498,50 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         return Collections.EMPTY_LIST;
     }
 
-    protected int callPreProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
+    protected int callPreProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap, PasswordSync passwordSync) {
 
         ProvisionServicePreProcessor<ProvisionUser> addPreProcessScript = null;
-        if ( pUser != null) {
-            log.info("======= callPreProcessor: isSkipPreprocessor="+pUser.isSkipPreprocessor()+", ");
-            if (!pUser.isSkipPreprocessor() &&
-                    (addPreProcessScript = createProvPreProcessScript(preProcessor, bindingMap)) != null) {
-                addPreProcessScript.setMuleContext(MuleContextProvider.getCtx());
-                addPreProcessScript.setApplicationContext(SpringContextProvider.getApplicationContext());
-                return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, null, operation);
+        if (pUser != null) {
+            log.info("======= call ProvisionServicePreProcessor: isSkipPreprocessor=" + pUser.isSkipPreprocessor() + ", ");
+            try {
+                if (!pUser.isSkipPreprocessor() &&
+                        (addPreProcessScript = createProvPreProcessScript(preProcessor, bindingMap)) != null) {
+                    addPreProcessScript.setMuleContext(MuleContextProvider.getCtx());
+                    addPreProcessScript.setApplicationContext(SpringContextProvider.getApplicationContext());
+                    return executeProvisionPreProcess(addPreProcessScript, bindingMap, pUser, passwordSync, operation);
 
-            }
-            log.info("======= callPreProcessor: addPreProcessScript="+addPreProcessScript+", ");
-        }
-        // pre-processor was skipped
-        return ProvisioningConstants.SUCCESS;
-    }
-
-
-    protected int callPostProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap ) {
-
-        ProvisionServicePostProcessor<ProvisionUser> addPostProcessScript;
-
-        if ( pUser != null) {
-            if (!pUser.isSkipPostProcessor() &&
-                    (addPostProcessScript = createProvPostProcessScript(postProcessor, bindingMap)) != null) {
-                addPostProcessScript.setMuleContext(MuleContextProvider.getCtx());
-                addPostProcessScript.setApplicationContext(SpringContextProvider.getApplicationContext());
-                return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, null, operation);
-
+                }
+            } finally {
+                log.info("======= call ProvisionServicePreProcessor: addPreProcessScript=" + addPreProcessScript + ", ");
             }
         }
         // pre-processor was skipped
         return ProvisioningConstants.SUCCESS;
     }
 
-    protected PreProcessor<ProvisionUser> createPreProcessScript(String scriptName, Map<String, Object> tmpMap) {
+
+    protected int callPostProcessor(String operation, ProvisionUser pUser, Map<String, Object> bindingMap, PasswordSync passwordSync) {
+
+        ProvisionServicePostProcessor<ProvisionUser> addPostProcessScript = null;
+
+        if (pUser != null) {
+            log.info("======= call ProvisionServicePostProcessor: isSkipPostprocessor=" + pUser.isSkipPostProcessor() + ", ");
+            try {
+                if (!pUser.isSkipPostProcessor() &&
+                        (addPostProcessScript = createProvPostProcessScript(postProcessor, bindingMap)) != null) {
+                    addPostProcessScript.setMuleContext(MuleContextProvider.getCtx());
+                    addPostProcessScript.setApplicationContext(SpringContextProvider.getApplicationContext());
+                    return executeProvisionPostProcess(addPostProcessScript, bindingMap, pUser, passwordSync, operation);
+                }
+            } finally {
+                log.info("======= call ProvisionServicePostProcessor: addPostProcessScript=" + addPostProcessScript + ", ");
+            }
+        }
+        // pre-processor was skipped
+        return ProvisioningConstants.SUCCESS;
+    }
+
+    protected PreProcessor<ProvisionUser> createPreProcessScript(String scriptName) {
         Map<String, Object> bindingMap = new HashMap<String, Object>();
         try {
             return (PreProcessor<ProvisionUser>) scriptRunner.instantiateClass(bindingMap, scriptName);
@@ -528,7 +551,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         }
     }
 
-    protected PostProcessor<ProvisionUser> createPostProcessScript(String scriptName, Map<String, Object> tmpMap) {
+    protected PostProcessor<ProvisionUser> createPostProcessScript(String scriptName) {
         Map<String, Object> bindingMap = new HashMap<String, Object>();
         try {
             return (PostProcessor<ProvisionUser>) scriptRunner.instantiateClass(bindingMap, scriptName);
@@ -559,77 +582,103 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     }
 
     protected int executeProvisionPreProcess(ProvisionServicePreProcessor<ProvisionUser> ppScript,
-            Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, String operation) {
+                                             Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, String operation) {
         if ("ADD".equalsIgnoreCase(operation)) {
             return ppScript.add(user, bindingMap);
-        }
+        } else
         if ("MODIFY".equalsIgnoreCase(operation)) {
             return ppScript.modify(user, bindingMap);
-        }
+        } else
         if ("DELETE".equalsIgnoreCase(operation)) {
             return ppScript.delete(user, bindingMap);
-        }
+        } else
         if ("SET_PASSWORD".equalsIgnoreCase(operation)) {
             return ppScript.setPassword(passwordSync, bindingMap);
+        } else
+        if ("RESET_PASSWORD".equalsIgnoreCase(operation)) {
+            return ppScript.resetPassword(passwordSync, bindingMap);
+        } else
+        if ("DISABLE".equalsIgnoreCase(operation)) {
+            return ppScript.disable(user, bindingMap);
         }
 
         return 0;
     }
 
     protected int executeProvisionPostProcess(ProvisionServicePostProcessor<ProvisionUser> ppScript,
-                Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, String operation) {
+                                              Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, String operation) {
         if ("ADD".equalsIgnoreCase(operation)) {
             return ppScript.add(user, bindingMap);
-        }
+        } else
         if ("MODIFY".equalsIgnoreCase(operation)) {
             return ppScript.modify(user, bindingMap);
-        }
+        } else
         if ("DELETE".equalsIgnoreCase(operation)) {
             return ppScript.delete(user, bindingMap);
-        }
+        } else
         if ("SET_PASSWORD".equalsIgnoreCase(operation)) {
             return ppScript.setPassword(passwordSync, bindingMap);
+        } else
+        if ("RESET_PASSWORD".equalsIgnoreCase(operation)) {
+            return ppScript.resetPassword(passwordSync, bindingMap);
+        } else
+        if ("DISABLE".equalsIgnoreCase(operation)) {
+            return ppScript.disable(user, bindingMap);
         }
-
         return 0;
     }
 
-    protected int executePreProcess(PreProcessor<ProvisionUser> ppScript,
-                Map<String, Object> bindingMap, ProvisionUser user, String operation) {
+    static int executePreProcess(PreProcessor<ProvisionUser> ppScript,
+                                    Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, LookupRequest lookupRequest,  String operation) {
+        log.info("======= call PreProcessor: ppScript=" + ppScript + ", operation="+operation);
         if ("ADD".equalsIgnoreCase(operation)) {
             return ppScript.add(user, bindingMap);
-        }
+        } else
         if ("MODIFY".equalsIgnoreCase(operation)) {
             return ppScript.modify(user, bindingMap);
-        }
+        } else
         if ("DELETE".equalsIgnoreCase(operation)) {
             return ppScript.delete(user, bindingMap);
-        }
+        } else
         if ("SET_PASSWORD".equalsIgnoreCase(operation)) {
-            return ppScript.setPassword(bindingMap);
+            return ppScript.setPassword(passwordSync, bindingMap);
+        } else
+        if ("RESET_PASSWORD".equalsIgnoreCase(operation)) {
+            return ppScript.resetPassword(passwordSync, bindingMap);
+        } else
+        if ("DISABLE".equalsIgnoreCase(operation)) {
+            return ppScript.disable(user, bindingMap);
+        } else
+        if ("LOOKUP".equalsIgnoreCase(operation)) {
+            return ppScript.lookupRequest(lookupRequest);
         }
-
         return 0;
     }
 
-    protected int executePostProcess(PostProcessor<ProvisionUser> ppScript,
-                Map<String, Object> bindingMap, ProvisionUser user, String operation, boolean success) {
+    static int executePostProcess(PostProcessor<ProvisionUser> ppScript,
+                                     Map<String, Object> bindingMap, ProvisionUser user, PasswordSync passwordSync, SearchResponse searchResponse, String operation,  boolean success) {
+        log.info("======= call PostProcessor: ppScript=" + ppScript + ", operation="+operation);
         if ("ADD".equalsIgnoreCase(operation)) {
             return ppScript.add(user, bindingMap, success);
-        }
+        } else
         if ("MODIFY".equalsIgnoreCase(operation)) {
             return ppScript.modify(user, bindingMap, success);
-
-        }
+        } else
         if ("DELETE".equalsIgnoreCase(operation)) {
             return ppScript.delete(user, bindingMap, success);
-
-        }
-
+        } else
         if ("SET_PASSWORD".equalsIgnoreCase(operation)) {
-            return ppScript.setPassword(bindingMap, success);
+            return ppScript.setPassword(passwordSync, bindingMap, success);
+        } else
+        if ("RESET_PASSWORD".equalsIgnoreCase(operation)) {
+            return ppScript.resetPassword(passwordSync, bindingMap, success);
+        } else
+        if ("DISABLE".equalsIgnoreCase(operation)) {
+            return ppScript.disable(user, bindingMap, success);
+        } else
+        if ("LOOKUP".equalsIgnoreCase(operation)) {
+            return ppScript.lookupRequest(searchResponse);
         }
-
         return 0;
     }
 
@@ -643,9 +692,9 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 }
                 if (e.getOperation().equals(AttributeOperationEnum.DELETE)) {
                     Set<EmailAddressEntity> entities = userEntity.getEmailAddresses();
-                    if (CollectionUtils.isNotEmpty(entities))  {
+                    if (CollectionUtils.isNotEmpty(entities)) {
                         for (EmailAddressEntity en : entities) {
-                            if (en.getEmailId().equals(e.getEmailId())) {
+                            if (StringUtils.equals(en.getEmailId(), e.getEmailId())) {
                                 userEntity.getEmailAddresses().remove(en);
                                 // Audit Log
                                 //--------------------------------------------------
@@ -653,7 +702,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                                 Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                                 auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.DELETE_EMAIL.value());
-                                auditLog.setAuditDescription("DELETE Email: "+en.toString());
+                                auditLog.setAuditDescription("DELETE Email: " + en.toString());
                                 parentLog.addChild(auditLog);
                                 // -------------------------------------------------
                                 break;
@@ -663,7 +712,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 } else if (e.getOperation().equals(AttributeOperationEnum.ADD)) {
                     EmailAddressEntity entity = emailAddressDozerConverter.convertToEntity(e, false);
                     entity.setParent(userEntity);
-                    if(org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())){
+                    if (org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())) {
                         entity.setMetadataType(null);
                     }
                     userEntity.getEmailAddresses().add(entity);
@@ -673,20 +722,20 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                     Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                     auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                     auditLog.setAction(AuditAction.ADD_EMAIL.value());
-                    auditLog.setAuditDescription("ADD Email: "+e.toString());
+                    auditLog.setAuditDescription("ADD Email: " + e.toString());
                     parentLog.addChild(auditLog);
                     // -------------------------------------------------
 
                 } else if (e.getOperation().equals(AttributeOperationEnum.REPLACE)) {
                     Set<EmailAddressEntity> entities = userEntity.getEmailAddresses();
-                    if (CollectionUtils.isNotEmpty(entities))  {
+                    if (CollectionUtils.isNotEmpty(entities)) {
                         for (EmailAddressEntity en : entities) {
                             if (StringUtils.equals(en.getEmailId(), e.getEmailId())) {
                                 userEntity.getEmailAddresses().remove(en);
                                 userMgr.evict(en);
                                 EmailAddressEntity entity = emailAddressDozerConverter.convertToEntity(e, false);
                                 entity.setParent(userEntity);
-                                if(org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())){
+                                if (org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())) {
                                     entity.setMetadataType(null);
                                 }
                                 userEntity.getEmailAddresses().add(entity);
@@ -696,7 +745,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                                 Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                                 auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.REPLACE_EMAIL.value());
-                                auditLog.setAuditDescription("REPLACE Email: "+en.toString()+"\n to:"+e.toString());
+                                auditLog.setAuditDescription("REPLACE Email: " + en.toString() + "\n to:" + e.toString());
                                 parentLog.addChild(auditLog);
                                 // -------------------------------------------------
                                 break;
@@ -718,16 +767,16 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 }
                 if (e.getOperation().equals(AttributeOperationEnum.DELETE)) {
                     Set<PhoneEntity> entities = userEntity.getPhones();
-                    if (CollectionUtils.isNotEmpty(entities))  {
+                    if (CollectionUtils.isNotEmpty(entities)) {
                         for (PhoneEntity en : entities) {
-                            if (en.getPhoneId().equals(e.getPhoneId())) {
+                            if (StringUtils.equals(en.getPhoneId(), e.getPhoneId())) {
                                 userEntity.getPhones().remove(en);
                                 //Audit log
                                 IdmAuditLog auditLog = new IdmAuditLog();
                                 Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                                 auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.DELETE_PHONE.value());
-                                auditLog.setAuditDescription("DELETE Phone: "+e.toString());
+                                auditLog.setAuditDescription("DELETE Phone: " + e.toString());
                                 parentLog.addChild(auditLog);
                                 // -------------------------------------
                                 break;
@@ -737,7 +786,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 } else if (e.getOperation().equals(AttributeOperationEnum.ADD)) {
                     PhoneEntity entity = phoneDozerConverter.convertToEntity(e, false);
                     entity.setParent(userEntity);
-                    if(org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())){
+                    if (org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())) {
                         entity.setMetadataType(null);
                     }
                     userEntity.getPhones().add(entity);
@@ -746,27 +795,27 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                     Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                     auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                     auditLog.setAction(AuditAction.ADD_PHONE.value());
-                    auditLog.setAuditDescription("ADD Phone: "+e.toString());
+                    auditLog.setAuditDescription("ADD Phone: " + e.toString());
                     parentLog.addChild(auditLog);
                     // ----------------------------------------
                 } else if (e.getOperation().equals(AttributeOperationEnum.REPLACE)) {
                     Set<PhoneEntity> entities = userEntity.getPhones();
-                    if (CollectionUtils.isNotEmpty(entities))  {
+                    if (CollectionUtils.isNotEmpty(entities)) {
                         for (PhoneEntity en : entities) {
-                            if (en.getPhoneId().equals(e.getPhoneId())) {
+                            if (StringUtils.equals(en.getPhoneId(), e.getPhoneId())) {
                                 // Audit Log
                                 IdmAuditLog auditLog = new IdmAuditLog();
                                 Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                                 auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.REPLACE_PHONE.value());
-                                auditLog.setAuditDescription("REPLACE Phone: "+en.toString()+"\n to:"+e.toString());
+                                auditLog.setAuditDescription("REPLACE Phone: " + en.toString() + "\n to:" + e.toString());
                                 parentLog.addChild(auditLog);
                                 //-------------------------------------
                                 userEntity.getPhones().remove(en);
                                 userMgr.evict(en);
                                 PhoneEntity entity = phoneDozerConverter.convertToEntity(e, false);
                                 entity.setParent(userEntity);
-                                if(org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())){
+                                if (org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())) {
                                     entity.setMetadataType(null);
                                 }
                                 userEntity.getPhones().add(entity);
@@ -789,15 +838,15 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 }
                 if (e.getOperation().equals(AttributeOperationEnum.DELETE)) {
                     Set<AddressEntity> entities = userEntity.getAddresses();
-                    if (CollectionUtils.isNotEmpty(entities))  {
+                    if (CollectionUtils.isNotEmpty(entities)) {
                         for (AddressEntity en : entities) {
-                            if (en.getAddressId().equals(e.getAddressId())) {
+                            if (StringUtils.equals(en.getAddressId(), e.getAddressId())) {
                                 userEntity.getAddresses().remove(en);
                                 IdmAuditLog auditLog = new IdmAuditLog();
                                 Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                                 auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.DELETE_ADDRESS.value());
-                                auditLog.setAuditDescription("DELETE Address: "+en.toString());
+                                auditLog.setAuditDescription("DELETE Address: " + en.toString());
 
                                 parentLog.addChild(auditLog);
                                 break;
@@ -807,7 +856,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 } else if (e.getOperation().equals(AttributeOperationEnum.ADD)) {
                     AddressEntity entity = addressDozerConverter.convertToEntity(e, false);
                     entity.setParent(userEntity);
-                    if(org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())){
+                    if (org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())) {
                         entity.setMetadataType(null);
                     }
                     userEntity.getAddresses().add(entity);
@@ -815,26 +864,26 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                     Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                     auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                     auditLog.setAction(AuditAction.ADD_ADDRESS.value());
-                    auditLog.setAuditDescription("ADD Address: "+entity.toString());
+                    auditLog.setAuditDescription("ADD Address: " + entity.toString());
                     parentLog.addChild(auditLog);
                 } else if (e.getOperation().equals(AttributeOperationEnum.REPLACE)) {
                     Set<AddressEntity> entities = userEntity.getAddresses();
-                    if (CollectionUtils.isNotEmpty(entities))  {
+                    if (CollectionUtils.isNotEmpty(entities)) {
                         for (AddressEntity en : entities) {
-                            if (en.getAddressId().equals(e.getAddressId())) {
+                            if (StringUtils.equals(en.getAddressId(), e.getAddressId())) {
                                 // Audit Log -----------------------------------------------------------------------------------
                                 IdmAuditLog auditLog = new IdmAuditLog();
                                 Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
                                 auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.REPLACE_ADDRESS.value());
-                                auditLog.setAuditDescription("REPLACE Address: "+en.toString()+"\n to:"+e.toString());
+                                auditLog.setAuditDescription("REPLACE Address: " + en.toString() + "\n to:" + e.toString());
                                 parentLog.addChild(auditLog);
                                 // ---------------------------------------------------------------------------------------------
                                 userEntity.getAddresses().remove(en);
                                 userMgr.evict(en);
                                 AddressEntity entity = addressDozerConverter.convertToEntity(e, false);
                                 entity.setParent(userEntity);
-                                if(org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())){
+                                if (org.apache.commons.lang.StringUtils.isBlank(e.getMetadataTypeId())) {
                                     entity.setMetadataType(null);
                                 }
                                 userEntity.getAddresses().add(entity);
@@ -851,219 +900,219 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         MetadataTypeEntity type = null;
         MetadataTypeEntity jobCode = null;
         MetadataTypeEntity employeeType = null;
-        if(StringUtils.isNotBlank(pUser.getMdTypeId())){
+        if (StringUtils.isNotBlank(pUser.getMdTypeId())) {
             type = metadataTypeDAO.findById(pUser.getMdTypeId());
         }
-        if(StringUtils.isNotBlank(pUser.getJobCodeId())){
+        if (StringUtils.isNotBlank(pUser.getJobCodeId())) {
             jobCode = metadataTypeDAO.findById(pUser.getJobCodeId());
         }
-        if(StringUtils.isNotBlank(pUser.getEmployeeTypeId())){
+        if (StringUtils.isNotBlank(pUser.getEmployeeTypeId())) {
             employeeType = metadataTypeDAO.findById(pUser.getEmployeeTypeId());
         }
 
         Login login = pUser.getPrimaryPrincipal(sysConfiguration.getDefaultManagedSysId());
-        if(login == null && StringUtils.isNotEmpty(pUser.getId())) {
-           login = loginDozerConverter.convertToDTO(loginManager.getByUserIdManagedSys(pUser.getId(), sysConfiguration.getDefaultManagedSysId()),false);
+        if (login == null && StringUtils.isNotEmpty(pUser.getId())) {
+            login = loginDozerConverter.convertToDTO(loginManager.getByUserIdManagedSys(pUser.getId(), sysConfiguration.getDefaultManagedSysId()), false);
         }
-        if(StringUtils.isNotEmpty(pUser.getFirstName()) && !pUser.getFirstName().equals(userEntity.getFirstName())) {
+        if (StringUtils.isNotEmpty(pUser.getFirstName()) && !pUser.getFirstName().equals(userEntity.getFirstName())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("FirstName", "old='"+userEntity.getFirstName()+"' new='"+pUser.getFirstName()+"'");
-            parentLog.addChild(auditLog);
-            // ---------------------------------------------------------------------------------------------
-         }
-        if(StringUtils.isNotEmpty(pUser.getLastName()) && !pUser.getLastName().equals(userEntity.getLastName())) {
-            // Audit Log -----------------------------------------------------------------------------------
-            IdmAuditLog auditLog = new IdmAuditLog();
-            auditLog.setRequestorUserId(pUser.getRequestorUserId());
-            auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
-            auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
-            auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("LastName", "old='"+userEntity.getLastName()+"' new='"+pUser.getLastName()+"'");
+            auditLog.addCustomRecord("FirstName", "old='" + userEntity.getFirstName() + "' new='" + pUser.getFirstName() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(pUser.getBirthdate() != null && !pUser.getBirthdate().equals(userEntity.getBirthdate())) {
+        if (StringUtils.isNotEmpty(pUser.getLastName()) && !pUser.getLastName().equals(userEntity.getLastName())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("Birthdate", "old='"+userEntity.getBirthdate()+"' new='"+pUser.getBirthdate()+"'");
+            auditLog.addCustomRecord("LastName", "old='" + userEntity.getLastName() + "' new='" + pUser.getLastName() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getCostCenter()) && !pUser.getCostCenter().equals(userEntity.getCostCenter())) {
+        if (pUser.getBirthdate() != null && !pUser.getBirthdate().equals(userEntity.getBirthdate())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("CostCenter", "old='"+userEntity.getCostCenter()+"' new='"+pUser.getCostCenter()+"'");
+            auditLog.addCustomRecord("Birthdate", "old='" + userEntity.getBirthdate() + "' new='" + pUser.getBirthdate() + "'");
+            parentLog.addChild(auditLog);
+            // ---------------------------------------------------------------------------------------------
+        }
+        if (StringUtils.isNotEmpty(pUser.getCostCenter()) && !pUser.getCostCenter().equals(userEntity.getCostCenter())) {
+            // Audit Log -----------------------------------------------------------------------------------
+            IdmAuditLog auditLog = new IdmAuditLog();
+            auditLog.setRequestorUserId(pUser.getRequestorUserId());
+            auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
+            auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
+            auditLog.setAction(AuditAction.REPLACE_PROP.value());
+            auditLog.addCustomRecord("CostCenter", "old='" + userEntity.getCostCenter() + "' new='" + pUser.getCostCenter() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
 
-        if(StringUtils.isNotEmpty(pUser.getDisplayName()) && !pUser.getDisplayName().equals(userEntity.getDisplayName())) {
+        if (StringUtils.isNotEmpty(pUser.getDisplayName()) && !pUser.getDisplayName().equals(userEntity.getDisplayName())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("DisplayName", "old='"+userEntity.getDisplayName()+"' new='"+pUser.getDisplayName()+"'");
+            auditLog.addCustomRecord("DisplayName", "old='" + userEntity.getDisplayName() + "' new='" + pUser.getDisplayName() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getMaidenName()) && !pUser.getMaidenName().equals(userEntity.getMaidenName())) {
+        if (StringUtils.isNotEmpty(pUser.getMaidenName()) && !pUser.getMaidenName().equals(userEntity.getMaidenName())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("MaidenName", "old='"+userEntity.getMaidenName()+"' new='"+pUser.getMaidenName()+"'");
+            auditLog.addCustomRecord("MaidenName", "old='" + userEntity.getMaidenName() + "' new='" + pUser.getMaidenName() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getNickname()) && !pUser.getNickname().equals(userEntity.getNickname())) {
+        if (StringUtils.isNotEmpty(pUser.getNickname()) && !pUser.getNickname().equals(userEntity.getNickname())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("Nickname", "old='"+userEntity.getNickname()+"' new='"+pUser.getNickname()+"'");
+            auditLog.addCustomRecord("Nickname", "old='" + userEntity.getNickname() + "' new='" + pUser.getNickname() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getMiddleInit()) && !pUser.getMiddleInit().equals(userEntity.getMiddleInit())) {
+        if (StringUtils.isNotEmpty(pUser.getMiddleInit()) && !pUser.getMiddleInit().equals(userEntity.getMiddleInit())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("MiddleInit", "old='"+userEntity.getMiddleInit()+"' new='"+pUser.getMiddleInit()+"'");
+            auditLog.addCustomRecord("MiddleInit", "old='" + userEntity.getMiddleInit() + "' new='" + pUser.getMiddleInit() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getEmployeeId()) && !pUser.getEmployeeId().equals(userEntity.getEmployeeId())) {
+        if (StringUtils.isNotEmpty(pUser.getEmployeeId()) && !pUser.getEmployeeId().equals(userEntity.getEmployeeId())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("EmployeeId", "old='"+userEntity.getEmployeeId()+"' new='"+pUser.getEmployeeId()+"'");
+            auditLog.addCustomRecord("EmployeeId", "old='" + userEntity.getEmployeeId() + "' new='" + pUser.getEmployeeId() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getEmployeeTypeId()) && (userEntity.getEmployeeType() == null || !pUser.getEmployeeTypeId().equals(userEntity.getEmployeeType().getId()))) {
+        if (StringUtils.isNotEmpty(pUser.getEmployeeTypeId()) && (userEntity.getEmployeeType() == null || !pUser.getEmployeeTypeId().equals(userEntity.getEmployeeType().getId()))) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            MetadataTypeEntity metadataType =  metadataTypeDAO.findById(pUser.getEmployeeTypeId());
-            auditLog.addCustomRecord("EmployeeType", "old='"+(userEntity.getEmployeeType() != null ? userEntity.getEmployeeType() : "N/A")+"' new='"+metadataType+"'");
+            MetadataTypeEntity metadataType = metadataTypeDAO.findById(pUser.getEmployeeTypeId());
+            auditLog.addCustomRecord("EmployeeType", "old='" + (userEntity.getEmployeeType() != null ? userEntity.getEmployeeType() : "N/A") + "' new='" + metadataType + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getUserTypeInd()) && (userEntity.getType() == null || !pUser.getUserTypeInd().equals(userEntity.getType().getId()))) {
+        if (StringUtils.isNotEmpty(pUser.getUserTypeInd()) && (userEntity.getType() == null || !pUser.getUserTypeInd().equals(userEntity.getType().getId()))) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            MetadataTypeEntity metadataType =  metadataTypeDAO.findById(pUser.getUserTypeInd());
-            auditLog.addCustomRecord("UserType", "old='"+(userEntity.getType() != null ? userEntity.getType() : "N/A")+"' new='"+metadataType+"'");
+            MetadataTypeEntity metadataType = metadataTypeDAO.findById(pUser.getUserTypeInd());
+            auditLog.addCustomRecord("UserType", "old='" + (userEntity.getType() != null ? userEntity.getType() : "N/A") + "' new='" + metadataType + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(StringUtils.isNotEmpty(pUser.getJobCodeId()) && (userEntity.getJobCode() == null || !pUser.getJobCodeId().equals(userEntity.getJobCode().getId()))) {
+        if (StringUtils.isNotEmpty(pUser.getJobCodeId()) && (userEntity.getJobCode() == null || !pUser.getJobCodeId().equals(userEntity.getJobCode().getId()))) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            MetadataTypeEntity metadataType =  metadataTypeDAO.findById(pUser.getJobCodeId());
-            auditLog.addCustomRecord("JobCode", "old='"+(userEntity.getJobCode() != null ? userEntity.getJobCode() : "N/A")+"' new='"+metadataType+"'");
+            MetadataTypeEntity metadataType = metadataTypeDAO.findById(pUser.getJobCodeId());
+            auditLog.addCustomRecord("JobCode", "old='" + (userEntity.getJobCode() != null ? userEntity.getJobCode() : "N/A") + "' new='" + metadataType + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(pUser.getStartDate() != null && !pUser.getStartDate().equals(userEntity.getStartDate())) {
+        if (pUser.getStartDate() != null && !pUser.getStartDate().equals(userEntity.getStartDate())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("StartDate", "old='"+userEntity.getStartDate()+"' new='"+pUser.getStartDate()+"'");
+            auditLog.addCustomRecord("StartDate", "old='" + userEntity.getStartDate() + "' new='" + pUser.getStartDate() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(pUser.getLastDate() != null && !pUser.getLastDate().equals(userEntity.getLastDate())) {
+        if (pUser.getLastDate() != null && !pUser.getLastDate().equals(userEntity.getLastDate())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("LastDate", "old='"+userEntity.getLastDate()+"' new='"+pUser.getLastDate()+"'");
+            auditLog.addCustomRecord("LastDate", "old='" + userEntity.getLastDate() + "' new='" + pUser.getLastDate() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if( pUser.getStatus() != null && !pUser.getStatus().equals(userEntity.getStatus())) {
+        if (pUser.getStatus() != null && !pUser.getStatus().equals(userEntity.getStatus())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("Status", "old='"+userEntity.getStatus()+"' new='"+pUser.getStatus()+"'");
+            auditLog.addCustomRecord("Status", "old='" + userEntity.getStatus() + "' new='" + pUser.getStatus() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(pUser.getSecondaryStatus() != null && !pUser.getSecondaryStatus().equals(userEntity.getSecondaryStatus())) {
+        if (pUser.getSecondaryStatus() != null && !pUser.getSecondaryStatus().equals(userEntity.getSecondaryStatus())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("SecondaryStatus", "old='"+userEntity.getSecondaryStatus()+"' new='"+pUser.getSecondaryStatus()+"'");
+            auditLog.addCustomRecord("SecondaryStatus", "old='" + userEntity.getSecondaryStatus() + "' new='" + pUser.getSecondaryStatus() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(!StringUtils.equals(pUser.getSuffix(), userEntity.getSuffix())) {
+        if (!StringUtils.equals(pUser.getSuffix(), userEntity.getSuffix())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("Suffix", "old='"+userEntity.getSuffix()+"' new='"+pUser.getSuffix()+"'");
+            auditLog.addCustomRecord("Suffix", "old='" + userEntity.getSuffix() + "' new='" + pUser.getSuffix() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
-        if(!StringUtils.equals(pUser.getTitle(), userEntity.getTitle())) {
+        if (!StringUtils.equals(pUser.getTitle(), userEntity.getTitle())) {
             // Audit Log -----------------------------------------------------------------------------------
             IdmAuditLog auditLog = new IdmAuditLog();
             auditLog.setRequestorUserId(pUser.getRequestorUserId());
             auditLog.setRequestorPrincipal(pUser.getRequestorLogin());
             auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
             auditLog.setAction(AuditAction.REPLACE_PROP.value());
-            auditLog.addCustomRecord("Title", "old='"+userEntity.getTitle()+"' new='"+pUser.getTitle()+"'");
+            auditLog.addCustomRecord("Title", "old='" + userEntity.getTitle() + "' new='" + pUser.getTitle() + "'");
             parentLog.addChild(auditLog);
             // ---------------------------------------------------------------------------------------------
         }
@@ -1118,7 +1167,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                         auditLog.setTargetUser(userEntity.getId(), login != null ? login.getLogin() : StringUtils.EMPTY);
                         auditLog.setAction(AuditAction.REPLACE_ATTRIBUTE.value());
                         auditLog.addCustomRecord(entry.getKey(), ("old= '" + oldValue +
-                                "' new= '"+userEntity.getUserAttributes().get(entry.getKey()).getValue()+"'"));
+                                "' new= '" + userEntity.getUserAttributes().get(entry.getKey()).getValue() + "'"));
                         parentLog.addChild(auditLog);
                         // ---------------------------------------------------------------------------------------------
                     }
@@ -1141,7 +1190,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                     List<UserEntity> supervisorList = userMgr.getSuperiors(userId, 0, Integer.MAX_VALUE);
                     if (CollectionUtils.isNotEmpty(supervisorList)) {
                         for (UserEntity se : supervisorList) {
-                            if (se.getId().equals(e.getId())) {
+                            if (StringUtils.equals(se.getId(), e.getId())) {
                                 userMgr.removeSupervisor(se.getId(), userId);
                                 log.info(String.format("Removed a supervisor user %s from user %s",
                                         e.getId(), userId));
@@ -1155,7 +1204,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                                 auditLog.setTargetUser(se.getId(), login != null ? loginSupervisor.getLogin() : StringUtils.EMPTY);
                                 auditLog.setAction(AuditAction.DELETE_SUPERVISOR.value());
 
-                                auditLog.addCustomRecord("SUPERVISOR",loginSupervisor.getLogin());
+                                auditLog.addCustomRecord("SUPERVISOR", loginSupervisor.getLogin());
                                 parentLog.addChild(auditLog);
                                 // -------------------------------------------------
                             }
@@ -1176,7 +1225,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                     auditLog.setTargetUser(userEntity.getId(), loginStr);
                     auditLog.setTargetUser(se.getId(), login != null ? loginSupervisor.getLogin() : StringUtils.EMPTY);
                     auditLog.setAction(AuditAction.ADD_SUPERVISOR.value());
-                    auditLog.addCustomRecord("SUPERVISOR",loginSupervisor.getLogin());
+                    auditLog.addCustomRecord("SUPERVISOR", loginSupervisor.getLogin());
                     parentLog.addChild(auditLog);
                     // -------------------------------------------------
 
@@ -1190,7 +1239,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     public void updateGroups(final UserEntity userEntity, final ProvisionUser pUser,
                              final Set<Group> groupSet, final Set<Group> deleteGroupSet, final IdmAuditLog parentLog) {
         if (CollectionUtils.isNotEmpty(pUser.getGroups())) {
-            for (Group g: pUser.getGroups()) {
+            for (Group g : pUser.getGroups()) {
                 AttributeOperationEnum operation = g.getOperation();
                 if (operation == AttributeOperationEnum.ADD) {
                     GroupEntity groupEntity = groupManager.getGroup(g.getId());
@@ -1232,7 +1281,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             for (GroupEntity gre : userEntity.getGroups()) {
                 Group gr = groupDozerConverter.convertToDTO(gre, false);
                 for (Group g : pUser.getGroups()) {
-                    if(g.getId().equals(gr.getId())) {
+                    if (StringUtils.equals(g.getId(), gr.getId())) {
                         gr.setOperation(g.getOperation()); // get operation value from pUser
                         break;
                     }
@@ -1243,9 +1292,9 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     }
 
     public void updateRoles(final UserEntity userEntity, final ProvisionUser pUser,
-            final Set<Role> roleSet, final Set<Role> deleteRoleSet, final IdmAuditLog parentLog) {
+                            final Set<Role> roleSet, final Set<Role> deleteRoleSet, final IdmAuditLog parentLog) {
         if (CollectionUtils.isNotEmpty(pUser.getRoles())) {
-            for (Role r: pUser.getRoles()) {
+            for (Role r : pUser.getRoles()) {
                 AttributeOperationEnum operation = r.getOperation();
                 if (operation == AttributeOperationEnum.ADD) {
                     RoleEntity roleEntity = roleDataService.getRole(r.getId());
@@ -1288,7 +1337,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             for (RoleEntity ure : userEntity.getRoles()) {
                 Role ar = roleDozerConverter.convertToDTO(ure, false);
                 for (Role r : pUser.getRoles()) {
-                    if(r.getId().equals(ar.getId())) {
+                    if (StringUtils.equals(r.getId(),ar.getId())) {
                         ar.setOperation(r.getOperation()); // get operation value from pUser
                         break;
                     }
@@ -1320,7 +1369,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                 } else if (operation == AttributeOperationEnum.DELETE) {
                     Set<OrganizationEntity> affiliations = userEntity.getAffiliations();
                     for (OrganizationEntity a : affiliations) {
-                        if (o.getId().equals(a.getId())) {
+                        if (StringUtils.equals(o.getId(),a.getId())) {
                             userEntity.getAffiliations().remove(a);
                             // Audit Log ---------------------------------------------------
                             IdmAuditLog auditLog = new IdmAuditLog();
@@ -1390,7 +1439,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     }
 
     private Login getPrincipal(String logingId, List<Login> loginList) {
-        for (Login lg : loginList ) {
+        for (Login lg : loginList) {
             if (lg.getLoginId().equals(logingId)) {
                 return lg;
             }
@@ -1412,7 +1461,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
                     if (CollectionUtils.isNotEmpty(entities)) {
                         for (final Iterator<LoginEntity> it = entities.iterator(); it.hasNext(); ) {
                             final LoginEntity en = it.next();
-                            if (en.getLoginId().equals(e.getLoginId())) {
+                            if (StringUtils.equals(en.getLoginId(),e.getLoginId())) {
                                 it.remove();
                                 // Audit Log ---------------------------------------------------
                                 IdmAuditLog auditLog = new IdmAuditLog();
@@ -1450,7 +1499,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
 
                     if (CollectionUtils.isNotEmpty(userEntity.getPrincipalList())) {
                         for (final LoginEntity en : userEntity.getPrincipalList()) {
-                            if (en.getLoginId().equals(e.getLoginId())) {
+                            if (StringUtils.equals(en.getLoginId(),e.getLoginId())) {
 
                                 if (!en.getLogin().equals(e.getLogin())) {
                                     e.setOrigPrincipalName(en.getLogin());
@@ -1476,67 +1525,8 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         }
     }
 
-    /**
-     * Update the list of attributes with the correct operation values so that they can be
-     * passed to the connector
-     */
-    public static ExtensibleObject updateAttributeList(ExtensibleObject extUser,
-            Map<String,String> currentValueMap ) {
-        if (extUser == null) {
-            return null;
-        }
-        log.debug("updateAttributeList: Updating operations on attributes being passed to connectors");
-
-
-        List<ExtensibleAttribute> extAttrList = extUser.getAttributes();
-        if (extAttrList == null) {
-
-            log.debug("Extended user attributes is null");
-
-            return null;
-        }
-
-        if ( extAttrList != null && currentValueMap == null) {
-            for (ExtensibleAttribute attr  : extAttrList) {
-                attr.setOperation(1);
-            }
-        } else {
-
-            for (ExtensibleAttribute attr  : extAttrList) {
-                String nm = attr.getName();
-                if (currentValueMap == null) {
-                    attr.setOperation(1);
-                } else {
-                    String curVal = currentValueMap.get(nm);
-                    if (curVal == null) {
-                        // temp hack
-                        if (nm.equalsIgnoreCase("objectclass")) {
-                            attr.setOperation(2);
-                        } else {
-                            log.debug("- Op = 1 - AttrName = " +nm );
-
-                            attr.setOperation(1);
-                        }
-                    } else {
-                        if (curVal.equalsIgnoreCase(attr.getValue())) {
-                            log.debug("- Op = 0 - AttrName = " +nm );
-
-                            attr.setOperation(0);
-                        } else {
-
-                            log.debug("- Op = 2 - AttrName = " +nm );
-
-                            attr.setOperation(2);
-                        }
-                    }
-                }
-            }
-        }
-        return extUser;
-    }
-
     public ObjectResponse requestAddModify(ExtensibleUser extUser, Login mLg, boolean isAdd,
-                                    String requestId, final IdmAuditLog idmAuditLog) {
+                                           String requestId, final IdmAuditLog idmAuditLog) {
 
         ObjectResponse response = new ObjectResponse();
 
@@ -1557,6 +1547,7 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
             if (PolicyMapObjectTypeOptions.PRINCIPAL.name().equalsIgnoreCase(attr.getMapForObjectType())) {
                 extUser.setPrincipalFieldName(attr.getAttributeName());
                 extUser.setPrincipalFieldDataType(attr.getDataType().getValue());
+                break;
             }
         }
 
@@ -1601,11 +1592,11 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         LoginEntity lRequestor = loginManager.getPrimaryIdentity(systemUserId);
         idmAuditLogChild1.setRequestorUserId(lRequestor.getUserId());
         idmAuditLogChild1.setRequestorPrincipal(lRequestor.getLogin());
-        idmAuditLogChild1.setTargetUser(mLg.getUserId(),mLg.getLogin());
+        idmAuditLogChild1.setTargetUser(mLg.getUserId(), mLg.getLogin());
         idmAuditLogChild1.setTargetResource(mSys.getResourceId(), mSys.getName());
         idmAuditLogChild1.setManagedSysId(mSys.getId());
         boolean successResult = response.getStatus() != StatusCodeType.FAILURE;
-        if(successResult) {
+        if (successResult) {
             idmAuditLogChild1.succeed();
             idmAuditLogChild1.setSuccessReason(StatusCodeType.SUCCESS.value());
         } else {
@@ -1653,8 +1644,8 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     }
 
     protected ResponseType resetPassword(String requestId, Login login,
-            String password, ManagedSysDto mSys,
-            ManagedSystemObjectMatch matchObj, ExtensibleUser extensibleUser) {
+                                         String password, ManagedSysDto mSys,
+                                         ManagedSystemObjectMatch matchObj, ExtensibleUser extensibleUser) {
 
         PasswordRequest req = new PasswordRequest();
         req.setObjectIdentity(login.getLogin());
@@ -1670,8 +1661,8 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         }
         req.setHostLoginPassword(passwordDecoded);
         req.setHostUrl(mSys.getHostUrl());
-        if(matchObj != null) {
-        	req.setBaseDN(matchObj.getBaseDn());
+        if (matchObj != null) {
+            req.setBaseDN(matchObj.getBaseDn());
         }
         req.setOperation("RESET_PASSWORD");
         req.setPassword(password);
@@ -1684,10 +1675,10 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
     }
 
     protected ResponseType setPassword(String requestId, Login login, String prevDecPassword,
-                                                                      String newDecPasswordSync,
-                                                                      ManagedSysDto mSys,
-                                                                      ManagedSystemObjectMatch matchObj,
-                                                                      ExtensibleUser extensibleUser) {
+                                       String newDecPasswordSync,
+                                       ManagedSysDto mSys,
+                                       ManagedSystemObjectMatch matchObj,
+                                       ExtensibleUser extensibleUser) {
 
         PasswordRequest req = new PasswordRequest();
         req.setObjectIdentity(login.getLogin());
@@ -1725,14 +1716,16 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
 
         Policy passwordPolicy = user.getPasswordPolicy();
         if (passwordPolicy == null) {
-            passwordPolicy = passwordPolicyProvider.getPasswordPolicyByUser(
-                    userDozerConverter.convertToEntity(user.getUser(), true));
+            PasswordPolicyAssocSearchBean searchBean = new PasswordPolicyAssocSearchBean();
+            searchBean.setManagedSystemId(primaryLogin.getManagedSysId());
+            searchBean.setUserId(user.getId());
+            passwordPolicy = passwordPolicyProvider.getPasswordPolicyByUser(searchBean);
         }
 
         try {
-        	PasswordValidationResponse valCode = passwordManager.isPasswordValidForUserAndPolicy(
+            PasswordValidationResponse valCode = passwordManager.isPasswordValidForUserAndPolicy(
                     password, userDozerConverter.convertToEntity(
-                    user.getUser(), true),
+                            user.getUser(), true),
                     loginDozerConverter.convertToEntity(
                             primaryLogin, true), passwordPolicy);
             if (valCode == null || !valCode.isSuccess()) {
@@ -1750,9 +1743,32 @@ public abstract class AbstractProvisioningService extends AbstractBaseService im
         return resp;
     }
 
+    protected ResponseType suspend(String requestId, Login login, ManagedSysDto mSys, ExtensibleUser extensibleUser, boolean operation) {
+        SuspendResumeRequest resumeReq = new SuspendResumeRequest();
+        resumeReq.setObjectIdentity(login.getLogin());
+        resumeReq.setTargetID(login.getManagedSysId());
+        resumeReq.setRequestID(requestId);
+        resumeReq.setScriptHandler(mSys.getSuspendHandler());
+        resumeReq.setHostLoginId(mSys.getUserId());
+        resumeReq.setExtensibleObject(extensibleUser);
+
+        String passwordDecoded = mSys.getPswd();
+        try {
+            passwordDecoded = getDecryptedPassword(mSys);
+        } catch (ConnectorDataException e) {
+            e.printStackTrace();
+        }
+        resumeReq.setHostLoginPassword(passwordDecoded);
+        resumeReq.setHostUrl(mSys.getHostUrl());
+
+        log.debug("Resume request will be sent for user login " + login.getLogin());
+        return operation ? connectorAdapter.suspendRequest(mSys, resumeReq, MuleContextProvider.getCtx()) :
+                connectorAdapter.resumeRequest(mSys, resumeReq, MuleContextProvider.getCtx());
+    }
+
     @Override
     public Response addEvent(ProvisionActionEvent event, ProvisionActionTypeEnum type) {
-        Map<String, Object> bindingMap = new HashMap<String, Object>();
+        Map<String, Object> bindingMap = new HashMap<>();
         Response response = new Response(ResponseStatus.SUCCESS);
         response.setResponseValue(ProvisionServiceEventProcessor.CONTINUE);
         ProvisionServiceEventProcessor eventProcessorScript = getEventProcessor(bindingMap, eventProcessor);

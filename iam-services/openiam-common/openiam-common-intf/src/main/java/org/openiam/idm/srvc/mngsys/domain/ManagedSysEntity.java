@@ -50,8 +50,6 @@ public class ManagedSysEntity implements Serializable {
     @Column(name = "END_DATE", length = 10)
     @Temporal(TemporalType.DATE)
     private Date endDate;
-    @Column(name = "ATTRIBUTE_NAMES_LOOKUP", length = 120)
-    private String attributeNamesLookup;
     @Column(name = "SEARCH_SCOPE")
     @Enumerated(EnumType.ORDINAL)
     private SearchScopeType searchScope = SearchScopeType.SUBTREE_SCOPE;
@@ -67,34 +65,38 @@ public class ManagedSysEntity implements Serializable {
     private String driverUrl;
     @Column(name = "CONNECTION_STRING", length = 100)
     private String connectionString;
-    @Column(name = "ADD_HNDLR", length = 100)
+    @Column(name = "ADD_HNDLR", length = 120)
     private String addHandler;
-    @Column(name = "MODIFY_HNDLR", length = 100)
+    @Column(name = "MODIFY_HNDLR", length = 120)
     private String modifyHandler;
-    @Column(name = "DELETE_HNDLR", length = 100)
+    @Column(name = "DELETE_HNDLR", length = 120)
     private String deleteHandler;
-    @Column(name = "SETPASS_HNDLR", length = 100)
+    @Column(name = "SETPASS_HNDLR", length = 120)
     private String passwordHandler;
-    @Column(name = "SUSPEND_HNDLR", length = 100)
+    @Column(name = "SUSPEND_HNDLR", length = 120)
     private String suspendHandler;
-    @Column(name = "RESUME_HNDLR", length = 100)
+    @Column(name = "RESUME_HNDLR", length = 120)
     private String resumeHandler;
-    @Column(name = "SEARCH_HNDLR", length = 100)
+    @Column(name = "SEARCH_HNDLR", length = 120)
     private String searchHandler;
-    @Column(name = "LOOKUP_HNDLR", length = 100)
+    @Column(name = "LOOKUP_HNDLR", length = 120)
     private String lookupHandler;
-    @Column(name = "TEST_CONNECTION_HNDLR", length = 100)
+    @Column(name = "TEST_CONNECTION_HNDLR", length = 120)
     private String testConnectionHandler;
-    @Column(name = "RECONCILE_RESOURCE_HNDLR", length = 100)
+    @Column(name = "RECONCILE_RESOURCE_HNDLR", length = 120)
     private String reconcileResourceHandler;
-    @Column(name = "ATTRIBUTE_NAMES_HNDLR", length = 100)
+    @Column(name = "ATTRIBUTE_NAMES_HNDLR", length = 120)
     private String attributeNamesHandler;
-    @Column(name = "HNDLR_5", length = 100)
+    @Column(name = "HNDLR_5", length = 120)
     private String handler5;
     @Column(name = "SKIP_GROUP_PROV", nullable = false)
     @Type(type = "yes_no")
     private boolean skipGroupProvision = true;
 
+    @Column(name = "CHANGE_END_USER", nullable = false)
+    @Type(type = "yes_no")
+    private boolean changedByEndUser = true;
+    ;
     @OneToMany(mappedBy = "managedSys")
     private Set<ManagedSystemObjectMatchEntity> mngSysObjectMatchs = new HashSet<ManagedSystemObjectMatchEntity>();
 
@@ -102,10 +104,10 @@ public class ManagedSysEntity implements Serializable {
     @JoinColumn(name = "MANAGED_SYS_ID", referencedColumnName = "MANAGED_SYS_ID")
     private List<ManagedSysRuleEntity> rules = new ArrayList<ManagedSysRuleEntity>(0);
 
-    @OneToMany(orphanRemoval = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH }, mappedBy = "managedSystem", fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval = false, cascade = {CascadeType.DETACH, CascadeType.REFRESH}, mappedBy = "managedSystem", fetch = FetchType.LAZY)
     private Set<GroupEntity> groups;
 
-    @OneToMany(orphanRemoval = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH }, mappedBy = "managedSystem", fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval = false, cascade = {CascadeType.DETACH, CascadeType.REFRESH}, mappedBy = "managedSystem", fetch = FetchType.LAZY)
     private Set<RoleEntity> roles;
 
     public List<ManagedSysRuleEntity> getRules() {
@@ -210,14 +212,6 @@ public class ManagedSysEntity implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public String getAttributeNamesLookup() {
-        return attributeNamesLookup;
-    }
-
-    public void setAttributeNamesLookup(String attributeNamesLookup) {
-        this.attributeNamesLookup = attributeNamesLookup;
     }
 
     public SearchScopeType getSearchScope() {
@@ -404,6 +398,14 @@ public class ManagedSysEntity implements Serializable {
         this.skipGroupProvision = skipGroupProvision;
     }
 
+    public boolean getChangedByEndUser() {
+        return changedByEndUser;
+    }
+
+    public void setChangedByEndUser(boolean changedByEndUser) {
+        this.changedByEndUser = changedByEndUser;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -456,9 +458,6 @@ public class ManagedSysEntity implements Serializable {
         if (attributeNamesHandler != null ? !attributeNamesHandler.equals(that.attributeNamesHandler)
                 : that.attributeNamesHandler != null)
             return false;
-        if (attributeNamesLookup != null ? !attributeNamesLookup.equals(that.attributeNamesLookup)
-                : that.attributeNamesLookup != null)
-            return false;
         if (searchScope != null ? !searchScope.equals(that.searchScope) : that.searchScope != null)
             return false;
         if (resourceId != null ? !resourceId.equals(that.resourceId) : that.resourceId != null)
@@ -501,7 +500,6 @@ public class ManagedSysEntity implements Serializable {
         result = 31 * result + (pswd != null ? pswd.hashCode() : 0);
         result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
         result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
-        result = 31 * result + (attributeNamesLookup != null ? attributeNamesLookup.hashCode() : 0);
         result = 31 * result + (searchScope != null ? searchScope.hashCode() : 0);
         result = 31 * result + (resourceId != null ? resourceId.hashCode() : 0);
         result = 31 * result + (primaryRepository != null ? primaryRepository.hashCode() : 0);
@@ -523,4 +521,6 @@ public class ManagedSysEntity implements Serializable {
         result = 31 * result + (skipGroupProvision ? 1231 : 1237);
         return result;
     }
+
+
 }

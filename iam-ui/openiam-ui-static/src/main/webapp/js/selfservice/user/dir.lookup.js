@@ -2,55 +2,39 @@ OPENIAM = window.OPENIAM || {};
 OPENIAM.User = window.OPENIAM.User || {};
 
 OPENIAM.User.Form = {
-	submit : function(page) {
-        $("#userResultsArea").userSearchResults({
-            jsonData : this.toJSON(),
-            page : 0,
-            size : 20,
-            initialSortColumn : "name",
-            initialSortOrder : "ASC",
-            entityURL: "viewUser.html",
-            url : OPENIAM.ENV.ContextPath + "/rest/api/users/search",
-            emptyFormText : localeManager["openiam.ui.common.user.search.empty"],
-			emptyResultsText : localeManager["openiam.ui.common.user.search.no.results"],
-            columnHeaders : [
-            	localeManager["openiam.ui.common.name"], 
-            	localeManager["openiam.ui.common.phone.number"], 
-            	localeManager["openiam.ui.common.email.address"], 
-            	localeManager["openiam.ui.webconsole.user.status"], 
-            	localeManager["openiam.ui.webconsole.user.accountStatus"]
-            ]
-        });
-	},
-    toJSON : function() {
-        var obj = {};
-        obj.firstName = $("#firstName").val();
-        obj.lastName = $("#lastName").val();
-        obj.email = $("#email").val();
-        obj.phoneCode = $("#phoneCode").val();
-        obj.phoneNumber = $("#phoneNumber").val();
-        return obj;
-    },
-    clear : function() {
-        $("#firstName").val("");
-        $("#lastName").val("");
-        $("#email").val("");
-        $("#phoneCode").val("");
-        $("#phoneNumber").val("");
-        return false;
+    init: function () {
+        $("#formContainer").userSearchForm({
+                onSubmit: function (json) {
+                    json.fromDirectoryLookup = true;
+                    $("#userResultsArea").userSearchResults({
+                        "jsonData": json,
+                        page: 0,
+                        size: 20,
+                        initialSortColumn: "name",
+                        initialSortOrder: "ASC",
+                        url: "rest/api/users/search",
+                        entityURL: OPENIAM.ENV.ShowDetails ? "viewUser.html" : null,
+                        emptyFormText: localeManager["openiam.ui.common.user.search.empty"],
+                        emptyResultsText: localeManager["openiam.ui.common.user.search.no.results"],
+                        onEntityClick: OPENIAM.ENV.ShowDetails ?
+                            function (bean) {
+                                window.location.href = "viewUser.html?id=" + bean.id;
+                            }
+                            :
+                            function (bean) {
+                                return false;
+                            },
+                        columnHeaders: OPENIAM.ENV.СolumnList
+                    });
+                }
+            }
+        )
+        ;
+
     }
-};
+}
+;
 
-$(document).ready(function() {
-    $("#userSearchForm").submit(function() {
-        OPENIAM.User.Form.submit(0);
-        return false;
-    });
-    $("#cleanUserSearchForm").click(function() {
-        OPENIAM.User.Form.clear();
-        return false;
-    });
-});
-
-$(window).load(function() {
+$(document).ready(function () {
+    OPENIAM.User.Form.init();
 });

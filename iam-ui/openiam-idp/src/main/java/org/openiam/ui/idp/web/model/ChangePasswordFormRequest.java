@@ -9,6 +9,7 @@ public class ChangePasswordFormRequest {
 	private String currentPassword;
 	private String newPassword;
 	private String newPasswordConfirm;
+	private String managedSystemId;
 	public String getLogin() {
 		return login;
 	}
@@ -39,7 +40,15 @@ public class ChangePasswordFormRequest {
 	public void setNewPasswordConfirm(String newPasswordConfirm) {
 		this.newPasswordConfirm = newPasswordConfirm;
 	}
-	
+
+	public String getManagedSystemId() {
+		return managedSystemId;
+	}
+
+	public void setManagedSystemId(String managedSystemId) {
+		this.managedSystemId = managedSystemId;
+	}
+
 	public boolean hasEmptyField() {
 		return StringUtils.isEmpty(login) ||
                StringUtils.isEmpty(userId) ||

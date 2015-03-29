@@ -23,7 +23,7 @@ public class CustomFieldValidator implements Validator {
         CustomFieldBean field = (CustomFieldBean) model;
 
         if (!StringUtils.hasText(field.getName())) {
-            errors.rejectValue("fieldName", "required", org.openiam.ui.util.messages.Errors.CUSTOM_FIELD_NAME_NOT_SET.getMessageName());
+            errors.rejectValue("name", "required", org.openiam.ui.util.messages.Errors.CUSTOM_FIELD_NAME_NOT_SET.getMessageName());
         }
         if (!StringUtils.hasText(field.getTypeId())) {
             errors.rejectValue("typeId", "required", org.openiam.ui.util.messages.Errors.CUSTOM_FIELD_TYPE_NOT_SET.getMessageName());

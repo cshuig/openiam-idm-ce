@@ -13,12 +13,11 @@ import javax.xml.bind.annotation.XmlType;
 import org.openiam.am.srvc.dto.AuthProviderAttribute;
 import org.openiam.am.srvc.dto.AuthResourceAttributeMap;
 
-public class SAMLIdentityProvider extends AuthenticationProvider implements Serializable {
+public class SAMLIdentityProvider extends SAMLAuthenticationProvider {
 
 	private String assertionConsumerURL;
 	private String requestIssuer;
 	private String responseIssuer;
-	private byte[] publicKey;
 	private byte[] privateKey;
 	private Set<String> audiences;
 	private String authContextClassRef;
@@ -27,7 +26,7 @@ public class SAMLIdentityProvider extends AuthenticationProvider implements Seri
 	private String nameIdFormat;
 	private String spNameQualifier;
 	private String nameQualifier;
-
+	
 	public String getAssertionConsumerURL() {
 		return assertionConsumerURL;
 	}
@@ -36,13 +35,6 @@ public class SAMLIdentityProvider extends AuthenticationProvider implements Seri
 		this.assertionConsumerURL = assertionConsumerURL;
 	}
 
-	public byte[] getPublicKey() {
-		return publicKey;
-	}
-
-	public void setPublicKey(byte[] publicKey) {
-		this.publicKey = publicKey;
-	}
 
 	public byte[] getPrivateKey() {
 		return privateKey;

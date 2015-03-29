@@ -14,7 +14,7 @@ OPENIAM.CustomField = {
             fields: [{fieldName: "id", type:"hidden",label:""},
                      {fieldName: "uiValue", type:"text",label:localeManager["openiam.ui.common.value"], required:true},
                      {fieldName: "languageMap", type:"map",label:localeManager["openiam.ui.common.display.name"], items:OPENIAM.ENV.LanguageList, keys:"languageCode",keyLabel:"name",value:"value", required:true},
-                     {fieldName: "default", type:"checkbox",label:localeManager["openiam.ui.common.is.default"]}],
+                     {fieldName: "isDef", type:"checkbox",label:localeManager["openiam.ui.common.is.default"]}],
             dialogTitle: localeManager["openiam.ui.custom.fields.edit.option.element"],
             onSubmit: function(bean){
                 OPENIAM.CustomField.saveValidValue(bean);
@@ -156,9 +156,9 @@ OPENIAM.CustomField = {
 
         var bean={};
         bean.id=propId;
-        bean.default=false;
+        bean.isDef=false;
         if(isDef){
-            bean.default=true;
+            bean.isDef=true;
         }
         bean.uiValue=tr.find("td.uiValue").html();
 
@@ -303,7 +303,7 @@ OPENIAM.CustomField = {
             }
             cell.append(ul);
 
-            if(bean.default!=null && bean.default!=undefined && bean.default!=false){
+            if(bean.isDef!=null && bean.isDef!=undefined && bean.isDef!=false){
                 // try to set default value
                 OPENIAM.CustomField.setDefaultValue(row, bean.uiValue);
             } else {

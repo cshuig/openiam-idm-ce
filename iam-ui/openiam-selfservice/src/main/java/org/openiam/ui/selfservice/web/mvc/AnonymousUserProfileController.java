@@ -8,9 +8,11 @@ import org.openiam.bpm.activiti.ActivitiService;
 import org.openiam.bpm.util.ActivitiRequestType;
 import org.openiam.exception.EsbErrorToken;
 import org.openiam.idm.srvc.auth.dto.Login;
+import org.openiam.idm.srvc.loc.dto.Location;
 import org.openiam.idm.srvc.meta.dto.SaveTemplateProfileResponse;
 import org.openiam.idm.srvc.user.dto.NewUserProfileRequestModel;
 import org.openiam.idm.srvc.user.dto.User;
+import org.openiam.ui.rest.api.model.LocationBean;
 import org.openiam.ui.selfservice.web.model.NewUserBean;
 import org.openiam.ui.selfservice.web.model.ProfieEditMode;
 import org.openiam.ui.selfservice.web.mvc.validator.UserProfileValidator;
@@ -20,16 +22,14 @@ import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.util.messages.SuccessMessage;
 import org.openiam.ui.util.messages.SuccessToken;
 import org.openiam.ui.web.model.BasicAjaxResponse;
+import org.openiam.ui.web.model.BeanResponse;
 import org.openiam.ui.web.util.DateFormatStr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -98,10 +98,31 @@ public class AnonymousUserProfileController extends AbstractProfileController {
         return "common/basic.ajax.response";
     }
 
+    @RequestMapping(value = "/getLocationsForOrg", method = RequestMethod.GET)
+    public @ResponseBody
+    BeanResponse getLocationsForOrg(final @RequestParam(required = true, value = "id") String  orgId,
+                                    final @RequestParam(required = true, value = "from") Integer from,
+                                    final @RequestParam(required = true, value = "size") Integer size) {
+
+        final List<LocationBean> beanList = new LinkedList<LocationBean>();
+        int cnt = 0;
+
+        List<Location> locations = organizationDataService.getLocationListByPage(orgId, from, size);
+
+        if (locations != null && locations.size() > 0) {
+            cnt = locations.size();
+            for (final Location locationEl : locations) {
+                beanList.add(new LocationBean(locationEl));
+            }
+        }
+
+        return new BeanResponse(beanList, cnt);
+    }
+
     @RequestMapping(value = "/newUser", method = RequestMethod.GET)
     public String newUserGET(final HttpServletRequest request) throws Exception {
         request.setAttribute("pageType", ProfieEditMode.NEW_USER_NO_APPROVER);
-        return processProfileScreenGetRequest(request, new User(), true, getRequesterId(request));
+        return processProfileScreenGetRequest(request, new User(), true, null);
     }
 
     @RequestMapping(value = "/newUser", method = RequestMethod.POST)
@@ -114,7 +135,7 @@ public class AnonymousUserProfileController extends AbstractProfileController {
     @RequestMapping(value = "/newUserWithApprover", method = RequestMethod.GET)
     public String newUserWithApprover(final HttpServletRequest request) throws Exception {
         request.setAttribute("pageType", ProfieEditMode.NEW_USER_WITH_APPROVER);
-        return processProfileScreenGetRequest(request, new User(), true, getRequesterId(request));
+        return processProfileScreenGetRequest(request, new User(), true, null);
     }
 
     @RequestMapping(value = "/newUserWithApprover", method = RequestMethod.POST)

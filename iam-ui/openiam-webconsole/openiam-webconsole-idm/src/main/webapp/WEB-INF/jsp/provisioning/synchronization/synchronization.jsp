@@ -370,7 +370,7 @@
     </td>
     <td>
         <spring:message var="connectionUrlTitle" code="openiam.ui.idm.synch.synch_edit.title.connectionUrl"/>
-        <form:input path="connectionUrl" cssClass="full rounded _input_tiptip" size="100" maxlength="100"
+        <form:input path="connectionUrl" cssClass="full rounded _input_tiptip" size="100" maxlength="500"
                     title="${connectionUrlTitle}"/>
     </td>
 </tr>

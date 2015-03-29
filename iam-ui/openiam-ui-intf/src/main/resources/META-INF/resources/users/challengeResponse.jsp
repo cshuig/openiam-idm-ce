@@ -36,7 +36,7 @@ response.setDateHeader ("Expires", -1);
 			OPENIAM = window.OPENIAM || {};
 			OPENIAM.ENV = window.OPENIAM.ENV || {};
 			OPENIAM.ENV.MenuTree = <c:choose><c:when test="${! empty requestScope.menuTree}">${requestScope.menuTree}</c:when><c:otherwise>null</c:otherwise></c:choose>;
-			OPENIAM.ENV.MenuTreeAppendURL = null;
+            OPENIAM.ENV.MenuTreeAppendURL = <c:choose><c:when test="${! empty requestScope.userId}">"id=${requestScope.userId}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
             OPENIAM.ENV.SecureAnswers = <c:choose><c:when test="${requestScope.secureAnswers}">1</c:when><c:otherwise>0</c:otherwise></c:choose>;
 		</script>
 	</head>
@@ -115,14 +115,16 @@ response.setDateHeader ("Expires", -1);
 	                <tr>
 	                    <td colspan="2">
 	                        <ul class="formControls">
-                                <li class="leftBtn">
-                                    <a href="myInfo.html" class="whiteBtn"><spring:message code="openiam.ui.common.cancel" /></a>
-                                </li>
-                                <li class="rightBtn">
-                                    <a href="javascript:void(0)">
-                                        <input id="save" type="submit" class="redBtn" value='<spring:message code="openiam.ui.common.save" />' />
-                                    </a>
-                                </li>
+                                <c:if test="${not requestScope.readOnly}">
+                                    <li class="leftBtn">
+                                        <a href="myInfo.html" class="whiteBtn"><spring:message code="openiam.ui.common.cancel" /></a>
+                                    </li>
+                                    <li class="rightBtn">
+                                        <a href="javascript:void(0)">
+                                            <input id="save" type="submit" class="redBtn" value='<spring:message code="openiam.ui.common.save" />' />
+                                        </a>
+                                    </li>
+                                </c:if>
 	                        </ul>
 	                    </td>
 	                </tr>

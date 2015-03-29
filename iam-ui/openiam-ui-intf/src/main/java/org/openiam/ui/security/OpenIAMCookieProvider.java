@@ -126,6 +126,36 @@ public class OpenIAMCookieProvider {
             response.addCookie(cookie);
         }
     }
+    
+    public void setSAMLPostbackURL(final HttpServletRequest request,
+    							   final HttpServletResponse response,
+    							   final String name, 
+    							   final String value) {
+    	final Cookie cookie = new Cookie(name, value);
+    	cookie.setPath("/");
+        cookie.setSecure(StringUtils.equalsIgnoreCase("https", request.getScheme()));
+        cookie.setDomain(getCookieDomain(request));
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(30 * 60); /* 30 secs */
+        response.addCookie(cookie);
+    }
+    
+    public String getAndRemoveSAMLPostbackURL(final HttpServletRequest request, 
+    									      final HttpServletResponse response,
+    									      final String name) {
+    	String retVal = null;
+    	final Cookie cookie = CookieUtils.getCookie(request, name);
+		if(cookie != null) {
+			retVal = cookie.getValue();
+			cookie.setPath("/");
+	        cookie.setSecure(StringUtils.equalsIgnoreCase("https", request.getScheme()));
+	        cookie.setDomain(getCookieDomain(request));
+	        cookie.setHttpOnly(true);
+			cookie.setMaxAge(0);
+			response.addCookie(cookie);
+		}
+		return retVal;
+    }
 
     public String getUserId(final HttpServletRequest request) {
         String userId = null;

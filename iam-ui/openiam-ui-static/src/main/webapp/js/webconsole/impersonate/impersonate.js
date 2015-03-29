@@ -34,13 +34,6 @@ OPENIAM.User = {
     				url : "rest/api/users/search",
     				emptyFormText : localeManager["openiam.ui.common.user.search.empty"],
                 	emptyResultsText : localeManager["openiam.ui.common.user.search.no.results"],
-    				columnHeaders : [
-    					localeManager["openiam.ui.common.name"], 
-    					localeManager["openiam.ui.common.phone.number"], 
-    					localeManager["openiam.ui.common.email.address"], 
-    					localeManager["openiam.ui.webconsole.user.status"], 
-    					localeManager["openiam.ui.webconsole.user.accountStatus"]
-    				],
     				onEntityClick : function(bean) {
     					OPENIAM.User.impersonate(bean.id);
     				}

@@ -42,7 +42,6 @@ public class MngSystemCommand {
     private String testConnectionHandler;
     private String reconcileResourceHandler;
     private String attributeNamesHandler;
-    private String attributeNamesLookup;
     private SearchScopeType searchScope = SearchScopeType.SUBTREE_SCOPE;
     private String resourceId;
     // ManagedSystemObjectMatch
@@ -51,6 +50,7 @@ public class MngSystemCommand {
     private String searchBaseDn;
     private String searchFilter;
     private String objectSearchId;
+    private boolean changedByEndUser;
     private boolean skipGroupProvision;
     private String keyFieldGroup;
     private String baseDnGroup;
@@ -76,6 +76,7 @@ public class MngSystemCommand {
         this.connectionString = managedSysDto.getConnectionString();
         this.login = managedSysDto.getUserId();
         this.password = managedSysDto.getDecryptPassword();
+        this.changedByEndUser = managedSysDto.getChangedByEndUser();
         this.primaryRepository = managedSysDto.getPrimaryRepository();
         this.secondaryRepositoryId = managedSysDto.getSecondaryRepositoryId();
         this.updateSecondary = managedSysDto.getUpdateSecondary();
@@ -91,7 +92,6 @@ public class MngSystemCommand {
         this.testConnectionHandler = managedSysDto.getTestConnectionHandler();
         this.reconcileResourceHandler = managedSysDto.getReconcileResourceHandler();
         this.attributeNamesHandler = managedSysDto.getAttributeNamesHandler();
-        this.attributeNamesLookup = managedSysDto.getAttributeNamesLookup();
         this.searchScope = managedSysDto.getSearchScope();
         this.resourceId = managedSysDto.getResourceId();
         this.skipGroupProvision = managedSysDto.getSkipGroupProvision();
@@ -359,6 +359,14 @@ public class MngSystemCommand {
         return testConnectionHandler;
     }
 
+    public boolean getChangedByEndUser() {
+        return changedByEndUser;
+    }
+
+    public void setChangedByEndUser(boolean changedByEndUser) {
+        this.changedByEndUser = changedByEndUser;
+    }
+
     public void setTestConnectionHandler(String testConnectionHandler) {
         this.testConnectionHandler = testConnectionHandler;
     }
@@ -411,7 +419,7 @@ public class MngSystemCommand {
 
     public ManagedSysDto getUpdatedManagedSys(ManagedSysDto managedSysDto) {
         fillDTO(managedSysDto);
-        if(!HIDDEN_PASSWORD.equalsIgnoreCase(this.password)) {
+        if (!HIDDEN_PASSWORD.equalsIgnoreCase(this.password)) {
             managedSysDto.setPswd(this.password);
         } else {
             managedSysDto.setPswd(managedSysDto.getDecryptPassword());
@@ -424,7 +432,7 @@ public class MngSystemCommand {
         managedSysDto.setId(this.id);
         fillDTO(managedSysDto);
         // set password
-        if(!MngSystemCommand.HIDDEN_PASSWORD.equalsIgnoreCase(this.password)) {
+        if (!MngSystemCommand.HIDDEN_PASSWORD.equalsIgnoreCase(this.password)) {
             managedSysDto.setPswd(this.password);
         }
         return managedSysDto;
@@ -460,10 +468,10 @@ public class MngSystemCommand {
         managedSysDto.setTestConnectionHandler(this.testConnectionHandler);
         managedSysDto.setAttributeNamesHandler(this.attributeNamesHandler);
         managedSysDto.setReconcileResourceHandler(this.reconcileResourceHandler);
-        managedSysDto.setAttributeNamesLookup(attributeNamesLookup);
         managedSysDto.setSearchScope(searchScope);
         managedSysDto.setResourceId(resourceId);
         managedSysDto.setSkipGroupProvision(skipGroupProvision);
+        managedSysDto.setChangedByEndUser(this.changedByEndUser);
     }
 
     public String getResourceId() {
@@ -472,14 +480,6 @@ public class MngSystemCommand {
 
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
-    }
-
-    public String getAttributeNamesLookup() {
-        return attributeNamesLookup;
-    }
-
-    public void setAttributeNamesLookup(String attributeNamesLookup) {
-        this.attributeNamesLookup = attributeNamesLookup;
     }
 
     public SearchScopeType getSearchScope() {

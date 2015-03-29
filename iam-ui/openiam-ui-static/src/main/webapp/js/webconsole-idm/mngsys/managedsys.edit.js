@@ -1,21 +1,21 @@
 OPENIAM = window.OPENIAM || {};
 
 OPENIAM.ManagedSys = {
-    init : function() {
-        $("#deleteBean").click(function() {
+    init: function () {
+        $("#deleteBean").click(function () {
             OPENIAM.Modal.Warn({
-                message : OPENIAM.ENV.Text.DeleteWarn,
-                buttons : true,
-                OK : {
-                    text : localeManager["openiam.ui.report.mngsys.delete.confirmation"],
-                    onClick : function() {
+                message: OPENIAM.ENV.Text.DeleteWarn,
+                buttons: true,
+                OK: {
+                    text: localeManager["openiam.ui.report.mngsys.delete.confirmation"],
+                    onClick: function () {
                         OPENIAM.Modal.Close();
                         OPENIAM.ManagedSys.performDelete();
                     }
                 },
-                Cancel : {
-                    text : localeManager["openiam.ui.common.cancel"],
-                    onClick : function() {
+                Cancel: {
+                    text: localeManager["openiam.ui.common.cancel"],
+                    onClick: function () {
                         OPENIAM.Modal.Close();
                     }
                 }
@@ -23,131 +23,152 @@ OPENIAM.ManagedSys = {
             return false;
         });
 
-        $("#save").click(function() {
+        $("#save").click(function () {
             OPENIAM.ManagedSys.save();
             return false;
         });
 
-        $("#testConnection").click(function() {
+        $("#testConnection").click(function () {
             OPENIAM.ManagedSys.testConnection();
         });
 
-        $("#requestSSLCert").click(function() {
+        $("#requestSSLCert").click(function () {
             OPENIAM.ManagedSys.certRequest();
         });
 
-        $("#skipGroupProvision").change(function() {
+        $("#skipGroupProvision").change(function () {
             OPENIAM.ManagedSys.showGroupMatching();
         });
 
         OPENIAM.ManagedSys.populate();
         OPENIAM.ManagedSys.showGroupMatching();
     },
-    populate : function() {
+    populate: function () {
         var fieldName = null;
         if (OPENIAM.ENV.MngSysProps) {
-            fieldName = {fieldName: "name", type:"select", label: localeManager["openiam.ui.common.attribute.name"], required : true, items : OPENIAM.ENV.MngSysProps};
+            fieldName = {
+                fieldName: "name",
+                type: "select",
+                label: localeManager["openiam.ui.common.attribute.name"],
+                required: true,
+                items: OPENIAM.ENV.MngSysProps
+            };
         } else {
-            fieldName = {fieldName: "name", type:"text", label: localeManager["openiam.ui.common.attribute.name"], required : true};
+            fieldName = {
+                fieldName: "name",
+                type: "text",
+                label: localeManager["openiam.ui.common.attribute.name"],
+                required: true
+            };
         }
         var modalFields = [
             fieldName,
-            {fieldName: "metadataId", type:"select",label: localeManager["openiam.ui.metadata.element"], required:false},
-            {fieldName: "value", type:"text",label:localeManager["openiam.ui.common.attribute.value"], required:true}
+            {
+                fieldName: "metadataId",
+                type: "select",
+                label: localeManager["openiam.ui.metadata.element"],
+                required: false
+            },
+            {
+                fieldName: "value",
+                type: "text",
+                label: localeManager["openiam.ui.common.attribute.value"],
+                required: true
+            }
         ];
 
         if (OPENIAM.ENV.Resource != null) {
             OPENIAM.ENV.Resource.resourceProps = (OPENIAM.ENV.Resource.resourceProps != null) ? OPENIAM.ENV.Resource.resourceProps : [];
             $("#attributesContainer").attributeTableEdit({
-                objectArray : OPENIAM.ENV.Resource.resourceProps,
-                dialogModalFields : modalFields,
-                fieldNames : ["name", "metadataName", "value"]
+                objectArray: OPENIAM.ENV.Resource.resourceProps,
+                dialogModalFields: modalFields,
+                fieldNames: ["name", "metadataName", "value"]
             });
         }
     },
-    testConnection : function() {
+    testConnection: function () {
         $.ajax({
-            url : "testManagedSysConnection.html",
-            data : {
-                id : OPENIAM.ENV.ManagedSysId
+            url: "testManagedSysConnection.html",
+            data: {
+                id: OPENIAM.ENV.ManagedSysId
             },
-            type : "POST",
-            dataType : "json",
-            success : function(data, textStatus, jqXHR) {
+            type: "POST",
+            dataType: "json",
+            success: function (data, textStatus, jqXHR) {
                 if (data.status == 200) {
                     OPENIAM.Modal.Success({
-                        message : data.successMessage,
-                        showInterval : 2000,
-                        onIntervalClose : function() {
+                        message: data.successMessage,
+                        showInterval: 2000,
+                        onIntervalClose: function () {
 
                         }
                     });
                 } else {
                     OPENIAM.Modal.Error({
-                        errorList : data.errorList
+                        errorList: data.errorList
                     });
                 }
             },
-            error : function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
             }
         });
     },
-    certRequest : function() {
+    certRequest: function () {
         $.ajax({
-            url : "certRequest.html",
-            data : {
-                id : OPENIAM.ENV.ManagedSysId
+            url: "certRequest.html",
+            data: {
+                id: OPENIAM.ENV.ManagedSysId
             },
-            type : "POST",
-            dataType : "json",
-            success : function(data, textStatus, jqXHR) {
+            type: "POST",
+            dataType: "json",
+            success: function (data, textStatus, jqXHR) {
                 if (data.status == 200) {
                     OPENIAM.Modal.Success({
-                        message : data.successMessage,
-                        showInterval : 2000,
-                        onIntervalClose : function() {
+                        message: data.successMessage,
+                        showInterval: 2000,
+                        onIntervalClose: function () {
 
                         }
                     });
                 } else {
                     OPENIAM.Modal.Error({
-                        errorList : data.errorList
+                        errorList: data.errorList
                     });
                 }
             },
-            error : function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
             }
         });
     },
-    showGroupMatching : function() {
+    showGroupMatching: function () {
         var hide = $("#skipGroupProvision").is(":checked");
         if (hide) {
             $("#keyFieldGroup").closest("tr").hide();
             $("#baseDnGroup").closest("tr").hide();
             $("#searchBaseDnGroup").closest("tr").hide();
             $("#searchFilterGroup").closest("tr").hide();
-        } else  {
+        } else {
             $("#keyFieldGroup").closest("tr").show();
             $("#baseDnGroup").closest("tr").show();
             $("#searchBaseDnGroup").closest("tr").show();
             $("#searchFilterGroup").closest("tr").show();
         }
     },
-    save : function() {
+    save: function () {
         $.ajax({
-            url : "mngsystem.html",
-            data : JSON.stringify(this.toJSON()),
-            type : "POST",
-            dataType : "json",
-            contentType : "application/json",
-            success : function(data, textStatus, jqXHR) {
+            url: "mngsystem.html",
+            data: JSON.stringify(this.toJSON()),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
                 if (data.status == 200) {
                     OPENIAM.Modal.Success({
-                        message : data.successMessage,
-                        showInterval : 2000,
-                        onIntervalClose : function() {
+                        message: data.successMessage,
+                        showInterval: 2000,
+                        onIntervalClose: function () {
                             if (data.redirectURL != null && data.redirectURL != undefined && data.redirectURL.length > 0) {
                                 window.location.href = data.redirectURL;
                             } else {
@@ -157,44 +178,44 @@ OPENIAM.ManagedSys = {
                     });
                 } else {
                     OPENIAM.Modal.Error({
-                        errorList : data.errorList
+                        errorList: data.errorList
                     });
                 }
             },
-            error : function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
             }
         });
     },
-    performDelete : function() {
+    performDelete: function () {
         $.ajax({
-            url : "deleteManagedSystem.html",
-            data : {
-                id : OPENIAM.ENV.ManagedSysId
+            url: "deleteManagedSystem.html",
+            data: {
+                id: OPENIAM.ENV.ManagedSysId
             },
-            type : "POST",
-            dataType : "json",
-            success : function(data, textStatus, jqXHR) {
+            type: "POST",
+            dataType: "json",
+            success: function (data, textStatus, jqXHR) {
                 if (data.status == 200) {
                     OPENIAM.Modal.Success({
-                        message : data.successMessage,
-                        showInterval : 2000,
-                        onIntervalClose : function() {
+                        message: data.successMessage,
+                        showInterval: 2000,
+                        onIntervalClose: function () {
                             window.location.href = data.redirectURL;
                         }
                     });
                 } else {
                     OPENIAM.Modal.Error({
-                        errorList : data.errorList
+                        errorList: data.errorList
                     });
                 }
             },
-            error : function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
             }
         });
     },
-    toJSON : function() {
+    toJSON: function () {
         var obj = {};
         obj.objectSearchId = OPENIAM.ENV.ObjectSearchId;
         obj.objectSearchIdGroup = OPENIAM.ENV.ObjectSearchIdGroup;
@@ -241,14 +262,15 @@ OPENIAM.ManagedSys = {
         obj.attributeNamesHandler = $("#attributeNamesHandler").val();
         obj.resourceProps = (OPENIAM.ENV.Resource != null) ? OPENIAM.ENV.Resource.resourceProps : [];
         obj.skipGroupProvision = $("#skipGroupProvision").is(":checked");
+        obj.changedByEndUser = $("#changedByEndUser").is(":checked");
         return obj;
     }
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     OPENIAM.ManagedSys.init();
 });
 
-$(window).load(function() {
+$(window).load(function () {
 
 });

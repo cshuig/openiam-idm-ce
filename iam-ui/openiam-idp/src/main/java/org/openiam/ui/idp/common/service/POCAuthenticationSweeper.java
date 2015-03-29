@@ -37,7 +37,7 @@ public class POCAuthenticationSweeper implements AuthenticationSweeper, Initiali
 		googleProvider = new SAMLIdentityProvider();
 		googleProvider.setPublicKey(IOUtils.toByteArray(getPublicKeyInputStream()));
 		googleProvider.setPrivateKey(IOUtils.toByteArray(getPrivateKeyInputStream()));
-		googleProvider.setSignResponse(true);
+		googleProvider.setSign(true);
 		googleProvider.setAssertionConsumerURL("https://www.google.com/a/openiamdemo.com/acs");
 		googleProvider.setRequestIssuer("google.com/a/openiamdemo.com");
 		googleProvider.setManagedSysId("103");
@@ -45,7 +45,7 @@ public class POCAuthenticationSweeper implements AuthenticationSweeper, Initiali
 		salesForceProvider = new SAMLIdentityProvider();
 		salesForceProvider.setPublicKey(IOUtils.toByteArray(getPublicKeyInputStream()));
 		salesForceProvider.setPrivateKey(IOUtils.toByteArray(getPrivateKeyInputStream()));
-		salesForceProvider.setSignResponse(true);
+		salesForceProvider.setSign(true);
 		salesForceProvider.setAssertionConsumerURL("https://login.salesforce.com/?saml=02HKiPoin4SS8VUMTuiWxjbWxIo20RQDhx3Wjixser3dgw6HNb6FttNu1C");
 		salesForceProvider.setRequestIssuer("https://openiam-dev-ed.my.salesforce.com");
 		salesForceProvider.addAudience("https://saml.salesforce.com");

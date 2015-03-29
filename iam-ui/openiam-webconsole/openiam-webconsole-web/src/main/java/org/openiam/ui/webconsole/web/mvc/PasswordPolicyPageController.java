@@ -10,10 +10,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.idm.searchbeans.MetadataTypeSearchBean;
 import org.openiam.idm.srvc.audit.constant.AuditAction;
 import org.openiam.idm.srvc.audit.constant.AuditAttributeName;
 import org.openiam.idm.srvc.audit.constant.AuditSource;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
+import org.openiam.idm.srvc.meta.domain.MetadataTypeGrouping;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.policy.dto.*;
 import org.openiam.idm.srvc.role.dto.Role;
@@ -273,7 +275,10 @@ public class PasswordPolicyPageController extends AbstractPolicyController {
         } catch (Exception exp) {
             log.error(exp);
         }
-
+        request.setAttribute("managedSystems", managedSysServiceClient.getAllManagedSys());
+        MetadataTypeSearchBean metadataTypeSearchBean = new MetadataTypeSearchBean();
+        metadataTypeSearchBean.setGrouping(MetadataTypeGrouping.USER_OBJECT_TYPE);
+        request.setAttribute("userTypes", metadataServiceClient.findTypeBeans(metadataTypeSearchBean, -1, -1, this.getCurrentLanguage()));
         request.setAttribute("policyAssociation", policyAssociation);
         return "passwordPolicy/assocPasswordPolicy";
     }

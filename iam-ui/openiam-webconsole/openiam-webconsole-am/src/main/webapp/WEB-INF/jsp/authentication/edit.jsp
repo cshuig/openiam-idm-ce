@@ -304,6 +304,24 @@ response.setDateHeader ("Expires", -1);
 									<li>
 										<a href="authenticationProviders.html" class="whiteBtn"><fmt:message key="openiam.ui.button.cancel"/></a>
 									</li>
+									<c:if test="${not empty requestScope.provider.providerId}">
+										<c:choose>
+											<c:when test="${requestScope.authProviderType.id eq 'SAML_SP_PROVIDER'}">
+												<li>
+													<a href="/idp/sp/metadata/${requestScope.provider.providerId}" target="_blank">
+														<fmt:message key="openiam.ui.webconsole.saml.sp.metadata"/>
+													</a>
+												</li>
+											</c:when>
+											<c:when test="${requestScope.authProviderType.id eq 'SAML_PROVIDER'}">
+												<li>
+													<a href="/idp/SAMLMetadata.html?id=${requestScope.provider.providerId}" target="_blank">
+														<fmt:message key="openiam.ui.webconsole.saml.sp.metadata"/>
+													</a>
+												</li>
+											</c:when>
+										</c:choose>
+									</c:if>
 									<c:if test="${! empty requestScope.provider.providerId}">
 										<li class="rightBtn">
 											<a id="deleteProvider" href="javascript:void(0);" class="redBtn"><fmt:message key="openiam.ui.button.delete"/></a>

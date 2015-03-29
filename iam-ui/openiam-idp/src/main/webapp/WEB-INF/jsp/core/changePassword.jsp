@@ -79,7 +79,7 @@ response.setDateHeader ("Expires", -1);
 						</c:forEach>
 					</c:if>
                     <div class="lrow">
-                        <a href="/selfservice/myInfo.html" class="whiteBtn"><spring:message code="openiam.ui.common.cancel" /></a>
+                        <a href="${requestScope.onCancelChangePasswordURL}" class="whiteBtn"><spring:message code="openiam.ui.common.cancel" /></a>
                         <a href="javascript:void(0)"><input id="submit" type="submit" class="redBtn" value="<fmt:message key='openiam.idp.change.password' />" /></a>
                     </div>
 				</form>

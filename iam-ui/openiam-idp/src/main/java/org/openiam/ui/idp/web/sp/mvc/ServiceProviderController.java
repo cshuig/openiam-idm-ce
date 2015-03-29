@@ -1,18 +1,24 @@
 package org.openiam.ui.idp.web.sp.mvc;
 
 import java.io.IOException;
+import java.net.CookiePolicy;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.openiam.ui.idp.saml.model.SAMLIDPMetadataResponse;
 import org.openiam.ui.idp.saml.model.SAMLRequestToken;
 import org.openiam.ui.idp.saml.model.SAMLResponseToken;
+import org.openiam.ui.idp.saml.model.SAMLSPMetadataResponse;
 import org.openiam.ui.idp.saml.provider.SAMLServiceProvider;
 import org.openiam.ui.idp.saml.service.SAMLService;
 import org.openiam.ui.security.OpenIAMCookieProvider;
+import org.openiam.ui.util.CookieUtils;
 import org.openiam.ui.util.URIUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.web.filter.ProxyFilter;
@@ -47,6 +53,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.w3c.dom.Element;
 
 @Controller
@@ -62,6 +69,19 @@ public class ServiceProviderController {
 	
 	@Autowired
 	private LoginProvider loginProvider;
+	
+	@RequestMapping(value={"/metadata/{serviceProviderId}"}, method=RequestMethod.GET, produces="text/xml")
+	public @ResponseBody String spMetadata(final HttpServletRequest request,
+			   							   final HttpServletResponse response,
+			   							   final @PathVariable(value="serviceProviderId") String serviceProviderId) throws IOException {
+		final SAMLSPMetadataResponse token = samlService.getSPMetadata(request, serviceProviderId);
+		if(token.isError()) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, token.getError().toString());
+			return null;
+		} else {
+			return XMLHelper.prettyPrintXML(token.getEntityDescriptorElement());
+		}
+	}
 	
 	@RequestMapping(value={"/logout/{spId}"}, method=RequestMethod.GET)
 	public void logout(final HttpServletRequest request,
@@ -79,10 +99,26 @@ public class ServiceProviderController {
 		}
 	}
 	
+	private String getSPPostbackURLCookieName(final String spName) {
+		return "SAMLPostbackURL" + spName;
+	}
+	
 	@RequestMapping(value={"/login/{spName}"}, method=RequestMethod.GET)
 	public void login(final HttpServletRequest request,
 					  final HttpServletResponse response,
-					  final @PathVariable(value="spName") String spName) throws IOException, MessageEncodingException {
+					  final @PathVariable(value="spName") String spName,
+					  @RequestParam(value = "postbackURL", required = false) String postbackURL) throws IOException, MessageEncodingException {
+		if(StringUtils.isNotBlank(postbackURL)) {
+			/*
+        	if (!URIUtils.isValidPostbackURL(postbackURL)) {
+        		log.warn(String.format("Postback URL '%s' not valid - doesn't start with a '/' - XSS detected.  Returning 401", postbackURL));
+        		response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        		return null;
+        	}
+        	*/
+			//cookieProvider.setSAMLPostbackURL(request, response, getSPPostbackURLCookieName(spName), postbackURL);
+        }
+		
 		final SAMLRequestToken token = samlService.getSAMLRequestForSP(request, spName);
 		if(token.isError()) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, token.getError().toString());
@@ -99,7 +135,7 @@ public class ServiceProviderController {
 				messageContext.setOutboundMessageTransport(outTransport);
 				messageContext.setOutboundMessage(authnRequest);
 				messageContext.setOutboundSAMLMessage(authnRequest);
-				//messageContext.setRelayState("relay");
+				messageContext.setRelayState(postbackURL);
 				messageContext.setPeerEntityEndpoint(endpoint);
 				new HTTPRedirectDeflateEncoder().encode(messageContext);
 			//}
@@ -108,13 +144,17 @@ public class ServiceProviderController {
 	
 	@RequestMapping(value={"/login/{spName}"}, method=RequestMethod.POST)
 	public String doPost(final HttpServletRequest request,
-					   final HttpServletResponse response) throws IOException {
+					   final HttpServletResponse response,
+					   final @PathVariable(value="spName") String spName) throws IOException {
 		final SAMLResponseToken token = samlService.processSAMLResponse(request, response);
 		if(token.isError()) {
 			request.setAttribute("error", new ErrorToken(token.getError()));
 			return "auth/authError";
 		} else {
-			response.sendRedirect("/selfservice");
+			String redirectURL = "/selfservice";
+			final String relayState = request.getParameter("RelayState");
+			redirectURL = (StringUtils.isNotEmpty(relayState)) ? relayState : redirectURL;
+			response.sendRedirect(redirectURL);
 			return null;
 		}
 		//validate SAMLResponse and RelayState

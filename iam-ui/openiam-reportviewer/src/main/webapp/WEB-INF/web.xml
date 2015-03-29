@@ -30,7 +30,7 @@
 	-->
 	<context-param>
 		<param-name>BIRT_VIEWER_WORKING_FOLDER</param-name>
-        <param-value>${confpath}/upload/report</param-value>
+        <param-value>${birt.viewer.folder}</param-value>
 		<!-- param-value>c://data/openiam/upload/report</param-value -->
 	</context-param>
 		
@@ -130,7 +130,7 @@
 	<!-- Defines the BIRT viewer configuration file -->
 	<context-param>
 		<param-name>BIRT_VIEWER_CONFIG_FILE</param-name>
-		<param-value>WEB-INF/viewer.properties</param-value>
+		<param-value>${birt.viewer.conf}</param-value>
 	</context-param>
 
 	<!--

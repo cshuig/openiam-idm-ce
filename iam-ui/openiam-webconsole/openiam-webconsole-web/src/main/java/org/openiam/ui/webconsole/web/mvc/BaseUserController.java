@@ -1,6 +1,7 @@
 package org.openiam.ui.webconsole.web.mvc;
 
 import org.openiam.idm.srvc.org.dto.Organization;
+import org.openiam.idm.srvc.role.ws.RoleDataWebService;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
 import org.openiam.provision.service.AsynchUserProvisionService;
 import org.openiam.provision.service.ProvisionService;
@@ -30,6 +31,7 @@ public abstract class BaseUserController extends AbstractWebconsoleController {
 
     @Resource(name = "userServiceClient")
     protected UserDataWebService userDataWebService;
+
 
     protected HashMap<String, List<KeyNameBean>> convertToOrganizationMap(List<Organization> organizationList) {
         HashMap<String, List<KeyNameBean>> map = new HashMap<String, List<KeyNameBean>>();

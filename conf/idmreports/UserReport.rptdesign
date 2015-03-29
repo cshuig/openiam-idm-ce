@@ -104,7 +104,8 @@
     </parameters>
     <data-sources>
         <oda-data-source extensionID="org.eclipse.datatools.enablement.oda.ws" name="Data Source" id="7">
-            <method name="beforeOpen"><![CDATA[var reportFolderAndReportName = reportContext.getReportRunnable().getReportName();
+            <method name="beforeOpen"><![CDATA[//var myresourcefolder = reportContext.getDesignHandle().getResourceFolder();
+var reportFolderAndReportName = reportContext.getReportRunnable().getReportName();
 var myresourcefolder = reportFolderAndReportName.substr(0,reportFolderAndReportName.lastIndexOf('/')) 
 this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/configuration.cps");]]></method>
             <property name="wsdlURI">http://localhost:9080/openiam-esb/idmsrvc/ReportWebService?wsdl</property>
@@ -215,6 +216,7 @@ this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/config
                     <expression name="defaultValue" type="javascript">multiParameterToXml("ROLE")</expression>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
                 </structure>
             </list-property>
             <structure name="cachedMetaData">
@@ -401,6 +403,13 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
           <design:scale>-1</design:scale>
           <design:nullability>Unknown</design:nullability>
         </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>CustomData value: multiParameterToXml(&amp;quot;ROLE&amp;quot;), displayValue: null</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
       </design:ParameterDefinition>
     </parameter>
   </DataSetParameters>
@@ -680,6 +689,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <expression name="defaultValue" type="javascript">multiParameterToXml("ROLE")</expression>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
                 </structure>
             </list-property>
             <structure name="cachedMetaData">
@@ -785,6 +795,13 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
           <design:scale>-1</design:scale>
           <design:nullability>Unknown</design:nullability>
         </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>CustomData value: multiParameterToXml(&amp;quot;ROLE&amp;quot;), displayValue: null</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
       </design:ParameterDefinition>
     </parameter>
   </DataSetParameters>
@@ -998,7 +1015,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             </list-property>
         </oda-data-set>
         <oda-data-set extensionID="org.eclipse.datatools.enablement.oda.ws.dataSet" name="Data Set Status" id="410">
-            <property name="nullsOrdering">nulls lowest</property>
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">ID</property>
@@ -1116,7 +1132,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>xmlFileURI</name>
-                    <value></value>
+                    <value>J:\data\openiam\upload\report\samples\AuditReport.attrib.sample.data.xml</value>
                 </ex-property>
                 <ex-property>
                     <name>xsdFileURI</name>
@@ -1127,7 +1143,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>useSoapEndPoint</name>
-                    <value>true</value>
+                    <value>false</value>
                 </ex-property>
             </list-property>
         </oda-data-set>
@@ -1249,7 +1265,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>xmlFileURI</name>
-                    <value></value>
+                    <value>J:\data\openiam\upload\report\samples\AuditReport.attrib.sample.data.xml</value>
                 </ex-property>
                 <ex-property>
                     <name>xsdFileURI</name>
@@ -1260,12 +1276,11 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>useSoapEndPoint</name>
-                    <value>true</value>
+                    <value>false</value>
                 </ex-property>
             </list-property>
         </oda-data-set>
         <oda-data-set extensionID="org.eclipse.datatools.enablement.oda.ws.dataSet" name="Data Set Org" id="893">
-            <property name="nullsOrdering">nulls lowest</property>
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">ID</property>
@@ -1383,7 +1398,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>xmlFileURI</name>
-                    <value></value>
+                    <value>J:\data\openiam\upload\report\samples\AuditReport.attrib.sample.data.xml</value>
                 </ex-property>
                 <ex-property>
                     <name>xsdFileURI</name>
@@ -1394,12 +1409,11 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>useSoapEndPoint</name>
-                    <value>true</value>
+                    <value>false</value>
                 </ex-property>
             </list-property>
         </oda-data-set>
         <oda-data-set extensionID="org.eclipse.datatools.enablement.oda.ws.dataSet" name="Data Set Role" id="892">
-            <property name="nullsOrdering">nulls lowest</property>
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">ID</property>
@@ -1517,7 +1531,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>xmlFileURI</name>
-                    <value></value>
+                    <value>J:\data\openiam\upload\report\samples\AuditReport.attrib.sample.data.xml</value>
                 </ex-property>
                 <ex-property>
                     <name>xsdFileURI</name>
@@ -1528,7 +1542,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </ex-property>
                 <ex-property>
                     <name>useSoapEndPoint</name>
-                    <value>true</value>
+                    <value>false</value>
                 </ex-property>
             </list-property>
         </oda-data-set>
@@ -1703,7 +1717,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
-                                    <expression name="valueExpr" type="javascript">!row["ROLE"]</expression>
+                                    <expression name="valueExpr" type="javascript">!params["ROLE"].value</expression>
                                 </structure>
                             </list-property>
                             <cell id="863">
@@ -1760,7 +1774,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
-                                    <expression name="valueExpr" type="javascript">!row["ORG_ID"]</expression>
+                                    <expression name="valueExpr" type="javascript">!params["ORG_ID"].value</expression>
                                 </structure>
                             </list-property>
                             <cell id="888">
@@ -1781,7 +1795,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
         </grid>
         <table id="12">
             <property name="marginBottom">15pt</property>
-            <property name="width">11.03125in</property>
+            <property name="width">100%</property>
             <property name="dataSet">Data Set Details</property>
             <list-property name="boundDataColumns">
                 <structure>
@@ -1890,28 +1904,28 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </structure>
             </list-property>
             <column id="67">
-                <property name="width">1.6in</property>
+                <property name="width">14%</property>
             </column>
             <column id="70">
-                <property name="width">1.3in</property>
+                <property name="width">12%</property>
             </column>
             <column id="71">
-                <property name="width">1.3in</property>
+                <property name="width">16%</property>
             </column>
             <column id="72">
-                <property name="width">1.3in</property>
+                <property name="width">8%</property>
             </column>
             <column id="392">
-                <property name="width">1.2604166666666667in</property>
+                <property name="width">11%</property>
             </column>
             <column id="73">
-                <property name="width">1.9895833333333333in</property>
+                <property name="width">18%</property>
             </column>
             <column id="74">
-                <property name="width">1.0729166666666667in</property>
+                <property name="width">10%</property>
             </column>
             <column id="75">
-                <property name="width">1.2395833333333333in</property>
+                <property name="width">11%</property>
             </column>
             <header>
                 <row id="310">
@@ -2103,6 +2117,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     </cell>
                     <cell id="47">
                         <property name="style">details-cell</property>
+                        <property name="textAlign">center</property>
                         <data id="48">
                             <property name="resultSetColumn">EMPLOYEE_ID</property>
                         </data>
@@ -2135,6 +2150,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                         <property name="style">details-cell</property>
                         <data id="52">
                             <property name="fontSize">10pt</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">LAST_LOGIN</property>
                         </data>
                     </cell>

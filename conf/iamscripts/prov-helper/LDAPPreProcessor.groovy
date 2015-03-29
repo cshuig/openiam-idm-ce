@@ -1,12 +1,9 @@
-import java.util.Map;
-
-import org.openiam.provision.dto.PasswordSync;
-import org.openiam.provision.dto.ProvisionUser;
-import org.openiam.provision.service.PreProcessor;
+import org.openiam.provision.dto.ProvisionUser
+import org.openiam.provision.service.AbstractPreProcessor
 import org.openiam.provision.service.ProvisioningConstants;
 
 
-public class LDAPPreProcessor implements PreProcessor<ProvisionUser> {
+public class LDAPPreProcessor extends AbstractPreProcessor<ProvisionUser> {
 	
 	public int add(ProvisionUser user, Map<String, Object> bindingMap) {
 		

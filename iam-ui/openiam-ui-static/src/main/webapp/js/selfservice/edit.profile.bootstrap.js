@@ -273,6 +273,7 @@ OPENIAM.EditProfileBootstrap = {
 		            		];
 	
 		if($("#addresses").length > 0) {
+
 			$("#addresses").persistentTable({
 				required : OPENIAM.ENV.AddressRequired,
 				emptyMessage : localeManager["openiam.ui.selfservice.ui.template.no.addresses"],
@@ -280,7 +281,8 @@ OPENIAM.EditProfileBootstrap = {
 				createBtnId : "createAddress",
 				objectArray : OPENIAM.ENV.addressList,
 				headerFields : [
-					localeManager["openiam.ui.common.address.type"], 
+					localeManager["openiam.ui.common.address.type"],
+					localeManager["openiam.ui.common.address.building"],
 					localeManager["openiam.ui.common.address.1"], 
 					localeManager["openiam.ui.common.address.2"], 
 					localeManager["openiam.ui.common.address.city"], 
@@ -290,12 +292,14 @@ OPENIAM.EditProfileBootstrap = {
 					localeManager["openiam.ui.common.is.default"], 
 					localeManager["openiam.ui.common.is.active"]
 				],
-				fieldNames : ["typeDescription", "address1", "address2", "city", "state", "country", "postalCd", "isDefault", "isActive"],
+				fieldNames : ["typeDescription","bldgNumber", "address1", "address2", "city", "state", "country", "postalCd", "isDefault", "isActive"],
 				deleteEnabledField : "editable",
 				editEnabledField : "editable",
 				createText : localeManager["openiam.ui.selfservice.ui.template.add.address"],
 				actionsColumnName : localeManager["openiam.ui.common.actions"],
 				tableTitle : localeManager["openiam.ui.selfservice.ui.template.addresses"],
+				additionalBtnText : localeManager["openiam.ui.button.add.location.to.address"],
+				additionalBtnId : "addLocationBtn",
 				onDeleteClick : function(obj) {
 					var objArray = OPENIAM.ENV.addressList;
 					var hasDefault = false;
@@ -356,6 +360,7 @@ OPENIAM.EditProfileBootstrap = {
 				onCreateClick : function() {
 					var $this = this;
 					var obj = {};
+
 					$("#editDialog").modalEdit({
 						fields: addressModalFields,
 			            dialogTitle: localeManager["openiam.ui.selfservice.ui.template.edit.address"],
@@ -387,6 +392,61 @@ OPENIAM.EditProfileBootstrap = {
 			            }
 	                });
 					$("#editDialog").modalEdit("show", obj);
+				},
+				onAdditionalBtnClick : function() {
+					var orgsId = [];
+					var hierarchy = OPENIAM.ENV.OrganizationHierarchy;
+					if (hierarchy != null && hierarchy != undefined && hierarchy.length > 0 && $("#organizationsTable").length > 0) {
+						orgsId = $("#organizationsTable").organizationHierarchyWrapper("getValues");
+					};
+					if ((orgsId == null) || (orgsId.length == 0)) {
+						OPENIAM.Modal.Error(localeManager["openiam.ui.idm.synch.synch_edit.field.organization"]);
+					} else {
+						var $this = this;
+						var obj = {};
+						var orgId = orgsId.pop();
+						$("#searchLocationContainer").entitlemetnsTable({
+							columnHeaders: [
+								localeManager["openiam.ui.common.location.address"],
+								localeManager["openiam.ui.common.actions"]
+							],
+							columnsMap: ["displayDescription"],
+							ajaxURL: "getLocationsForOrg.html",
+							entityUrl: "",
+							entityURLIdentifierParamName: "id",
+							requestParamIdName: "id",
+							requestParamIdValue: orgId,
+							pageSize: 10,
+							hasEditButton: false,
+							emptyResultsText: localeManager["openiam.ui.user.contact.address.empty"],
+							onAdd: function (bean) {
+								obj.address1 = bean.address1;
+								obj.address2 = bean.address2;
+								obj.city = bean.city;
+								obj.state = bean.state;
+								obj.country = bean.country;
+								obj.postalCd = bean.postalCd;
+								obj.metadataTypeId = "OFFICE_ADDRESS";
+								try {
+									obj.typeDescription = OPENIAM.ENV.AddressTypeMap[obj.metadataTypeId].name
+								} catch(e) {
+									obj.typeDescription = "";
+								}
+								obj.bldgNumber = bean.bldgNum;
+								obj.isDefault = (bean.isDefault == true || OPENIAM.ENV.addressList.length == 0);
+								obj.isActive = (bean.isActive == true || OPENIAM.ENV.addressList.length == 0);
+								obj.addressId = null;
+								obj.editable = true;
+								if(obj.isDefault === true) {
+									$this.persistentTable("setPropertyOnAll", "isDefault", false);
+									obj.isDefault = true;
+								}
+								$this.persistentTable("addObject", obj);
+								$this.persistentTable("draw");
+								$("#searchLocationContainer").empty();
+							}
+						})
+					}
 				}
 			});
 		}

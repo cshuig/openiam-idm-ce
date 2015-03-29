@@ -1,15 +1,19 @@
 package org.openiam.ui.idp.web.mvc;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.auth.dto.AuthenticationRequest;
+import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.service.AuthenticationConstants;
 import org.openiam.idm.srvc.auth.service.AuthenticationService;
 import org.openiam.idm.srvc.auth.ws.AuthenticationResponse;
 import org.openiam.idm.srvc.auth.ws.LoginResponse;
+import org.openiam.idm.srvc.mngsys.dto.ManagedSysDto;
 import org.openiam.idm.srvc.mngsys.ws.ManagedSystemWebService;
 import org.openiam.idm.srvc.policy.dto.Policy;
+import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.ui.exception.ErrorTokenException;
 import org.openiam.ui.idp.web.model.ChangePasswordFormRequest;
 import org.openiam.ui.security.OpenIAMCookieProvider;
@@ -22,17 +26,17 @@ import org.openiam.ui.web.mvc.AbstractPasswordController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @Controller
 public class PasswordController extends AbstractPasswordController {
@@ -48,20 +52,65 @@ public class PasswordController extends AbstractPasswordController {
     @Autowired
     private OpenIAMCookieProvider cookieProvider;
 
+    @Value("${org.openiam.change.password.all}")
+    private Boolean showAllManagedSystems;
+
     @Value("${org.openiam.change.password.success.url}")
     private String changedPasswordSuccess;
+    
+    @Value("${org.openiam.ui.change.password.uri.oncancel}")
+    private String onCancelChangePasswordURL;
 
     @RequestMapping(value = "/changedPasswordSuccess", method = RequestMethod.GET)
     public String changedPasswordSuccess(final HttpServletRequest request) {
         return "core/changedPasswordSuccess";
     }
 
+    @RequestMapping(value = "/changePasswordManagedSystem", method = RequestMethod.GET)
+    public String getChangePasswordManagedSysScreen(final HttpServletRequest request,
+                                                    final HttpServletResponse response
+    ) throws Exception {
+        Policy policy = this.getAuthentificationPolicy();
+        String currentLogin = getRequesterPrincipal(request);
+        if (currentLogin == null) {
+            currentLogin = getTemporaryLoginCookie(request);
+        }
+//Actualize to internal login
+        String internalLogin = this.buildLoginAccordingAuthPolicy(policy, currentLogin);
+        String userId = null;
+        if (StringUtils.isNotBlank(currentLogin)) {
+            User u = userDataWebService.getUserByPrincipal(internalLogin, this.getAuthentificationManagedSystem(policy), true);
+            List<Login> logins = u.getPrincipalList();
+            List<ManagedSysDto> managedSysDtoList = new ArrayList<ManagedSysDto>();
+            if (CollectionUtils.isNotEmpty(logins)) {
+                for (Login l : logins) {
+                    if (l.getManagedSysId() != null) {
+                        ManagedSysDto ms = managedSysServiceClient.getManagedSys(l.getManagedSysId());
+                        if (ms.getChangedByEndUser() || showAllManagedSystems) {
+                            ms.setUserId(l.getLogin());
+                            managedSysDtoList.add(ms);
+                        }
+                    }
+                }
+            }
+            if (CollectionUtils.isNotEmpty(managedSysDtoList)) {
+                request.setAttribute("principalList", managedSysDtoList);
+                request.setAttribute("userId", u.getId());
+            }
+        }
+
+
+        return "core/changePasswordManagedSys";
+    }
+
+
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
     public String getChangePasswordScreen(final HttpServletRequest request,
                                           final HttpServletResponse response,
                                           final @RequestParam(value = "changeReason", required = false) Integer changeReason,
                                           final @RequestParam(value = "postbackURL", required = false) String postbackURL,
-                                          final @RequestParam(value = "numOfDaysUntilPasswordExpiration", required = false) String numOfDaysUntilPasswordExpiration) throws Exception {
+                                          final @RequestParam(value = "numOfDaysUntilPasswordExpiration", required = false) String numOfDaysUntilPasswordExpiration) throws
+            Exception {
         if (!URIUtils.isValidPostbackURL(postbackURL)) {
             log.warn(String.format("Postback URL '%s' not valid - doesn't start with a '/' - XSS detected.  Returning 401", postbackURL));
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -126,6 +175,7 @@ public class PasswordController extends AbstractPasswordController {
             hiddenAttributes.put("numOfDaysUntilPasswordExpiration", numOfDaysUntilPasswordExpiration);
         }
         request.setAttribute("hiddenAttributes", hiddenAttributes);
+        request.setAttribute("onCancelChangePasswordURL", onCancelChangePasswordURL);
         return "core/changePassword";
     }
 
@@ -175,7 +225,7 @@ public class PasswordController extends AbstractPasswordController {
             }
 
 
-            token = attemptResetPassword(request, formRequest.getNewPassword(), formRequest.getUserId(), true);
+            token = attemptResetPassword(request, formRequest.getNewPassword(), formRequest.getUserId(), true, false);
             if (token.hasErrors()) {
                 throw new ErrorTokenException(token.getErrorList());
             }
@@ -233,6 +283,8 @@ public class PasswordController extends AbstractPasswordController {
             return null;
         }
     }
+
+
 
     private boolean isValidErrorCodeForPasswordChange(final int code) {
         return (code == AuthenticationConstants.RESULT_SUCCESS) ||

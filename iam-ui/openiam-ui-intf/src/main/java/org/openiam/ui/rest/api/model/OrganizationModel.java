@@ -24,6 +24,7 @@ public class OrganizationModel extends AbstractBean {
     private String domainName;
     private String ldapStr;
     private String mdTypeId;
+    private String metadataTypeName;
 
     protected List<OrganizationAttribute> attributes = new ArrayList<OrganizationAttribute>();
 
@@ -121,5 +122,13 @@ public class OrganizationModel extends AbstractBean {
 
     public void setAttributes(List<OrganizationAttribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getMetadataTypeName() {
+        return metadataTypeName;
+    }
+
+    public void setMetadataTypeName(String metadataTypeName) {
+        this.metadataTypeName = metadataTypeName;
     }
 }

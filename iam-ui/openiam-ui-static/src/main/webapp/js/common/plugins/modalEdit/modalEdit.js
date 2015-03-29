@@ -242,6 +242,7 @@
                 resizable : false,
                 title : $options.dialogTitle,
                 width : $options.width,
+                position : $options.position,
                 open:function (event, ui) {
                     $options.dialog.css('overflow', 'visible'); //this line does the actual hiding
                     $options.dialog.parents(".ui-dialog:first").css('overflow', 'visible');
@@ -449,6 +450,7 @@
                 saveBtnTxt : localeManager["openiam.ui.common.save"],
                 cancelBtnText : localeManager["openiam.ui.common.cancel"],
                 onShown : null,
+                position : null,
                 afterFormAppended : function() {
                 } // called when the form is fetched and appended
             }, args);

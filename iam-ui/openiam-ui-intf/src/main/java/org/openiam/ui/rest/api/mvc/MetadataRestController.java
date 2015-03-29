@@ -30,12 +30,16 @@ public class MetadataRestController extends AbstractController {
 	
 	
 	@RequestMapping(value = "/metadata/type/groupings", method = RequestMethod.GET)
-	public @ResponseBody BeanResponse getMetdataTypeGroupings() {
+	public @ResponseBody BeanResponse getMetdataTypeGroupings(@RequestParam(required = false, value = "getAll") Boolean showAllGroupings) {
 		final List<KeyNameBean> beans = new LinkedList<>();
 		for(final MetadataTypeGrouping grouping : MetadataTypeGrouping.values()) {
-			if(grouping.isCreatable()) {
-				beans.add(new KeyNameBean(grouping.name(), getLocalizedMessage(String.format("openiam.ui.webconsole.meta.type.grouping.%s", grouping.name()), null)));
-			}
+            if((showAllGroupings!=null && showAllGroupings)
+                    || grouping.isCreatable()){
+                beans.add(new KeyNameBean(grouping.name(), getLocalizedMessage(String.format("openiam.ui.webconsole.meta.type.grouping.%s", grouping.name()), null)));
+            }
+//			if(grouping.isCreatable()) {
+//				beans.add(new KeyNameBean(grouping.name(), getLocalizedMessage(String.format("openiam.ui.webconsole.meta.type.grouping.%s", grouping.name()), null)));
+//			}
 		}
 		return new BeanResponse(beans, beans.size());
 	}

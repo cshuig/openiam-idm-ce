@@ -384,6 +384,11 @@ public enum Errors {
     CHANGE_PWD_FAIL_LENGTH_RULE_RANGE(311, "openiam.ui.password.rule.length.range"),
     CONNECTOR_DELETE_ERROR(312, "openiam.ui.webconsole.idm.connector.delete.error"),
     RESOURCE_LINKED_TO_MANAGED_SYSTEM(313, "openiam.ui.webconsole.resource.delete.linked.managedsys"),
+    CANNOT_SAVE_LOCATION(314, "openiam.ui.common.location.save.error"),
+
+    ADDRESS1_REQUIRED(315, "openiam.ui.profile.address1.required"),
+    LOCATION_NAME_REQUIRED(315, "openiam.ui.profile.location.name.required"),
+
 
     INVALID_REQUEST(400, "openiam.ui.invalid.request"),
     UNAUTHORIZED(401, "openiam.ui.unauthorized"),
@@ -530,7 +535,11 @@ public enum Errors {
     FAIL_POSTPROCESSOR_CUSTOM_ERROR_17(9017,"openiam.postprocessor.custom.error.17"),
     FAIL_POSTPROCESSOR_CUSTOM_ERROR_18(9018,"openiam.postprocessor.custom.error.18"),
     FAIL_POSTPROCESSOR_CUSTOM_ERROR_19(9019,"openiam.postprocessor.custom.error.19"),
-    FAIL_POSTPROCESSOR_CUSTOM_ERROR_20(9020,"openiam.postprocessor.custom.error.20");
+    FAIL_POSTPROCESSOR_CUSTOM_ERROR_20(9020,"openiam.postprocessor.custom.error.20"),
+
+
+
+    USERS_NOT_SELECTED(678,"openiam.ui.bulk.op.user.not.selected");
 
     private int code;
     private String messageName;

@@ -1,10 +1,10 @@
 
-import org.openiam.provision.dto.ProvisionUser;
-import org.openiam.provision.service.PreProcessor;
+import org.openiam.provision.dto.ProvisionUser
+import org.openiam.provision.service.AbstractPostProcessor
 import org.openiam.provision.service.ProvisioningConstants;
 
 
-public class ExchangePreProcessor implements PreProcessor<ProvisionUser> {
+public class ExchangePreProcessor extends AbstractPostProcessor<ProvisionUser> {
 	
 	public int add(ProvisionUser user, Map<String, Object> bindingMap) {
 		

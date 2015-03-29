@@ -18,6 +18,7 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
 import java.util.*;
 
 @Entity
@@ -43,10 +44,10 @@ public class LoginEntity implements java.io.Serializable {
         @Field(name = "login", index = Index.TOKENIZED, store = Store.YES),
         @Field(name = "loginUntokenized", index = Index.UN_TOKENIZED, store = Store.YES)
     })
-    @Column(name="LOGIN",length=320)
+    @Column(name="LOGIN",length=220)
     private String login;
     
-    @Column(name="LOWERCASE_LOGIN",length=320)
+    @Column(name="LOWERCASE_LOGIN",length=220)
     private String lowerCaseLogin;
     
     @Field(name = "managedSysId", index = Index.UN_TOKENIZED, store = Store.YES)
@@ -422,6 +423,15 @@ public class LoginEntity implements java.io.Serializable {
 
     public Set<PasswordHistoryEntity> getPasswordHistory() {
         return passwordHistory;
+    }
+    
+    public void addHistoryRecord(final PasswordHistoryEntity history) {
+    	if(history != null) {
+    		if(this.passwordHistory == null) {
+    			this.passwordHistory = new HashSet<>();
+    		}
+    		this.passwordHistory.add(history);
+    	}
     }
 
     public void setPasswordHistory(Set<PasswordHistoryEntity> passwordHistory) {

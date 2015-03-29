@@ -34,6 +34,7 @@ response.setDateHeader ("Expires", -1);
 		<link href="/openiam-ui-static/js/common/plugins/entitlementstable/entitlements.table.css" rel="stylesheet" type="text/css" />
         <link href="/openiam-ui-static/js/common/plugins/modalsearch/modal.search.css" rel="stylesheet" type="text/css" />
         <link href="/openiam-ui-static/js/common/plugins/modalEdit/modalEdit.css" rel="stylesheet" type="text/css" />
+		<link href="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.css" rel="stylesheet" type="text/css" />
 		<openiam:overrideCSS />
         <script type="text/javascript" src="/openiam-ui-static/_dynamic/openiamResourceBundle.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/js/common/jquery/jquery-1.8.2.js"></script>
@@ -54,12 +55,17 @@ response.setDateHeader ("Expires", -1);
 		<script type="text/javascript" src="/openiam-ui-static/js/common/search/organization.search.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/js/common/plugins/entitlementstable/entitlements.table.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/js/common/attribute.table.edit.js"></script>
+		<script type="text/javascript" src="/openiam-ui-static/js/common/search/group.search.js"></script>
+		<script type="text/javascript" src="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.form.js"></script>
+		<script type="text/javascript" src="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.results.js"></script>
+		<script type="text/javascript" src="/openiam-ui-static/js/common/plugins/orghierarchy/organization.hierarchy.js"></script>
 		<script type="text/javascript">
 			OPENIAM = window.OPENIAM || {};
 			OPENIAM.ENV = window.OPENIAM.ENV || {};
 			OPENIAM.ENV.MenuTree = <c:choose><c:when test="${! empty requestScope.menuTree}">${requestScope.menuTree}</c:when><c:otherwise>null</c:otherwise></c:choose>;
             OPENIAM.ENV.GroupId = <c:choose><c:when test="${! empty requestScope.group.id}">"${requestScope.group.id}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 			OPENIAM.ENV.Group = ${requestScope.groupAsJSON};
+			OPENIAM.ENV.OrganizationHierarchy = ${requestScope.orgHierarchy};
 			OPENIAM.ENV.MenuTreeAppendURL = <c:choose><c:when test="${! empty requestScope.group.id}">"id=${requestScope.group.id}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 		</script>
 	</head>
@@ -69,6 +75,17 @@ response.setDateHeader ("Expires", -1);
 			<form id="groupForm" method="post">
 				<table cellpadding="8px" align="center" class="fieldset">
 					<tbody>
+						<tr>
+							<td>
+								<label>
+									<fmt:message key="openiam.ui.group.type" />
+								</label>
+							</td>
+							<td>
+								<input id="groupTypeId" name="groupTypeId"  type="hidden"  />
+								<input id="groupType" name="groupType"  type="text" readonly class="full rounded" />
+							</td>
+						</tr>
 						<tr>
 							<td>
 								<label class="required">
@@ -89,16 +106,7 @@ response.setDateHeader ("Expires", -1);
 								<textarea id="description" name="description" class="full rounded"></textarea>
 							</td>
 						</tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <fmt:message key="openiam.ui.webconsole.meta.type" />
-                                </label>
-                            </td>
-                            <td>
-                               <div id="metadataType"></div>
-                            </td>
-                        </tr>
+
 						<c:if test="${! empty requestScope.managedSystems and fn:length(requestScope.managedSystems) > 0}">
 							<tr>
 								<td>
@@ -118,6 +126,99 @@ response.setDateHeader ("Expires", -1);
 								</td>
 							</tr>
 						</c:if>
+						<tr>
+							<td>
+								<label>
+									<fmt:message key="openiam.ui.group.classification" />
+								</label>
+							</td>
+							<td>
+								<div id="groupClassification"/>
+							</td>
+						</tr>
+						<c:if test="${! empty requestScope.group.mdTypeId and requestScope.group.mdTypeId=='AD_GROUP'}">
+
+							<tr>
+								<td>
+									<label>
+										<fmt:message key="openiam.ui.group.ad.type" />
+									</label>
+								</td>
+								<td>
+									<div id="groupADType"/>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<label>
+										<fmt:message key="openiam.ui.group.ad.scope" />
+									</label>
+								</td>
+								<td>
+									<div id="groupADScope"/>
+								</td>
+							</tr>
+						</c:if>
+						<tr>
+							<td>
+								<label>
+									<fmt:message key="openiam.ui.common.risk" />
+								</label>
+							</td>
+							<td>
+								<div id="groupRisk"/>
+							</td>
+						</tr>
+
+
+						<tr>
+							<td>
+								<label>
+									<fmt:message key="openiam.ui.group.max.user.count" />
+								</label>
+							</td>
+							<td>
+								<input id="groupMaxUserCount" name="groupMaxUserCount"  type="text" class="full rounded" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									<fmt:message key="openiam.ui.group.membership.duration" />
+								</label>
+							</td>
+							<td>
+								<input id="groupMembershipDuration" name="groupMembershipDuration"  type="text" class="full rounded" />
+							</td>
+						</tr>
+
+						<c:if test="${empty requestScope.group.id}">
+							<tr>
+								<td>
+									<label>
+										<fmt:message key="openiam.ui.group.parent" />
+									</label>
+								</td>
+								<td>
+									<div id="groupParent"/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label>
+										<fmt:message key="openiam.ui.group.owner" />
+									</label>
+								</td>
+								<td>
+									<input id="groupOwner" type="text"  class="full rounded"  readonly="readonly">
+									<input id="groupOwnerId" type="hidden" value="" name="groupOwnerId">
+									<input id="groupOwnerType" name="groupOwnerType"  type="hidden" class="full rounded" />
+									<a id="selectGroupOwner" href="javascript:void(0);"><fmt:message key="openiam.ui.group.owner.select"/></a>
+								</td>
+							</tr>
+						</c:if>
+
 						<c:if test="${! empty requestScope.group.adminResourceId}">
 							<tr>
 								<td>
@@ -130,18 +231,10 @@ response.setDateHeader ("Expires", -1);
 								</td>
 							</tr>
 						</c:if>
-						<tr>
-							<td>
-								<label>
-									<fmt:message key="openiam.ui.common.organization" />
-								</label>
-							</td>
-							<td>
-								<a id="organization" href="javascript:void(0);" class="entity-link organization ui-search-enabled"></a>
-							</td>
-						</tr>
 					</tbody>
 				</table>
+				<div id="organizationsTable">
+				</div>
 				<c:if test="${! requestScope.isNew}">
 					<div>
 						<div class="title">
@@ -182,5 +275,6 @@ response.setDateHeader ("Expires", -1);
 			</form>
 		</div>
 		<div id="editDialog"></div>
+		<div id="userResultsArea"></div>
 	</body>
 </html>

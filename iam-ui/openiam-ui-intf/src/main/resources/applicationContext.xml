@@ -50,10 +50,6 @@
 		</property> 
 	</bean>
 	
-	<bean id="xssJsonResource" class="org.springframework.core.io.ClassPathResource">
-		<constructor-arg index="0" value="${org.openiam.uri.patterns.xss.json.file}" />
-	</bean>
-
 	<bean id="jacksonMapper" class="org.openiam.ui.util.CustomJacksonMapper" />
 
     <bean id="localeResolver" class="org.openiam.ui.web.util.OpeniamCookieLocaleResolver">
@@ -185,8 +181,7 @@
 			value="${openiam.service_host}${openiam.idm.ws.path}RoleDataWebService" />
 	</bean>
 
-
-	<!-- Organization Service -->
+    <!-- Organization Service -->
 	<bean id="organizationServiceClient"
 		class="org.openiam.idm.srvc.org.service.OrganizationDataService"
 		factory-bean="organizatinoServiceClientFactory" factory-method="create" />

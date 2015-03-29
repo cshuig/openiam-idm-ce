@@ -455,6 +455,7 @@ response.setDateHeader ("Expires", -1);
 				</c:if>
 				<c:if test="${! empty requestScope.pageTemplate.uiFields['USER_ADDRESSES_CREATABLE']}">
 					<div id="addresses"></div>
+					<div id="searchLocationContainer"></div>
 				</c:if>
 				<c:if test="${! empty requestScope.pageTemplate.uiFields['USER_PHONES_CREATABLE']}">
 					<div id="phoneNumbers"></div>

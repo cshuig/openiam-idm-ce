@@ -1,5 +1,6 @@
 (function ($) {
-
+    var selectedItems = [];
+    var selectedItemsCount = 0;
     var privateMethods = {
         request: function (page) {
             var that = this;
@@ -70,9 +71,15 @@
             var onAppendDone = $options.onAppendDone;
             var message = $options.message;
             var columnsMap = $options.columnsMap;
+            var colspan = columnHeaders.length;
+            if($options.isSelectAllowed)
+                colspan = colspan +1;
+
             $options.page = page;
             $options.from = from;
             $options.totalSize = totalSize;
+
+
 
             var table = document.createElement("table");
             $(table).attr("cellspacing", "1");
@@ -84,13 +91,16 @@
                 var div = document.createElement("div");
                 $(div).addClass("info center").css("position", "relative").html(message);
                 var td = document.createElement("td");
-                $(td).attr("colspan", columnHeaders.length);
+                $(td).attr("colspan", colspan);
                 $(td).append(div);
                 $(tr).append(td);
                 $(thead).append(tr);
             }
             tr = document.createElement("tr");
             if (theadInputElements != null) {
+                if($options.isSelectAllowed){
+                    $(tr).append(document.createElement("td"));
+                }
                 $.each(theadInputElements, function (idx, elmt) {
                     var td = document.createElement("td");
                     $(td).html(elmt);
@@ -99,6 +109,32 @@
                 $(thead).append(tr);
             }
             tr = document.createElement("tr");
+
+            if($options.isSelectAllowed){
+                var th = document.createElement("th");
+                $(th).addClass("checkCell");
+                var chkBox = $(document.createElement("input")).attr("type", "checkbox").addClass("selectAllBtn");
+                chkBox.change(function () {
+                    var state = $(this).prop('checked');
+                    var chkBoxes = $(this).parents("table:first").find(".selectItemBtn");
+
+                    chkBoxes.each(function(){
+                        $(this).prop('checked', state);
+                        if(state)
+                            privateMethods.selectItem.call(that, $(this));
+                        else
+                            privateMethods.deselectItem.call(that, $(this));
+                    });
+                    selectedItemsCount=selectedItems.length;
+
+                    if($options.onCheckCallback && $.isFunction($options.onCheckCallback)){
+                        $options.onCheckCallback.call(that);
+                    }
+                });
+                $(th).append(chkBox);
+                $(tr).append(th);
+            }
+
             $.each(columnHeaders, function (idx, header) {
                 var th = document.createElement("th");
                 var headerText = header;
@@ -159,7 +195,7 @@
                 var footTr = document.createElement("tr");
                 footTr.className = "pager";
                 var footTd = document.createElement("td");
-                $(footTd).attr("colspan", columnHeaders.length);
+                $(footTd).attr("colspan", colspan);
                 $(footTd).attr("style", "border-right: solid 3px #7f7f7f;");
                 $(footTd).append("<img src=\"/openiam-ui-static/plugins/tablesorter/img/first.png\" class=\"first\"/>");
                 $(footTd).append("<img src=\"/openiam-ui-static/plugins/tablesorter/img/prev.png\" class=\"prev\"/>");
@@ -170,10 +206,10 @@
                 $(tfoot).append(footTr);
             }
             $(table).append(tfoot);
-            this.removeClass("loading").empty().html(table);
-            privateMethods.tableSort.call(this, table, page, from);
+            that.removeClass("loading").empty().html(table);
+            privateMethods.tableSort.call(that, table, page, from);
             if (onAppendDone) {
-                onAppendDone.call(this);
+                onAppendDone.call(that);
             }
         },
         drawRow: function (bean, tbody) {
@@ -227,6 +263,7 @@
             }
         },
         fillRowWithData: function (tr, bean) {
+            var that = this;
             var $options = this.data("options");
             var hasEditButton = $options.hasEditButton;
             var hasAddButton = $.isFunction($options.onAdd);
@@ -235,11 +272,12 @@
             var hasDeprovisionButton = $options.hasProvisionButton;
 
             var deleteOptions = $options.deleteOptions;
+            var hasDeleteBtn = (deleteOptions != null && deleteOptions != undefined)? $options.deleteOptions.hasDeleteBtn : true;
             var onDelete = (deleteOptions != null && deleteOptions != undefined) ? $options.deleteOptions.onDelete : null;
             var isDeletable = (deleteOptions != null && deleteOptions != undefined) ? $options.deleteOptions.isDeletable : function () {
                 return true;
             };
-            var hasDeleteButton = $.isFunction(onDelete) && isDeletable.call(this, bean);
+            var hasDeleteButton = hasDeleteBtn && $.isFunction(onDelete) && isDeletable.call(this, bean);
 
             var onEdit = $options.onEdit;
             var onView = $options.onView;
@@ -252,6 +290,7 @@
             var useTrueFalseStringsOnBoolean = $options.useTrueFalseStringsOnBoolean;
 
             $(tr).empty();
+            $(tr).data("entity", bean).attr("entityId", bean.id);
 
             var beanURL = null;
             if ($.isFunction($options.getEntityURL)) {
@@ -263,14 +302,36 @@
                 }
             }
 
+            if($options.isSelectAllowed){
+                var td = document.createElement("td");
+                $(td).addClass("checkCell");
+                var chkBox = $(document.createElement("input")).attr("type", "checkbox").addClass("selectItemBtn");
+                chkBox.change(function () {
+                    var isChecked =$(this).is(':checked');
+                    if(!isChecked){
+                        $(this).parents("table:first").find(".selectAllBtn").prop('checked', false);
+                        privateMethods.deselectItem.call(that, $(this));
+                    } else {
+                        privateMethods.selectItem.call(that, $(this));
+                    }
+                    selectedItemsCount=selectedItems.length;
+
+                    if($options.onCheckCallback && $.isFunction($options.onCheckCallback)){
+                        $options.onCheckCallback.call(that);
+                    }
+                });
+                $(td).append(chkBox);
+                $(tr).append(td);
+            }
+
             for (var i = 0; i < columnsMap.length; i++) {
                 var fieldName = columnsMap[i];
+                var td = document.createElement("td");
                 if ($.isFunction(fieldName)) {
-                    var td = $(document.createElement("td")).append($(document.createElement("span")).text(fieldName.call(this, bean)));
+                    td.append($(document.createElement("span")).text(fieldName.call(this, bean)));
                     $(tr).append(td);
                 }
                 else if (bean.hasOwnProperty(fieldName)) {
-                    var td = document.createElement("td");
                     var isDate = ($.inArray(fieldName, $options.dateFields) > -1);
                     if (fieldName == "name") {
                         var beanA = null;
@@ -321,10 +382,9 @@
                     $(tr).append(td);
                 }
 
-                $(tr).data("entity", bean).attr("entityId", bean.id);
                 if (!$options.preventOnclickEvent) {
-                    $(tr).off("click");
-                    $(tr).click(function () {
+                    $(td).off("click");
+                    $(td).click(function () {
                         if (!onEdit)
                             window.location.href = beanURL;
                         return false;
@@ -507,6 +567,18 @@
         rowCount: function () {
             return this.find("tbody tr:not(tr.empty)").length;
         },
+        selectItem: function(checkBox){
+            var idToAdd =  checkBox.parents("tr:first").attr("entityId");
+            if($.inArray(idToAdd, selectedItems)==-1){
+                selectedItems.push(idToAdd);
+            }
+        },
+        deselectItem: function(checkBox){
+            var idToRemove =  $(checkBox).parents("tr:first").attr("entityId");
+            selectedItems = $.grep(selectedItems, function(item){
+                return item!=idToRemove;
+            });
+        },
         tableSort: function (table, page, from) {
             var that = this;
             var $options = this.data("options");
@@ -630,7 +702,9 @@
                 message: null,
                 sortEnable: false,
                 defaultSortColumnIndex: 0,
-                deleteOptions: null /* contains deletion options */
+                deleteOptions: null, /* contains deletion options */
+                isSelectAllowed:false,
+                onCheckCallback: null
             }, args);
 
             if (options.columnHeaders == null) {
@@ -651,6 +725,7 @@
 
             if (args.deleteOptions != null && typeof(args.deleteOptions) === "object") {
                 options.deleteOptions = $.extend({
+                    hasDeleteBtn:true,
                     onDelete: null,
                     preventWarning: false,
                     warningMessage: localeManager["openiam.ui.delete.confirmation.message"],
@@ -685,6 +760,8 @@
             if (options.entityUrl == "javascript:void(0);" && options.onView == null) {
                 options.hideLink = true;
             }
+            selectedItems = [];
+            selectedItemsCount = 0;
 
             options = $.extend(options, {initialSortColumn: options.columnsMap[0], initialSortOrder: "ASC"});
             this.data("options", options);
@@ -712,8 +789,13 @@
         },
         setOddRows: function () {
             privateMethods.setOddRows.call(this);
+        },
+        countSelectedItems:function(){
+            return selectedItemsCount;
+        },
+        getSelectedItems:function(){
+            return selectedItems;
         }
-
     };
 
     $.fn.entitlemetnsTable = function (method) {

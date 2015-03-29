@@ -1,5 +1,11 @@
 OPENIAM = window.OPENIAM || {};
 OPENIAM.UserEntitlements = {
+    hasAddBtn:false,
+    hasEditBtn:false,
+    hasDeleteBtn:false,
+    hasInfoBtn:false,
+    hasProvBtn:false,
+    hasDeprovBtn:false,
     getButton : function(args) {
 		var mySearch = $(document.createElement("input"));
 		mySearch.attr("type", "submit").attr("value", args.buttonTitle).addClass("redBtn").attr("id", "searchBtn");
@@ -8,6 +14,7 @@ OPENIAM.UserEntitlements = {
 	Load : {
 		onReady : function() {
             OPENIAM.UserEntitlements.Menu.draw();
+            OPENIAM.UserEntitlements.Buttons.init();
 			switch(OPENIAM.ENV.EntitlementType) {
 				case "Groups":
 					OPENIAM.UserEntitlements.Group.load();
@@ -26,6 +33,47 @@ OPENIAM.UserEntitlements = {
 			}
 		}
 	},
+    Buttons: {
+        init: function(){
+            if (OPENIAM.ENV.buttonsMenu != null && OPENIAM.ENV.buttonsMenu != 'undefined') {
+                OPENIAM.UserEntitlements.Buttons = Object.create(OPENIAM.MenuTree);
+                OPENIAM.UserEntitlements.Buttons.initialize({
+                    tree : OPENIAM.ENV.buttonsMenu,
+                    toHTML : function() {
+                        if(this.getRoot() != null) {
+                            var node = this.getRoot().getChild();
+                            while(node != null) {
+                                node.toHTML();
+                                node = node.getNext();
+                            }
+                        }
+                        return "";
+                    },
+                    onNodeClick : function() {
+                    },
+                    toNodeHtml : function() {
+                        var btnId = this.getId();
+                        var type = OPENIAM.ENV.EntitlementType.toUpperCase();
+                        if((type+"_ADD_BTN")==btnId){
+                            OPENIAM.UserEntitlements.hasAddBtn=true;
+                        } else if((type+"_EDT_BTN")==btnId){
+                            OPENIAM.UserEntitlements.hasEditBtn=true;
+                        } else if((type+"_DEL_BTN")==btnId){
+                            OPENIAM.UserEntitlements.hasDeleteBtn=true;
+                        } else if((type+"_INFO_BTN")==btnId){
+                            OPENIAM.UserEntitlements.hasInfoBtn=true;
+                        }else if((type+"_PROV_BTN")==btnId){
+                            OPENIAM.UserEntitlements.hasProvBtn=true;
+                        }else if((type+"_DEPROV_BTN")==btnId){
+                            OPENIAM.UserEntitlements.hasDeprovBtn=true;
+                        }
+                        return "";
+                    }
+                });
+                OPENIAM.UserEntitlements.Buttons.toHTML()
+            }
+        }
+    },
     Menu: {
         draw : function() {
             if (OPENIAM.ENV.initialMenu != null && OPENIAM.ENV.initialMenu != 'undefined') {
@@ -78,23 +126,24 @@ OPENIAM.UserEntitlements = {
 				columnHeaders : args.columns,
                 columnsMap : args.columnsMap,
 				ajaxURL : args.ajaxURL,
-				entityUrl : args.entityURL,
+				entityUrl : OPENIAM.UserEntitlements.hasEditBtn ? args.entityURL : "javascript:void(0);",
 				entityURLIdentifierParamName : "id",
 				requestParamIdName : "id",
 				getAdditionalDataRequestObject : args.getAdditionalDataRequestObject,
 				requestParamIdValue : OPENIAM.ENV.UserId,
 				pageSize : 20,
-                hasProvisionButton : args.hasProvisionButton,
-                hasDeprovisionButton : args.hasDeprovisionButton,
+                hasProvisionButton : OPENIAM.UserEntitlements.hasProvBtn,
+                hasDeprovisionButton : OPENIAM.UserEntitlements.hasDeprovBtn,
                 showPageSizeSelector:true,
                 deleteOptions : {
+                    hasDeleteBtn: OPENIAM.UserEntitlements.hasDeleteBtn,
                 	warningMessage : localeManager["openiam.ui.delete.relationship.confirmation.delete"],
 					preventWarning : $.isFunction(args.onInfo),
                 	onDelete : function(bean) {
 						if($.isFunction(args.onInfo)) { /* only if there is an info button */
 							$.fn.entitlementsEntityView.hasChildren({entityType : args.entityType, entityId : bean.id, warningOnHasChildren : true, callback : function(result) {
 								if(result) {
-									that.remove(bean.id);
+									that.remove(bean);
 								} else {
 									OPENIAM.Modal.Warn({
 			                            message : localeManager["openiam.ui.delete.relationship.confirmation.delete"],
@@ -103,7 +152,7 @@ OPENIAM.UserEntitlements = {
 			                                text : localeManager["openiam.ui.common.execute"],
 			                                onClick : function() {
 			                                    OPENIAM.Modal.Close();
-			                                    that.remove(bean.id);
+			                                    that.remove(bean);
 			                                }
 			                            },
 			                            Cancel : {
@@ -116,16 +165,16 @@ OPENIAM.UserEntitlements = {
 								}
 							}});
 						} else {
-							that.remove(bean.id);
+							that.remove(bean);
 						}
 					}
                 },
                 preventOnclickEvent : OPENIAM.ENV.PreventOnClick,
                 sortEnable:true,
-				hasEditButton : !(OPENIAM.ENV.PreventOnClick),
-				onEdit : function(bean) {
+				hasEditButton : OPENIAM.UserEntitlements.hasEditBtn,
+				onEdit : (OPENIAM.UserEntitlements.hasEditBtn) ? function(bean) {
 					window.location.href = args.entityURL + "?id=" + bean.id;
-				},
+				} : null,
                 onProvision: function(bean) {
                     that.provision(bean.id);
                 },
@@ -144,13 +193,13 @@ OPENIAM.UserEntitlements = {
 						}
 					}
 				},
-				onInfo : args.onInfo
+				onInfo : OPENIAM.UserEntitlements.hasInfoBtn ? args.onInfo : null
             });
 		},
 		addOrRemove : function(args) {
 			var data = {};
 			data["userId"] = OPENIAM.ENV.UserId;
-			data[args.entityRequestParamName] = args.entityId;
+			data[args.entityRequestParamName] = args.entity.id;
 			$.ajax({
 				url : args.url,
 				"data" : data,
@@ -159,7 +208,13 @@ OPENIAM.UserEntitlements = {
 				success : function(data, textStatus, jqXHR) {
 					if(data.status == 200) {
 						OPENIAM.Modal.Success({message : data.successMessage, showInterval : 1000, onIntervalClose : function() {
-							args.target.load(0);
+							//args.target.load(0);
+                            if(args.isAdd){
+                                $("#entitlementsContainer").entitlemetnsTable("addRow", args.entity);
+                            } else {
+                                $("#entitlementsContainer").entitlemetnsTable("deleteRow", args.entity);
+                            }
+
 						}});
 					} else {
 						OPENIAM.Modal.Error({errorList : data.errorList});
@@ -220,13 +275,13 @@ OPENIAM.UserEntitlements = {
 	Resource : {
 		load : function() {
 			OPENIAM.UserEntitlements.Common.load({
-				customHeaders : ["", "", "", OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.resource.add"]})],
+				customHeaders : OPENIAM.UserEntitlements.hasAddBtn ? ["", "", "",  OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.resource.add"]})]:null,
 				onSearchClick : function() {
 					$("#editDialog").resourceDialogSearch({
 						searchTargetElmt : "#searchResultsContainer",
 						excludeMenus : true,
-						onSearchResultClick : function(bean) {
-							OPENIAM.UserEntitlements.Resource.add(bean.id);
+                        onAdd : function(bean) {
+							OPENIAM.UserEntitlements.Resource.add(bean);
 							return false;
 						}
 					});
@@ -245,8 +300,8 @@ OPENIAM.UserEntitlements = {
 				entityURL : "editResource.html",
 				ajaxURL : "rest/api/entitlements/getResourcesForUser",
 				buttonTitle : localeManager["openiam.ui.shared.resource.search"],
-                hasProvisionButton : true,
-                hasDeprovisionButton : true,
+                //hasProvisionButton : true,
+                //hasDeprovisionButton : true,
                 emptyResultsText:localeManager["openiam.ui.user.entitlement.resource.not.found"],
                 dialogTitle:localeManager["openiam.ui.shared.resource.search"],
                 emptySearchResultsText:localeManager["openiam.ui.shared.resource.search.empty"],
@@ -258,18 +313,20 @@ OPENIAM.UserEntitlements = {
 				}
 			});
 		},
-		add : function(id) {
+		add : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "resourceId",
-				entityId : id,
+				entity : bean,
+                isAdd:true,
 				url : "addUserToResource.html",
 				target : this
 			});
 		},
-		remove : function(id) {
+		remove : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "resourceId",
-				entityId : id,
+				entity : bean,
+                isAdd:false,
 				url : "removeUserFromResource.html",
 				target : this
 			});
@@ -294,7 +351,7 @@ OPENIAM.UserEntitlements = {
 	Organizations : {
 		load : function() {
 			OPENIAM.UserEntitlements.Common.load({
-				customHeaders : ["", "", OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.organization.add"]})],
+				customHeaders : OPENIAM.UserEntitlements.hasAddBtn ?["", "",  OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.organization.add"]})]:null,
 				modalAjaxURL : "rest/api/entitlements/searchOrganizations",
 				columns : [
                     localeManager["openiam.ui.common.organization.name"],
@@ -304,8 +361,8 @@ OPENIAM.UserEntitlements = {
 				onSearchClick : function() {
 					$("#editDialog").organizationDialogSearch({
 						searchTargetElmt : "#searchResultsContainer",
-						onSearchResultClick : function(bean) {
-							OPENIAM.UserEntitlements.Organizations.add(bean.id);
+						onAdd : function(bean) {
+							OPENIAM.UserEntitlements.Organizations.add(bean);
 							return false;
 						}
 					});
@@ -318,23 +375,25 @@ OPENIAM.UserEntitlements = {
                 emptyResultsText:localeManager["openiam.ui.user.entitlement.organization.not.found"],
                 dialogTitle:localeManager["openiam.ui.shared.organization.search"],
                 emptySearchResultsText:localeManager["openiam.ui.shared.organization.search.empty"],
-                hasProvisionButton: false,
-                hasDeprovisionButton : false,
+                //hasProvisionButton: false,
+                //hasDeprovisionButton : false,
 				target : this
 			});
 		},
-		add : function(id) {
+		add : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "organizationId",
-				entityId : id,
+				entity : bean,
+                isAdd:true,
 				url : "addUserToOrganization.html",
 				target : this
 			});
 		},
-		remove : function(id) {
+		remove : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "organizationId",
-				entityId : id,
+				entity : bean,
+                isAdd:false,
 				url : "removeUserFromOrganization.html",
 				target : this
 			});
@@ -359,7 +418,7 @@ OPENIAM.UserEntitlements = {
 	Roles : {
 		load : function() {
 			OPENIAM.UserEntitlements.Common.load({
-				customHeaders : ["", "", OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.role.add"]})],
+				customHeaders : OPENIAM.UserEntitlements.hasAddBtn ?["", "",  OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.role.add"]})]:null,
 				modalAjaxURL : "rest/api/entitlements/searchRoles",
                 columns : [
                     localeManager["openiam.ui.shared.role.name"],
@@ -369,8 +428,8 @@ OPENIAM.UserEntitlements = {
                 onSearchClick : function() {
 					$("#editDialog").roleDialogSearch({
 						searchTargetElmt : "#searchResultsContainer",
-						onSearchResultClick : function(bean) {
-							OPENIAM.UserEntitlements.Roles.add(bean.id);
+						onAdd : function(bean) {
+							OPENIAM.UserEntitlements.Roles.add(bean);
 							return false;
 						}
 					});
@@ -384,26 +443,28 @@ OPENIAM.UserEntitlements = {
 				ajaxURL : "rest/api/entitlements/getRolesForUser",
 				buttonTitle : localeManager["openiam.ui.shared.role.search"],
 				placeholder : localeManager["openiam.ui.shared.type.role.name"],
-                hasProvisionButton : true,
-                hasDeprovisionButton : true,
+                //hasProvisionButton : true,
+                //hasDeprovisionButton : true,
                 emptyResultsText:localeManager["openiam.ui.user.entitlement.role.not.found"],
                 dialogTitle:localeManager["openiam.ui.shared.organization.search"],
                 emptySearchResultsText:localeManager["openiam.ui.shared.organization.search.empty"],
 				target : this
 			});
 		},
-		add : function(id) {
+		add : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "roleId",
-				entityId : id,
+				entity : bean,
+                isAdd:true,
 				url : "addUserToRole.html",
 				target : this
 			});
 		},
-		remove : function(id) {
+		remove : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "roleId",
-				entityId : id,
+				entity : bean,
+                isAdd:false,
 				url : "removeUserFromRole.html",
 				target : this
 			});
@@ -428,12 +489,12 @@ OPENIAM.UserEntitlements = {
 	Group : {
 		load : function() {
 			OPENIAM.UserEntitlements.Common.load({
-				customHeaders : ["", "", OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.group.add"]})],
+				customHeaders : OPENIAM.UserEntitlements.hasAddBtn ?["", "",  OPENIAM.UserEntitlements.getButton({buttonTitle : localeManager["openiam.ui.entitlements.group.add"]})]:null,
 				onSearchClick : function() {
 					$("#editDialog").groupDialogSearch({
 						searchTargetElmt : "#searchResultsContainer",
-						onSearchResultClick : function(bean) {
-							OPENIAM.UserEntitlements.Group.add(bean.id);
+                        onAdd : function(bean) {
+							OPENIAM.UserEntitlements.Group.add(bean);
 							return false;
 						}
 					});
@@ -452,8 +513,8 @@ OPENIAM.UserEntitlements = {
 				ajaxURL : "rest/api/entitlements/getGroupsForUser",
 				buttonTitle : localeManager["openiam.ui.shared.group.search"],
 				placeholder : localeManager["openiam.ui.shared.group.type.name"],
-                hasProvisionButton : true,
-                hasDeprovisionButton : true,
+                //hasProvisionButton : true,
+                //hasDeprovisionButton : true,
                 emptyResultsText:localeManager["openiam.ui.user.entitlement.group.not.found"],
                 dialogTitle:localeManager["openiam.ui.shared.group.search"],
                 emptySearchResultsText:localeManager["openiam.ui.shared.group.search.empty"],
@@ -464,18 +525,20 @@ OPENIAM.UserEntitlements = {
 				}
 			});
 		},
-		add : function(id) {
+		add : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "groupId",
-				entityId : id,
+				entity : bean,
+                isAdd:true,
 				url : "addUserToGroup.html",
 				target : this
 			});
 		},
-		remove : function(id) {
+		remove : function(bean) {
 			OPENIAM.UserEntitlements.Common.addOrRemove({
 				entityRequestParamName : "groupId",
-				entityId : id,
+				entity : bean,
+                isAdd:false,
 				url : "removeUserFromGroup.html",
 				target : this
 			});

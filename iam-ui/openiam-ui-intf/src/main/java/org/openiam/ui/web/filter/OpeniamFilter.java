@@ -1,29 +1,21 @@
 package org.openiam.ui.web.filter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.http.protocol.UriPatternMatcher;
 import org.apache.log4j.Logger;
-import org.openiam.am.srvc.uriauth.dto.URIFederationResponse;
 import org.openiam.am.srvc.ws.URIFederationWebService;
 import org.openiam.idm.srvc.lang.dto.Language;
 import org.openiam.idm.srvc.lang.service.LanguageWebService;
 import org.openiam.ui.security.OpenIAMCookieProvider;
 import org.openiam.ui.security.http.OpeniamHttpServletRequest;
-import org.openiam.ui.security.model.XSSPatternProcessor;
 import org.openiam.ui.security.model.XSSPatternRule;
 import org.openiam.ui.security.model.XSSPatternWrapper;
 import org.openiam.ui.util.CustomJacksonMapper;
-import org.openiam.ui.util.HeaderUtils;
 import org.openiam.ui.util.SpringContextProvider;
-import org.openiam.ui.util.URIUtils;
-import org.openiam.ui.web.util.ContentProviderCacheProvider;
 import org.openiam.ui.web.util.LanguageProvider;
 import org.openiam.ui.web.util.OpeniamCookieLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -32,9 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class OpeniamFilter implements Filter {
@@ -48,9 +38,8 @@ public class OpeniamFilter implements Filter {
     @Autowired
     private OpenIAMCookieProvider cookieProvider;
     
-    @Autowired
-    @Qualifier("xssJsonResource")
-    private Resource xssJsonResource;
+    @Value("${org.openiam.uri.patterns.xss.json.file}")
+    String xssJsonResourcePath;
     
     @Autowired
     private CustomJacksonMapper jacksonMapper;
@@ -94,6 +83,8 @@ public class OpeniamFilter implements Filter {
     protected LanguageProvider languageProvider;
     
     private XSSPatternWrapper xssPatternWrapper;
+    
+    private UriPatternMatcher<XSSPatternRule> matcherRules;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -115,9 +106,17 @@ public class OpeniamFilter implements Filter {
                     if (!isInitialized) {
                         SpringContextProvider.autowire(this);
                         SpringContextProvider.resolveProperties(this);
-                        
+
+                        final Resource xssJsonResource = SpringContextProvider.getApplicationContext().getResource(xssJsonResourcePath);
                         final InputStream stream = xssJsonResource.getInputStream();
-                        xssPatternWrapper = (XSSPatternWrapper)jacksonMapper.readValue(stream, XSSPatternWrapper.class);
+                        xssPatternWrapper = jacksonMapper.readValue(stream, XSSPatternWrapper.class);
+                        
+                        matcherRules = new UriPatternMatcher<XSSPatternRule>();
+                        if(xssPatternWrapper.getProcessors() != null) {
+                        	for(final String uri : xssPatternWrapper.getProcessors().keySet()) {
+                        		matcherRules.register(uri, xssPatternWrapper.getProcessors().get(uri));
+                        	}
+                        }
                         isInitialized = true;
                     }
                 }
@@ -164,8 +163,10 @@ public class OpeniamFilter implements Filter {
             request.setAttribute("selectedCountry", localeObj.getCountry());
             request.setAttribute("selectedLanguage", getCurrentLanguage(localeObj));
 
-            final XSSPatternRule xssRule = xssPatternWrapper.getProcessors().get(requestURI);
-            chain.doFilter(new OpeniamHttpServletRequest(httpRequest, xssRule), response);
+            final XSSPatternRule xssRule = matcherRules.lookup(requestURI);
+            
+            final OpeniamHttpServletRequest customHttpServletRequest = new OpeniamHttpServletRequest(httpRequest, xssRule);
+            chain.doFilter(customHttpServletRequest, response);
         } else {
             throw new IOException(String.format("Could not initialize '%s'.", this.getClass().getCanonicalName()));
         }
@@ -196,11 +197,11 @@ public class OpeniamFilter implements Filter {
         return languageProvider.getCurrentLanguage(localeObj);
     }
 
-    private String getMessage(String key, Locale locale) {
+    private String getMessage(String key, Locale locale) throws IOException {
         if (org.springframework.util.StringUtils.hasText(key)) {
             ResourceBundle rb = ResourceBundle.getBundle("messages", locale);
             if (rb != null) {
-                return rb.getString(key);
+                return new String(rb.getString(key).getBytes("ISO-8859-1"), "UTF-8");
             }
         }
         return "";

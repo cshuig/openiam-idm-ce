@@ -14,17 +14,36 @@ import org.apache.commons.lang.StringUtils;
 
 import org.openiam.authmanager.common.model.AuthorizationMenu;
 import org.openiam.authmanager.ws.request.MenuRequest;
+import org.openiam.base.AttributeOperationEnum;
+import org.openiam.base.ws.Response;
+import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.searchbeans.UserSearchBean;
+import org.openiam.idm.srvc.audit.constant.AuditAction;
+import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
+import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.user.dto.User;
+import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.ui.web.model.BasicAjaxResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public abstract class AbstractUserEntitlementsController extends AbstractEntitlementsController<User> {
+    @Value("${org.openiam.provision.service.user.entitlements.flag}")
+    protected Boolean provisionUserEntitlementsFlag;
+
+    @Value("${org.openiam.ui.user.role.membership.buttons.root.id}")
+    protected String userRoleBtnRootId;
+    @Value("${org.openiam.ui.user.group.membership.buttons.root.id}")
+    protected String userGroupBtnRootId;
+    @Value("${org.openiam.ui.user.resource.membership.buttons.root.id}")
+    protected String userResourceBtnRootId;
+    @Value("${org.openiam.ui.user.organization.membership.buttons.root.id}")
+    protected String userOrganizationBtnRootId;
 
 	@Override
 	public String getRootMenu() {
@@ -71,7 +90,11 @@ public abstract class AbstractUserEntitlementsController extends AbstractEntitle
         request.setAttribute("type", type);
         setMenuTree(request, getEditMenu());
         final String menuString = getInitialMenuAsJson(request, "USER_ENTITLEMENTS_PAGE");
+
+        final String btnString = getButtonsAsJson(request, type);
+
         request.setAttribute("initialMenu", menuString);
+        request.setAttribute("buttonsMenu", btnString);
         return "jar:users/entitlements";
     }
 
@@ -258,8 +281,58 @@ public abstract class AbstractUserEntitlementsController extends AbstractEntitle
 
 	protected abstract BasicAjaxResponse user2OrganizationOperation(final HttpServletRequest request, final String userId, final String organizationId, boolean isAddition);
 	protected abstract BasicAjaxResponse user2ResourceOperation(final HttpServletRequest request, final String userId, final String resourceId, boolean isAddition);
-	protected abstract BasicAjaxResponse user2GroupOperation(final HttpServletRequest request, final String userId, final String groupId, boolean isAddition);
+//	protected abstract BasicAjaxResponse user2GroupOperation(final HttpServletRequest request, final String userId, final String groupId, boolean isAddition);
 	protected abstract BasicAjaxResponse user2RoleOperation(final HttpServletRequest request, final String userId, final String roleId, boolean isAddition);
+
+
+    protected BasicAjaxResponse user2GroupOperation(HttpServletRequest request,
+                                                    String userId, String groupId, boolean isAddition) {
+        Response wsResponse = null;
+        final String requestorId = cookieProvider.getPrincipal(request);
+        final User user = userDataWebService.getUserWithDependent(userId, requestorId, true);
+        final Group group = groupServiceClient.getGroup(groupId, requestorId);
+
+        IdmAuditLog idmAuditLog = new IdmAuditLog();
+        idmAuditLog.setRequestorUserId(getRequesterId(request));
+        idmAuditLog.setTargetUser(user.getId(), user.getLogin());
+        idmAuditLog.setTargetGroup(group.getId(), group.getName());
+
+        final String callerId = getRequesterId(request);
+        if (provisionUserEntitlementsFlag) {
+            if (user != null && group != null) {
+                final ProvisionUser pUser = new ProvisionUser(user);
+                pUser.setRequestorUserId(getRequesterId(request));
+
+                if (isAddition) {
+                    group.setOperation(AttributeOperationEnum.ADD);
+                    pUser.getGroups().add(group);
+                    idmAuditLog.setAction(AuditAction.ADD_USER_TO_GROUP.value());
+                    idmAuditLog.setAuditDescription("Add user to group");
+                    auditLogService.addLog(idmAuditLog);
+                } else {
+                    pUser.getGroups().remove(group);
+                    group.setOperation(AttributeOperationEnum.DELETE);
+                    pUser.getGroups().add(group);
+                    idmAuditLog.setAction(AuditAction.REMOVE_USER_FROM_GROUP.value());
+                    idmAuditLog.setAuditDescription("Remove user from group");
+                    auditLogService.addLog(idmAuditLog);
+                }
+                wsResponse = provisionService.modifyUser(pUser);
+            } else {
+                wsResponse = new Response();
+                wsResponse.setErrorCode(ResponseCode.UNAUTHORIZED);
+            }
+        } else {
+            if (isAddition) {
+                wsResponse = groupServiceClient.addUserToGroup(groupId, userId, callerId);
+            } else {
+                wsResponse = groupServiceClient.removeUserFromGroup(groupId, userId, callerId);
+            }
+        }
+        //final BasicAjaxResponse ajaxResponse = getResponseAfterEntity2EntityAddition(wsResponse, false);
+        final BasicAjaxResponse ajaxResponse = getResponseAfterEntity2EntityAddition(wsResponse, isAddition);
+        return ajaxResponse;
+    }
 
     private String getActiveType(AuthorizationMenu menu) {
         String activeType = null;
@@ -274,5 +347,24 @@ public abstract class AbstractUserEntitlementsController extends AbstractEntitle
             menuNode = menuNode.getNextSibling();
         }
         return activeType;
+    }
+
+    private String getButtonsAsJson(HttpServletRequest request, String type) {
+        String result = null;
+        switch (type){
+            case "Groups":
+                result = getInitialMenuAsJson(request, userGroupBtnRootId);
+                break;
+            case "Roles":
+                result = getInitialMenuAsJson(request, userRoleBtnRootId);
+                break;
+            case "Resources":
+                result = getInitialMenuAsJson(request, userResourceBtnRootId);
+                break;
+            case "Organizations":
+                result = getInitialMenuAsJson(request, userOrganizationBtnRootId);
+                break;
+        }
+        return result;
     }
 }

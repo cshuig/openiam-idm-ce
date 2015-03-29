@@ -5,13 +5,21 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.openiam.am.srvc.constants.AuthAttributeDataType;
+import org.openiam.am.srvc.dto.AuthProvider;
 import org.openiam.am.srvc.dto.AuthProviderAttribute;
 import org.openiam.ui.bean.converter.BeanConverter;
+import org.openiam.ui.idp.saml.model.SAMLUploadToken;
+import org.springframework.beans.factory.annotation.Value;
 
 public abstract class AbstractSAMLConverter<T, S> implements BeanConverter<T, S> {
+	
+	@Value("${org.openiam.defaultManagedSysId}")
+	protected String defaultManagedSysId;
 
 
 	private static final String VALUE_DELIMITER = ",";
+	
+	public abstract AuthProvider convert(final SAMLUploadToken token) throws Exception;
 
 	protected List<String> getValue(final AuthProviderAttribute attribute) {
 		final List<String> retVal = new LinkedList<String>();

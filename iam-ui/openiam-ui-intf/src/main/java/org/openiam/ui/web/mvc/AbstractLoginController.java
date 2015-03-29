@@ -73,6 +73,15 @@ public abstract class AbstractLoginController extends AbstractController {
     @Value("${org.openiam.ui.login.page.additional.hyperlink.script}")
     private String hyperlinkScript;
 
+    @Value("${org.openiam.ui.login.placeholder}")
+    private String loginPlaceholder;
+    @Value("${org.openiam.ui.password.placeholder}")
+    private String passwordPlaceholder;
+    @Value("${org.openiam.ui.forgot.password.label}")
+    private String forgotPasswordLabel;
+    @Value("${org.openiam.ui.forgot.username.label}")
+    private String forgotUsernameLabel;
+
     private String getCookieDomain(final HttpServletRequest request) {
         String domain = null;
         if (StringUtils.isNotBlank(cookieDomain)) {
@@ -178,6 +187,10 @@ public abstract class AbstractLoginController extends AbstractController {
         request.setAttribute("forgotUsernameEnabled", forgotUsernameEnabled);
         request.setAttribute("passwordUnlockEnabled", passwordUnlockEnabled);
         request.setAttribute("selfRegistrationURL", selfRegistrationURL);
+        request.setAttribute("loginPlaceholder", loginPlaceholder);
+        request.setAttribute("passwordPlaceholder", passwordPlaceholder);
+        request.setAttribute("forgotPasswordLabel", forgotPasswordLabel);
+        request.setAttribute("forgotUsernameLabel", forgotUsernameLabel);
     }
 
     protected Errors getErrorFromCode(final int errCode) {

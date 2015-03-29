@@ -1,5 +1,7 @@
 package org.openiam.ui.selfservice.web.mvc.entitlements;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.openiam.authmanager.service.AuthorizationManagerAdminWebService;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.res.dto.Resource;
@@ -11,9 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 @Controller
 public class UserEntitlementsController extends AbstractUserEntitlementsController {
+	@javax.annotation.Resource(name = "authManagerAdminClient")
+	private AuthorizationManagerAdminWebService authWebService;
 
 	@Value("${org.openiam.selfservice.activiti.user.menu}")
 	private String userMenu;
@@ -39,9 +44,17 @@ public class UserEntitlementsController extends AbstractUserEntitlementsControll
 	@Override
 	protected BasicAjaxResponse user2GroupOperation(HttpServletRequest request,
 			String userId, String groupId, boolean isAddition) {
-		final User member = getEntity(userId, request);
-		final Group entity = groupServiceClient.getGroup(groupId, getRequesterId(request));
-		return makeMembershipRequest(request, entity, member, isAddition);
+
+		Set<String> groupOwnerIds =  authWebService.getOwnerIdsForGroup(groupId);
+		String requestorId = getRequesterId(request);
+		if(CollectionUtils.isNotEmpty(groupOwnerIds) && groupOwnerIds.contains(requestorId)){
+			return super.user2GroupOperation(request, userId, groupId, isAddition);
+		} else {
+			final User member = getEntity(userId, request);
+			final Group entity = groupServiceClient.getGroup(groupId, getRequesterId(request));
+
+			return makeMembershipRequest(request, entity, member, isAddition);
+		}
 	}
 
 	@Override

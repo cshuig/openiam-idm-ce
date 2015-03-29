@@ -90,9 +90,6 @@ OPENIAM.User.Form = {
                                                 url : OPENIAM.ENV.ContextPath + "/rest/api/users/search",
                                                 emptyFormText : localeManager["openiam.ui.common.user.search.empty"],
                                                 emptyResultsText : localeManager["openiam.ui.common.user.search.no.results"],
-                                                columnHeaders : [ localeManager["openiam.ui.common.name"], localeManager["openiam.ui.common.phone.number"],
-                                                        localeManager["openiam.ui.common.email.address"], localeManager["openiam.ui.webconsole.user.status"],
-                                                        localeManager["openiam.ui.webconsole.user.accountStatus"] ],
                                                 onAppendDone : function() {
                                                     $("#dialog").dialog("close");
                                                     $("#userResultsArea").prepend("<div class=\"\">" + localeManager["openiam.ui.user.supervisor.table.description"] + "</div>")
@@ -141,9 +138,6 @@ OPENIAM.User.Form = {
                                                 url : OPENIAM.ENV.ContextPath + "/rest/api/users/search",
                                                 emptyFormText : localeManager["openiam.ui.common.user.search.empty"],
                                                 emptyResultsText : localeManager["openiam.ui.common.user.search.no.results"],
-                                                columnHeaders : [ localeManager["openiam.ui.common.name"], localeManager["openiam.ui.common.phone.number"],
-                                                        localeManager["openiam.ui.common.email.address"], localeManager["openiam.ui.webconsole.user.status"],
-                                                        localeManager["openiam.ui.webconsole.user.accountStatus"] ],
                                                 onAppendDone : function() {
                                                     $("#dialog").dialog("close");
                                                     $("#userResultsArea").prepend(
@@ -181,6 +175,22 @@ OPENIAM.User.Form = {
 				});
 			}
 		});
+
+        $("#userGroupId").selectableSearchResult({
+            singleSearch : true,
+            noneSelectedText : localeManager["openiam.ui.shared.group.search"],
+            addMoreText : localeManager["openiam.ui.common.group.add.another"],
+            onClick : function($that) {
+                $("#editDialog").groupDialogSearch({
+                    searchTargetElmt : "#editDialog",
+                    showResultsInDialog : true,
+                    onAdd : function(bean) {
+                        $that.selectableSearchResult("add", bean);
+                    },
+                    pageSize : 5
+                });
+            }
+        });
     },
     getDependendOptionList : function(parentId, dataMap) {
         var dataList = dataMap[parentId];
@@ -291,6 +301,7 @@ OPENIAM.User.Form = {
                 obj.phone = phoneObj;
 
             obj.roleId = $("#userRoleId").selectableSearchResult("getId");
+            obj.groupId = $("#userGroupId").selectableSearchResult("getId");
         }
         obj.metadataTypeId = $("#metadataTypeId").val();
 

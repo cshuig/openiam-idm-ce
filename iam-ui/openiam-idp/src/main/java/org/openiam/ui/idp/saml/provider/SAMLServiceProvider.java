@@ -2,12 +2,14 @@ package org.openiam.ui.idp.saml.provider;
 
 import java.io.Serializable;
 
-public class SAMLServiceProvider extends AuthenticationProvider implements Serializable {
+import org.openiam.ui.idp.saml.groovy.AbstractJustInTimeSAMLAuthenticator;
+
+public class SAMLServiceProvider extends SAMLAuthenticationProvider {
 
 	private String loginURL;
 	private String logoutURL;
-	private byte[] publicKey;
 	private String issuer;
+	private String justInTimeSAMLAuthenticatorScript;
 	
 	public String getLoginURL() {
 		return loginURL;
@@ -24,14 +26,6 @@ public class SAMLServiceProvider extends AuthenticationProvider implements Seria
 	public void setLogoutURL(String logoutURL) {
 		this.logoutURL = logoutURL;
 	}
-	
-	public byte[] getPublicKey() {
-		return publicKey;
-	}
-
-	public void setPublicKey(byte[] publicKey) {
-		this.publicKey = publicKey;
-	}
 
 	public String getIssuer() {
 		return issuer;
@@ -39,6 +33,15 @@ public class SAMLServiceProvider extends AuthenticationProvider implements Seria
 
 	public void setIssuer(String issuer) {
 		this.issuer = issuer;
+	}
+
+	public String getJustInTimeSAMLAuthenticatorScript() {
+		return justInTimeSAMLAuthenticatorScript;
+	}
+
+	public void setJustInTimeSAMLAuthenticatorScript(
+			String justInTimeSAMLAuthenticatorScript) {
+		this.justInTimeSAMLAuthenticatorScript = justInTimeSAMLAuthenticatorScript;
 	}
 
 	

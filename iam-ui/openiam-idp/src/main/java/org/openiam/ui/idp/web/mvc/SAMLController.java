@@ -34,7 +34,7 @@ public class SAMLController extends AbstractLoginController {
 	@Autowired
 	private LoginProvider loginProvider;
 	
-	@RequestMapping(value="/SAMLMetadata", method=RequestMethod.GET)
+	@RequestMapping(value="/SAMLMetadata", method=RequestMethod.GET, produces="text/xml")
 	public @ResponseBody String SAMLMetadata(final HttpServletRequest request,
 							   final HttpServletResponse response) throws IOException {
 		final SAMLIDPMetadataResponse token = samlProvider.getSAMLIDPMetadata(request);
@@ -44,7 +44,6 @@ public class SAMLController extends AbstractLoginController {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, token.getError().toString());
 			return null;
 		} else {
-			response.setContentType("text/xml");
 			return XMLHelper.prettyPrintXML(token.getEntityDescriptorElement());
 		}
 	}

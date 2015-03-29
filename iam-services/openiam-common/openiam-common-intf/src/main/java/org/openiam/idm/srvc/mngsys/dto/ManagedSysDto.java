@@ -7,13 +7,8 @@ import org.openiam.am.srvc.constants.SearchScopeType;
 import org.openiam.dozer.DozerDTOCorrespondence;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.mngsys.domain.ManagedSysEntity;
-import org.openiam.idm.srvc.mngsys.domain.ManagedSysRuleEntity;
 import org.openiam.idm.srvc.role.dto.Role;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
@@ -32,19 +27,19 @@ import java.util.Set;
  * can also be forms
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ManagedSysDto", propOrder = { "id", "name", "description", "status", "connectorId", "hostUrl", "port",
-        "commProtocol", "userId", "pswd", "decryptPassword", "endDate", "startDate", "attributeNamesLookup",
+@XmlType(name = "ManagedSysDto", propOrder = {"id", "name", "description", "status", "connectorId", "hostUrl", "port",
+        "commProtocol", "userId", "pswd", "decryptPassword", "endDate", "startDate",
         "searchScope", "resourceId", "primaryRepository", "secondaryRepositoryId", "updateSecondary",
         "mngSysObjectMatchs", "driverUrl", "connectionString", "addHandler", "modifyHandler", "deleteHandler",
         "passwordHandler", "suspendHandler", "resumeHandler", "searchHandler", "lookupHandler",
         "testConnectionHandler", "reconcileResourceHandler", "attributeNamesHandler", "handler5", "skipGroupProvision",
-        "rules", "groups", "roles" })
+        "rules", "groups", "roles", "changedByEndUser"})
 @DozerDTOCorrespondence(ManagedSysEntity.class)
 public class ManagedSysDto implements java.io.Serializable {
 
     /**
-	 * 
-	 */
+     *
+     */
     private static final long serialVersionUID = -648884785253890053L;
     private String id;
     private String name;
@@ -60,7 +55,6 @@ public class ManagedSysDto implements java.io.Serializable {
     private Date startDate;
     @XmlSchemaType(name = "dateTime")
     private Date endDate;
-    private String attributeNamesLookup;
     private SearchScopeType searchScope = SearchScopeType.SUBTREE_SCOPE;
     private String resourceId;
     private Integer primaryRepository;
@@ -81,6 +75,7 @@ public class ManagedSysDto implements java.io.Serializable {
     private String attributeNamesHandler;
     private String handler5;
     private Boolean skipGroupProvision;
+    private boolean changedByEndUser = true;
 
     private List<ManagedSysRuleDto> rules = new ArrayList<ManagedSysRuleDto>(0);
 
@@ -105,7 +100,7 @@ public class ManagedSysDto implements java.io.Serializable {
     }
 
     public ManagedSysDto(String id, String name, String description, String status, String connectorId, String hostUrl,
-            Integer port, String commProtocol, String userId, String pswd, Date startDate, Date endDate) {
+                         Integer port, String commProtocol, String userId, String pswd, Date startDate, Date endDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -217,10 +212,18 @@ public class ManagedSysDto implements java.io.Serializable {
         this.endDate = endDate;
     }
 
+    public boolean getChangedByEndUser() {
+        return changedByEndUser;
+    }
+
+    public void setChangedByEndUser(boolean changedByEndUser) {
+        this.changedByEndUser = changedByEndUser;
+    }
+
     /**
      * Return a ManagedSystemObjectMatch for an object type. Return null is an
      * object for the specified objectType is not found.
-     * 
+     *
      * @param objectType
      * @return
      */
@@ -240,7 +243,7 @@ public class ManagedSysDto implements java.io.Serializable {
 
     public void removeManagedSysObjectMatch(final ManagedSystemObjectMatch match) {
         if (match != null && this.mngSysObjectMatchs != null) {
-            for (final Iterator<ManagedSystemObjectMatch> it = this.mngSysObjectMatchs.iterator(); it.hasNext();) {
+            for (final Iterator<ManagedSystemObjectMatch> it = this.mngSysObjectMatchs.iterator(); it.hasNext(); ) {
                 final ManagedSystemObjectMatch next = it.next();
                 if (StringUtils.equals(next.getObjectSearchId(), match.getObjectSearchId())) {
                     it.remove();
@@ -272,14 +275,6 @@ public class ManagedSysDto implements java.io.Serializable {
 
     public void setDecryptPassword(String decryptPassword) {
         this.decryptPassword = decryptPassword;
-    }
-
-    public String getAttributeNamesLookup() {
-        return attributeNamesLookup;
-    }
-
-    public void setAttributeNamesLookup(String attributeNamesLookup) {
-        this.attributeNamesLookup = attributeNamesLookup;
     }
 
     public SearchScopeType getSearchScope() {
@@ -447,9 +442,8 @@ public class ManagedSysDto implements java.io.Serializable {
         return "ManagedSysDto{" + "managedSysId='" + id + '\'' + ", name='" + name + '\'' + ", description='"
                 + description + '\'' + ", status='" + status + '\'' + ", connectorId='" + connectorId + '\''
                 + ", hostUrl='" + hostUrl + '\'' + ", port=" + port + ", commProtocol='" + commProtocol + '\''
-                + ", userId='" + userId + '\'' + ", pswd='" + pswd + '\'' + ", decryptPassword='" + decryptPassword
-                + '\'' + ", startDate=" + startDate + ", endDate=" + endDate + ", attributeNamesLookup='"
-                + attributeNamesLookup + '\'' + ", searchScope='" + searchScope + '\'' + ", resourceId='" + resourceId
+                + ", userId='" + userId + '\'' + ", pswd='" + "******" + '\'' + ", decryptPassword='" + "******"
+                + '\'' + ", startDate=" + startDate + ", endDate=" + endDate + '\'' + ", searchScope='" + searchScope + '\'' + ", resourceId='" + resourceId
                 + '\'' + ", primaryRepository=" + primaryRepository + ", secondaryRepositoryId='"
                 + secondaryRepositoryId + '\'' + ", updateSecondary=" + updateSecondary + ", driverUrl='" + driverUrl
                 + '\'' + ", connectionString='" + connectionString + '\'' + ", addHandler='" + addHandler + '\''

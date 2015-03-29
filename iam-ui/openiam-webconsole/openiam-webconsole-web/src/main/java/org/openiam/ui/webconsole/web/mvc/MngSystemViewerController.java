@@ -113,12 +113,13 @@ public class MngSystemViewerController extends BaseUserController {
         for (ExtensibleAttribute ea : attrs) {
             if (StringUtils.isBlank(ea.getValue())) {
                 attrsToDelete.add(ea);
+                ea.setOperation(AttributeOperationEnum.NO_CHANGE.getValue());
             } else if (StringUtils.isBlank(mngSysAttrsMap.get(ea.getName()).getValue())) {
                 ea.setOperation(AttributeOperationEnum.ADD.getValue());
             } else if (!ea.getValue().equals(mngSysAttrsMap.get(ea.getName()).getValue())) {
                 ea.setOperation(AttributeOperationEnum.REPLACE.getValue());
             } else {
-                attrsToDelete.add(ea);
+                ea.setOperation(AttributeOperationEnum.NO_CHANGE.getValue());
             }
         }
         attrs.removeAll(attrsToDelete);

@@ -3,13 +3,13 @@
     <parent>
         <groupId>org.openiam</groupId>
         <artifactId>openiam-ui</artifactId>
-        <version>3.2.6.RELEASE</version>
+        <version>3.3.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.openiam</groupId>
     <artifactId>openiam-rest-client</artifactId>
     <name>openiam-rest-client</name>
-    <version>3.2.6.RELEASE</version>
+    <version>3.3.RELEASE</version>
     <description>OpenIAM Rest Client</description>
 
     <build>

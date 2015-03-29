@@ -82,13 +82,15 @@ OPENIAM.Policy.Form = {
                 success: function (data, textStatus, jqXHR) {
                     //alert('success');
                     if (data.status == 200) {
-                        OPENIAM.Modal.Success({message: data.successMessage, showInterval: 2000, onIntervalClose: function () {
-                            if (data.redirectURL != null && data.redirectURL != undefined && data.redirectURL.length > 0) {
-                                window.location.href = data.redirectURL;
-                            } else {
-                                window.location.reload(true);
+                        OPENIAM.Modal.Success({
+                            message: data.successMessage, showInterval: 2000, onIntervalClose: function () {
+                                if (data.redirectURL != null && data.redirectURL != undefined && data.redirectURL.length > 0) {
+                                    window.location.href = data.redirectURL;
+                                } else {
+                                    window.location.reload(true);
+                                }
                             }
-                        }});
+                        });
                     } else {
                         OPENIAM.Modal.Error({errorList: data.errorList});
                     }
@@ -117,11 +119,21 @@ OPENIAM.Policy.Form = {
             $("#assocValueTr").show();
             $("#organizationTd").hide();
             $("#roleTd").hide();
+            $("#userTypeTd").hide();
+            $("#managedSystemTd").hide();
+
             if ($("#associationLevel").val() == "ROLE") {
                 $("#roleTd").show();
             }
             if ($("#associationLevel").val() == "ORGANIZATION") {
                 $("#organizationTd").show();
+            }
+
+            if ($("#associationLevel").val() == "USER_TYPE") {
+                $("#userTypeTd").show();
+            }
+            if ($("#associationLevel").val() == "MANAGED_SYSTEM") {
+                $("#managedSystemTd").show();
             }
         }
     },
@@ -143,6 +155,10 @@ OPENIAM.Policy.Form = {
                 obj.associationValue = OPENIAM.Policy.Form.getSelectedItemsValue("#roleContainer li");
             } else if (obj.associationLevel == "ORGANIZATION") {
                 obj.associationValue = OPENIAM.Policy.Form.getSelectedItemsValue("#orgContainer li");
+            } else if (obj.associationLevel == "USER_TYPE") {
+                obj.associationValue = $("#userType").val();
+            } else if (obj.associationLevel == "MANAGED_SYSTEM") {
+                obj.associationValue = $("#managesSystem").val();
             }
             if (!obj.associationValue) {
                 return localeManager["openiam.ui.webconsole.policy.password.association.no.value"];
@@ -169,6 +185,14 @@ OPENIAM.Policy.Form = {
             obj.associationValue = OPENIAM.Policy.Form.getSelectedItemsValue("#orgContainer li");
             obj.objectType = "ORGANIZATION";
             obj.objectId = OPENIAM.Policy.Form.getSelectedItemsValue("#orgContainer li");
+        } else if (obj.associationLevel == "MANAGED_SYSTEM") {
+            obj.associationValue = $("#managesSystem").val();
+            obj.objectType = "MANAGED_SYSTEM";
+            obj.objectId = $("#managesSystem").val();
+        } else if (obj.associationLevel == "USER_TYPE") {
+            obj.associationValue = $("#userType").val();
+            obj.objectType = "USER_TYPE";
+            obj.objectId = $("#userType").val();
         }
 
         return obj;

@@ -63,6 +63,9 @@ public class UserContactInfoValidator implements Validator {
                 if (!StringUtils.hasText(address.getTypeId())) {
                     errors.rejectValue("type", "required", org.openiam.ui.util.messages.Errors.ADDRESS_TYPE_REQUIRED.getMessageName());
                 }
+                if (!StringUtils.hasText(address.getAddress1())) {
+                    errors.rejectValue("address1", "required", org.openiam.ui.util.messages.Errors.ADDRESS1_REQUIRED.getMessageName());
+                }
             }
         }
     }

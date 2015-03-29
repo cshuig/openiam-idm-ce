@@ -1,3 +1,4 @@
+
 import org.openiam.base.AttributeOperationEnum
 import org.openiam.idm.srvc.org.dto.Organization
 import org.openiam.idm.srvc.role.dto.Role
@@ -9,9 +10,8 @@ import java.util.*;
 import org.openiam.provision.dto.PasswordSync;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.provision.service.ProvisioningConstants;
-import org.openiam.provision.service.AbstractPreProcessor;
-import org.openiam.idm.srvc.org.service.OrganizationDataService;
-
+import org.openiam.provision.service.AbstractProvisionPreProcessor;
+import org.openiam.idm.srvc.org.service.OrganizationDataService
 import org.openiam.idm.srvc.role.service.RoleDataService;
 import org.openiam.idm.srvc.auth.login.LoginDataService;
 import org.openiam.idm.srvc.res.service.ResourceDataService;
@@ -20,7 +20,7 @@ import org.openiam.idm.srvc.res.service.ResourceDataService;
 /**
  * Pre-processor script that is used with the Provisioning service.
  */
-public class ProvisionServicePreProcessor extends AbstractPreProcessor<ProvisionUser> {
+public class ProvisionServicePreProcessor extends AbstractProvisionPreProcessor<ProvisionUser> {
     private String ORGANIZATION_ADMIN_ROLEID = "8a4a92c641c017e00141c32e69e002c7";
 
     public int add(ProvisionUser user, Map<String, Object> bindingMap) {
@@ -53,6 +53,21 @@ public class ProvisionServicePreProcessor extends AbstractPreProcessor<Provision
                 }
             }
         }
+
+        /*
+        //Try to fix login
+	println("-----------------------------------------try fix LOGIN --------------------------------------");
+	println ("Login from Primary Principal" + user.getPrimaryPrincipal("0"));
+        println ("Login from principalList" + user.principalList);
+	Login l = user.getPrimaryPrincipal("0");
+	if (l){
+		println("-------------------------------------------- fix LOGIN --------------------------------------");
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.DAY_OF_YEAR, 120);
+		l.pwdExp = c.getTime();
+		
+		
+	} */
 
         return ProvisioningConstants.SUCCESS;
     }

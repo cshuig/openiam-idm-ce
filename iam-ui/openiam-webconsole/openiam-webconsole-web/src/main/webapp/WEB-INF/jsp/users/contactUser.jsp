@@ -51,6 +51,8 @@ response.setDateHeader ("Expires", -1);
 
         <script type="text/javascript" src="/openiam-ui-static/js/webconsole/user/user.contact.js"></script>
         <%--<script type="text/javascript" src="/openiam-ui-static/js/common/plugins/modalsearch/modal.search.js"></script>--%>
+        <script type="text/javascript" src="/openiam-ui-static/js/webconsole/organization/organization.membership.js"></script>
+        <script type="text/javascript" src="/openiam-ui-static/js/common/search/organization.search.js"></script>
         <script type="text/javascript" src="/openiam-ui-static/js/common/plugins/entitlementstable/entitlements.table.js"></script>
         <script type="text/javascript" src="/openiam-ui-static/js/common/plugins/modalEdit/modalEdit.js"></script>
 		<script type="text/javascript">
@@ -99,5 +101,7 @@ response.setDateHeader ("Expires", -1);
 		</div>
 
         <div id="editDialog"></div>
+        <div id="dialog"></div>
+        <div id="searchResultsContainer"></div>
 	</body>
 </html>

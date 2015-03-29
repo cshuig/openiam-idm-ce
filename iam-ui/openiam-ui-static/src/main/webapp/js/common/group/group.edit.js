@@ -73,9 +73,15 @@ OPENIAM.Group.Form = {
 	*/
 	populate : function() {
 		var obj = OPENIAM.ENV.Group;
+		$("#groupTypeId").val(obj.mdTypeId);
+		$("#groupType").val(obj.metadataTypeName);
+
 		$("#groupName").val(obj.name);
 		$("#description").val(obj.description);
 		$("#managedSysId").val(obj.managedSysId);
+		$("#groupMaxUserCount").val(obj.maxUserNumber);
+		$("#groupMembershipDuration").val(obj.membershipDuration);
+
 		//$("#organization").val(obj.companyId);
 		$("#organization").selectableSearchResult({
 			initialBeans : [{id : obj.companyId, name : obj.companyName}], 
@@ -94,38 +100,150 @@ OPENIAM.Group.Form = {
 				});
 			}
 		});
-        $("#metadataType").selectableSearchResult({
-            initialBeans : [{id : obj.mdTypeId, name : obj.metadataTypeName}],
-            singleSearch : true,
-            addMoreText : localeManager["openiam.ui.webconsole.meta.type.select.another"],
-            noneSelectedText : localeManager["openiam.ui.webconsole.meta.type.select"],
-            dialogWarnOnChange : (OPENIAM.ENV.GroupId != null) ? {
-                addWarning : localeManager["openiam.ui.webconsole.meta.type.change.warn"],
-                deleteWarning : localeManager["openiam.ui.webconsole.meta.type.delete.warn"],
-                okText : localeManager["openiam.ui.common.yes"],
-                cancelText : localeManager["openiam.ui.common.cancel"]
-            } : null,
-            onClick : function($that) {
-                $("#editDialog").metadataTypeDialogSearch({
-                    showResultsInDialog : true,
-                    searchTargetElmt : "#editDialog",
-                    onAdd : function(bean) {
-                        $that.selectableSearchResult("add", bean);
-                        $("#editDialog").dialog("close");
-                    },
-                    pageSize : 5
-                });
-            },
-            onAdd : function(initializing) {
-                if(!initializing) {
-                    $("#attributesContainer").attributeTableEdit("onChange");
-                }
-            },
-            onRemove : function() {
-                $("#attributesContainer").attributeTableEdit("onChange");
-            }
-        });
-        
+
+		OPENIAM.Group.Form.initMetadataSearchDialog({targetElement:"#groupClassification",
+													initialDataId:obj.classificationId,
+													initialDataName:obj.classificationName,
+													selectAnotherLabel:localeManager["openiam.ui.group.classification.select.another"],
+													selectLabel:localeManager["openiam.ui.group.classification.select"],
+													metadataGrouping:"GROUP_CLASSIFICATION" });
+
+		OPENIAM.Group.Form.initMetadataSearchDialog({targetElement:"#groupADType",
+													initialDataId:obj.adGroupTypeId,
+													initialDataName:obj.adGroupTypeName,
+													selectAnotherLabel:localeManager["openiam.ui.group.ad.type.select.another"],
+													selectLabel:localeManager["openiam.ui.group.ad.type.select"],
+													metadataGrouping:"AD_GROUP_TYPE",
+													showAllGroupings:true});
+
+		OPENIAM.Group.Form.initMetadataSearchDialog({targetElement:"#groupADScope",
+													initialDataId:obj.adGroupScopeId,
+													initialDataName:obj.adGroupScopeName,
+													selectAnotherLabel:localeManager["openiam.ui.group.ad.scope.select.another"],
+													selectLabel:localeManager["openiam.ui.group.ad.scope.select"],
+													metadataGrouping:"AD_GROUP_SCOPE",
+													showAllGroupings:true });
+
+		OPENIAM.Group.Form.initMetadataSearchDialog({targetElement:"#groupRisk",
+													initialDataId:obj.riskId,
+													initialDataName:obj.riskName,
+													selectAnotherLabel:localeManager["openiam.ui.common.risk.select.another"],
+													selectLabel:localeManager["openiam.ui.common.risk.select"],
+													metadataGrouping:"RISK",
+													showAllGroupings:true });
+
+		OPENIAM.Group.Form.initGroupSearchDialog({targetElement:"#groupParent",
+													selectAnotherLabel:localeManager["openiam.ui.common.group.add.another"],
+													selectLabel:localeManager["openiam.ui.shared.group.search"]});
+
+		$("#selectGroupOwner").click(function(){
+			OPENIAM.Modal.Warn({
+				title : localeManager["openiam.ui.group.owner.type.to.select"],
+				buttons : true,
+				OK : {
+					text : localeManager["openiam.ui.common.user"],
+					onClick : function() {
+						OPENIAM.Modal.Close();
+						$("#editDialog").userSearchForm(
+							{
+								afterFormAppended : function() {
+									$("#editDialog").dialog({
+										autoOpen : false,
+										draggable : false,
+										resizable : false,
+										title : localeManager["openiam.ui.common.search.users"],
+										width : "auto",
+										position : "center"
+									});
+									$("#editDialog").dialog("open");
+								},
+								onSubmit : function(json) {
+									$("#userResultsArea").userSearchResults(
+										{
+											"jsonData" : json,
+											"page" : 0,
+											"size" : 20,
+											initialSortColumn : "name",
+											initialSortOrder : "ASC",
+											url : "rest/api/users/search",
+											emptyFormText : localeManager["openiam.ui.common.user.search.empty"],
+											emptyResultsText : localeManager["openiam.ui.common.user.search.no.results"],
+											onAppendDone : function() {
+												$("#editDialog").dialog("close");
+												$("#userResultsArea").prepend("<div class=\"\">" + localeManager["openiam.ui.user.supervisor.table.description"] + "</div>")
+													.dialog({
+														autoOpen : true,
+														draggable : false,
+														resizable : false,
+														title : localeManager["openiam.ui.user.search.result.title"],
+														width : "auto"
+													})
+											},
+											onEntityClick : function(bean) {
+												$("#userResultsArea").dialog("close");
+												//$("#groupOwnerId").val(bean.id);
+												//$("#groupOwner").val(localeManager["openiam.ui.common.user"] +" - " + bean.name);
+												OPENIAM.Group.Form.addOwner("user", bean);
+											}
+										});
+								}
+							});
+					}
+				},
+				No : {
+					text : localeManager["openiam.ui.common.group"],
+					className:"redBtn",
+					onClick : function() {
+						OPENIAM.Modal.Close();
+						$("#editDialog").groupDialogSearch({
+							searchTargetElmt : "#editDialog",
+							showResultsInDialog : true,
+							onSearchResultClick : function(bean) {
+								//$("#groupOwnerId").val(bean.id);
+								//$("#groupOwner").val(localeManager["openiam.ui.common.group"] +" - " + bean.name);
+								OPENIAM.Group.Form.addOwner("group", bean);
+								return false;
+							}
+						});
+					}
+				}
+			});
+		});
+		//var selectedOrgList = [];
+		//if(obj.organizations!=null && obj.organizations!=undefined && obj.organizations.length>0){
+		//	for(var i = 0; i<obj.organizations.length;i++){
+		//		selectedOrgList.push({id:obj.organizations[i].id,name:obj.organizations[i].name,type:obj.organizations[i].organizationTypeId});
+		//	}
+		//}
+
+		$("#organizationsTable").organizationHierarchyWrapper({
+			hierarchy : OPENIAM.ENV.OrganizationHierarchy,
+			selectedOrgs : obj.organizations,
+			draw : function(select, labelText) {
+				if(this.idx == undefined) {
+					this.idx = 0;
+					this.tr = null;
+				}
+				if (this.idx == 0 || this.idx % 3 == 0) {
+					this.tr = document.createElement("tr");
+					$(this).append(this.tr);
+				}
+				var label = document.createElement("label");
+				$(label).text(labelText);
+				var td = document.createElement("td");
+				$(td).append(label).append("<br/>");
+				$(td).append(select);
+				$(this.tr).append(td);
+				this.idx++;
+			},
+			hide : function(select) {
+				select.closest("td").hide();
+			},
+			show : function(select) {
+				select.closest("td").show();
+			}
+		});
+
         OPENIAM.ENV.Group.attributes = (OPENIAM.ENV.Group.attributes != null) ? OPENIAM.ENV.Group.attributes : [];
         
         var modalFields = [
@@ -138,6 +256,51 @@ OPENIAM.Group.Form = {
 			objectArray : OPENIAM.ENV.Group.attributes,
 			dialogModalFields : modalFields,
 			fieldNames : ["name", "metadataName", "values"]
+		});
+	},
+	addOwner:function(typeName, bean){
+		var type = localeManager["openiam.ui.common."+typeName]
+		$("#groupOwnerId").val(bean.id);
+		$("#groupOwnerType").val(typeName);
+		$("#groupOwner").val(type +" - " + bean.name);
+		//$("#selectGroupOwner").remove()
+	},
+	initGroupSearchDialog: function(args){
+		args.onClick = function($that) {
+			$("#editDialog").groupDialogSearch({
+				searchTargetElmt : "#editDialog",
+				showResultsInDialog : true,
+				onAdd : function(bean) {
+					$that.selectableSearchResult("add", bean);
+				},
+				pageSize : 5
+			});
+		}
+		OPENIAM.Group.Form.initSearchDialog(args);
+	},
+	initMetadataSearchDialog: function(args){
+		args.onClick = function($that) {
+			$("#editDialog").metadataTypeDialogSearch({
+				initialGrouping:args.metadataGrouping,
+				showResultsInDialog : true,
+				searchTargetElmt : "#editDialog",
+				showAllGroupings: args.showAllGroupings,
+				onAdd : function(bean) {
+					$that.selectableSearchResult("add", bean);
+					$("#editDialog").dialog("close");
+				},
+				pageSize : 5
+			});
+		};
+		OPENIAM.Group.Form.initSearchDialog(args);
+	},
+	initSearchDialog: function(args){
+		$(args.targetElement).selectableSearchResult({
+			initialBeans : [{id : args.initialDataId, name : args.initialDataName}],
+			singleSearch : true,
+			addMoreText : args.selectAnotherLabel,
+			noneSelectedText : args.selectLabel,
+			onClick :args.onClick
 		});
 	},
 	deleteGroup : function() {
@@ -191,8 +354,34 @@ OPENIAM.Group.Form = {
 		obj.name = $("#groupName").val();
 		obj.description = $("#description").val();
 		obj.managedSysId = $("#managedSysId").val();
+		obj.maxUserNumber = $("#groupMaxUserCount").val();
+		obj.membershipDuration = $("#groupMembershipDuration").val();
+
 		obj.companyId = $("#organization").selectableSearchResult("getId");
-        obj.mdTypeId = $("#metadataType").selectableSearchResult("getId");
+
+		obj.classificationId = $("#groupClassification").selectableSearchResult("getId");
+		obj.adGroupTypeId = $("#groupADType").selectableSearchResult("getId");
+		obj.adGroupScopeId = $("#groupADScope").selectableSearchResult("getId");
+		obj.riskId = $("#groupRisk").selectableSearchResult("getId");
+        obj.mdTypeId = $("#groupTypeId").val();
+
+		obj.owner={};
+		obj.owner.type= $("#groupOwnerType").val();
+		obj.owner.id= $("#groupOwnerId").val();
+
+		obj.organizations = [];
+		var orgids = $("#organizationsTable").organizationHierarchyWrapper("getValues");
+		if(orgids!=null && orgids!=undefined && orgids.length>0){
+			for(var i=0; i<orgids.length;i++ ){
+				obj.organizations.push({id:orgids[i]});
+			}
+		}
+
+		var parentId = $("#groupParent").selectableSearchResult("getId");
+		if(parentId!=null && parentId!=undefined){
+			obj.parentGroups = [];
+			obj.parentGroups.push({id:parentId});
+		}
 	}
 };
 

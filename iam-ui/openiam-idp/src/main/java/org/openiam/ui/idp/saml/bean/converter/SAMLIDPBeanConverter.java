@@ -13,6 +13,7 @@ import org.openiam.am.srvc.dto.AuthProvider;
 import org.openiam.am.srvc.dto.AuthProviderAttribute;
 import org.openiam.am.srvc.dto.AuthResourceAttributeMap;
 import org.openiam.ui.bean.converter.BeanConverter;
+import org.openiam.ui.idp.saml.model.SAMLUploadToken;
 import org.openiam.ui.idp.saml.provider.SAMLIdentityProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,13 @@ public class SAMLIDPBeanConverter extends AbstractSAMLConverter<SAMLIdentityProv
 	private String nameQualifierAttributeId;
 	
 	@Override
+	public AuthProvider convert(final SAMLUploadToken token) throws Exception {
+		final AuthProvider provider = new AuthProvider();
+		
+		return provider;
+	}
+	
+	@Override
 	public SAMLIdentityProvider convert(final AuthProvider bean) {
 		SAMLIdentityProvider samlprovider = null;
 		if(bean != null) {
@@ -62,7 +70,7 @@ public class SAMLIDPBeanConverter extends AbstractSAMLConverter<SAMLIdentityProv
 			samlprovider.setPrivateKey(bean.getPrivateKey());
 			samlprovider.setPublicKey(bean.getPublicKey());
 			samlprovider.setResource(bean.getResource());
-			samlprovider.setSignResponse(bean.isSignRequest());
+			samlprovider.setSign(bean.isSignRequest());
 			if(MapUtils.isNotEmpty(bean.getResourceAttributeMap())) {
 				samlprovider.setHasAMAttributes(true);
 				samlprovider.setAmAttributes(new ArrayList<AuthResourceAttributeMap>(bean.getResourceAttributeMap().values()));

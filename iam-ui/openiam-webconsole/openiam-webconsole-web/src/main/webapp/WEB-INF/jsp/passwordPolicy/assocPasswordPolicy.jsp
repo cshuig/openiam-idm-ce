@@ -83,6 +83,14 @@
                                 <c:if test="${requestScope.policyAssociation.associationLevel eq 'ORGANIZATION'}">selected</c:if> >
                             <fmt:message
                                     key="openiam.ui.webconsole.policy.password.association.level.organization"/></option>
+                        <option value="USER_TYPE"
+                                <c:if test="${requestScope.policyAssociation.associationLevel eq 'USER_TYPE'}">selected</c:if> >
+                            <fmt:message
+                                    key="openiam.ui.webconsole.policy.password.association.level.usertype"/></option>
+                        <option value="MANAGED_SYSTEM"
+                                <c:if test="${requestScope.policyAssociation.associationLevel eq 'MANAGED_SYSTEM'}">selected</c:if> >
+                            <fmt:message
+                                    key="openiam.ui.webconsole.policy.password.association.level.managedsystem"/></option>
                     </select>
                 </td>
             </tr>
@@ -100,6 +108,30 @@
                         <a id="userOrgId" href="javascript:void(0);"
                            class="entity-link organization ui-search-enabled"></a>
                         <ul id="orgContainer" class="multi-choices" style="display: none"></ul>
+                    </div>
+                </td>
+                <td class="tdlightnormal" id="managedSystemTd">
+                    <div>
+                        <select id="managesSystem" class="rounded select">
+                            <option value=""><fmt:message key="openiam.ui.common.please.select"/></option>
+                            <c:forEach var="system" items="${requestScope.managedSystems}">
+                                <option value="${system.id}"
+                                        <c:if test="${requestScope.policyAssociation.objectId eq system.id}">selected</c:if>
+                                        >${system.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </td>
+                <td class="tdlightnormal" id="userTypeTd">
+                    <div>
+                        <select id="userType" class="rounded select">
+                            <option value=""><fmt:message key="openiam.ui.common.please.select"/></option>
+                            <c:forEach var="userType" items="${requestScope.userTypes}">
+                                <option value="${userType.id}"
+                                        <c:if test="${requestScope.policyAssociation.objectId eq userType.id}">selected</c:if>
+                                        >${userType.displayName}</option>
+                            </c:forEach>
+                        </select>
                     </div>
                 </td>
 

@@ -1,12 +1,9 @@
-import java.util.Map;
-
-import org.openiam.provision.dto.PasswordSync;
-import org.openiam.provision.dto.ProvisionUser;
-import org.openiam.provision.service.PostProcessor;
+import org.openiam.provision.dto.ProvisionUser
+import org.openiam.provision.service.AbstractPostProcessor;
 import org.openiam.provision.service.ProvisioningConstants;
 
 
-public class LDAPPostProcessor implements PostProcessor<ProvisionUser> {
+public class LDAPPostProcessor extends AbstractPostProcessor<ProvisionUser> {
 	
 	public int add(ProvisionUser user, Map<String, Object> bindingMap, boolean success) {
 	

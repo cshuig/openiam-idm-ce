@@ -215,26 +215,31 @@ console.log = window.console.log || function() {};
                 if(options.createEnabled) {
                     var tr = document.createElement("tr");
 
-                    if(options.isExpandable){
-                        var td = document.createElement("td");
-                        $(tr).append(td);
-                    }
-                    for(var i = 0; i < numHeaderFields; i++) {
-                        var td = document.createElement("td");
-                        $(tr).append(td);
-                    }
+					var td = document.createElement("td"); $(td).attr("colspan", totalColCount);
 
-                    var td = document.createElement("td");
-                        var btn = document.createElement("button"); btn.className = "redBtn"; btn.innerHTML = options.createText;
-                        if(options.createBtnId) {
-                            btn.id = options.createBtnId;
-                        }
-                        $(btn).click(function() {
-                            options.onCreateClick.call($this);
-                            return false;
-                        });
-                        $(td).append(btn);
-                    $(tr).append(td);
+                    var btn = document.createElement("button"); btn.className = "redBtn"; btn.innerHTML = options.createText; btn.style.cssFloat='right';
+
+					if(options.createBtnId) {
+                        btn.id = options.createBtnId;
+                    }
+                    $(btn).click(function() {
+                        options.onCreateClick.call($this);
+                        return false;
+                    });
+                    $(td).append(btn);
+
+					if(options.additionalBtnId || options.additionalBtnText) {
+						var btnAdditional = document.createElement("button"); btnAdditional.className = "redBtn"; btnAdditional.innerHTML = options.additionalBtnText;
+						btnAdditional.id = options.additionalBtnId;
+						btnAdditional.setAttribute('type', 'button');
+						btnAdditional.style.marginRight='5px';
+						btnAdditional.style.cssFloat='right';
+						$(btnAdditional).click(function() {
+							options.onAdditionalBtnClick.call($this);
+						});
+						$(td).append(btnAdditional);
+					}
+					$(tr).append(td);
 
                     $(thead).append(tr);
                 }
@@ -332,6 +337,12 @@ console.log = window.console.log || function() {};
                 isExpandable : false,
                 showHeader: true,
                 required : false,
+				additionalBtnId : null,
+				additionalBtnText : null,
+
+				onAdditionalBtnClick : function(obj) {
+
+				},
 
 	    		equals : function(obj1, obj2) { /* method to determine if two objects are equal - used by delete and create */
 	    			

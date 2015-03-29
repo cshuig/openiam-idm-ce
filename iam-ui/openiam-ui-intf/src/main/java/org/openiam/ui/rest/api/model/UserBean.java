@@ -2,7 +2,9 @@ package org.openiam.ui.rest.api.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openiam.base.ws.SortParam;
 import org.openiam.idm.srvc.continfo.dto.Phone;
+import org.openiam.idm.srvc.org.domain.OrganizationEntity;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.dto.UserStatusEnum;
@@ -10,6 +12,9 @@ import org.openiam.ui.web.model.AbstractBean;
 import org.openiam.ui.web.util.DateFormatStr;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class UserBean extends AbstractBean {
@@ -199,10 +204,25 @@ public class UserBean extends AbstractBean {
         }
 
         if(CollectionUtils.isNotEmpty(user.getAffiliations())){
-            for(Organization org: user.getAffiliations()){
-                if(organizationTypeId.equals(org.getOrganizationTypeId())){
+            List<Organization>  userOrgs = new ArrayList<Organization>(user.getAffiliations());
+
+            Collections.sort(userOrgs, new Comparator<Organization>() {
+                @Override
+                public int compare(Organization o1, Organization o2) {
+                    int result = o1.getOrganizationTypeId().compareTo(o2.getOrganizationTypeId());
+                    if (result != 0) {
+                        return result;
+                    }
+                    return  o1.getName().compareTo(o2.getName());
+                }
+            });
+
+            for(Organization org: userOrgs){
+                if(organizationTypeId.equals(org.getOrganizationTypeId())
+                        && StringUtils.isBlank(bean.getOrganization())){
                     bean.setOrganization(org.getName());
-                }else if(departmentTypeId.equals(org.getOrganizationTypeId())){
+                }else if(departmentTypeId.equals(org.getOrganizationTypeId())
+                            && StringUtils.isBlank(bean.getDepartment())){
                     bean.setDepartment(org.getName());
                 }
             }

@@ -3,14 +3,14 @@
   <parent>
     <artifactId>openiam-webconsole</artifactId>
     <groupId>org.openiam</groupId>
-    <version>3.2.6.RELEASE</version>
+    <version>3.3.RELEASE</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openiam</groupId>
   <artifactId>openiam-webconsole-web</artifactId>
   <packaging>war</packaging>
   <name>Webconsole Web</name>
-  <version>3.2.6.RELEASE</version>
+  <version>3.3.RELEASE</version>
   <description>Webconsole Web WAR</description>
   <ciManagement>
     <system>idm</system>

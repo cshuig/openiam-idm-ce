@@ -29,6 +29,7 @@ while ( loginManager.loginExists( loginID, sysId )) {
 	ctr++
 }
 
+println("LOGIN="+loginID); 
 output = loginID
 
 

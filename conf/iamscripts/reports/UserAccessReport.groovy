@@ -77,6 +77,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
         def String userId = query.getParameterValue("USER_ID")
         risk = query.getParameterValue("RISK")?.toUpperCase()
         def String manSysId = query.getParameterValue("MANAGED_SYS_ID")
+        def String[] resTypeIds = query.getParameterValues("RES_TYPE_IDS")
 
         def ReportTable reportTable = new ReportTable()
 
@@ -111,6 +112,16 @@ public class UserAccessReport implements ReportDataSetBuilder {
                 def ManagedSysDto bean = managedSystemService.getManagedSys(manSysId)
                 row.column.add(new ReportColumn('MANAGED_SYSTEM', bean?.name ?: NOT_FOUND))
             }
+            if (!EmptyMultiValue(resTypeIds)) {
+                def names = ""
+                resTypeIds.each { resTypeId ->
+                    def name = resourceService.findResourceTypeById(resTypeId)?.description
+                    if (name) {
+                        names += (names ? ", " : "") + name
+                    }
+                }
+                row.column.add(new ReportColumn('RES_TYPES', names ?: NOT_FOUND))
+            }
             reportTable.row.add(row)
 
         } else {
@@ -144,19 +155,22 @@ public class UserAccessReport implements ReportDataSetBuilder {
                 users.each { UserEntity user ->
 
                     // retrieve resources entitled to the user
-                    def entitlementBeans = getEntitlementBeans(user.id)
+                    def includeMenu = !EmptyMultiValue(resTypeIds) && resTypeIds.find {it=='MENU_ITEM'}
+                    def entitlementBeans = getEntitlementBeans(user.id, includeMenu)
                     entitlementBeans.each { eb ->
                         eb.resources.each { res ->
-                            def row = new ReportRow()
-                            row.column.add(new ReportColumn('FULL_NAME', user.userAttributes.get("FULL_NAME")?.value ?:
-                                    user.firstName + ' ' + (user.middleInit ? user.middleInit + ' ' : '') + user.lastName))
-                            row.column.add(new ReportColumn('EMPLOYEE_ID', user.employeeId))
-                            row.column.add(new ReportColumn('CONTAINER_TYPE', eb.type))
-                            row.column.add(new ReportColumn('CONTAINER_NAME', eb.name))
-                            row.column.add(new ReportColumn('RES_NAME', res.name))
-                            row.column.add(new ReportColumn('RES_TYPE', res.typeName))
-                            row.column.add(new ReportColumn('RISK', res.risk))
-                            reportTable.row.add(row)
+                            if (EmptyMultiValue(resTypeIds) || resTypeIds.find {it==res.typeId}) {
+                                def row = new ReportRow()
+                                row.column.add(new ReportColumn('FULL_NAME', user.userAttributes.get("FULL_NAME")?.value ?:
+                                        user.firstName + ' ' + (user.middleInit ? user.middleInit + ' ' : '') + user.lastName))
+                                row.column.add(new ReportColumn('EMPLOYEE_ID', user.employeeId))
+                                row.column.add(new ReportColumn('CONTAINER_TYPE', eb.type))
+                                row.column.add(new ReportColumn('CONTAINER_NAME', eb.name))
+                                row.column.add(new ReportColumn('RES_NAME', res.name))
+                                row.column.add(new ReportColumn('RES_TYPE', res.typeName))
+                                row.column.add(new ReportColumn('RISK', res.risk))
+                                reportTable.row.add(row)
+                            }
                         }
                     }
                 }
@@ -183,13 +197,13 @@ public class UserAccessReport implements ReportDataSetBuilder {
         return reportDataDto
     }
 
-    List<EntitlementBean> getEntitlementBeans(String userId) {
+    List<EntitlementBean> getEntitlementBeans(String userId, boolean includeMenu) {
 
         def matrix = authManagerService.getUserEntitlementsMatrix(userId)
         def result = [] as List<EntitlementBean>
         if (matrix.resourceIds) {
             def directResources = new EntitlementBean(type: DIRECT_RESOURCES)
-            directResources.resources += getResourceBeans(matrix.resourceIds)
+            directResources.resources += getResourceBeans(matrix.resourceIds, includeMenu)
             result += directResources
         }
 
@@ -197,7 +211,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
             def resourceIds = getResourcesForRole(roleId, matrix)
             if (resourceIds) {
                 def roleBean = getRoleBean(roleId)
-                roleBean.resources += getResourceBeans(resourceIds)
+                roleBean.resources += getResourceBeans(resourceIds, includeMenu)
                 result += roleBean
             }
         }
@@ -206,7 +220,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
             def resourceIds = getResourcesForGroup(groupId, matrix)
             if (resourceIds) {
                 def groupBean = getGroupBean(groupId)
-                groupBean.resources += getResourceBeans(resourceIds)
+                groupBean.resources += getResourceBeans(resourceIds, includeMenu)
                 result += groupBean
             }
         }
@@ -244,13 +258,13 @@ public class UserAccessReport implements ReportDataSetBuilder {
         return group2ResCache.get(groupId)
     }
 
-    List<ResBean> getResourceBeans(Set<String> resIds) {
+    List<ResBean> getResourceBeans(Set<String> resIds, boolean includeMenu) {
         def resBeans = [] as List<ResBean>
         def notCachedIds = [] as List<String>
         resIds.each { resId ->
             def res = resCache.get(resId)//getResourceBean(resId)
             if (res) {
-                if (resourceMatchesFilter(res)) {
+                if (resourceMatchesFilter(res, includeMenu)) {
                     resBeans += res
                 }
             } else {
@@ -267,7 +281,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
                     typeId: resEntity.resourceType.id,
                     typeName: resEntity.resourceType.displayNameMap?.get(DEFAULT_LANGUAGE.id)?.value)
             resCache.put(resEntity.id, resBean)
-            if (resourceMatchesFilter(resBean)) {
+            if (resourceMatchesFilter(resBean, includeMenu)) {
                 resBeans += resBean
             }
         }
@@ -288,8 +302,8 @@ public class UserAccessReport implements ReportDataSetBuilder {
                 type: CONTAINER_GROUP)
     }
 
-    boolean resourceMatchesFilter(ResBean resource) {
-        if (resource.typeId != 'MENU_ITEM') {
+    boolean resourceMatchesFilter(ResBean resource, boolean includeMenu) {
+        if (includeMenu || resource.typeId != 'MENU_ITEM') {
             if (!risk || resource.risk == risk) {
                 if (!manSysResourceId || (resource.typeId == 'MANAGED_SYS' && resource.id == manSysResourceId)) {
                     return true
@@ -327,6 +341,10 @@ public class UserAccessReport implements ReportDataSetBuilder {
             }
         }
         return resultIds
+    }
+
+    private static boolean EmptyMultiValue(String[] values) {
+        return !values || (values.length == 1 && !values[0])
     }
 
     static class EntitlementBean {

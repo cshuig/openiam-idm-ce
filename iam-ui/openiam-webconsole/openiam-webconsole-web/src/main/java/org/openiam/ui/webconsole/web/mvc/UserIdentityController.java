@@ -1,9 +1,13 @@
 package org.openiam.ui.webconsole.web.mvc;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openiam.base.AttributeOperationEnum;
+import org.openiam.base.OrderConstants;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.base.ws.SortParam;
+import org.openiam.idm.searchbeans.LoginSearchBean;
 import org.openiam.idm.srvc.auth.dto.Login;
 import org.openiam.idm.srvc.auth.dto.LoginStatusEnum;
 import org.openiam.idm.srvc.auth.ws.LoginListResponse;
@@ -62,40 +66,55 @@ public class UserIdentityController extends BaseUserController {
     }
     
     @RequestMapping(value="/getUserIdentities", method = RequestMethod.GET)
-    public @ResponseBody BeanResponse getUserIdentities(final @RequestParam(required=true, value="id") String userId) {
+    public @ResponseBody BeanResponse getUserIdentities(final @RequestParam(required=true, value="id") String userId,
+                                                        final @RequestParam(required = true, value = "from") int from,
+                                                        final @RequestParam(required = true, value = "size") int size,
+                                                        final @RequestParam(required = false, value = "sortBy") String sortBy,
+                                                        final @RequestParam(required = false, value = "orderBy") String orderBy) {
 
-    	final LoginListResponse loginListResponse = loginServiceClient.getLoginByUser(userId);
-    	final List<Login> loginList = (loginListResponse != null) ? loginListResponse.getPrincipalList() : null;
-    	final List<LoginBean> loginBeans = new LinkedList<LoginBean>();
-    	if(CollectionUtils.isNotEmpty(loginList)) {
-    		final Map<String, KeyNameBean> managedSysMap = getManagedSysMap();
-    		final SimpleDateFormat sdf = new SimpleDateFormat(DateFormatStr.getSdfDateTime());
-    		for(final Login login : loginList) {
-    			final LoginBean loginBean = new LoginBean();
-    			loginBean.setId(login.getLoginId());
-    			loginBean.setLocked(login.getIsLocked() > 0);
-    			if(login.getLastLogin() != null) {
-    				loginBean.setLastLogin(sdf.format(login.getLastLogin()));
-    			}
-                loginBean.setUserId(userId);
-    			loginBean.setLogin(login.getLogin());
-    			loginBean.setStatus(login.getStatus());
-                loginBean.setProvStatus(login.getProvStatus());
-    			if(login.getManagedSysId() != null) {
-    				final KeyNameBean mSys = managedSysMap.get(login.getManagedSysId());
-    				if(mSys != null) {
-    					loginBean.setManagedSys(mSys.getName());
-    					loginBean.setManagedSysId(mSys.getId());
-    				}
-    			}
-                loginBean.setGracePeriod(login.getGracePeriod());
-                loginBean.setPwdExp(login.getPwdExp());
-                loginBean.setLastUpdate(login.getLastUpdate());
-                loginBean.formatDates();
-    			loginBeans.add(loginBean);
-    		}
-    	}
-    	return new BeanResponse(loginBeans, loginBeans.size());
+        final List<LoginBean> loginBeans = new LinkedList<LoginBean>();
+        int count = 0;
+        if(StringUtils.isNotEmpty(userId)) {
+            LoginSearchBean searchBean = new LoginSearchBean();
+            searchBean.setDeepCopy(false);
+            searchBean.setUserId(userId);
+            if(StringUtils.isNotEmpty(sortBy)) {
+                List<SortParam> sortParamList = new ArrayList<>();
+                sortParamList.add(StringUtils.isNotEmpty(orderBy)? new SortParam(OrderConstants.valueOf(orderBy), sortBy) : new SortParam(OrderConstants.ASC.getValue()));
+                searchBean.setSortBy(sortParamList);
+            }
+            count = loginServiceClient.count(searchBean);
+            final List<Login> loginList = loginServiceClient.findBeans(searchBean, from, size);
+            if(CollectionUtils.isNotEmpty(loginList)) {
+                final Map<String, KeyNameBean> managedSysMap = getManagedSysMap();
+                final SimpleDateFormat sdf = new SimpleDateFormat(DateFormatStr.getSdfDateTime());
+                for(final Login login : loginList) {
+                    final LoginBean loginBean = new LoginBean();
+                    loginBean.setId(login.getLoginId());
+                    loginBean.setLocked(login.getIsLocked() > 0);
+                    if(login.getLastLogin() != null) {
+                        loginBean.setLastLogin(sdf.format(login.getLastLogin()));
+                    }
+                    loginBean.setUserId(userId);
+                    loginBean.setLogin(login.getLogin());
+                    loginBean.setStatus(login.getStatus());
+                    loginBean.setProvStatus(login.getProvStatus());
+                    if(login.getManagedSysId() != null) {
+                        final KeyNameBean mSys = managedSysMap.get(login.getManagedSysId());
+                        if(mSys != null) {
+                            loginBean.setManagedSys(mSys.getName());
+                            loginBean.setManagedSysId(mSys.getId());
+                        }
+                    }
+                    loginBean.setGracePeriod(login.getGracePeriod());
+                    loginBean.setPwdExp(login.getPwdExp());
+                    loginBean.setLastUpdate(login.getLastUpdate());
+                    loginBean.formatDates();
+                    loginBeans.add(loginBean);
+                }
+            }
+        }
+    	return new BeanResponse(loginBeans, count);
     }
 
     @RequestMapping(value="/editUserIdentity", method = RequestMethod.GET)

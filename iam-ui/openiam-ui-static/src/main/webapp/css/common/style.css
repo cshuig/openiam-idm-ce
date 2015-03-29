@@ -493,8 +493,7 @@ a .icon {
     margin-top: 10px;
 }
 
-
-#log-header{
+#log-header {
     margin: 0px auto;
     width: 432px;
     color: #fff;
@@ -503,7 +502,6 @@ a .icon {
 #log-header a {
     color: #fff;
 }
-
 
 #footnav {
     float: left;
@@ -891,9 +889,11 @@ a.blue {
     width: 24px;
     margin: 0 auto;
 }
+
 input.date {
     margin-right: 10px;
 }
+
 .openiam-edit-icon {
     background-image: url("../../images/common/edit.png");
     background-repeat: no-repeat;
@@ -1306,7 +1306,7 @@ select.pair {
 }
 
 .radioContainer {
-	width: 380px;
+    width: 380px;
 }
 
 div.policyContent {
@@ -1326,4 +1326,20 @@ div.policyContent ul li {
 
 div.policyContent ul li ul li {
     list-style-type: circle;
+}
+
+#managedSystemId.reset-password {
+    background: none repeat scroll 0 0 #f9f9f9;
+    border: 1px solid #ccc;
+    margin-bottom: 23px;
+    margin-top: 30px;
+    padding: 3px 10px;
+    width: 100%;
+}
+
+.width_90 {
+    width: 90px;
+}
+.checkCell{
+    width: 24px;
 }

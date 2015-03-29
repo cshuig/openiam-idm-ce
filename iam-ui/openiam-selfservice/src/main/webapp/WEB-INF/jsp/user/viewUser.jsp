@@ -43,7 +43,8 @@
         OPENIAM.ENV.MenuTree = <c:choose><c:when test="${! empty requestScope.menuTree}">${requestScope.menuTree}</c:when><c:otherwise>null</c:otherwise></c:choose>;
         OPENIAM.ENV.MenuTreeAppendURL = null;
         OPENIAM.ENV.ContextPath = "${pageContext.request.contextPath}";
-        OPENIAM.ENV.UserId = <c:choose><c:when test="${not empty requestScope.user.id}">"${requestScope.user.id}"
+        OPENIAM.ENV.UserId = <c:choose><c:when test="${not empty requestScope.user.id}">"${requestScope.user.id}";
+        OPENIAM.ENV.СolumnList = ${requestScope.columnList};
         </c:when><c:otherwise>null</c:otherwise></c:choose>;
     </script>
 </head>
@@ -52,12 +53,14 @@
     <fmt:message key="openiam.ui.user"/>: ${user.displayName}
 </div>
 <div class="frameContentDivider">
-    <c:if test="${! empty defaultLogin}">
+
+    <c:if test="${! empty requestScope.profilePicture}">
         <p>
-            <label><fmt:message key="openiam.ui.user.login"/>: </label>
-            <span>${defaultLogin}</span>
+            <span><img
+                    src='<c:url context="${pageContext.request.contextPath}" value="/rest/api/images/${requestScope.profilePicture}" />'/></span>
         </p>
     </c:if>
+
     <c:if test="${! empty user.firstName}">
         <p>
             <label><fmt:message key="openiam.ui.user.firstname"/>: </label>
@@ -76,12 +79,12 @@
             <span>${user.title}</span>
         </p>
     </c:if>
-    <c:if test="${! empty user.employeeId}">
-        <p>
-            <label><fmt:message key="openiam.ui.user.employee.id"/>: </label>
-            <span>${user.employeeId}</span>
-        </p>
-    </c:if>
+    <%--<c:if test="${! empty user.employeeId}">--%>
+        <%--<p>--%>
+            <%--<label><fmt:message key="openiam.ui.user.employee.id"/>: </label>--%>
+            <%--<span>${user.employeeId}</span>--%>
+        <%--</p>--%>
+    <%--</c:if>--%>
     <c:if test="${! empty requestScope.organizationList and fn:length(requestScope.organizationList) > 0}">
         <p>
             <label><fmt:message key="openiam.ui.common.organizations"/>: </label>
@@ -104,36 +107,60 @@
             <span>${user.jobCodeId}</span>
         </p>
     </c:if>
-    <c:if test="${! empty user.email}">
+    <c:if test="${! empty user.emailAddresses}">
         <p>
             <label><fmt:message key="openiam.ui.common.email.address"/>: </label>
-            <span>${user.email}</span>
+
+        <ul>
+            <c:forEach var="ea" items="${ user.emailAddresses}">
+                <li>
+                <span>
+                    <c:if test="${! empty ea}">
+                        <span>  ${ea.typeDescription}: ${ea.emailAddress}</span>
+                    </c:if>
+                </span></li>
+            </c:forEach>
+        </ul>
+
         </p>
     </c:if>
-    <c:if test="${! empty user.defaultPhone}">
+    <c:if test="${! empty user.phones}">
         <p>
             <label><fmt:message key="openiam.ui.common.phone.number"/>: </label>
-                <span>
-                    <c:if test="${! empty user.defaultPhone}">
-                        <c:if test="${! empty user.defaultPhone.areaCd}">(${user.defaultPhone.areaCd}) </c:if> ${user.defaultPhone.phoneNbr}
+        <ul>
+            <c:forEach var="ph" items="${ user.phones}">
+                <li>
+            <span>
+                    <c:if test="${! empty ph}">
+                        ${ph.typeDescription}: <c:if
+                            test="${! empty ph.areaCd}">(${ph.areaCd}) </c:if> ${ph.phoneNbr}
                     </c:if>
-                </span>
+                </span></li>
+            </c:forEach>
+        </ul>
         </p>
     </c:if>
-    <c:if test="${! empty user.defaultAddress}">
+    <c:if test="${! empty user.addresses}">
         <p>
             <label><fmt:message key="openiam.ui.common.address"/>: </label>
-                <span>
-                    <c:if test="${! empty user.defaultAddress}">
-                        <c:if test="${! empty user.defaultAddress.postalCd}">${user.defaultAddress.postalCd}</c:if>
-                        <c:if test="${! empty user.defaultAddress.country}">${user.defaultAddress.country}</c:if>
-                        <c:if test="${! empty user.defaultAddress.state}">${user.defaultAddress.state}</c:if>
-                        <c:if test="${! empty user.defaultAddress.city}">${user.defaultAddress.city}</c:if>
-                        <c:if test="${! empty user.defaultAddress.address1}">${user.defaultAddress.address1}</c:if>
-                        <c:if test="${! empty user.defaultAddress.address2}">${user.defaultAddress.address2}</c:if>
-                        <c:if test="${! empty user.defaultAddress.bldgNumber}">${user.defaultAddress.bldgNumber}</c:if>
-                    </c:if>
-                </span>
+        <ul>
+            <c:forEach var="addr" items="${ user.addresses}">
+                <li>
+                    <span>
+                        <c:if test="${! empty addr}">
+                            <c:if test="${! empty addr.typeDescription}">${addr.typeDescription}</c:if>:
+                            <c:if test="${! empty addr.postalCd}">${addr.postalCd}</c:if>
+                            <c:if test="${! empty addr.country}">${addr.country}</c:if>
+                            <c:if test="${! empty addr.state}">${addr.state}</c:if>
+                            <c:if test="${! empty addr.city}">${addr.city}</c:if>
+                            <c:if test="${! empty addr.address1}">${addr.address1}</c:if>
+                            <c:if test="${! empty addr.address2}">${addr.address2}</c:if>
+                            <c:if test="${! empty addr.bldgNumber}">${addr.bldgNumber}</c:if>
+                        </c:if>
+                    </span>
+                </li>
+            </c:forEach>
+        </ul>
         </p>
     </c:if>
     <c:choose>

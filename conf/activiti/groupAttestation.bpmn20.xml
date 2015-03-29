@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="definitions"
+  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:activiti="http://activiti.org/bpmn" 
+  targetNamespace="Attestation">
+
+  <process id="groupAttestationWorkflow">
+
+    <startEvent id="start" name="Initialize Process" />
+    
+    <sequenceFlow id="subProcessFlow" sourceRef="start" targetRef="subProcess" />
+		<subProcess id="subProcess" name="Start Approval Flow">
+			<multiInstanceLoopCharacteristics isSequential="true">
+	    		<loopDataInputRef>ApproverCardindality</loopDataInputRef>
+    			<inputDataItem name="cardinalityObject" />
+    			<completionCondition>${!IsTaskApproved}</completionCondition>
+	  		</multiInstanceLoopCharacteristics>
+			
+	  		<startEvent id="subProcessStart" />
+			
+			<sequenceFlow id="subProcessStartFlow" sourceRef="subProcessStart" targetRef="sendRequests" />
+				<serviceTask id="sendRequests" activiti:class="org.openiam.bpm.activiti.delegate.group.attestation.SendAttestationRequestDelegate" name="Send Requests to Group Owners" />
+		    
+		    <sequenceFlow id="makeRequestDecisionFlow" sourceRef="sendRequests" targetRef="makeRequestDecision" />
+		    	<userTask id="makeRequestDecision" name="Make Decision">
+		    		<extensionElements>
+		    			<activiti:taskListener event="create" class="org.openiam.bpm.activiti.tasklistener.AddGroupAttestationCandidateTaskListener" />
+					</extensionElements>
+		    	</userTask>
+		   
+		   	<sequenceFlow id="preSubProcessEnd" sourceRef="makeRequestDecision" targetRef="subProcessEnd" />
+		   
+	  		<endEvent id="subProcessEnd" />
+	 	</subProcess>
+ 	
+	<sequenceFlow id="doAttestationFlow" sourceRef="subProcess" targetRef="doAttestation" />
+    	<serviceTask id="doAttestation" activiti:class="org.openiam.bpm.activiti.delegate.group.attestation.GroupAttestationWorkDelegate" name="Task Accepted" />
+	
+	<sequenceFlow id="postAttestationFlow" sourceRef="doAttestation" targetRef="postAttestation" />
+		<serviceTask id="postAttestation" activiti:class="org.openiam.bpm.activiti.delegate.user.attestation.PostAttestationDelegate" name="Send Notifications" />
+		
+	<sequenceFlow id="afterNotifyAccepted" sourceRef="postAttestation" targetRef="finish" />
+ 	
+	<endEvent id="finish" name="Task Completed" />
+	
+  </process>
+
+</definitions>

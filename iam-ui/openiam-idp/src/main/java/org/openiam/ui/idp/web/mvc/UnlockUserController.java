@@ -133,7 +133,7 @@ public class UnlockUserController extends AbstractPasswordController {
                 throw new ErrorTokenException(token.getErrorList());
             }
 
-            token = attemptResetPassword(request, formRequest.getNewPassword(), login.getUserId(), false);
+            token = attemptResetPassword(request, formRequest.getNewPassword(), login.getUserId(), false, true);
             if (token.hasErrors()) {
                 throw new ErrorTokenException(token.getErrorList());
             }
@@ -332,9 +332,7 @@ public class UnlockUserController extends AbstractPasswordController {
             }
             auditLog.succeed();
         } catch (ErrorMessageException e) {
-            //IDMAPPS-2392
-            //error = e.getError();
-            error = Errors.COULD_NOT_INITIATE_REQUEST;
+            error = e.getError();
             auditLog.fail();
             auditLog.setFailureReason(getMessage(request, e.getError()));
             auditLog.setException(e);

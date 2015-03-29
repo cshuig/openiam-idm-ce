@@ -42,6 +42,13 @@ response.setDateHeader ("Expires", -1);
 			OPENIAM.ENV = window.OPENIAM.ENV || {};
 			OPENIAM.ENV.MenuTree = <c:choose><c:when test="${! empty requestScope.menuTree}">${requestScope.menuTree}</c:when><c:otherwise>null</c:otherwise></c:choose>;
 			OPENIAM.ENV.ManagedSys = ${requestScope.managedSystems};
+			OPENIAM.ENV.EntityUrl='editGroup.html';
+			OPENIAM.ENV.emptyResultsText='<fmt:message key="openiam.ui.shared.group.search.empty"/>';
+            OPENIAM.ENV.hasEditButton=true;
+            OPENIAM.ENV.onAdd = null;
+            OPENIAM.ENV.onEdit = function(bean){
+                window.location.href = OPENIAM.ENV.EntityUrl + "?id=" + bean.id;
+            };
 		</script>
 	</head>
 	<body>

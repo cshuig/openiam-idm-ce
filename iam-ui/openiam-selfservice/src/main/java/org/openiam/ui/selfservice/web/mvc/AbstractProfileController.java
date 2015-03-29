@@ -73,10 +73,7 @@ public abstract class AbstractProfileController extends AbstractSelfServiceContr
 	@Autowired
 	@Resource(name="authorizationManagerServiceClient")
 	protected AuthorizationManagerWebService authorizationManager;
-	
-    @Resource(name = "userServiceClient")
-    protected UserDataWebService userDataWebService;
-    
+
 	@Resource(name="managedSysServiceClient")
 	protected ManagedSystemWebService managedSysServiceClient;
 

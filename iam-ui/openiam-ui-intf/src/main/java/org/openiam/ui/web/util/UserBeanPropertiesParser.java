@@ -28,6 +28,10 @@ public class UserBeanPropertiesParser implements InitializingBean {
     private String userFullNameComposeRule;
     @Value("${org.openiam.ui.user.search.form.additional.criteria}")
     private String additionalSearchCriteria;
+    @Value("${org.openiam.ui.user.dir.lookup.search.result.columns}")
+    private String dirLookupSearchResultColumns;
+    @Value("${org.openiam.ui.user.view.user.search.result.columns}")
+    private String viewUserSearchResultColumns;
 
     @Value("${org.openiam.date.format}")
     private String dateFormatProp;
@@ -35,6 +39,9 @@ public class UserBeanPropertiesParser implements InitializingBean {
     private List<String> userSearchResultColumnList = new LinkedList<String>();
     private List<String> userFullNameComposeOrderList = new LinkedList<String>();
     private List<String> additionalSearchCriteriaList = new LinkedList<String>();
+    private List<String> dirLookupSearchResultColumnsList = new LinkedList<String>();
+
+    private List<String> viewUserSearchResultColumnsList = new LinkedList<String>();
 
     public List<String> getUserSearchResultColumnList() {
         return userSearchResultColumnList;
@@ -44,20 +51,35 @@ public class UserBeanPropertiesParser implements InitializingBean {
         return userFullNameComposeOrderList;
     }
 
-    public List<String> getAdditionalSearchCriteriaList(){ return this.additionalSearchCriteriaList; }
+    public List<String> getAdditionalSearchCriteriaList() {
+        return this.additionalSearchCriteriaList;
+    }
+
+    public List<String> getDirLookupSearchResultColumnsList() {
+        return dirLookupSearchResultColumnsList;
+    }
+
+    public List<String> getViewUserSearchResultColumnsList() {
+        return viewUserSearchResultColumnsList;
+    }
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        final String[] columns = StringUtils.split(userSearchResultColumns, ",");
-        for(int i = 0; i < columns.length; i++) {
-            userSearchResultColumnList.add(columns[i]);
-        }
+//        final String[] columns = StringUtils.split(userSearchResultColumns, ",");
+//        for(int i = 0; i < columns.length; i++) {
+//            userSearchResultColumnList.add(columns[i]);
+//        }
+        userSearchResultColumnList = parseProperty(userSearchResultColumns);
+        dirLookupSearchResultColumnsList = parseProperty(dirLookupSearchResultColumns);
+        viewUserSearchResultColumnsList = parseProperty(viewUserSearchResultColumns);
+
         final String[] ruleOrder = StringUtils.split(userFullNameComposeRule, ",");
-        for(int i = 0; i < ruleOrder.length; i++) {
+        for (int i = 0; i < ruleOrder.length; i++) {
             userFullNameComposeOrderList.add(ruleOrder[i]);
         }
         final String[] additionalCriteria = StringUtils.split(additionalSearchCriteria, ",");
-        for(int i = 0; i < additionalCriteria.length; i++) {
+        for (int i = 0; i < additionalCriteria.length; i++) {
             additionalSearchCriteriaList.add(additionalCriteria[i]);
         }
 
@@ -65,5 +87,19 @@ public class UserBeanPropertiesParser implements InitializingBean {
         UserBean.setDepartmentTypeId(departmentTypeId);
         UserBean.setFullNameComposeOrderList(userFullNameComposeOrderList);
         UserBean.setSDF(new SimpleDateFormat(dateFormatProp));
+    }
+
+    private List<String> parseProperty(final String property) {
+
+        List<String> result = new LinkedList<String>();
+        if (StringUtils.isNotBlank(property)) {
+            final String[] propertyArray = StringUtils.split(property, ",");
+            if (propertyArray != null && propertyArray.length > 0) {
+                for (int i = 0; i < propertyArray.length; i++) {
+                    result.add(propertyArray[i]);
+                }
+            }
+        }
+        return result;
     }
 }

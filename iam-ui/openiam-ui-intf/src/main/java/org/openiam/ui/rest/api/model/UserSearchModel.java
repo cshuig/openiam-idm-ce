@@ -21,10 +21,10 @@ import java.util.Set;
  * Date: 10.11.12
  */
 public class UserSearchModel implements Serializable {
-	
-	private static transient Logger LOG = Logger.getLogger(UserSearchModel.class);
-	
-	private String jobCode;
+
+    private static transient Logger LOG = Logger.getLogger(UserSearchModel.class);
+
+    private String jobCode;
     private String requesterId;
     private String lastName;
     private String firstName;
@@ -47,19 +47,20 @@ public class UserSearchModel implements Serializable {
     private int size;
     private String targetUserId;
     protected String maidenName;
+    private boolean fromDirectoryLookup;
 
     private String sortBy;
     private OrderConstants orderBy;
 
     public String getResourceId() {
-		return resourceId;
-	}
+        return resourceId;
+    }
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
 
-	public String getRequesterId() {
+    public String getRequesterId() {
         return requesterId;
     }
 
@@ -100,12 +101,12 @@ public class UserSearchModel implements Serializable {
     }
 
     public String getUserStatus() {
-		return userStatus;
-	}
+        return userStatus;
+    }
 
-	public void setUserStatus(String userStatus) {
-		this.userStatus = userStatus;
-	}
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
+    }
 
     public String getPhoneCode() {
         return phoneCode;
@@ -157,20 +158,20 @@ public class UserSearchModel implements Serializable {
     }
 
     public int getFrom() {
-		return from;
-	}
+        return from;
+    }
 
-	public void setFrom(int from) {
-		this.from = from;
-	}
+    public void setFrom(int from) {
+        this.from = from;
+    }
 
-	public int getSize() {
-		return size;
-	}
+    public int getSize() {
+        return size;
+    }
 
-	public void setSize(int size) {
-		this.size = size;
-	}
+    public void setSize(int size) {
+        this.size = size;
+    }
 
     public String getEmployeeId() {
         return employeeId;
@@ -181,12 +182,12 @@ public class UserSearchModel implements Serializable {
     }
 
     public String getEmployeeType() {
-		return employeeType;
-	}
+        return employeeType;
+    }
 
-	public void setEmployeeType(String employeeType) {
-		this.employeeType = employeeType;
-	}
+    public void setEmployeeType(String employeeType) {
+        this.employeeType = employeeType;
+    }
 
     public String getTargetUserId() {
         return targetUserId;
@@ -197,149 +198,157 @@ public class UserSearchModel implements Serializable {
     }
 
     public Set<String> getRoleIds() {
-		return roleIds;
-	}
-
-	public void setRoleIds(Set<String> roleIds) {
-		this.roleIds = roleIds;
-	}
-
-	public Set<String> getGroupIds() {
-		return groupIds;
-	}
-
-	public void setGroupIds(Set<String> groupIds) {
-		this.groupIds = groupIds;
-	}
-
-	public Set<String> getOrganizationIds() {
-		return organizationIds;
-	}
-
-	public void setOrganizationIds(Set<String> organizationIds) {
-		this.organizationIds = organizationIds;
-	}
-
-	public boolean isEmpty() {
-    	return StringUtils.isBlank(lastName) && 
-    		   StringUtils.isBlank(firstName) &&
-    		   StringUtils.isBlank(principal) &&
-    		   StringUtils.isBlank(email) &&
-    		   CollectionUtils.isEmpty(roleIds) &&
-    		   CollectionUtils.isEmpty(groupIds) &&
-    		   StringUtils.isBlank(userStatus) &&
-    		   CollectionUtils.isEmpty(organizationIds) &&
-    		   StringUtils.isBlank(phoneCode) &&
-    		   StringUtils.isBlank(phoneNumber) &&
-    		   StringUtils.isBlank(accountStatus) &&
-    		   StringUtils.isBlank(attributeName) &&
-    		   StringUtils.isBlank(attributeValue) &&
-               StringUtils.isBlank(attributeElementId) &&
-               StringUtils.isBlank(employeeId) &&
-               StringUtils.isBlank(resourceId) &&
-               StringUtils.isBlank(employeeType) &&
-               StringUtils.isBlank(maidenName) &&
-               StringUtils.isBlank(jobCode);
+        return roleIds;
     }
 
-    public <T extends UserSearchBean> T buildSearchBean(String requesterId, Class<T> clazz){
+    public void setRoleIds(Set<String> roleIds) {
+        this.roleIds = roleIds;
+    }
+
+    public Set<String> getGroupIds() {
+        return groupIds;
+    }
+
+    public void setGroupIds(Set<String> groupIds) {
+        this.groupIds = groupIds;
+    }
+
+    public Set<String> getOrganizationIds() {
+        return organizationIds;
+    }
+
+    public void setOrganizationIds(Set<String> organizationIds) {
+        this.organizationIds = organizationIds;
+    }
+
+    public boolean getFromDirectoryLookup() {
+        return fromDirectoryLookup;
+    }
+
+    public void setFromDirectoryLookup(boolean fromDirectoryLookup) {
+        this.fromDirectoryLookup = fromDirectoryLookup;
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isBlank(lastName) &&
+                StringUtils.isBlank(firstName) &&
+                StringUtils.isBlank(principal) &&
+                StringUtils.isBlank(email) &&
+                CollectionUtils.isEmpty(roleIds) &&
+                CollectionUtils.isEmpty(groupIds) &&
+                StringUtils.isBlank(userStatus) &&
+                CollectionUtils.isEmpty(organizationIds) &&
+                StringUtils.isBlank(phoneCode) &&
+                StringUtils.isBlank(phoneNumber) &&
+                StringUtils.isBlank(accountStatus) &&
+                StringUtils.isBlank(attributeName) &&
+                StringUtils.isBlank(attributeValue) &&
+                StringUtils.isBlank(attributeElementId) &&
+                StringUtils.isBlank(employeeId) &&
+                StringUtils.isBlank(resourceId) &&
+                StringUtils.isBlank(employeeType) &&
+                StringUtils.isBlank(maidenName) &&
+                StringUtils.isBlank(jobCode);
+    }
+
+    public <T extends UserSearchBean> T buildSearchBean(String requesterId, Class<T> clazz) {
         T searchBean = null;
         try {
             searchBean = clazz.newInstance();
             searchBean.setRequesterId(StringUtils.isNotBlank(this.requesterId) ? this.requesterId : requesterId);
 
-            if(StringUtils.isNotBlank(this.firstName)) {
+            if (StringUtils.isNotBlank(this.firstName)) {
                 searchBean.setFirstNameMatchToken(new SearchParam(StringUtils.trimToNull(this.firstName), MatchType.STARTS_WITH));
             }
 
-            if(StringUtils.isNotBlank(this.lastName)) {
+            if (StringUtils.isNotBlank(this.lastName)) {
                 searchBean.setLastNameMatchToken(new SearchParam(StringUtils.trimToNull(this.lastName), MatchType.STARTS_WITH));
             }
 
-            if(StringUtils.isNotBlank(this.accountStatus)) {
+            if (StringUtils.isNotBlank(this.accountStatus)) {
                 searchBean.setAccountStatus(StringUtils.trimToNull(this.accountStatus));
             }
 
-            if(StringUtils.isNotBlank(this.userStatus)) {
+            if (StringUtils.isNotBlank(this.userStatus)) {
                 searchBean.setUserStatus(StringUtils.trimToNull(this.userStatus));
             }
 
-            if(StringUtils.isNotBlank(this.attributeName)
-               || StringUtils.isNotBlank(this.attributeValue)
-               || StringUtils.isNotBlank(this.attributeElementId)) {
+            if (StringUtils.isNotBlank(this.attributeName)
+                    || StringUtils.isNotBlank(this.attributeValue)
+                    || StringUtils.isNotBlank(this.attributeElementId)) {
                 searchBean.addAttribute(this.attributeName, this.attributeValue, this.attributeElementId);
             }
-            
+
             searchBean.setMaidenNameMatchToken(new SearchParam(StringUtils.trimToNull(maidenName), MatchType.STARTS_WITH));
             searchBean.setJobCode(StringUtils.trimToNull(jobCode));
 
-            if(StringUtils.isNotBlank(this.email)) {
+            if (StringUtils.isNotBlank(this.email)) {
                 searchBean.setEmailAddressMatchToken(new SearchParam(StringUtils.trimToNull(this.email), MatchType.STARTS_WITH));
             }
 
             searchBean.setGroupIdSet(this.groupIds);
             searchBean.setOrganizationIdSet(this.organizationIds);
             searchBean.setRoleIdSet(this.roleIds);
-            
-            if(StringUtils.isNotBlank(this.phoneCode)) {
+
+            if (StringUtils.isNotBlank(this.phoneCode)) {
                 searchBean.setPhoneAreaCd(StringUtils.trimToNull(this.phoneCode));
             }
 
-            if(StringUtils.isNotBlank(this.phoneNumber)) {
+            if (StringUtils.isNotBlank(this.phoneNumber)) {
                 searchBean.setPhoneNbr(StringUtils.trimToNull(this.phoneNumber));
             }
 
-            if(StringUtils.isNotBlank(this.principal)) {
+            if (StringUtils.isNotBlank(this.principal)) {
                 LoginSearchBean lsb = new LoginSearchBean();
                 lsb.setLoginMatchToken(new SearchParam(this.principal, MatchType.STARTS_WITH));
                 searchBean.setPrincipal(lsb);
             }
-            
+
             searchBean.setEmployeeIdMatchToken(new SearchParam(StringUtils.trimToNull(this.employeeId), MatchType.EXACT));
 
 
-            if(StringUtils.isNotBlank(this.resourceId)) {
+            if (StringUtils.isNotBlank(this.resourceId)) {
                 searchBean.addResourceId(this.resourceId);
             }
-            if(StringUtils.isNotEmpty(this.employeeType)) {
+            if (StringUtils.isNotEmpty(this.employeeType)) {
                 searchBean.setEmployeeType(this.employeeType);
             }
 
-            if(searchBean instanceof PotentialSupSubSearchBean){
-                ((PotentialSupSubSearchBean)searchBean).addTargetUserId(this.getTargetUserId());
+            if (searchBean instanceof PotentialSupSubSearchBean) {
+                ((PotentialSupSubSearchBean) searchBean).addTargetUserId(this.getTargetUserId());
             }
             searchBean.setDeepCopy(false);
         } catch (Throwable e) {
             LOG.error("Exception", e);
         }
-        if(StringUtils.isNotEmpty(this.employeeType)) {
+        if (StringUtils.isNotEmpty(this.employeeType)) {
             searchBean.setEmployeeType(this.employeeType);
         }
 
-        if(StringUtils.isNotEmpty(this.sortBy)) {
+        if (StringUtils.isNotEmpty(this.sortBy)) {
             List<SortParam> sortParamList = new ArrayList<>();
-            sortParamList.add(new SortParam((this.orderBy==null)?OrderConstants.ASC:this.orderBy, this.sortBy));
+            sortParamList.add(new SortParam((this.orderBy == null) ? OrderConstants.ASC : this.orderBy, this.sortBy));
             searchBean.setSortBy(sortParamList);
         }
         searchBean.setDeepCopy(false);
         return searchBean;
     }
-    
+
     public String getMaidenName() {
-		return maidenName;
-	}
+        return maidenName;
+    }
 
-	public void setMaidenName(String maidenName) {
-		this.maidenName = maidenName;
-	}
-	
-	public String getJobCode() {
-		return jobCode;
-	}
+    public void setMaidenName(String maidenName) {
+        this.maidenName = maidenName;
+    }
 
-	public void setJobCode(String jobCode) {
-		this.jobCode = jobCode;
-	}
+    public String getJobCode() {
+        return jobCode;
+    }
+
+    public void setJobCode(String jobCode) {
+        this.jobCode = jobCode;
+    }
 
     public String getSortBy() {
         return sortBy;

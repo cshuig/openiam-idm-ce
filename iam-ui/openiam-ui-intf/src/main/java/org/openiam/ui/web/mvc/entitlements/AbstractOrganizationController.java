@@ -109,6 +109,7 @@ public abstract class AbstractOrganizationController extends AbstractEntityEntit
         model.setInternalOrgId(org.getInternalOrgId());
         model.setLdapStr(org.getLdapStr());
         model.setMdTypeId(org.getMdTypeId());
+        model.setMetadataTypeName(org.getMetadataTypeName());
         model.setSelectable(org.isSelectable());
         model.setSymbol(org.getSymbol());
         model.setAlias(org.getAlias());

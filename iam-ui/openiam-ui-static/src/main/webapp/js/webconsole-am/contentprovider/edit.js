@@ -102,6 +102,8 @@ OPENIAM.ContentProvider = {
         $("#domainPattern").val(obj.domainPattern);
         $("#themeId").val(obj.themeId);
         $("#isSSL").val(obj.isSSL + "");
+        $("#loginURL").val(obj.loginURL);
+        $("#postbackURLParamName").val(obj.postbackURLParamName);
         if (obj.isPublic) {
             $("#cpIsPublicOn").attr("checked", "checked");
         } else {
@@ -124,6 +126,8 @@ OPENIAM.ContentProvider = {
         obj.isPublic = $("#cpIsPublicOn").is(":checked") ? true : false;
         obj.showOnApplicationPage = $("#showOnApplicationPageOn").is(":checked") ? true : false;
         obj.groupingXrefs = $("#authenticationLevels").authenticationLevelTable("getValues");
+        obj.loginURL = $("#loginURL").val();
+        obj.postbackURLParamName = $("#postbackURLParamName").val();
     }
 };
 

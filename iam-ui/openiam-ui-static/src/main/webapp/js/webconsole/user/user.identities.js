@@ -43,7 +43,7 @@ OPENIAM.User.Identity = {
             requestParamIdName : "id",
             requestParamIdValue : OPENIAM.ENV.UserId,
             userId : OPENIAM.ENV.UserId,
-            pageSize : 10,
+            pageSize : 20,
             emptyResultsText : localeManager["openiam.ui.user.identities.empty.result"],
             onAppendDone : function() {
                 var editFields = [

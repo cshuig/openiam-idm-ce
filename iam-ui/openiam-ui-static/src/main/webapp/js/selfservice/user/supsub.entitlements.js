@@ -57,13 +57,6 @@ OPENIAM.UserEntitlements = {
                                     url : OPENIAM.ENV.ContextPath + "/" + args.modalAjaxURL,
                                     emptyFormText : OPENIAM.ENV.Text.EmptySearch,
                                     emptyResultsText : OPENIAM.ENV.Text.EmptyChildren,
-                                    columnHeaders : [
-                                    	localeManager["openiam.ui.common.name"], 
-                                    	localeManager["openiam.ui.common.phone.number"], 
-                                    	localeManager["openiam.ui.common.email.address"], 
-                                    	localeManager["openiam.ui.webconsole.user.status"], 
-                                    	localeManager["openiam.ui.webconsole.user.accountStatus"]
-                                    ],
                                     onAppendDone : function() {
                                         $("#dialog").dialog("close");
                                         $("#userResultsArea").prepend("<div class=\"\">" + OPENIAM.ENV.Text.UserTableDescription + "</div>");

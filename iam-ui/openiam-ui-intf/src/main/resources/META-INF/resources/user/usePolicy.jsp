@@ -28,6 +28,7 @@
     <script type="text/javascript" src="/openiam-ui-static/js/common/json/json.js"></script>
 
     <script type="text/javascript" src="/openiam-ui-static/js/common/openiam.common.js"></script>
+    <script type="text/javascript" src="/openiam-ui-static/js/common/use.policy.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/plugins/tiptip/jquery.tipTip.js"></script>
     <script type="text/javascript">
         OPENIAM = window.OPENIAM || {};
@@ -58,7 +59,7 @@
             <tbody>
             <tr>
                 <td>
-                    <div class="policyContent">${requestScope.usePolicy.policyContent}</div>
+                    <div name="licenseAgreement" class="policyContent">${requestScope.usePolicy.policyContent}</div>
                 </td>
             </tr>
             <tr align="center">
@@ -74,7 +75,7 @@
                                    value="<fmt:message key='openiam.ui.common.decline' />"/>
                         </li>
                         <li class="rightBtn">
-                            <input type="submit" name="accept" class="redBtn"
+                            <input type="submit" name="accept" class="redBtn" style="display: none;"
                                    value="<fmt:message key='openiam.ui.common.accept' />"/>
                         </li>
                     </ul>

@@ -7,6 +7,7 @@ import org.openiam.base.OrderConstants;
 import org.openiam.base.ws.SortParam;
 import org.openiam.idm.searchbeans.*;
 import org.openiam.idm.srvc.grp.dto.Group;
+import org.openiam.idm.srvc.loc.dto.Location;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.recon.dto.ReconciliationConfig;
 import org.openiam.idm.srvc.recon.ws.ReconciliationConfigResponse;
@@ -118,6 +119,7 @@ public class EntitlementsRestController extends AbstractController {
     public @ResponseBody BeanResponse searchGroups(final HttpServletRequest request,
     											   @RequestParam(required = false, value = "name") String name,
     											   final @RequestParam(required = false, value = "managedSysId") String managedSysId,
+                                                   final @RequestParam(required = false, value = "ownerId") String ownerId,
     											   final @RequestParam(required = true, value = "size") int size,
     											   final @RequestParam(required = true, value = "from") int from,
     											   final @RequestParam(required = false, value = "attributeName") String attributeName,
@@ -147,9 +149,16 @@ public class EntitlementsRestController extends AbstractController {
         }
 
     	searchBean.addAttribute(attributeName, attributeValue);
+        List<Group> results = new ArrayList<>();
+        Integer count = null;
+        if(StringUtils.isNotBlank(ownerId)){
+            results = groupServiceClient.findGroupsForOwner(searchBean, requesterId, ownerId, from, size, getCurrentLanguage());
+            count = (from == 0) ? groupServiceClient.countGroupsForOwner(searchBean, requesterId, ownerId) : null;
+        } else {
+            results = groupServiceClient.findBeans(searchBean, requesterId, from, size);
+            count = (from == 0) ? groupServiceClient.countBeans(searchBean, requesterId) : null;
+        }
 
-    	final List<Group> results = groupServiceClient.findBeans(searchBean, requesterId, from, size);
-    	final Integer count = (from == 0) ? groupServiceClient.countBeans(searchBean, requesterId) : null;
 
     	return new BeanResponse(mapper.mapToList(results, GroupBean.class), count);
     }
@@ -240,6 +249,48 @@ public class EntitlementsRestController extends AbstractController {
         List<ReconciliationConfig> configList = (List<ReconciliationConfig>) response.getConfigList();
         final Integer count = (from.intValue() == 0) ? reconciliationWebService.countReconConfig(searchBean) : null;
         return new BeanResponse(mapper.mapToList(configList, ReconcileConfigBean.class), count);
+    }
+
+    @RequestMapping(value = "/searchLocations", method = RequestMethod.GET)
+    public @ResponseBody
+    BeanResponse searchLocations(final HttpServletRequest request,
+                                 @RequestParam(required = false, value = "name") String name,
+                                 final @RequestParam(required = true, value = "organizationId") String organizationId,
+                                            final @RequestParam(required = true, value = "size") Integer size,
+                                            final @RequestParam(required = true, value = "from") Integer from,
+                                            final @RequestParam(required = false, value = "sortBy") String sortBy,
+                                            final @RequestParam(required = false, value = "orderBy") String orderBy) {
+
+        if (StringUtils.isNotBlank(name)) {
+            if (name.charAt(0) != '*') {
+                name = "*" + name;
+            }
+            if (name.charAt(name.length() - 1) != '*') {
+                name = name + "*";
+            }
+        }
+        LocationSearchBean locationSearchBean = new LocationSearchBean();
+        locationSearchBean.setOrganizationId(organizationId);
+        locationSearchBean.setName(name);
+        locationSearchBean.setDeepCopy(false);
+        if(StringUtils.isNotBlank(sortBy)){
+            List<SortParam> sortParamList = new ArrayList<>();
+            sortParamList.add((orderBy != null) ? new SortParam(OrderConstants.valueOf(orderBy), sortBy) : new SortParam(sortBy));
+            locationSearchBean.setSortBy(sortParamList);
+        }
+
+        List<Location> locations = organizationDataService.findLocationBeans(locationSearchBean, from, size);
+
+        int cnt =  organizationDataService.getNumOfLocations(locationSearchBean);
+
+        final List<LocationBean> beanList = new LinkedList<LocationBean>();
+
+        if (locations != null && locations.size() > 0) {
+            for (final Location locationEl : locations) {
+                beanList.add(new LocationBean(locationEl));
+            }
+        }
+        return new BeanResponse(mapper.mapToList(beanList, LocationBean.class), cnt);
     }
 
     @RequestMapping(value = "/searchOrganizations", method = RequestMethod.GET)

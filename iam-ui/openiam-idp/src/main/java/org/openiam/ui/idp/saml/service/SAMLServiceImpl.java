@@ -32,16 +32,25 @@ import org.openiam.idm.srvc.auth.ws.LoginDataWebService;
 import org.openiam.idm.srvc.auth.ws.LoginListResponse;
 import org.openiam.idm.srvc.auth.ws.LoginResponse;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
+import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.idm.srvc.user.ws.UserDataWebService;
+import org.openiam.idm.srvc.user.ws.UserResponse;
+import org.openiam.provision.dto.ProvisionUser;
+import org.openiam.provision.resp.ProvisionUserResponse;
+import org.openiam.provision.service.ProvisionService;
+import org.openiam.script.ScriptIntegration;
 import org.openiam.ui.audit.AuditLogProvider;
 import org.openiam.ui.idp.common.service.AuthenticationSweeper;
 import org.openiam.ui.idp.saml.exception.AuthenticationException;
+import org.openiam.ui.idp.saml.groovy.AbstractJustInTimeSAMLAuthenticator;
 import org.openiam.ui.idp.saml.model.SAMLIDPMetadataResponse;
 import org.openiam.ui.idp.saml.model.SAMLLogoutRequestToken;
 import org.openiam.ui.idp.saml.model.SAMLLogoutResponseToken;
 import org.openiam.ui.idp.saml.model.SAMLRequestToken;
 import org.openiam.ui.idp.saml.model.SAMLResponseToken;
+import org.openiam.ui.idp.saml.model.SAMLSPMetadataResponse;
 import org.openiam.ui.idp.saml.provider.AuthenticationProvider;
+import org.openiam.ui.idp.saml.provider.SAMLAuthenticationProvider;
 import org.openiam.ui.idp.saml.provider.SAMLIdentityProvider;
 import org.openiam.ui.idp.saml.provider.SAMLServiceProvider;
 import org.openiam.ui.idp.saml.util.SAMLAttributeBuilder;
@@ -56,6 +65,7 @@ import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.web.util.LoginProvider;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObjectBuilder;
+import org.opensaml.common.SignableSAMLObject;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.core.impl.*;
@@ -81,6 +91,7 @@ import org.opensaml.xml.XMLObjectBuilderFactory;
 import org.opensaml.xml.io.Marshaller;
 import org.opensaml.xml.io.MarshallerFactory;
 import org.opensaml.xml.io.MarshallingException;
+import org.opensaml.xml.schema.XSString;
 import org.opensaml.xml.security.SecurityConfiguration;
 import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.security.credential.Credential;
@@ -94,9 +105,14 @@ import org.opensaml.xml.security.x509.X509KeyInfoGeneratorFactory;
 import org.opensaml.xml.signature.KeyInfo;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.signature.SignatureConstants;
+import org.opensaml.xml.signature.SignatureException;
 import org.opensaml.xml.signature.SignatureValidator;
 import org.opensaml.xml.signature.Signer;
+import org.opensaml.xml.signature.X509Data;
+import org.opensaml.xml.signature.impl.KeyInfoBuilder;
 import org.opensaml.xml.signature.impl.SignatureBuilder;
+import org.opensaml.xml.signature.impl.X509CertificateBuilder;
+import org.opensaml.xml.signature.impl.X509DataBuilder;
 import org.opensaml.xml.util.XMLHelper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,6 +167,8 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 	@Qualifier("samlProviderIdCache")
 	private Ehcache samlIdCache;
 	
+	private Map<String, SAMLServiceProvider> spIdCache;
+	
 	private boolean cacheInitialized = false;
 	
 	@Autowired
@@ -187,6 +205,13 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 	@Value("${org.openiam.idp.saml.skip.uri.check}")
 	private boolean skipURICheck;
 	
+    @Autowired
+    @Qualifier("configurableGroovyScriptEngine")
+    protected ScriptIntegration scriptRunner;
+
+    @Value("${org.openiam.provision.service.flag}")
+    protected Boolean provisionServiceFlag;
+	
 	private long samlIssueThresholdInMillis;
 	
 	@Autowired
@@ -200,6 +225,10 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 
     @Resource(name = "userServiceClient")
     protected UserDataWebService userDataWebService;
+    
+
+    @Resource(name = "provisionServiceClient")
+    protected ProvisionService provisionService;
 	
 	@ManagedOperation(description="sweep the SAML Cache")
 	public void sweep() {
@@ -243,6 +272,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			samlIdCache.flush();
 		}
 		
+		final Map<String, SAMLServiceProvider> tempSpIdCache = new HashMap<>();
 		final List<SAMLServiceProvider> samlServiceProviders = authSweeper.getSAMLServiceProviders();
 		if(CollectionUtils.isNotEmpty(samlServiceProviders)) {
 			final Map<String, SAMLServiceProvider> providerCache = new HashMap<String, SAMLServiceProvider>();
@@ -265,12 +295,14 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				final String issuer = provider.getIssuer();
 				if(StringUtils.isNotEmpty(issuer)) {
 					samlSPCache.put(new net.sf.ehcache.Element(StringUtils.lowerCase(issuer), provider));
+					tempSpIdCache.put(provider.getId(), provider);
 				}
 			}
 		} else {
 			samlSPCache.flush();
 		}
 		
+		spIdCache = tempSpIdCache;
 		cacheInitialized = true;
 		log.debug("Done sweeping SAML Cache...");
 	}
@@ -296,16 +328,14 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 	}
 	
 	public SAMLServiceProvider getSAMLServiceProvierById(final String id) {
-		SAMLServiceProvider sp = null;
-		if(samlSPCache.getKeys() != null) {
-			for(final Object key : samlSPCache.getKeys()) {
-				final net.sf.ehcache.Element cacheElement = samlSPCache.get(key);
-				if(cacheElement != null) {
-					sp = (SAMLServiceProvider)cacheElement.getObjectValue();
-				}
+		try {
+			if(!cacheInitialized) { /* in case the ESB was down at startup, retry */
+				sweep();
 			}
+			return spIdCache.get(id);
+		} catch(Throwable e) { /* would happen if the ESB is down - just return null */
+			return null;
 		}
-		return sp;
 	}
 	
 	private SAMLServiceProvider getSAMLServiceProviderByName(final String issuer) {
@@ -353,6 +383,85 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		
 	}
 	
+
+	@Override
+	public SAMLSPMetadataResponse getSPMetadata(final HttpServletRequest request, final String serviceProviderId) {
+		final SAMLSPMetadataResponse token = new SAMLSPMetadataResponse();
+		
+		try {
+			final MarshallerFactory marshallerFactory = Configuration.getMarshallerFactory();
+			
+			final SAMLServiceProvider provider = getSAMLServiceProvierById(serviceProviderId);
+			if(provider == null) {
+				throw new AuthenticationException(String.format("SAMLServiceProvider with ID '%s' not configured or doesn't exist", serviceProviderId), Errors.SAML_SERVICE_PROVIDER_NOT_FOUND);
+			}
+			
+			final XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
+			final EntityDescriptor entityDescriptor = ((EntityDescriptorBuilder)builderFactory.getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
+			entityDescriptor.setID(RandomStringUtils.randomAlphanumeric(10));
+			entityDescriptor.setCacheDuration(providerSweepTime);
+			entityDescriptor.setEntityID(provider.getIssuer());
+			
+			final SPSSODescriptor descriptor = ((SPSSODescriptorBuilder)builderFactory.getBuilder(SPSSODescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
+			descriptor.setAuthnRequestsSigned(false);
+			
+			final KeyDescriptor keyDescriptor = ((KeyDescriptorBuilder)builderFactory.getBuilder(KeyDescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
+			if(provider.isSign()) {
+				keyDescriptor.setUse(UsageType.SIGNING);
+				final Credential signingCredential = getSigningCredential(provider);
+				final X509KeyInfoGeneratorFactory keyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();  
+				keyInfoGeneratorFactory.setEmitEntityCertificate(true);
+				final KeyInfoGenerator keyInfoGenerator = keyInfoGeneratorFactory.newInstance();
+				keyDescriptor.setKeyInfo(keyInfoGenerator.generate(signingCredential));
+			} else {
+				keyDescriptor.setUse(UsageType.UNSPECIFIED);
+			}
+			descriptor.getKeyDescriptors().add(keyDescriptor);
+			
+			/* NameID would go here, but we have no name ID */
+			for(final String format : new String[] {NameIDType.EMAIL, NameIDType.TRANSIENT}) {
+				final NameIDFormat nameIdFormat = ((NameIDFormatBuilder)builderFactory.getBuilder(NameIDFormat.DEFAULT_ELEMENT_NAME)).buildObject();
+				nameIdFormat.setFormat(format);
+				descriptor.getNameIDFormats().add(nameIdFormat);
+			}
+			
+			final String baseURI = URIUtils.getBaseURI(request);
+			final String entryPointURL = new StringBuilder(baseURI).append("/idp/sp/login/").append(serviceProviderId).toString();
+			final String applicationLoginURL = provider.getLoginURL();
+			final String applicationLogoutURL = provider.getLogoutURL();
+			
+			descriptor.getAssertionConsumerServices();
+			//descriptor.getSingleLogoutServices();
+			
+			for(final String binding : new String[] {SAMLConstants.SAML2_POST_BINDING_URI}) {
+				final AssertionConsumerService ssoService = ((AssertionConsumerServiceBuilder)builderFactory.getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME)).buildObject();
+				ssoService.setBinding(binding);
+				ssoService.setLocation(entryPointURL);
+				ssoService.setResponseLocation(applicationLoginURL);
+				ssoService.setIndex(0);
+				ssoService.setIsDefault(true);
+				descriptor.getAssertionConsumerServices().add(ssoService);
+			}
+			
+			descriptor.addSupportedProtocol(SAMLConstants.SAML20_NS);
+			entityDescriptor.getRoleDescriptors().add(descriptor);
+			
+			final Element entityDescriptorElement = marshallerFactory.getMarshaller(entityDescriptor).marshall(entityDescriptor);
+			token.setEntityDescriptor(entityDescriptor);
+			token.setEntityDescriptorElement(entityDescriptorElement);
+		} catch(SecurityException e) {
+			token.setError(Errors.SAML_SECURITY_EXCEPTION, e);
+			log.warn(String.format("Authencation Exception: %s", e.getMessage()));
+		} catch(AuthenticationException e) {
+			token.setError(e.getError(), e);
+			log.warn(String.format("Authencation Exception: %s", e.getMessage()));
+		} catch(Throwable e) {
+			log.error("SAML Exception", e);
+			token.setError(Errors.INTERNAL_ERROR, e);
+		}
+		return token;
+	}
+	
 	@Override
 	public SAMLIDPMetadataResponse getSAMLIDPMetadata(HttpServletRequest request) {
 		final SAMLIDPMetadataResponse token = new SAMLIDPMetadataResponse();
@@ -384,7 +493,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			//idpSSODescriptor.addSupportedProtocol(SAMLConstants.SAML20_NS);
 			
 			final KeyDescriptor keyDescriptor = ((KeyDescriptorBuilder)builderFactory.getBuilder(KeyDescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
-			if(provider.isSignResponse()) {
+			if(provider.isSign()) {
 				keyDescriptor.setUse(UsageType.SIGNING);
 				final Credential signingCredential = getSigningCredential(provider);
 				final X509KeyInfoGeneratorFactory keyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();  
@@ -427,7 +536,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			entityDescriptor.getRoleDescriptors().add(idpSSODescriptor);
 
 			/* sign the response.  this MUST BE THE LAST BLOCK, otheriwse you'll get no signature!!!!! */
-			if(provider.isSignResponse()) {
+			if(provider.isSign()) {
 				final Signature signature = getSignature(provider, builderFactory);
 				entityDescriptor.setSignature(signature);
 				marshallerFactory.getMarshaller(entityDescriptor).marshall(entityDescriptor);
@@ -484,7 +593,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			final MarshallerFactory marshallerFactory = Configuration.getMarshallerFactory();
 			final AuthnRequest authnRequest = SAMLDigestUtils.getAuthNRequest(httpRequest, skipURICheck);
 			
-			final Element marshalledRequest = Configuration.getMarshallerFactory().getMarshaller(authnRequest).marshall(authnRequest);
+			final Element marshalledRequest = marshallerFactory.getMarshaller(authnRequest).marshall(authnRequest);
 			final String samlReqeustString = XMLHelper.prettyPrintXML(marshalledRequest);
 			auditLog.addAttribute(AuditAttributeName.SAML_REQUEST_XML, samlReqeustString);
 			log.info(String.format("SAML Request: %s", samlReqeustString));
@@ -612,12 +721,32 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				}
 			}
 			
+			if(authnRequest.isSigned()) {
+				final BasicX509Credential credential = new BasicX509Credential();
+
+				credential.setUsageType(UsageType.SIGNING);
+
+			    final InputStream inStream = new ByteArrayInputStream(provider.getPublicKey());
+			    final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			    final X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
+			    inStream.close();
+			    credential.setEntityCertificate(cert);
+			    credential.setPublicKey(cert.getPublicKey());
+				
+				final Signature signature = authnRequest.getSignature();
+				final SignatureValidator validator = new SignatureValidator(credential);
+				validator.validate(signature);
+			}
+			
 			/* sign the response.  this MUST BE THE LAST BLOCK, otheriwse you'll get no signature!!!!! */
-			if(provider.isSignResponse()) {
+			Element responseElmt = null;
+			if(provider.isSign()) {
 				final Signature signature = getSignature(provider, builderFactory);
-				assertion.setSignature(signature);
-				marshallerFactory.getMarshaller(assertion).marshall(assertion);
+				response.setSignature(signature);
+				responseElmt = marshallerFactory.getMarshaller(response).marshall(response);
 				Signer.signObject(signature);
+			} else {
+				responseElmt = marshallerFactory.getMarshaller(response).marshall(response);	
 			}
 			
 			token.setEncodedResponse(SAMLEncoder.encodeResponse(response));
@@ -625,12 +754,8 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			token.setResponse(response);
 			token.setRelayState(relayState);
 			
-			//if(log.isDebugEnabled()) {
-				final Marshaller marshaller = marshallerFactory.getMarshaller(response);
-				final Element responseElmt = marshaller.marshall(response);
-				final String prettyXML = XMLHelper.prettyPrintXML(responseElmt);
+			final String prettyXML = XMLHelper.prettyPrintXML(responseElmt);
 				
-			//}
 			log.info(String.format("SAML XML: %s", prettyXML));
 			auditLog.addAttribute(AuditAttributeName.SAML_REQUEST_XML, samlReqeustString);
 			auditLog.addAttribute(AuditAttributeName.SAML_RESPONSE_XML, prettyXML);
@@ -731,7 +856,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		return keyInfo;
 	}
 	
-	private Credential getSigningCredential(final SAMLIdentityProvider provider) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, java.security.cert.CertificateException {
+	private BasicX509Credential getSigningCredential(final SAMLAuthenticationProvider provider) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, java.security.cert.CertificateException {
 		final BasicX509Credential credential = new BasicX509Credential();
 
 		credential.setUsageType(UsageType.SIGNING);
@@ -743,10 +868,12 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 	    credential.setEntityCertificate(cert);
 	    credential.setPublicKey(cert.getPublicKey());
 	    
-	    final PKCS8EncodedKeySpec kspec = new PKCS8EncodedKeySpec(provider.getPrivateKey());
-	    final KeyFactory kf = KeyFactory.getInstance("RSA");
-	    final PrivateKey privKey = kf.generatePrivate(kspec);
-	    credential.setPrivateKey(privKey);
+	    if(provider instanceof SAMLIdentityProvider) {
+	    	final PKCS8EncodedKeySpec kspec = new PKCS8EncodedKeySpec(((SAMLIdentityProvider)provider).getPrivateKey());
+	    	final KeyFactory kf = KeyFactory.getInstance("RSA");
+	    	final PrivateKey privKey = kf.generatePrivate(kspec);
+	    	credential.setPrivateKey(privKey);
+	    }
 	    
 	    return credential;
 	}
@@ -785,6 +912,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		auditLog.setRequestorPrincipal(cookieProvider.getPrincipal(request));
 		
 		try {
+			final MarshallerFactory marshallerFactory = Configuration.getMarshallerFactory();
 			final SAMLServiceProvider serviceProvider = getSAMLServiceProviderByName(issuerName);
 			if(serviceProvider == null) {
 				throw new AuthenticationException(String.format("SAMLServiceProvider with Name '%s' not configured or doesn't exist", issuerName), Errors.SAML_SERVICE_PROVIDER_NOT_FOUND);
@@ -802,12 +930,6 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			issuer.setValue(serviceProvider.getIssuer());
 			authnRequest.setIssuer(issuer);
 			
-			final Element authnRequestElmt = Configuration.getMarshallerFactory().getMarshaller(authnRequest).marshall(authnRequest);
-			final String prettyXML = XMLHelper.prettyPrintXML(authnRequestElmt);
-			auditLog.addAttribute(AuditAttributeName.SAML_REQUEST_XML, prettyXML);
-			
-			token.setAuthnRequest(authnRequest);
-			
 			serviceProvider.setLoginURL(serviceProvider.getLoginURL());
 			serviceProvider.setLogoutURL(serviceProvider.getLogoutURL());
 			token.setServiceProvider(serviceProvider);
@@ -815,6 +937,34 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			final Endpoint endpoint = ((SAMLObjectBuilder<Endpoint>) builderFactory.getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME)).buildObject();
 			endpoint.setLocation(serviceProvider.getLoginURL());
 			token.setEndpoint(endpoint);
+
+			
+			Element authnRequestElmt = null;
+			if(serviceProvider.isSign()) {
+				final BasicX509Credential credential = getSigningCredential(serviceProvider);
+				final Signature signature = ((SignatureBuilder)builderFactory.getBuilder(Signature.DEFAULT_ELEMENT_NAME)).buildObject();
+				signature.setSigningCredential(credential);
+				signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+				signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+				final KeyInfo keyInfo = ((KeyInfoBuilder) builderFactory.getBuilder(KeyInfo.DEFAULT_ELEMENT_NAME)).buildObject();
+				final X509Data data = ((X509DataBuilder) builderFactory.getBuilder(X509Data.DEFAULT_ELEMENT_NAME)).buildObject();
+				final org.opensaml.xml.signature.X509Certificate cert = ((X509CertificateBuilder) 
+						builderFactory.getBuilder(org.opensaml.xml.signature.X509Certificate.DEFAULT_ELEMENT_NAME)).buildObject();
+				final String value = org.apache.xml.security.utils.Base64.encode(credential.getEntityCertificate().getEncoded());
+				cert.setValue(value);
+				data.getX509Certificates().add(cert);
+				keyInfo.getX509Datas().add(data);
+				signature.setKeyInfo(keyInfo);
+				
+	            authnRequest.setSignature(signature);
+			}
+			
+			authnRequestElmt = marshallerFactory.getMarshaller(authnRequest).marshall(authnRequest);
+			
+			final String prettyXML = XMLHelper.prettyPrintXML(authnRequestElmt);
+			auditLog.addAttribute(AuditAttributeName.SAML_REQUEST_XML, prettyXML);
+			
+			token.setAuthnRequest(authnRequest);
 		/*
 		} catch(SecurityException e) {
 			auditLog.setFailureReason(e.getMessage());
@@ -855,9 +1005,10 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		auditLog.setAction(AuditAction.SAML_SP_RESPONSE_PROCESS.value());
 		auditLog.addAttribute(AuditAttributeName.RELAY_STATE, relayState);
 		try {
+			final MarshallerFactory marshallerFactory = Configuration.getMarshallerFactory();
 			final Response response = SAMLDigestUtils.getSAMLResponse(httpRequest, skipURICheck);
 			
-			final Element marshalledResponse = Configuration.getMarshallerFactory().getMarshaller(response).marshall(response);
+			final Element marshalledResponse = marshallerFactory.getMarshaller(response).marshall(response);
 			final String samlResponseString = XMLHelper.prettyPrintXML(marshalledResponse);
 			auditLog.addAttribute(AuditAttributeName.SAML_RESPONSE_XML, samlResponseString);
 			log.info(String.format("SAML Request: %s", samlResponseString));
@@ -929,7 +1080,10 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				throw new AuthenticationException(String.format("response.assertions.subject.nameId.format is null"), Errors.SAML_SP_EXCEPTION);
 			}
 			
-			if(serviceProvider.isSignResponse()) {
+			if(serviceProvider.isSign()) {
+				if(!response.isSigned()) {
+					throw new SecurityException("Expecting Signed Response");
+				}
 				final BasicX509Credential credential = new BasicX509Credential();
 
 				credential.setUsageType(UsageType.SIGNING);
@@ -950,6 +1104,8 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			final String nameIdValue = nameId.getValue();
 			final String managedSysId = serviceProvider.getManagedSysId();
 			
+			final boolean justInTimeAuthEnabled = StringUtils.isNotBlank(serviceProvider.getJustInTimeSAMLAuthenticatorScript());
+			
 			String principal = null;
 			switch(nameIdFormat) {
 				case NameIDType.EMAIL:
@@ -957,39 +1113,99 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 					searchBean.setDeepCopy(false);
 					searchBean.setEmailMatchToken(new SearchParam(nameIdValue, MatchType.EXACT));
 					final List<EmailAddress> emailAddresses = userDataWebService.findEmailBeans(searchBean, 0, 10);
-					if(CollectionUtils.isEmpty(emailAddresses)) {
+					
+					/* if just-in-time auth is not enabled, and there is no match, throw an exception */
+					if(!justInTimeAuthEnabled && CollectionUtils.isEmpty(emailAddresses)) {
 						throw new SecurityException(String.format("Email address '%s' resulted in no results", nameIdValue));
 					}
-					if(emailAddresses.size() > 1) {
-						throw new SecurityException(String.format("Email address '%s' maps to mroe than one record", nameIdValue));
+					
+					/* 
+					 * If any matching email address is found, try to find a login match 
+					 */
+					if(emailAddresses != null) {
+						/* bad data check */
+						if(emailAddresses.size() > 1) {
+							throw new SecurityException(String.format("Email address '%s' maps to mroe than one record", nameIdValue));
+						}
+						
+						/* bad data check */
+						final LoginListResponse loginListResponse = loginServiceClient.getLoginByUser(emailAddresses.get(0).getParentId());
+						if(CollectionUtils.isEmpty(loginListResponse.getPrincipalList())) {
+							throw new SecurityException(String.format("Email address '%s' maps to a user with no principals", nameIdValue));
+						}
+						
+						for(final Login login : loginListResponse.getPrincipalList()) {
+							if(StringUtils.equals(login.getManagedSysId(), managedSysId)) {
+								principal = login.getLogin();
+								break;
+							}
+						}
+						
+						if(!justInTimeAuthEnabled && principal == null) {
+							throw new SecurityException(String.format("Could not find principal '%s'", nameIdValue));
+						}
+					}
+					break;
+				default:
+					principal = nameIdValue;
+					
+					/* none was sent */
+					if(StringUtils.isBlank(principal)) {
+						throw new SecurityException(String.format("No principal sent in AuthnResponse"));
+					}
+					break;
+			}
+			
+			/* if a principal is sent, check to see if it maps to a user */
+			LoginResponse loginResponse = null;
+			if(principal != null) {
+				loginResponse = loginServiceClient.getLoginByManagedSys(principal, managedSysId);
+				if(!justInTimeAuthEnabled && loginResponse.isFailure()) {
+					throw new SecurityException(String.format("Could not find principal '%s' using managed System '%s'", principal, managedSysId));
+				}
+			}
+			
+			/* try just-in-time auth */
+			if(justInTimeAuthEnabled) {
+				if(loginResponse == null || loginResponse.isFailure()) {
+					final AbstractJustInTimeSAMLAuthenticator authenticator = (AbstractJustInTimeSAMLAuthenticator)scriptRunner.instantiateClass(null, serviceProvider.getJustInTimeSAMLAuthenticatorScript());
+					authenticator.init(response, nameId, serviceProvider);
+					User user = authenticator.createUser();
+					if (provisionServiceFlag) {
+						final ProvisionUser pUser = new ProvisionUser(user);
+						final ProvisionUserResponse userResponse = provisionService.addUser(pUser);
+						if(userResponse.isFailure()) {
+							throw new AuthenticationException("Just in time provisioning failed due to the provisioning service returning a failure", 
+									Errors.SAML_SECURITY_EXCEPTION);
+						}
+						user = userResponse.getUser();
+					} else {
+						final UserResponse userResponse = userDataWebService.saveUserInfo(user, null);
+						if(userResponse.isFailure()) {
+							throw new AuthenticationException("Just in time provisioning failed due to the provisioning service returning a failure", 
+									Errors.SAML_SECURITY_EXCEPTION);
+						}
+						user = userResponse.getUser();
 					}
 					
-					final LoginListResponse loginListResponse = loginServiceClient.getLoginByUser(emailAddresses.get(0).getParentId());
-					if(loginListResponse == null || CollectionUtils.isEmpty(loginListResponse.getPrincipalList())) {
-						throw new SecurityException(String.format("Email address '%s' maps to a user with no principals", nameIdValue));
+					if(CollectionUtils.isEmpty(user.getPrincipalList())) {
+						throw new SecurityException("The return value from the provisioning service did not have any principals.");
 					}
 					
-					for(final Login login : loginListResponse.getPrincipalList()) {
+					for(final Login login : user.getPrincipalList()) {
 						if(StringUtils.equals(login.getManagedSysId(), managedSysId)) {
 							principal = login.getLogin();
 							break;
 						}
 					}
 					
-					break;
-				default:
-					principal = nameIdValue;
-					break;
+					loginResponse = loginServiceClient.getLoginByManagedSys(principal, managedSysId);
+					if(loginResponse.isFailure()) {
+						throw new SecurityException(String.format("Could not find principal '%s' using managed System '%s' AFTER Just-in-time provisioning", principal, managedSysId));
+					}
+				}
 			}
 			
-			if(principal == null) {
-				throw new SecurityException(String.format("Could not find principal", nameIdValue));
-			}
-			
-			final LoginResponse loginResponse = loginServiceClient.getLoginByManagedSys(principal, managedSysId);
-			if(loginResponse == null || loginResponse.isFailure()) {
-				
-			}
 			
 			final Login login = loginResponse.getPrincipal();
 			final org.openiam.base.ws.Response passwordResponse = loginServiceClient.decryptPassword(login.getUserId(), login.getPassword());

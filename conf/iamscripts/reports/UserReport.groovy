@@ -1,5 +1,6 @@
 package reports
 
+import org.openiam.idm.searchbeans.EmailSearchBean
 import org.openiam.idm.searchbeans.MetadataTypeSearchBean
 import org.openiam.idm.searchbeans.OrganizationSearchBean
 import org.openiam.idm.searchbeans.PhoneSearchBean
@@ -7,6 +8,8 @@ import org.openiam.idm.searchbeans.RoleSearchBean
 import org.openiam.idm.searchbeans.UserSearchBean
 import org.openiam.idm.srvc.auth.dto.Login
 import org.openiam.idm.srvc.auth.ws.LoginDataWebService
+import org.openiam.idm.srvc.continfo.domain.EmailAddressEntity
+import org.openiam.idm.srvc.continfo.dto.EmailAddress
 import org.openiam.idm.srvc.lang.dto.Language
 import org.openiam.idm.srvc.meta.dto.MetadataType
 import org.openiam.idm.srvc.meta.ws.MetadataWebService
@@ -24,6 +27,7 @@ import org.openiam.idm.srvc.role.dto.Role
 import org.openiam.idm.srvc.role.ws.RoleDataWebService
 import org.openiam.idm.srvc.user.domain.UserEntity
 import org.openiam.idm.srvc.user.service.UserDataService
+import org.springframework.beans.BeansException
 import org.springframework.context.ApplicationContext
 
 import java.text.*
@@ -142,10 +146,10 @@ public class UserReport implements ReportDataSetBuilder {
                 row.column.add(new ReportColumn('MIDDLE_INIT', u.middleInit))
                 row.column.add(new ReportColumn('LAST_NAME', u.lastName))
                 row.column.add(new ReportColumn('TITLE', u.title))
-                row.column.add(new ReportColumn('COMPANY_NAME', u.companyOwnerId))
+                row.column.add(new ReportColumn('COMPANY_NAME', getCompanyNamesByUserId(userId)))
                 row.column.add(new ReportColumn('STATUS', u.status?.value))
                 row.column.add(new ReportColumn('EMPLOYEE_ID', u.employeeId))
-                row.column.add(new ReportColumn('EMAIL_ADDRESS', u.email))
+                row.column.add(new ReportColumn('EMAIL_ADDRESS', getDefaultEmail(userId)?.replaceAll('@', ' @')))
                 row.column.add(new ReportColumn('PHONE', getDefaultPhone(userId)))
                 Login l = loginDataWebService.getPrimaryIdentity(userId)?.principal
                 row.column.add(new ReportColumn('LAST_LOGIN', l?.lastLogin ? dateFormat.format(l.lastLogin) : null))
@@ -165,9 +169,12 @@ public class UserReport implements ReportDataSetBuilder {
 
     private MetadataWebService metadataWebService
 
-    @Override
-    void setApplicationContext(org.springframework.context.ApplicationContext applicationContext) throws org.springframework.beans.BeansException {
-        context = applicationContext
+    private String getCompanyNamesByUserId(String userId) {
+        def orgs = organizationService.getOrganizationsForUser(userId, "3000", 0, 100) as List<Organization>
+        orgs.sort(true, { a,b -> a.id <=> b.id })
+        def result = []
+        orgs.each { result += it.abbreviation ?: it.name }
+        return result.join(', ')
     }
 
     private ReportTable listValues(String parameter) {
@@ -227,11 +234,13 @@ public class UserReport implements ReportDataSetBuilder {
     }
 
     private String getDefaultPhone(String userId) {
-        def PhoneSearchBean phoneSearchBean = new PhoneSearchBean()
-        phoneSearchBean.setIsDefault(true)
-        phoneSearchBean.setParentId(userId)
-        def List<PhoneEntity> phones = userDataService.getPhoneList(phoneSearchBean, 1, 0)
-        return phones?.size() > 0 ? phones.get(0).phoneNbr : ''
+        def phones = userDataService.getPhoneList(new PhoneSearchBean(parentId: userId), 100, 0) as List<PhoneEntity>
+        return phones ? phones.sort(true, { a,b -> a.isDefault <=> b.isDefault }).get(0).phoneNbr : ''
+    }
+
+    private String getDefaultEmail(String userId) {
+        def emails = userDataService.getEmailAddressList(new EmailSearchBean(parentId: userId), 100, 0) as List<EmailAddressEntity>
+        return emails ? emails.sort(true, { a,b -> a.isDefault <=> b.isDefault }).get(0).emailAddress : ''
     }
 
     private static ReportDataDto packReportTable(ReportTable reportTable)
@@ -246,6 +255,9 @@ public class UserReport implements ReportDataSetBuilder {
     private static Language getDefaultLanguage(){
         return new Language(id:  1)
     }
+
+    @Override
+    void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        context = applicationContext
+    }
 }
-
-

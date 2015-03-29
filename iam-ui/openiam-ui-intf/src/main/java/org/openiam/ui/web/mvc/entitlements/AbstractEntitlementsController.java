@@ -33,8 +33,11 @@ public abstract class AbstractEntitlementsController<T extends KeyDTO> extends A
 	protected abstract String getEditMenu();
 	protected abstract String getRootMenu();
 	protected abstract T getEntity(final String id, final HttpServletRequest request);
-	
+
 	protected BasicAjaxResponse makeCRUDRequest(final HttpServletRequest request, final T entity, final boolean isDelete, final String redirectURL) {
+		return makeCRUDRequest(request, entity,  isDelete, null, redirectURL);
+	}
+	protected BasicAjaxResponse makeCRUDRequest(final HttpServletRequest request, final T entity, final boolean isDelete, final Set<String> ownerIds, final String redirectURL) {
 		final BasicAjaxResponse response = new BasicAjaxResponse();
 		String name = null;
 		AssociationType entityType = null;
@@ -128,6 +131,9 @@ public abstract class AbstractEntitlementsController<T extends KeyDTO> extends A
 				 workflowRequest.addJSONParameter(jsonParamName.getName(), entity, jacksonMapper);
 				 workflowRequest.setAssociationId(entity.getId());
 				 workflowRequest.setAssociationType(entityType);
+				 if(CollectionUtils.isNotEmpty(ownerIds)){
+					 workflowRequest.setCustomApproverIds(ownerIds);
+				 }
 				 if(StringUtils.isNotBlank(entity.getId())) {
 					 final String adminResourceId = ((AdminResourceDTO)entity).getAdminResourceId();
 					 final boolean isEntitled = authorizationManager.isUserEntitledToResource(getRequesterId(request), adminResourceId);
@@ -153,8 +159,12 @@ public abstract class AbstractEntitlementsController<T extends KeyDTO> extends A
 		}
 		return response;
 	}
-	 
-	protected BasicAjaxResponse makeMembershipRequest(final HttpServletRequest request, final KeyDTO entity, final KeyDTO member, final boolean isAddition) {
+
+	protected BasicAjaxResponse makeMembershipRequest(final HttpServletRequest request, final KeyDTO entity, final KeyDTO member, final boolean isAddition){
+		return makeMembershipRequest(request, entity, member, null, isAddition);
+	}
+
+	protected BasicAjaxResponse makeMembershipRequest(final HttpServletRequest request, final KeyDTO entity, final KeyDTO member, final Set<String> ownerIds, final boolean isAddition) {
 		 final BasicAjaxResponse response = new BasicAjaxResponse();
 		 String name = null;
 		 AssociationType entityType = null;
@@ -316,6 +326,9 @@ public abstract class AbstractEntitlementsController<T extends KeyDTO> extends A
 					 workflowRequest.setMemberAssociationType(memberType);
 					 workflowRequest.setAdditionalApproverIds(additionalApproverIds);
 					 workflowRequest.setUserCentricUserId(userCentricId);
+					 if(CollectionUtils.isNotEmpty(ownerIds)){
+						 workflowRequest.setCustomApproverIds(ownerIds);
+					 }
 					 wsResponse = activitiService.initiateWorkflow(workflowRequest);
 					 if(wsResponse.isFailure()) {
 						 errorList.add(new ErrorToken(Errors.WORKFLOW_NOT_INITIATED));

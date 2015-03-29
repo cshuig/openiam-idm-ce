@@ -74,6 +74,7 @@ public class LoginController extends AbstractLoginController {
         } else {
             setCommonRequestAttributes(request, postbackURL);
         }
+
         return "core/login";
     }
 

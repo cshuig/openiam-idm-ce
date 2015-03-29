@@ -13,12 +13,12 @@ import org.openiam.idm.srvc.user.dto.UserAttribute;
 import org.openiam.idm.srvc.user.util.DelegationFilterHelper;
 import org.openiam.provision.dto.ProvisionUser;
 import org.openiam.ui.rest.api.model.KeyNameBean;
+import org.openiam.ui.util.WSUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.util.messages.SuccessMessage;
 import org.openiam.ui.util.messages.SuccessToken;
 import org.openiam.ui.web.model.BasicAjaxResponse;
-import org.openiam.ui.webconsole.util.WSUtils;
 import org.openiam.ui.webconsole.web.model.DelegationFilterModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,6 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,11 @@ import java.util.Map;
 @Controller
 public class UserDelegetionController extends BaseUserController {
     //
-    @Resource(name="groupServiceClient")
+    @Resource(name = "groupServiceClient")
     private GroupDataWebService groupServiceClient;
-    @Resource(name="roleServiceClient")
+    @Resource(name = "roleServiceClient")
     private RoleDataWebService roleServiceClient;
-    @Resource(name="resourceServiceClient")
+    @Resource(name = "resourceServiceClient")
     private ResourceDataService resourceDataService;
 
     @Value("${org.openiam.organization.type.id}")
@@ -51,14 +52,14 @@ public class UserDelegetionController extends BaseUserController {
     private String departmentTypeId;
 
 
-    @RequestMapping(value="/userDelegation", method = RequestMethod.GET)
-    public String getUserDelegation(final HttpServletRequest request,final HttpServletResponse response, Model model,
-                                    final @RequestParam(required=false, value="id") String userId) throws IOException {
+    @RequestMapping(value = "/userDelegation", method = RequestMethod.GET)
+    public String getUserDelegation(final HttpServletRequest request, final HttpServletResponse response, Model model,
+                                    final @RequestParam(required = false, value = "id") String userId) throws IOException {
         final UserSearchBean searchBean = new UserSearchBean();
         searchBean.setKey(userId);
         searchBean.setDeepCopy(true);
         final List<User> userList = userDataWebService.findBeans(searchBean, 0, 1);
-        if(CollectionUtils.isEmpty(userList)) {
+        if (CollectionUtils.isEmpty(userList)) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("User with id '%s' does not exist", userId));
             return null;
         }
@@ -77,7 +78,7 @@ public class UserDelegetionController extends BaseUserController {
 //
 //            filterModel.setAppList(DelegationFilterHelper.getAPPFilterFromString(attrMap));
 //        }
-        if (DelegationFilterHelper.isGroupFilterSet(attrMap))  {
+        if (DelegationFilterHelper.isGroupFilterSet(attrMap)) {
             GroupSearchBean groupSearchBean = new GroupSearchBean();
             groupSearchBean.setDeepCopy(false);
             groupSearchBean.setKeys(new HashSet<String>(DelegationFilterHelper.getGroupFilterFromString(attrMap)));
@@ -93,7 +94,7 @@ public class UserDelegetionController extends BaseUserController {
             orgSearchBean.setKeys(DelegationFilterHelper.getOrgIdFilterFromString(attrMap));
 
             filterModel.setOrgFilter(mapper.mapToList(getOrganizationList(orgSearchBean, requesterId),
-                                                      KeyNameBean.class));
+                    KeyNameBean.class));
         }
         if (DelegationFilterHelper.isDivisionFilterSet(attrMap)) {
             OrganizationSearchBean orgSearchBean = new OrganizationSearchBean();
@@ -103,7 +104,7 @@ public class UserDelegetionController extends BaseUserController {
 
 
             filterModel.setDivFilter(mapper.mapToList(getOrganizationList(orgSearchBean, requesterId),
-                                                      KeyNameBean.class));
+                    KeyNameBean.class));
         }
         if (DelegationFilterHelper.isDeptFilterSet(attrMap)) {
             OrganizationSearchBean orgSearchBean = new OrganizationSearchBean();
@@ -112,7 +113,7 @@ public class UserDelegetionController extends BaseUserController {
             orgSearchBean.setKeys(DelegationFilterHelper.getDeptFilterFromString(attrMap));
 
             filterModel.setDeptFilter(mapper.mapToList(getOrganizationList(orgSearchBean, requesterId),
-                                                       KeyNameBean.class));
+                    KeyNameBean.class));
         }
 
         if (DelegationFilterHelper.isRoleFilterSet(attrMap)) {
@@ -146,66 +147,37 @@ public class UserDelegetionController extends BaseUserController {
         return "users/delegation";
     }
 
-    @RequestMapping(value="/userDelegation", method=RequestMethod.POST)
+    @RequestMapping(value = "/userDelegation", method = RequestMethod.POST)
     public String saveUserDelegation(final HttpServletRequest request, @RequestBody DelegationFilterModel filter) {
         final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
-        try{
-            final UserSearchBean searchBean = new UserSearchBean();
-            searchBean.setKey(filter.getUserId());
-            searchBean.setDeepCopy(true);
-            final List<User> userList = userDataWebService.findBeans(searchBean, 0, 1);
-            if(CollectionUtils.isEmpty(userList)) {
-                ajaxResponse.addError(new ErrorToken(Errors.USER_NOT_SET));
-            } else{
-                User usr = userList.get(0);
-                Map<String, UserAttribute> attrMap = usr.getUserAttributes();
+        try {
 
-//                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_APP,  DelegationFilterHelper.getValueFromList(filter.getAppList()), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_GRP, DelegationFilterHelper.getValueFromList(filter.getGroupKeys()), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_ROLE, DelegationFilterHelper.getValueFromList(filter.getRoleKeys()), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_ORG, DelegationFilterHelper.getValueFromList(filter.getOrgFilterKeys()), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_DIV, DelegationFilterHelper.getValueFromList(filter.getDivFilterKeys()), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_DEPT, DelegationFilterHelper.getValueFromList(filter.getDeptFilterKeys()), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_MNG_RPT, filter.getMngRptFlag().toString(), filter.getUserId());
-                updateUserAttr(attrMap,DelegationFilterHelper.DLG_FLT_USE_ORG_INH, filter.getUseOrgInhFlag().toString(), filter.getUserId());
+            SuccessMessage succsessMessage = SuccessMessage.USER_DELEGETION_FILTER_SAVED;
 
-                SuccessMessage succsessMessage = SuccessMessage.USER_DELEGETION_FILTER_SAVED;
-                Response wsResponse = null;
+            User user = userDataWebService.getUserWithDependent(filter.getUserId(), cookieProvider.getUserId(request), true);
+            // the user can't be found if requested user don't have permissions for delegation filter
+            // e.g. sysadmin must have the roles,groups that he wants to add for himself in delegation filter
+            if (user != null) {
+                ProvisionUser pUser = new ProvisionUser(user);
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_GRP, DelegationFilterHelper.getValueFromList(filter.getGroupKeys())));
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_ROLE,  DelegationFilterHelper.getValueFromList(filter.getRoleKeys())));
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_ORG, DelegationFilterHelper.getValueFromList(filter.getOrgFilterKeys())));
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_DIV, DelegationFilterHelper.getValueFromList(filter.getDivFilterKeys())));
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_DEPT, DelegationFilterHelper.getValueFromList(filter.getDeptFilterKeys())));
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_MNG_RPT, filter.getMngRptFlag().toString()));
+                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_USE_ORG_INH, filter.getUseOrgInhFlag().toString()));
 
-
-                for (String attributeName : DelegationFilterHelper.getFilterTypes()) {
-                    UserAttribute attribute = attrMap.get(attributeName);
-                    if(attribute==null)
-                        continue;
-                    if (attribute.getId() == null && attribute.getValue() != null) {
-                        // add
-                        wsResponse = userDataWebService.addAttribute(attribute);
-                    } else if (attribute.getValue() == null) {
-                        // remove
-                        wsResponse = userDataWebService.removeAttribute(attribute.getId());
-                    } else if (attribute.getId() != null && attribute.getValue() != null) {
-                        //update
-                        wsResponse = userDataWebService.updateAttribute(attribute);
-                    }
-                }
-
-
-                if(ResponseStatus.SUCCESS.equals(wsResponse.getStatus())) {
-                    if(provisionServiceFlag){
-                        User user = userDataWebService.getUserWithDependent(usr.getId(),cookieProvider.getUserId(request),true);
-                        ProvisionUser pUser = new ProvisionUser(user);
-                        pUser.setRequestorUserId(getRequesterId(request));
-                        WSUtils.setWSClientTimeout(provisionService, 360000L);
-                        provisionService.modifyUser(pUser);
-                    }
-                    ajaxResponse.setStatus(HttpServletResponse.SC_OK);
-                    ajaxResponse.setSuccessToken(new SuccessToken(succsessMessage));
-                } else {
-                    ajaxResponse.addError(new ErrorToken(Errors.USER_DELEGETION_FILTER_COULD_NOT_SAVED));
-                    ajaxResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
+                pUser.setRequestorUserId(getRequesterId(request));
+                WSUtils.setWSClientTimeout(provisionService, 360000L);
+                provisionService.modifyUser(pUser);
+                ajaxResponse.setStatus(HttpServletResponse.SC_OK);
+                ajaxResponse.setSuccessToken(new SuccessToken(succsessMessage));
+            } else {
+                ajaxResponse.addError(new ErrorToken(Errors.USER_DELEGETION_FILTER_COULD_NOT_SAVED));
+                ajaxResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
-        }  catch (Exception e){
+
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             ajaxResponse.addError(new ErrorToken(Errors.INTERNAL_ERROR));
         }
@@ -213,22 +185,13 @@ public class UserDelegetionController extends BaseUserController {
         return "common/basic.ajax.response";
     }
 
-
-
-    private void updateUserAttr(Map<String, UserAttribute> attrMap, String attrName, String value,  String personId) {
-        UserAttribute attr =  attrMap.get(attrName);
-        if (attr == null) {
-            // new attr
-            attr = new UserAttribute(attrName, value);
-            attr.setOperation(AttributeOperationEnum.ADD);
-            attr.setId(null);
-            attr.setUserId(personId);
-            attrMap.put(attrName,attr );
-        }else {
-            // update existing attr
-            attr.setOperation(AttributeOperationEnum.REPLACE);
-            attr.setValue(value);
-            attrMap.put(attrName, attr);
+    private void addAttribute(ProvisionUser pUser, UserAttribute userAttr) {
+        if (!pUser.getUserAttributes().containsKey(userAttr.getName())) {
+            userAttr.setOperation(AttributeOperationEnum.ADD);
+        } else {
+            userAttr.setOperation(AttributeOperationEnum.REPLACE);
         }
+        pUser.getUserAttributes().put(userAttr.getName(), userAttr);
     }
+
 }

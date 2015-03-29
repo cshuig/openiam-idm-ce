@@ -22,6 +22,7 @@
     <link href="/openiam-ui-static/css/selfservice/selfservice.my.info.css" rel="stylesheet" type="text/css"/>
     <link href="/openiam-ui-static/js/common/jquery/css/smoothness/jquery-ui-1.9.1.custom.css" rel="stylesheet"
           type="text/css"/>
+    <link href="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.css" rel="stylesheet" type="text/css"/>
     <link href="/openiam-ui-static/plugins/tiptip/tipTip.css" rel="stylesheet" type="text/css"/>
     <openiam:overrideCSS/>
     <script type="text/javascript" src="/openiam-ui-static/_dynamic/openiamResourceBundle.js"></script>
@@ -35,6 +36,8 @@
 
     <script type="text/javascript" src="/openiam-ui-static/js/common/openiam.common.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/plugins/tiptip/jquery.tipTip.js"></script>
+    <script type="text/javascript" src="/openiam-ui-static/js/common/openiam.common.js"></script>
+    <script type="text/javascript" src="/openiam-ui-static/js/selfservice/user/plugin/user.search.form.js"></script>
     <script type="text/javascript"
             src="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.results.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/selfservice/user/dir.lookup.js"></script>
@@ -45,6 +48,8 @@
         OPENIAM.ENV.MenuTree = <c:choose><c:when test="${! empty requestScope.menuTree}">${requestScope.menuTree}</c:when><c:otherwise>null</c:otherwise></c:choose>;
         OPENIAM.ENV.MenuTreeAppendURL = null;
         OPENIAM.ENV.ContextPath = "${pageContext.request.contextPath}";
+        OPENIAM.ENV.СolumnList = ${requestScope.columnList};
+        OPENIAM.ENV.ShowDetails = ${requestScope.showDetails};
     </script>
 </head>
 <body>
@@ -52,73 +57,7 @@
     <fmt:message key="openiam.ui.selfservice.user.directory.lookup"/>
 </div>
 <div class="frameContentDivider" id="formContainer">
-    <form id="userSearchForm" name="userSearchForm">
-        <table cellspacing="1" class="yui" width="100%">
-            <thead>
-            <tr>
-                <td colspan="4">
-                    <div class="info center"><fmt:message
-                            key="openiam.ui.common.user.search.algorithm.explanation"/></div>
-                </td>
-            </tr>
-            <tr>
-                <td class="filter">
-                    <label for="lastName"><fmt:message key='openiam.ui.webconsole.user.lastName'/>:</label>
-                </td>
-                <td class="filter">
-                    <input id="lastName" name="lastName" maxlength="30" size="30" type="text"/>
-                </td>
-                <td class="filter">
-                    <label for="firstName"><fmt:message key='openiam.ui.webconsole.user.firstName'/>:</label>
-                </td>
-                <td class="filter">
-                    <input id="firstName" name="firstName" maxlength="30" size="30" type="text"/>
-                </td>
-            </tr>
-            <tr>
-                <td class="filter">
-                    <label for="email"><fmt:message key='openiam.ui.webconsole.user.email'/>:</label>
-                </td>
-                <td class="filter">
-                    <input id="email" name="email" maxlength="50" size="30" type="text"/>
-                </td>
-                <td class="filter">
-                    <label for="phoneCode"><fmt:message key='openiam.ui.webconsole.user.phone'/>:</label>
-                </td>
-                <td class="filter">
-                    <input id="phoneCode" name="phoneCode" maxlength="3" size="3" type="text"/>
-                    <input id="phoneNumber" name="phoneNumber" maxlength="10" size="21" type="text"/>
-                </td>
-            </tr>
-            <%--<tr>--%>
-            <%--<td class="filter">--%>
-            <%--<label for="organizationId"><fmt:message key='openiam.ui.webconsole.user.organization' />:</label>--%>
-            <%--</td>--%>
-            <%--<td class="filter">--%>
-            <%--<select id="organizationId" name="organizationId">--%>
-            <%--<option value="">Select an Organization...</option>--%>
-            <%--<c:forEach var="organization" items="${requestScope.organizationList}">--%>
-            <%--<option value="${organization.id}">${organization.name}</option>--%>
-            <%--</c:forEach>--%>
-            <%--</select>--%>
-            <%--</td>--%>
-            <%--<td class="filter">--%>
-            <%--</td>--%>
-            <%--<td class="filter">--%>
-            <%--</td>--%>
-            <%--</tr>--%>
-            </thead>
-            <tfoot id="searchFormButtons">
-            <tr>
-                <td class="filter" colspan="4">
-                    <input type="submit" value="<fmt:message key='openiam.ui.common.search' />" class="redBtn">
-                    <a id="cleanUserSearchForm" class="whiteBtn" href="javascript:void(0);"><fmt:message
-                            key="openiam.ui.button.clear"/></a>
-                </td>
-            </tr>
-            </tfoot>
-        </table>
-    </form>
+
 </div>
 <div id="userResultsArea"></div>
 </body>

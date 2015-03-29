@@ -29,10 +29,10 @@ import org.openiam.provision.service.AsynchUserProvisionService;
 import org.openiam.ui.rest.api.model.Application;
 import org.openiam.ui.rest.api.model.UserBean;
 import org.openiam.ui.security.OpenIAMCookieProvider;
+import org.openiam.ui.web.model.BulkOperationBean;
+import org.openiam.ui.web.model.BulkOperationUserSearchBean;
 import org.openiam.ui.web.util.ApplicationsProvider;
 import org.openiam.ui.web.util.LanguageProvider;
-import org.openiam.ui.webconsole.web.model.BulkOperationBean;
-import org.openiam.ui.webconsole.web.model.BulkOperationUserSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.binding.message.MessageBuilder;
@@ -165,6 +165,7 @@ public class BulkOperationService {
     public List<UserBean> getUserList(RequestContext requestContext, BulkOperationBean bulkOperationBean) {
         List<UserBean> beanList = new LinkedList<UserBean>();
         initUserCollections(bulkOperationBean);
+        bulkOperationBean.getUserSearchBean().setDeepCopy(false);
         final List<User> userList = userServiceClient.findBeans(bulkOperationBean.getUserSearchBean(),
                 bulkOperationBean.getStartPos()-1, bulkOperationBean.getPageSize());
         if(CollectionUtils.isNotEmpty(userList)) {

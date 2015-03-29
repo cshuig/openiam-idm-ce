@@ -35,7 +35,7 @@ response.setDateHeader ("Expires", -1);
 				</div>
 				
 				<div id="credentials">
-                    <fmt:message key="openiam.idp.enter.username.email" />
+                    <fmt:message key="openiam.idp.enter.username.to.password.reset" />
 				</div>
 				
 				<form:form id="unlock-form" action="unlockPassword.html" commandName="passwordBean">

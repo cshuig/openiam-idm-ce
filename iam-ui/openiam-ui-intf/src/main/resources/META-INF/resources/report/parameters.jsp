@@ -126,6 +126,19 @@
                                             <input type="submit" id="${parameter.id}" value="<fmt:message key='openiam.ui.shared.supervisor.search'/>" class="redBtn searchSupervisorBtn" />
                                         </td>
                                     </c:when>
+                                    <c:when test="${parameter.metaTypeId eq 'RESOURCE_TYPE'}">
+                                        <td>
+                                            <select id="input${parameter.id}" class="rounded">
+                                                <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
+                                                <c:forEach var="bean" items="${requestScope.resourceTypes}">
+                                                    <option value="${bean.id}">${bean.name}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="submit" id="${parameter.id}" value="<fmt:message key='openiam.ui.report.add.parameter'/>" class="redBtn addBtn" />
+                                        </td>
+                                    </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'ORGANIZATION'}">
                                         <td>
                                             <input type="text" id="input${parameter.id}" class="full rounded" placeholder="<fmt:message key='openiam.ui.shared.organization.type.name'/>" autocomplete="off" />

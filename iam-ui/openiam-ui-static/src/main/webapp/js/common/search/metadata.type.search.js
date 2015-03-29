@@ -20,7 +20,7 @@ console.log = window.console.log || function() {};
 			var $options = $this.data("metdataTypeOptions");
 			$.ajax({
 				url : $options.metadataURL,
-				"data" : null,
+				"data" : ($options.showAllGroupings) ? {getAll:true} : null,
 				type: "GET",
 				dataType : "json",
 				success : function(data, textStatus, jqXHR) {
@@ -39,7 +39,8 @@ console.log = window.console.log || function() {};
 			this.modalEdit({
 				fields: [
 							{fieldName: "name", type:"text",label: localeManager["openiam.ui.webconsole.meta.type.name"], required : false},
-							{fieldName: "grouping", type:"select",label: localeManager["metadata.type.search.edit.grouping"], required : false, items : $options.groupings}
+							{fieldName: "grouping", type:"select",label: localeManager["metadata.type.search.edit.grouping"],
+							 required : false, readonly:($options.initialGrouping!=null)?true:false, items : $options.groupings}
 						],
 				dialogTitle: $options.dialogTitle || localeManager["metadata.type.search.title"],
 				saveBtnTxt : $options.saveBtnTxt || localeManager["openiam.ui.common.search"],
@@ -72,7 +73,7 @@ console.log = window.console.log || function() {};
 					}
 				}
 			});
-			this.modalEdit("show");
+			this.modalEdit("show", ($options.initialGrouping!=null)?{grouping:$options.initialGrouping}:null);
 		}
 	};
 	
@@ -89,7 +90,9 @@ console.log = window.console.log || function() {};
 	    		searchTargetElmt : null,
 	    		onAdd : null,
 	    		pageSize : 10,
-                showResultsInDialog : false
+                showResultsInDialog : false,
+				initialGrouping: null,
+				showAllGroupings: false
 	    	}, args);
 	    	
 	    	options.metadataURL = options.restfulURLPrefix + METADATA_URL;

@@ -21,7 +21,7 @@ public class SAMLEncoder {
 		final Element responseElmt = marshaller.marshall(response);
 		final String xml = SAMLUtils.toString(responseElmt);
 		final String encodedXML = new Base64().encodeAsString(xml.getBytes("UTF-8"));
-		System.out.println(xml);
+		//System.out.println(xml);
 		return encodedXML;
 	}
 }

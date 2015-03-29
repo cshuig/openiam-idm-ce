@@ -2,6 +2,7 @@ OPENIAM = window.OPENIAM || {};
 OPENIAM.UserContacts = {
     Load : {
         onReady : function() {
+
             switch(OPENIAM.ENV.ContactType) {
                 case "emails":
                     OPENIAM.UserContacts.Emails.load();
@@ -22,10 +23,42 @@ OPENIAM.UserContacts = {
             var that = args.target;
             var inputelements = [];
             var addBtn = document.createElement("input"); $(addBtn).attr("type", "submit"); $(addBtn).attr("value", args.buttonTitle); addBtn.className = "redBtn"; addBtn.id = "addBtn";
+            if (args.buttonTitleLocation != null && args.buttonTitleLocation != "") {
+                var addBtn2 = document.createElement("input"); $(addBtn2).attr("value", args.buttonTitleLocation); $(addBtn).attr("type", "button"); addBtn2.className = "redBtn width_90"; addBtn2.id = "addLocationBtn";
+                $(addBtn2).click(function() {
+                    $("#searchResultsContainer").entitlemetnsTable({
+
+                        columnHeaders : [
+                            localeManager["openiam.ui.common.location.address"],
+                            localeManager["openiam.ui.common.actions"]
+                        ],
+                        columnsMap : ["displayDescription"],
+                        ajaxURL : "getLocationsForUser.html",
+                        entityUrl : "",
+                        entityURLIdentifierParamName : "id",
+                        requestParamIdName : "id",
+                        requestParamIdValue : OPENIAM.ENV.UserId,
+                        pageSize : 10,
+                        hasEditButton : false,
+                        emptyResultsText : localeManager["openiam.ui.user.contact.address.empty"],
+                        onAdd : function(location) {
+                            OPENIAM.UserContacts.Addresses.copyLocation(location);
+                        }
+
+                    });
+
+
+                });
+            }
             inputelements.push("");
             inputelements.push("");
             inputelements.push("");
-            inputelements.push("");
+
+            if (args.buttonTitleLocation != null && args.buttonTitleLocation != "") {
+                inputelements.push(addBtn2);
+            } else {
+                inputelements.push("");
+            }
             inputelements.push(addBtn);
 
             $("#contactUserContainer").entitlemetnsTable({
@@ -67,6 +100,8 @@ OPENIAM.UserContacts = {
                     });
                 }
             });
+
+
         },
         saveOrRemove : function(args) {
             var data = args.entity;
@@ -108,6 +143,8 @@ OPENIAM.UserContacts = {
     },
     Emails : {
         load : function() {
+           // $("#searchResultsContainer").empty();
+
             OPENIAM.UserContacts.Common.load({
                 columns : [
                     localeManager["openiam.ui.common.type"],
@@ -157,10 +194,11 @@ OPENIAM.UserContacts = {
     },
     Addresses : {
         load : function() {
+
             OPENIAM.UserContacts.Common.load({
                 columns : [
                     localeManager["openiam.ui.common.type"],
-                    localeManager["openiam.ui.common.address.column"],
+                    localeManager["openiam.ui.common.address"],
                     localeManager["openiam.ui.common.is.default"],
                 	localeManager["openiam.ui.common.is.active"],
                 	localeManager["openiam.ui.common.actions"]
@@ -168,13 +206,14 @@ OPENIAM.UserContacts = {
                 columnsMap:["type","description","default","active"],
                 ajaxURL : "getAddressesForUser.html",
                 buttonTitle : localeManager["openiam.ui.button.add.address"],
+                buttonTitleLocation : localeManager["openiam.ui.button.add.location.to.address"],
                 emptyResultsText:localeManager["openiam.ui.user.contact.address.empty"],
                 hasEditButton : true,
                 target : this,
                 editFields:[{fieldName: "id", type:"hidden",label:""},
                             {fieldName: "typeId", itemText:"type", type:"select", items:OPENIAM.ENV.TypeList, label:localeManager["openiam.ui.common.type"], required:true},
                             {fieldName: "bldgNumber", type:"text",label:localeManager["openiam.ui.common.address.building"]},
-                            {fieldName: "address1", type:"text",label:localeManager["openiam.ui.common.address.1"]},
+                            {fieldName: "address1", type:"text",label:localeManager["openiam.ui.common.address.1"], required:true},
                             {fieldName: "address2", type:"text",label:localeManager["openiam.ui.common.address.2"]},
                             {fieldName: "city", type:"text",label:localeManager["openiam.ui.common.address.city"]},
                             {fieldName: "state", type:"text",label:localeManager["openiam.ui.common.address.state"]},
@@ -207,10 +246,43 @@ OPENIAM.UserContacts = {
                 url : "saveOrRemoveUserAddress.html",
                 target : this
             });
+        },
+        add : function(id) {
+            OPENIAM.UserContacts.Common.addOrRemove({
+                entityRequestParamName : "resourceId",
+                entityId : id,
+                url : "addRoleToResource.html",
+                target : this
+            });
+        },
+        copyLocation : function(location) {
+            var data = {
+                userId: OPENIAM.ENV.UserId,
+                locationId: location.id
+            };
+            $.ajax({
+                url : "copyLocationToAddress.html",
+                data : data,
+                type: "POST",
+                dataType : "json",
+                success : function(data, textStatus, jqXHR) {
+                    if(data.status == 200) {
+                        $("#searchResultsContainer").empty();
+                        OPENIAM.UserContacts.Addresses.load();
+                    } else {
+                        OPENIAM.Modal.Error({errorList : data.errorList});
+                    }
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
+                }
+            });
         }
     },
     Phones : {
         load : function() {
+            //$("#searchResultsContainer").empty();
+
             OPENIAM.UserContacts.Common.load({
                 columns : [
                     localeManager["openiam.ui.common.type"],

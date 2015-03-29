@@ -71,8 +71,24 @@ console.log = window.console.log || function() {
                 options.hide.call($this, select);
                 privateMethods.bindSelect.call($this, selectList[i]);
             }
-            options.show.call($this, selectList[0].select);
-//            privateMethods.request.call($this, selectList[0]);
+
+            if(options.selectedOrgs.length>0){
+                // show already selected values
+                for (var i = 0; i < typeIds.length; i++) {
+                    var select = selectList[i];
+
+                    for (var j = 0; j < options.selectedOrgs.length; j++) {
+                        var bean = options.selectedOrgs[j];
+                        if(bean.organizationTypeId==typeIds[i].id){
+                            privateMethods.addData.call($this, select, bean);
+                            options.show.call($this, select.select);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                options.show.call($this, selectList[0].select);
+            }
         },
         bindSelect : function(obj) {
             var $this = this;
@@ -98,7 +114,9 @@ console.log = window.console.log || function() {
             if(bean!=null && bean.id!=null && bean.id!=undefined){
                 privateMethods.addBean.call($this, element, bean);
                 // hide result dialog
-                $("#organizationSearchResult").dialog("close");
+                if($("#organizationSearchResult").is(':data(dialog)')) {
+                    $("#organizationSearchResult").dialog("close");
+                }
                 // show next element
                 if (element.nextObjects.length > 0) {
                     options.show.call($this, options.selectList[element.index + 1].select);
@@ -172,7 +190,8 @@ console.log = window.console.log || function() {
                 hide : null,
                 show : null,
                 typeIds : [],
-                initialValues : []
+                initialValues : [],
+                selectedOrgs: []
             }, args);
 
             if (!$.isFunction(options.draw)) {
@@ -193,6 +212,9 @@ console.log = window.console.log || function() {
 
             if (options.initialValues == null || options.initialValues == undefined) {
                 options.initialValues = [];
+            }
+            if (options.selectedOrgs == null || options.selectedOrgs == undefined) {
+                options.selectedOrgs = [];
             }
 
 
@@ -250,13 +272,17 @@ console.log = window.console.log || function() {
             	draw : null,
                 hide : null,
                 show : null,
-                initialValues : []
+                initialValues : [],
+                selectedOrgs : []
             }, args);
 
             options.divs = [];
             
             if (options.initialValues == null || options.initialValues == undefined) {
                 options.initialValues = [];
+            }
+            if (options.selectedOrgs == null || options.selectedOrgs == undefined) {
+                options.selectedOrgs = [];
             }
             
             
@@ -293,7 +319,8 @@ console.log = window.console.log || function() {
                 	hide : options.hide,
                 	show : options.show,
                 	typeIds : val,
-                	initialValues : options.initialValues
+                	initialValues : options.initialValues,
+                    selectedOrgs:options.selectedOrgs
             	});
             });
         },

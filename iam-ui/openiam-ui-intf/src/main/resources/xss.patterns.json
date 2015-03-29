@@ -3,8 +3,48 @@
 		"/selfservice/language/languageSupport.html" : {
 			"ignoreXSS" : "true"
 		},
+		"/idp/sp/*" : {
+			"ignoreXSS" : "true"
+		},
 		"/idp/SAMLLogin.html" : {
 			"ignoreXSS" : "true"
+		},
+		"/idp/login.html" : {
+			"rules" : {
+				"password" : {
+					"ignoreXSS" : "true"
+				}
+			}
+		},
+		"/idp/login.html" : {
+			"rules" : {
+				"password" : {
+					"ignoreXSS" : "true"
+				}
+			}
+		},
+		"/idp/changePassword.html" : {
+			"rules" : {
+				"currentPassword" : {
+					"ignoreXSS" : "true"
+				},
+				"newPassword" : {
+					"ignoreXSS" : "true"
+				},
+				"newPasswordConfirm" : {
+					"ignoreXSS" : "true"
+				}
+			}
+		},
+		"/idp/unlockUserResetPasswordForm.html" : {
+			"rules" : {
+				"newPassword" : {
+					"ignoreXSS" : "true"
+				},
+				"newPasswordConfirm" : {
+					"ignoreXSS" : "true"
+				}
+			}
 		}
 	}
 }

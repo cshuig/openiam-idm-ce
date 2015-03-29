@@ -9,9 +9,9 @@ import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseCode;
 import org.openiam.idm.srvc.user.dto.User;
 import org.openiam.provision.dto.ProvisionUser;
+import org.openiam.ui.util.WSUtils;
 import org.openiam.ui.web.model.BasicAjaxResponse;
 import org.openiam.ui.web.mvc.entitlements.AbstractSupervisorController;
-import org.openiam.ui.webconsole.util.WSUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 

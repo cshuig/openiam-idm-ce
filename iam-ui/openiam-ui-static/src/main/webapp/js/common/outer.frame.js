@@ -1,3 +1,9 @@
+/* we don't support iframing */
+if(parent != self) {
+	 parent.onbeforeunload = function() {};
+	 parent.location.replace(self.location.href);
+}
+
 OPENIAM = window.OPENIAM || {};
 
 OPENIAM.MenuTree.OuterTree = Object.create(OPENIAM.MenuTree);
@@ -130,7 +136,7 @@ OPENIAM.Frame = {
 };
 
 OPENIAM.AjaxLoader.getURLOnAuthRedirect = function() {
-	var loc = $("#contentFrame")[0].contentWindow.location
+	var loc = $("#contentFrame")[0].contentWindow.location;
 	var currentURL = loc.pathname;
 	if(loc.search != null && loc.search != undefined) {
 		currentURL += loc.search;
@@ -143,7 +149,7 @@ OPENIAM.NotificationPanel = {
 		setTimeout(function() {
 			OPENIAM.NotificationPanel.updateActivitiStatus();
 			OPENIAM.NotificationPanel.setTimeouts();
-		}, 10000);
+		}, 60000);
 	},
 	updateActivitiStatus : function() {
 		$.ajax({
@@ -167,13 +173,14 @@ OPENIAM.NotificationPanel = {
 				$("#notifications").empty().append(numOfCandidateTasksDiv, numOfAssignedTasksDiv);
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
-				OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
+				//OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
 			}
 		});
 	}
 };
 
 $(document).ready(function() {
+	
 	$(function(){
 		
 		$('#content').corner("20px");

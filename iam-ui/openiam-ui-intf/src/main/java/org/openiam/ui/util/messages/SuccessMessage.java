@@ -158,7 +158,11 @@ public enum SuccessMessage {
     OPERATION_ABORTED("openiam.ui.webconsole.user.operation.abort"),
 
     IDENTITY_SAVED("openiam.ui.webconsole.identity.saved"),
-    IDENTITY_DELETED("openiam.ui.webconsole.identity.deleted");
+    IDENTITY_DELETED("openiam.ui.webconsole.identity.deleted"),
+
+    ORGANIZATION_LOCATION_SAVED("openiam.ui.common.location.saved.success"),
+    ORGANIZATION_LOCATION_DELETED("openiam.ui.common.location.deleted.success"),
+    GROUP_BULK_OPERATION_STARTED("openiam.ui.group.bulk.op.started");
 
     private String messageName;
 

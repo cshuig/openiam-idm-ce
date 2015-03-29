@@ -9,19 +9,19 @@ public class XSSPatternProcessor {
 	
 	private static Logger LOG = Logger.getLogger(XSSPatternProcessor.class);
 	
-	private String paramName;
+	private boolean ignoreXSS = false;
 	private String characterWhitelist;
 	
 	public XSSPatternProcessor() {
 		
 	}
-
-	public String getParamName() {
-		return paramName;
+	
+	public boolean isIgnoreXSS() {
+		return ignoreXSS;
 	}
 
-	public void setParamName(String paramName) {
-		this.paramName = paramName;
+	public void setIgnoreXSS(boolean ignoreXSS) {
+		this.ignoreXSS = ignoreXSS;
 	}
 
 	public String getCharacterWhitelist() {
@@ -35,7 +35,9 @@ public class XSSPatternProcessor {
 	public String process(final String value) {
 		StringBuffer sb = null;
 		if(value != null) {
-			if(characterWhitelist != null) {
+			if(ignoreXSS) {
+				sb = new StringBuffer(value);
+			} else if(characterWhitelist != null) {
 				for(int i = 0; i < value.length(); i++) {
 					final String charAsString = new Character(value.charAt(i)).toString();
 					if(charAsString.matches(characterWhitelist)) {

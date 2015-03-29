@@ -40,13 +40,16 @@ public class LanguageProvider implements InitializingBean {
 		if(CollectionUtils.isEmpty(languageList)) {
 			throw new RuntimeException("There are no languages with the 'used' flag marked as 'true'.");
 		}
-		
+        Set<String> inactiveKeys = new HashSet<>(languageMap.keySet());
 		for(final Language language : languageList) {
-			languageMap.put(StringUtils.lowerCase(language.getLanguageCode()), language);
+            final String key = StringUtils.lowerCase(language.getLanguageCode());
+            languageMap.put(key, language);
+            inactiveKeys.remove(key);
 			if(language.getIsDefault()) {
 				defaultLanguage = language;
 			}
 		}
+        languageMap.keySet().removeAll(inactiveKeys);
         LOG.debug("Sweeping Language provider... - DONE! ");
 	}
 	

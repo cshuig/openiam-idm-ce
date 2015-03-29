@@ -46,6 +46,7 @@ console.log = window.console.log || function() {};
 						],
 				dialogTitle: $options.dialogTitle || localeManager["openiam.ui.shared.organization.search"],
 				saveBtnTxt : $options.saveBtnTxt || localeManager["openiam.ui.common.search"],
+				position: $options.position,
 				onSubmit: function(bean){
 					$this.modalEdit("hide");
 					$($options.searchTargetElmt).entitlemetnsTable({
@@ -79,9 +80,10 @@ console.log = window.console.log || function() {};
 					        draggable : false,
 					        resizable : false,
 					        title : localeManager["openiam.ui.shared.organization.search"],
-					        width : "auto",
-					        maxWidth : 600
-					    });
+					        width : $options.resultsDialogWidth,
+					        maxWidth : 600,
+							position: $options.position
+						});
 					}
 				}
 			});
@@ -105,6 +107,8 @@ console.log = window.console.log || function() {};
                 organizationTypes:null,
                 showResultsInDialog : false,
                 parentId:null,
+				position:null,
+				resultsDialogWidth:"auto",
                 validParentTypeId:null
 	    	}, args);
 	    	

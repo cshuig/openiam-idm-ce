@@ -1,6 +1,7 @@
 package org.openiam.ui.rest.api.mvc;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseConstants;
@@ -8,8 +9,10 @@ import org.openiam.base.ExtendController;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.connector.type.constant.ErrorCode;
 import org.openiam.exception.EsbErrorToken;
 import org.openiam.idm.searchbeans.OrganizationSearchBean;
+import org.openiam.idm.searchbeans.PolicySearchBean;
 import org.openiam.idm.searchbeans.UserSearchBean;
 import org.openiam.idm.srvc.audit.constant.AuditAction;
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
@@ -20,8 +23,10 @@ import org.openiam.idm.srvc.auth.ws.LoginListResponse;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.idm.srvc.continfo.dto.EmailAddress;
 import org.openiam.idm.srvc.continfo.dto.Phone;
+import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.policy.dto.Policy;
+import org.openiam.idm.srvc.policy.dto.PolicyConstants;
 import org.openiam.idm.srvc.policy.service.PolicyDataService;
 import org.openiam.idm.srvc.pswd.dto.PasswordValidationResponse;
 import org.openiam.idm.srvc.pswd.service.PasswordGenerator;
@@ -38,6 +43,7 @@ import org.openiam.provision.service.ProvisionServiceEventProcessor;
 import org.openiam.ui.exception.ErrorMessageException;
 import org.openiam.ui.rest.api.model.EditUserModel;
 import org.openiam.ui.rest.api.model.ResetPasswordBean;
+import org.openiam.ui.util.WSUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.util.messages.SuccessMessage;
@@ -46,7 +52,6 @@ import org.openiam.ui.web.model.BasicAjaxResponse;
 import org.openiam.ui.web.model.SetPasswordToken;
 import org.openiam.ui.web.mvc.AbstractPasswordController;
 import org.openiam.ui.web.validator.UserInfoValidator;
-import org.openiam.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -62,16 +67,20 @@ import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 @Controller
 public class ProvisioningRestController extends AbstractPasswordController {
 
 
+    @Value("${org.openiam.ui.user.profile.picture.autoResize}")
+    private boolean autoResize;
     @Value("${org.openiam.ui.user.profile.picture.formats}")
     private String formats;
     @Value("${org.openiam.ui.user.profile.picture.maxWidth}")
@@ -384,6 +393,13 @@ public class ProvisioningRestController extends AbstractPasswordController {
         List<ErrorToken> errorTokenList = new LinkedList<>();
         Response wsResponse = null;
         SetPasswordToken token = null;
+        if (CollectionUtils.isEmpty(passwordBean.getManagedSystem())
+                && StringUtils.isEmpty(passwordBean.getManagedSystemId())) {
+            ajaxResponse.setStatus(500);
+            errorTokenList.add(new ErrorToken("Managed system must be set."));
+            ajaxResponse.addErrors(errorTokenList);
+            return ajaxResponse;
+        }
         ActionEventBuilder eventBuilder = new ActionEventBuilder(
                 passwordBean.getUserId(),
                 getRequesterId(request),
@@ -395,28 +411,28 @@ public class ProvisioningRestController extends AbstractPasswordController {
         }
 
         try {
-            if (provisionServiceFlag) {
-                UserSearchBean usb = new UserSearchBean();
-                usb.setKey(passwordBean.getUserId());
-                List<User> u = userDataWebService.findBeans(usb, -1, -1);
-                String oiamPassword = null;
-                if (CollectionUtils.isNotEmpty(u) && CollectionUtils.isNotEmpty(u.get(0).getPrincipalList())) {
-                    for (Login l : u.get(0).getPrincipalList()) {
-                        if (defaultManagedSysId.equals(l.getManagedSysId())) {
-                            Response res = loginDataWebService.decryptPassword(l.getUserId(), l.getPassword());
-                            if (res.isSuccess()) {
-                                oiamPassword = (String) res.getResponseValue();
-                            } else {
-                                errorTokenList.add(new ErrorToken(Errors.INVALID_LOGIN));
-                            }
-                            break;
-                        }
-                    }
+            UserSearchBean usb = new UserSearchBean();
+            usb.setKey(passwordBean.getUserId());
+            List<User> u = userDataWebService.findBeans(usb, 0, 1);
+            Map<String, Login> loginBeManagedSys = new HashMap<String, Login>();
+            for (Login l : u.get(0).getPrincipalList()) {
+                loginBeManagedSys.put(l.getManagedSysId(), l);
+            }
+            for (String managedSystemId : passwordBean.getManagedSystem()) {
+                if (provisionServiceFlag) {
+                    Login l = loginBeManagedSys.get(managedSystemId);
+                    String mangedSysLoginDecryptPassword = l.getPassword();
+                    Response res = loginDataWebService.decryptPassword(l.getUserId(), l.getPassword());
 
-                    if (StringUtils.isNotBlank(oiamPassword)) {
+                    if (res.isSuccess()) {
+                        mangedSysLoginDecryptPassword = (String) res.getResponseValue();
+                    } else {
+                        errorTokenList.add(new ErrorToken(Errors.INVALID_LOGIN));
+                    }
+                    if (StringUtils.isNotBlank(mangedSysLoginDecryptPassword)) {
                         final PasswordSync pswdSync = new PasswordSync();
-                        pswdSync.setManagedSystemId(passwordBean.getManagedSystemId());
-                        pswdSync.setPassword(oiamPassword);
+                        pswdSync.setManagedSystemId(managedSystemId);
+                        pswdSync.setPassword(mangedSysLoginDecryptPassword);
                         pswdSync.setUserId(passwordBean.getUserId());
                         pswdSync.setRequestClientIP(request.getRemoteHost());
                         pswdSync.setRequestorLogin(cookieProvider.getPrincipal(request));
@@ -447,6 +463,26 @@ public class ProvisioningRestController extends AbstractPasswordController {
         return ajaxResponse;
     }
 
+    @RequestMapping(value = "/prov/resetPasswordSelfService", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    BasicAjaxResponse resetPasswordSelfservice(final HttpServletRequest request, @RequestBody @Valid ResetPasswordBean passwordBean) throws Exception {
+        BasicAjaxResponse ajaxResponse = null;
+        ajaxResponse = new BasicAjaxResponse();
+        ajaxResponse.addError(new ErrorToken(Errors.INVALID_LOGIN));
+        ajaxResponse.setStatus(500);
+        if (passwordBean.getPrincipal() == null || passwordBean.getManagedSystem() == null || passwordBean.getCurrentPassword() == null) {
+            return ajaxResponse;
+        }
+        Response response = loginDataWebService.isPasswordEq(passwordBean.getPrincipal(), passwordBean.getManagedSystemId(), passwordBean.getCurrentPassword());
+        if (ResponseStatus.SUCCESS.equals(response.getStatus())) {
+            ajaxResponse = resetPassword(request, passwordBean);
+            ajaxResponse.setRedirectURL("/selfservice/myInfo.html");
+        }
+        ajaxResponse.process(localeResolver, messageSource, request);
+        return ajaxResponse;
+    }
+
     /**
      * Resets password for user
      *
@@ -467,6 +503,14 @@ public class ProvisioningRestController extends AbstractPasswordController {
         Response wsResponse = null;
         SetPasswordToken token = null;
 
+        if (CollectionUtils.isEmpty(passwordBean.getManagedSystem())
+                && StringUtils.isEmpty(passwordBean.getManagedSystemId())) {
+            ajaxResponse.setStatus(500);
+            errorTokenList.add(new ErrorToken("Managed system must be set."));
+            ajaxResponse.addErrors(errorTokenList);
+            return ajaxResponse;
+        }
+
         ActionEventBuilder eventBuilder = new ActionEventBuilder(
                 passwordBean.getUserId(),
                 getRequesterId(request),
@@ -477,66 +521,103 @@ public class ProvisioningRestController extends AbstractPasswordController {
             return genAbortAjaxResponse(response, localeResolver.resolveLocale(request));
         }
 
-        try {
-            if (passwordBean.getAutoGeneratePassword()) {
-                Policy policy = passwordService.getPasswordPolicy(passwordBean.getPrincipal(), defaultManagedSysId);
-                passwordBean.setPassword(PasswordGenerator.generatePassword(policy));
+        // Rest password for selected managed system passwordBean.getManagedSystemId()
+        // We have to get Password Policy for selected managed system and apply
+        // If many managed systems should be used => authManagedSystemId = "ALL" we should to do reset password for every manged system
+        // and apply policy according selected ManagedSystem
+
+        // default authentification policy
+        Policy defaultPolicy = this.getAuthentificationPolicy();
+        String defaultManagedSysLogin = this.buildLoginAccordingAuthPolicy(defaultPolicy, passwordBean.getPrincipal());
+
+        Map<String, String> loginByManagedSysId = new HashMap<String, String>();
+        final LoginListResponse loginResponce = loginDataWebService.getLoginByUser(passwordBean.getUserId());
+        if (loginResponce.isSuccess()) {
+            for (Login login : loginResponce.getPrincipalList()) {
+                loginByManagedSysId.put(login.getManagedSysId(), login.getLogin());
             }
-            Policy policy = this.getAuthentificationPolicy();
-            String internalLogin = this.buildLoginAccordingAuthPolicy(policy, passwordBean.getPrincipal());
-            String managedSystemId = this.getAuthentificationManagedSystem(policy);
-
-            token = validatePassword(internalLogin, managedSystemId, passwordBean.getPassword(), false);
-            if (token.hasErrors()) {
-                errorTokenList.addAll(token.getErrorList());
-            } else {
-                // try to reset
-                if (provisionServiceFlag) {
-                    final PasswordSync pswdSync = new PasswordSync();
-                    pswdSync.setManagedSystemId(passwordBean.getManagedSystemId());
-                    pswdSync.setPassword(passwordBean.getPassword());
-                    pswdSync.setUserId(passwordBean.getUserId());
-                    pswdSync.setRequestClientIP(request.getRemoteHost());
-                    pswdSync.setRequestorLogin(cookieProvider.getPrincipal(request));
-                    pswdSync.setRequestorId(getRequesterId(request));
-                    pswdSync.setSendPasswordToUser(passwordBean.getNotifyUserViaEmail());
-
-                    final Response setPasswordResponse = provisionService.resetPassword(pswdSync);
-
-                    if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
-                        errorTokenList.add(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
-                    }
-
+        } else {
+            loginByManagedSysId.put(defaultManagedSysId, defaultManagedSysLogin);
+        }
+        try {
+            //if you change this code ak VYakunin for review
+            for (String managedSysId : passwordBean.getManagedSystem()) {
+                PolicySearchBean policySearchBean = new PolicySearchBean();
+                policySearchBean.setPolicyDefId(PolicyConstants.AUTHENTICATION_POLICY);
+                policySearchBean.addAttribute("MANAGED_SYS_ID", managedSysId);
+                List<Policy> policies = policyServiceClient.findBeans(policySearchBean, 0, 1); // search policy by managed system
+                String targetSystemId;
+                if (CollectionUtils.isNotEmpty(policies)) {
+                    targetSystemId = managedSysId;
                 } else {
+                    targetSystemId = defaultManagedSysId;
+                }
 
-                    String encPassword = null;
-                    wsResponse = loginDataWebService.encryptPassword(passwordBean.getUserId(), passwordBean.getPassword());
+                String managedSysLogin = loginByManagedSysId.get(targetSystemId);
 
-                    if (wsResponse.getStatus() != ResponseStatus.SUCCESS) {
-                        errorTokenList.add(new ErrorToken(Errors.PASSWORD_ENCRYPTION_FAIL));
-                    }
-                    encPassword = (String) wsResponse.getResponseValue();
 
-                    wsResponse = loginDataWebService.resetPasswordAndNotifyUser(passwordBean.getPrincipal(), defaultManagedSysId,
-                            encPassword, passwordBean.getNotifyUserViaEmail());
+                if (passwordBean.getAutoGeneratePassword()) {
+                    Policy pp = passwordService.getPasswordPolicy(managedSysLogin, targetSystemId);
+                    passwordBean.setPassword(PasswordGenerator.generatePassword(pp));
+                }
 
-                    IdmAuditLog idmAuditLog = new IdmAuditLog();
-                    idmAuditLog.setRequestorUserId(getRequesterId(request));
-                    idmAuditLog.setTargetUser(passwordBean.getUserId(), passwordBean.getPrincipal());
-                    idmAuditLog.setAction(AuditAction.USER_RESETPASSWORD.value());
-                    idmAuditLog.setAuditDescription("User reset password");
-                    if (wsResponse.getStatus() == ResponseStatus.SUCCESS) {
-                        idmAuditLog.succeed();
+                token = validatePassword(managedSysLogin, targetSystemId, passwordBean.getPassword(), false);
+                if (token.hasErrors()) {
+                    errorTokenList.addAll(token.getErrorList());
+                } else {
+                    // try to reset
+                    if (provisionServiceFlag) {
+                        final PasswordSync pswdSync = new PasswordSync();
+                        pswdSync.setManagedSystemId(managedSysId);
+                        pswdSync.setPassword(passwordBean.getPassword());
+                        pswdSync.setUserId(passwordBean.getUserId());
+                        pswdSync.setRequestClientIP(request.getRemoteHost());
+                        pswdSync.setRequestorLogin(cookieProvider.getPrincipal(request));
+                        pswdSync.setRequestorId(getRequesterId(request));
+                        pswdSync.setUserActivateFlag(passwordBean.getUserActivateFlag());
+                        pswdSync.setSendPasswordToUser(passwordBean.getNotifyUserViaEmail());
+
+                        final Response setPasswordResponse = provisionService.resetPassword(pswdSync);
+
+                        if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
+                            // Don't fail if target system does not support password reset
+                            if (!ErrorCode.UNSUPPORTED_OPERATION.value().equals(setPasswordResponse.getErrorText())
+                                    && !ErrorCode.OPERATION_NOT_SUPPORTED_EXCEPTION.value().equals(setPasswordResponse.getErrorText())
+                                    ) {
+                                errorTokenList.add(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
+                            }
+                        }
+
                     } else {
-                        errorTokenList.add(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
-                        idmAuditLog.fail();
-                        idmAuditLog.setFailureReason(wsResponse.getErrorText());
-                    }
-                    auditLogService.addLog(idmAuditLog);
 
+                        String encPassword = null;
+                        wsResponse = loginDataWebService.encryptPassword(passwordBean.getUserId(), passwordBean.getPassword());
+
+                        if (wsResponse.getStatus() != ResponseStatus.SUCCESS) {
+                            errorTokenList.add(new ErrorToken(Errors.PASSWORD_ENCRYPTION_FAIL));
+                        }
+                        encPassword = (String) wsResponse.getResponseValue();
+
+                        wsResponse = loginDataWebService.resetPasswordAndNotifyUser(managedSysLogin, targetSystemId,
+                                encPassword, passwordBean.getNotifyUserViaEmail());
+
+                        IdmAuditLog idmAuditLog = new IdmAuditLog();
+                        idmAuditLog.setRequestorUserId(getRequesterId(request));
+                        idmAuditLog.setTargetUser(passwordBean.getUserId(), passwordBean.getPrincipal());
+                        idmAuditLog.setAction(AuditAction.USER_RESETPASSWORD.value());
+                        idmAuditLog.setAuditDescription("User reset password");
+                        if (wsResponse.getStatus() == ResponseStatus.SUCCESS) {
+                            idmAuditLog.succeed();
+                        } else {
+                            errorTokenList.add(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
+                            idmAuditLog.fail();
+                            idmAuditLog.setFailureReason(wsResponse.getErrorText());
+                        }
+                        auditLogService.addLog(idmAuditLog);
+
+                    }
                 }
             }
-
         } catch (Throwable e) {
             errorTokenList.add(new ErrorToken(Errors.INTERNAL_ERROR));
             log.error("Exception while resetting the password", e);
@@ -717,6 +798,8 @@ public class ProvisioningRestController extends AbstractPasswordController {
         setOrganizationIds(user, userModel, requesterId, isNew);
         setContactInfo(user, userModel, isNew);
         setUserRoles(user, userModel, requesterId, isNew);
+        setUserGroups(user, userModel, requesterId, isNew);
+
         if (isNew) {
             if (StringUtils.isNotBlank(userModel.getSupervisorId())) {
                 supervisorUser = new User(userModel.getSupervisorId());
@@ -814,6 +897,12 @@ public class ProvisioningRestController extends AbstractPasswordController {
         final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
 
         Response res = userDataWebService.deleteProfilePictureByUserId(userId, getRequesterId(request));
+
+        if (res.isSuccess()) {
+            final User user = userDataWebService.getUserWithDependent(userId, getRequesterId(request), true);
+            res = provisionService.modifyUser(new ProvisionUser(user));
+        }
+
         if (res.isSuccess()) {
             ajaxResponse.setStatus(200);
             SuccessToken successToken = new SuccessToken(SuccessMessage.IMAGE_DELETE_SUCCESS);
@@ -860,20 +949,21 @@ public class ProvisioningRestController extends AbstractPasswordController {
         final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse(500);
 
         if (user != null) {
-            List<ErrorToken> errors = validateProfilePic(pic, request);
-            if (CollectionUtils.isNotEmpty(errors)) {
-                ajaxResponse.setStatus(500);
-                ajaxResponse.setErrorList(errors);
-
-            } else {
+            try {
+                byte[] imageData = getValidAndResizedProfilePicData(pic, autoResize, request);
                 ProfilePicture profilePic = userDataWebService.getProfilePictureByUserId(user.getId(), requesterId);
                 if (profilePic == null) {
                     profilePic = new ProfilePicture();
                 }
                 profilePic.setUser(user);
                 profilePic.setName(pic.getName());
-                profilePic.setPicture(pic.getBytes());
+                profilePic.setPicture(imageData);
                 Response res = userDataWebService.saveProfilePicture(profilePic, requesterId);
+
+                if (res.isSuccess()) {
+                    res = provisionService.modifyUser(new ProvisionUser(user));
+                }
+
                 if (res.isSuccess()) {
                     ajaxResponse.setStatus(200);
                     SuccessToken successToken = new SuccessToken(SuccessMessage.IMAGE_UPLOAD_SUCCESS);
@@ -902,18 +992,40 @@ public class ProvisioningRestController extends AbstractPasswordController {
                         ajaxResponse.addError(errorToken);
                     }
                 }
+            } catch (ErrorMessageException emex) {
+                ErrorToken errorToken = new ErrorToken(emex.getError());
+                if (Errors.IMAGE_INVALID_TYPE.equals(emex.getError())) {
+                    errorToken.setParams(new Object[]{formats});
+
+                } else if (Errors.IMAGE_INVALID_DIMENSIONS.equals(emex.getError())) {
+                    errorToken.setParams(new Object[]{maxWidth, maxHeight});
+
+                } else if (Errors.IMAGE_INVALID_SIZE.equals(emex.getError())) {
+                    errorToken.setParams(new Object[]{maxSize});
+                }
+                errorToken.setMessage(messageSource.getMessage(
+                        errorToken.getError().getMessageName(),
+                        errorToken.getParams(),
+                        localeResolver.resolveLocale(request)));
+                ajaxResponse.addError(errorToken);
             }
+        } else {
+            ErrorToken errorToken = new ErrorToken(Errors.USER_NOT_SET);
+            errorToken.setMessage(messageSource.getMessage(
+                    errorToken.getError().getMessageName(),
+                    errorToken.getParams(),
+                    localeResolver.resolveLocale(request)));
+            ajaxResponse.addError(errorToken);
         }
 
         return ajaxResponse;
     }
 
-    private List<ErrorToken> validateProfilePic(MultipartFile pic, HttpServletRequest request) throws IOException {
+    private byte[] getValidAndResizedProfilePicData(MultipartFile pic, boolean autoResize, HttpServletRequest request) throws IOException, ErrorMessageException {
 
-        List<ErrorToken> errors = new ArrayList<ErrorToken>();
+        byte[] result = null;
         ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(pic.getBytes()));
         Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
-        ErrorToken errorToken;
         if (iter.hasNext()) {
             ImageReader ir = iter.next();
             String format = ir.getFormatName();
@@ -924,41 +1036,53 @@ public class ProvisioningRestController extends AbstractPasswordController {
                 contentTypes = Arrays.asList(formats.split("\\s*,\\s*"));
             }
             if (!contentTypes.contains(format.toLowerCase())) {
-                errorToken = new ErrorToken(Errors.IMAGE_INVALID_TYPE);
-                errorToken.setMessage(messageSource.getMessage(
-                        errorToken.getError().getMessageName(),
-                        errorToken.getParams(),
-                        localeResolver.resolveLocale(request)));
-                errors.add(errorToken);
-            }
-            if ((bufferedImage.getWidth() > maxWidth) || (bufferedImage.getHeight() > maxHeight)) {
-                errorToken = new ErrorToken(Errors.IMAGE_INVALID_DIMENSIONS);
-                errorToken.setParams(new Object[]{maxWidth, maxHeight});
-                errorToken.setMessage(messageSource.getMessage(
-                        errorToken.getError().getMessageName(),
-                        errorToken.getParams(),
-                        localeResolver.resolveLocale(request)));
-                errors.add(errorToken);
+                throw new ErrorMessageException(Errors.IMAGE_INVALID_TYPE);
             }
             if ((pic.getSize() > maxSize * 1024)) {
-                errorToken = new ErrorToken(Errors.IMAGE_INVALID_SIZE);
-                errorToken.setParams(new Object[]{maxWidth, maxHeight});
-                errorToken.setMessage(messageSource.getMessage(
-                        errorToken.getError().getMessageName(),
-                        errorToken.getParams(),
-                        localeResolver.resolveLocale(request)));
-                errors.add(errorToken);
+                throw new ErrorMessageException(Errors.IMAGE_INVALID_SIZE);
             }
+            if (!autoResize) {
+                if ((bufferedImage.getWidth() > maxWidth) || (bufferedImage.getHeight() > maxHeight)) {
+                    throw new ErrorMessageException(Errors.IMAGE_INVALID_DIMENSIONS);
+                }
+                result = pic.getBytes();
+
+            } else {
+                double wScale = 1;
+                if (bufferedImage.getWidth() > maxWidth) {
+                    wScale = (double) (bufferedImage.getWidth()) / maxWidth;
+                }
+                double hScale = 1;
+                if (bufferedImage.getHeight() > maxHeight) {
+                    hScale = (double) (bufferedImage.getHeight()) / maxHeight;
+                }
+                double scale = Math.max(wScale, hScale);
+                if (scale > 1) {
+                    int width = (int) (bufferedImage.getWidth() / scale);
+                    int height = (int) (bufferedImage.getHeight() / scale);
+                    int type = bufferedImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : bufferedImage.getType();
+                    BufferedImage resizedImage = new BufferedImage(width, height, type);
+                    Graphics2D g = resizedImage.createGraphics();
+                    g.drawImage(bufferedImage, 0, 0, width, height, null);
+                    g.dispose();
+                    g.setComposite(AlphaComposite.Src);
+                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(resizedImage, format, baos);
+                    baos.flush();
+                    result = baos.toByteArray();
+                    baos.close();
+                } else {
+                    result = pic.getBytes();
+                }
+            }
+            return result;
 
         } else {
-            errorToken = new ErrorToken(Errors.IMAGE_INVALID);
-            errorToken.setMessage(messageSource.getMessage(
-                    errorToken.getError().getMessageName(),
-                    errorToken.getParams(),
-                    localeResolver.resolveLocale(request)));
-            errors.add(errorToken);
+            throw new ErrorMessageException(Errors.IMAGE_INVALID);
         }
-        return errors;
     }
 
     private void setMetaDataTypes(User user, EditUserModel userModel) {
@@ -1056,6 +1180,16 @@ public class ProvisioningRestController extends AbstractPasswordController {
         }
     }
 
+    private void setUserGroups(User user, EditUserModel userModel, String requesterId, boolean isNew) {
+        if (StringUtils.isNotEmpty(userModel.getGroupId())) {
+            Group group = groupServiceClient.getGroupLocalize(userModel.getGroupId(), requesterId, getCurrentLanguage());
+            if (isNew) {
+                group.setOperation(AttributeOperationEnum.ADD);
+            }
+            user.getGroups().add(group);
+        }
+    }
+
     private void setAuditInfo(ProvisionUser pUser, HttpServletRequest request) {
         pUser.setRequestClientIP(request.getRemoteHost());
         pUser.setRequestorLogin(cookieProvider.getPrincipal(request));
@@ -1104,6 +1238,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
 
         } finally {
             if (errorToken == null) {
+                provisionService.addEvent(actionEvent, ProvisionActionTypeEnum.POST);
                 ajaxResponse.setStatus(200);
                 ajaxResponse.setSuccessToken(successToken);
                 ajaxResponse.setSuccessMessage(messageSource.getMessage(
@@ -1114,7 +1249,6 @@ public class ProvisioningRestController extends AbstractPasswordController {
                     ajaxResponse.setRedirectURL("users.html");
                 }
             } else {
-                provisionService.addEvent(actionEvent, ProvisionActionTypeEnum.POST);
                 ajaxResponse.setStatus(500);
                 errorToken.setMessage(messageSource.getMessage(
                         errorToken.getError().getMessageName(),
@@ -1154,12 +1288,14 @@ public class ProvisioningRestController extends AbstractPasswordController {
                         wsResponse = provisionService.deleteByUserId(userId, UserStatusEnum.REMOVE, requesterId);
                         break;
                     case ENABLE:
+                        WSUtils.setWSClientTimeout(provisionService, 360000L);
                         wsResponse = provisionService.disableUser(userId, false, requesterId);
                         idmAuditLog.setAction(AuditAction.USER_ENABLE.value());
                         idmAuditLog.setAuditDescription("User enable");
                         auditLogService.addLog(idmAuditLog);
                         break;
                     case DISABLE:
+                        WSUtils.setWSClientTimeout(provisionService, 360000L);
                         wsResponse = provisionService.disableUser(userId, true, requesterId);
                         idmAuditLog.setAction(AuditAction.USER_DISABLE.value());
                         idmAuditLog.setAuditDescription("User disable");

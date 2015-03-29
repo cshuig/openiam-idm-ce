@@ -38,7 +38,7 @@
         OPENIAM.ENV.MenuTree = <c:choose><c:when test="${! empty requestScope.menuTree}">${requestScope.menuTree}</c:when><c:otherwise>null</c:otherwise></c:choose>;
         OPENIAM.ENV.MenuTreeAppendURL = null;
         OPENIAM.ENV.ContextPath = "${pageContext.request.contextPath}";
-        OPENIAM.ENV.UserId = <c:choose><c:when test="${not empty requestScope.user.id}">"${requestScope.user.id}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
+        OPENIAM.ENV.UserId = <c:choose><c:when test="${not empty requestScope.userId}">"${requestScope.userId}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
         OPENIAM.ENV.ProfilePicSrc = <c:choose><c:when test="${not empty requestScope.profilePicSrc}">"${requestScope.profilePicSrc}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
     </script>
 </head>
@@ -47,6 +47,14 @@
     <fmt:message key="openiam.ui.selfservice.ui.template.edit.profile.pic" />
 </div>
 <div class="frameContentDivider">
+    <c:choose>
+    <c:when test="${requestScope.autoResize}">
+        <div class="info center"><spring:message code="openiam.ui.selfservice.ui.template.profile.pic.info.autoResize" argumentSeparator=";" arguments="${requestScope.formats};${requestScope.maxSize};${requestScope.maxWidth};${requestScope.maxHeight}" /></div>
+    </c:when>
+    <c:otherwise>
+        <div class="info center"><spring:message code="openiam.ui.selfservice.ui.template.profile.pic.info" argumentSeparator=";" arguments="${requestScope.formats};${requestScope.maxSize};${requestScope.maxWidth};${requestScope.maxHeight}" /></div>
+    </c:otherwise>
+    </c:choose>
     <div id="profilePicContent">
     <c:if test="${not empty requestScope.profilePicSrc}">
         <div id="profilePic">
@@ -58,7 +66,9 @@
         </div>
     </c:if>
     <div id="profilePicForm" <c:if test="${not empty requestScope.profilePicSrc}">style='display:none;'</c:if> >
-        <input type="file" id="uploadProfilePic" accept="image/gif, image/jpeg, image/png" class="full rounded" />
+        <form id="uploadForm" action="${pageContext.request.contextPath}/saveProfilePic.html" method="post" enctype="multipart/form-data">
+        <input name="file" type="file" id="uploadProfilePic" accept="image/gif, image/jpeg, image/png" class="full rounded" />
+        </form>
         <br style="clear:both;"/>
     </div>
     </div>

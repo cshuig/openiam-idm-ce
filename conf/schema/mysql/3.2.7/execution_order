@@ -1,0 +1,5 @@
+dml/1.pt_localization.sql
+ddl/1.rename_IDENTITY.sql
+ddl/2.MANAGED_SYS_SHOW_END_USER_FLAG.sql
+dml/2.ADD_MENU_EXTENDED_RESET_PASSWORD.sql
+ddl/3.alter_LOGIN_table.sql

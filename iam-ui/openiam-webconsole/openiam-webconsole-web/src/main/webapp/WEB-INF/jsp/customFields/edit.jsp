@@ -49,7 +49,7 @@
         <c:if test="${! empty requestScope.languageList}">
             OPENIAM.ENV.LanguageList=[];
             <c:forEach var="lang" items="${requestScope.languageList}">
-                OPENIAM.ENV.LanguageList.push({languageCode:'${lang.languageCode}',name:'${lang.name}', id: ${lang.id}});
+                OPENIAM.ENV.LanguageList.push({languageCode:'${lang.languageCode}',name:'${lang.name}', id: '${lang.id}'});
             </c:forEach>
         </c:if>
 

@@ -4,8 +4,8 @@
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
 
-    <var name="bulkOperationBean" class="org.openiam.ui.webconsole.web.model.BulkOperationBean" />
-    <var name="test" class="org.openiam.ui.webconsole.web.model.BulkOperationBean" />
+    <var name="bulkOperationBean" class="org.openiam.ui.web.model.BulkOperationBean" />
+    <var name="test" class="org.openiam.ui.web.model.BulkOperationBean" />
     <on-start>
         <set name="flowScope.bulkOperationBean" value="bulkOperationBean" />
         <evaluate expression="bulkOperationService.getRequesterId()" result="flowScope.bulkOperationBean.userSearchBean.requesterId" />
