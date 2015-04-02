@@ -1,3 +1,0 @@
-dml/1.insert_primary_location_address_metadata.sql
-dml/2.update_batch_tasks.sql
-ddl/1.modify_uri_meta.sql

@@ -1,3 +1,0 @@
-use openiam;
-
-UPDATE LANGUAGE_MAPPING SET TEXT_VALUE='Single select checkbox' WHERE REFERENCE_ID='CHECKBOX' AND REFERENCE_TYPE='MetadataTypeEntity.displayNameMap' AND LANGUAGE_ID='1';

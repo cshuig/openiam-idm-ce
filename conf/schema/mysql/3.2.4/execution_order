@@ -1,7 +1,0 @@
-ddl/1.add_profile_pic.sql
-dml/1.add_profile_pic_to_selfserv_center.sql
-ddl/2.alter_grp.sql
-ddl/3.alter_grp_res.sql
-dml/2.fix_metadatatype_user_status.sql
-dml/3.fix_initial_password_policy.sql
-ddl/4.add_constraint_to_USER_IDENTITY_ANS.sql

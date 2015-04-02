@@ -1,4 +1,0 @@
-use openiam;
-
-DELETE FROM LANGUAGE_LOCALE WHERE LOCALE='en_GB';
-
