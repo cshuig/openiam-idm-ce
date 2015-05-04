@@ -16,6 +16,7 @@ import org.openiam.provision.service.ProvisionService;
 import org.openiam.provision.type.ExtensibleAttribute;
 import org.openiam.provision.type.ExtensibleUser;
 import org.openiam.provision.type.ManagedSystemViewerBean;
+import org.openiam.ui.util.WSUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.util.messages.SuccessMessage;
@@ -126,6 +127,7 @@ public class MngSystemViewerController extends BaseUserController {
         extUser.setAttributes(attrs);
 
         Response res;
+        WSUtils.setWSClientTimeout(provisionService, 600000L);
         if (attrBean.isExist()) {
             res = provisionService.requestModify(extUser, login, getRequesterId(request));
         } else {
@@ -180,6 +182,7 @@ public class MngSystemViewerController extends BaseUserController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
+        WSUtils.setWSClientTimeout(provisionService, 600000L);
         ManagedSystemViewerResponse res = provisionService.buildManagedSystemViewer(userId, managedSys.getId());
         List<ViewerBean> viewerList = new ArrayList<ViewerBean>();
         Map<String, ExtensibleAttribute> idmAttrsMap = new HashMap<String, ExtensibleAttribute>();

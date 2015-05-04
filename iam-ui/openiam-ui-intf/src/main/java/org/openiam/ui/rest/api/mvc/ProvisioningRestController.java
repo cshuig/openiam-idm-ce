@@ -3,6 +3,7 @@ package org.openiam.ui.rest.api.mvc;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openiam.authmanager.service.AuthorizationManagerMenuWebService;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.BaseConstants;
 import org.openiam.base.ExtendController;
@@ -102,6 +103,9 @@ public class ProvisioningRestController extends AbstractPasswordController {
 
     @Resource(name = "policyServiceClient")
     protected PolicyDataService policyServiceClient;
+
+    @Resource(name="authorizationManagerMenuServiceClient")
+    private AuthorizationManagerMenuWebService authorizationManagerMenuServiceClient;
 
     private static final String extendController = "/webconsole/EditUserController.groovy";
 
@@ -438,6 +442,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
                         pswdSync.setRequestorLogin(cookieProvider.getPrincipal(request));
                         pswdSync.setRequestorId(getRequesterId(request));
                         pswdSync.setSendPasswordToUser(passwordBean.getNotifyUserViaEmail());
+                        WSUtils.setWSClientTimeout(provisionService, 360000L);
                         final Response setPasswordResponse = provisionService.resetPassword(pswdSync);
                         if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
                             errorTokenList.add(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
@@ -456,7 +461,11 @@ public class ProvisioningRestController extends AbstractPasswordController {
                 provisionService.addEvent(eventBuilder.build(), ProvisionActionTypeEnum.POST);
                 ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.PASSWORD_RESYNC));
                 ajaxResponse.setStatus(200);
-                ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
+                final boolean isAuthenticated = authorizationManagerMenuServiceClient.isUserAuthenticatedToMenuWithURL(
+                        getRequesterId(request), "/webconsole/editUser.html", null, true);
+                if(isAuthenticated) {
+                    ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
+                }
             }
             ajaxResponse.process(localeResolver, messageSource, request);
         }
@@ -577,6 +586,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
                         pswdSync.setUserActivateFlag(passwordBean.getUserActivateFlag());
                         pswdSync.setSendPasswordToUser(passwordBean.getNotifyUserViaEmail());
 
+                        WSUtils.setWSClientTimeout(provisionService, 360000L);
                         final Response setPasswordResponse = provisionService.resetPassword(pswdSync);
 
                         if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
@@ -633,7 +643,11 @@ public class ProvisioningRestController extends AbstractPasswordController {
                 provisionService.addEvent(actionEvent, ProvisionActionTypeEnum.PRE);
                 ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.PASSWORD_RESETED));
                 ajaxResponse.setStatus(200);
-                ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
+                final boolean isAuthenticated = authorizationManagerMenuServiceClient.isUserAuthenticatedToMenuWithURL(
+                        getRequesterId(request), "/webconsole/editUser.html", null, true);
+                if(isAuthenticated) {
+                    ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
+                }
             }
             ajaxResponse.process(localeResolver, messageSource, request);
         }
@@ -740,6 +754,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
                     pswdSync.setRequestClientIP(request.getRemoteHost());
                     pswdSync.setRequestorLogin(cookieProvider.getPrincipal(request));
                     pswdSync.setRequestorId(getRequesterId(request));
+                    WSUtils.setWSClientTimeout(provisionService, 360000L);
                     final Response setPasswordResponse = provisionService.resetPassword(pswdSync);
                     final Response resetQuestionsResponse = challengeResponseService.resetQuestionsForUser(userId);
                 }
@@ -899,7 +914,8 @@ public class ProvisioningRestController extends AbstractPasswordController {
         Response res = userDataWebService.deleteProfilePictureByUserId(userId, getRequesterId(request));
 
         if (res.isSuccess()) {
-            final User user = userDataWebService.getUserWithDependent(userId, getRequesterId(request), true);
+            final User user = userDataWebService.getUserWithDependent(userId, getRequesterId(request), false);
+            user.setRequestorUserId(getRequesterId(request));
             res = provisionService.modifyUser(new ProvisionUser(user));
         }
 
@@ -944,7 +960,8 @@ public class ProvisioningRestController extends AbstractPasswordController {
 
         String requesterId = getRequesterId(request);
 
-        final User user = userDataWebService.getUserWithDependent(userId, requesterId, true);
+        final User user = userDataWebService.getUserWithDependent(userId, requesterId, false);
+        user.setRequestorUserId(requesterId);
 
         final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse(500);
 
@@ -1103,10 +1120,12 @@ public class ProvisioningRestController extends AbstractPasswordController {
             searchBean.setKeys(userModel.getOrganizationIds());
             orgs = organizationDataService.findBeansLocalized(searchBean, requesterId, -1, -1, getCurrentLanguage());
         }
-        for (Organization o : orgs) {
-            if (isNewUser || !user.getAffiliations().contains(o)) {
-                o.setOperation(AttributeOperationEnum.ADD);
-                user.getAffiliations().add(o);
+        if (CollectionUtils.isNotEmpty(orgs)) {
+            for (Organization o : orgs) {
+                if (isNewUser || !user.getAffiliations().contains(o)) {
+                    o.setOperation(AttributeOperationEnum.ADD);
+                    user.getAffiliations().add(o);
+                }
             }
         }
         if (!isNewUser) {

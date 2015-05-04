@@ -116,8 +116,9 @@ public class AuthenticationProviderController extends AbstractController {
 		final AuthProviderSearchBean searchBean = new AuthProviderSearchBean();
 		searchBean.setDeepCopy(false);
 		final List<AuthProvider> results = authProviderServiceClient.findAuthProviderBeans(searchBean, size, from);
+		final Integer count = authProviderServiceClient.getNumOfAuthProviderBeans(searchBean);
 		final List<KeyNameBean> beans = mapper.mapToList(results, KeyNameBean.class);
-		return new BeanResponse(beans, (beans != null) ? beans.size() : 0);
+		return new BeanResponse(beans, count);
 	}
 
 	@RequestMapping("/authenticationProviders.html")

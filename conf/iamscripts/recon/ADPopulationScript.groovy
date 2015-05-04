@@ -1,8 +1,6 @@
 import org.openiam.base.AttributeOperationEnum
-import org.openiam.idm.srvc.mngsys.dto.ManagedSysDto
-import org.openiam.idm.srvc.mngsys.ws.ManagedSystemWebService
-import org.openiam.idm.srvc.res.dto.Resource
-import org.openiam.idm.srvc.res.service.ResourceDataService
+import org.openiam.idm.srvc.mngsys.service.ManagedSystemService
+import org.openiam.idm.srvc.res.service.ResourceService
 import org.openiam.provision.dto.ProvisionUser
 import org.openiam.idm.srvc.user.dto.UserStatusEnum
 import org.openiam.idm.srvc.user.dto.UserAttribute
@@ -52,8 +50,8 @@ public class ADPopulationScript extends org.openiam.idm.srvc.recon.service.Abstr
                     addAttribute(pUser, "employeeID", line.get("employeeID"));
                     break
                 case "employeeType":
-                    if(pUser.employeeType != line.get("employeeType")){
-                        pUser.employeeType = line.get("employeeType")
+                    if(pUser.employeeTypeId != line.get("employeeType")){
+                        pUser.employeeTypeId = line.get("employeeType")
                         retval = 0
                     }
                     addAttribute(pUser, "employeeType", line.get("employeeType"));
@@ -112,16 +110,22 @@ public class ADPopulationScript extends org.openiam.idm.srvc.recon.service.Abstr
             }
         }
 
-        ManagedSystemWebService systemWebService = context.getBean("managedSysService");
-        ResourceDataService  resourceDataService = context.getBean("resourceDataService");
-        ManagedSysDto currentManagedSys = systemWebService.getManagedSys(managedSysId);
-        Resource currentResource = resourceDataService.getResource(currentManagedSys.getResourceId(), null);
-        currentResource.setOperation(AttributeOperationEnum.ADD);
-        pUser.getResources().add(currentResource);
+        def managedSystemService = context.getBean(ManagedSystemService.class)
+        def resourceService = context.getBean(ResourceService.class)
+        def currentManagedSys = managedSystemService.getManagedSysById(managedSysId)
+        def currentResource = resourceService.getResourceDTO(currentManagedSys.resourceId)
+        if (!pUser?.resources?.find {it-> it.id == currentResource.id }) {
+            currentResource.operation = AttributeOperationEnum.ADD
+            pUser.resources.add(currentResource)
+        }
         //set status to active: IMPORTANT!!!!
-        pUser.setStatus(UserStatusEnum.PENDING_INITIAL_LOGIN);
-	    pUser.setMdTypeId("Contractor");
-        return retval;
+        if (!pUser.id) {
+            pUser.status = UserStatusEnum.PENDING_INITIAL_LOGIN
+        }
+        if (!pUser.mdTypeId) {
+            pUser.mdTypeId = "Contractor"
+        }
+        return retval
     }
 
     def addAttribute(ProvisionUser pUser, String attributeName, String attributeValue) {

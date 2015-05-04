@@ -1,0 +1,4 @@
+use openiam;
+
+INSERT INTO BATCH_CONFIG (TASK_ID, TASK_NAME, TASK_URL, EXECUTION_ORDER, ENABLED, CRON_EXPRESSION)
+	VALUES ('109', 'GENERATE_REPORTS', 'batch/reportsGeneration.groovy', '5', 'N', '0 15 0 * * ?');

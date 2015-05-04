@@ -6,6 +6,7 @@ public class LoginActionToken {
 	
 	public LoginActionToken() {}
 
+	private String userId;
 	private AuthenticationResponse authResponse;
 	private boolean successWithWarning;
 	private boolean success;
@@ -69,6 +70,14 @@ public class LoginActionToken {
 
 	public void setAuthResponse(AuthenticationResponse authResponse) {
 		this.authResponse = authResponse;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	
 	

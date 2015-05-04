@@ -2,6 +2,7 @@ package org.openiam.ui.selfservice.web.mvc.entitlements;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.openiam.authmanager.service.AuthorizationManagerAdminWebService;
+import org.openiam.idm.searchbeans.UserSearchBean;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.res.dto.Resource;
@@ -11,8 +12,14 @@ import org.openiam.ui.web.model.BasicAjaxResponse;
 import org.openiam.ui.web.mvc.entitlements.AbstractUserEntitlementsController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -22,7 +29,32 @@ public class UserEntitlementsController extends AbstractUserEntitlementsControll
 
 	@Value("${org.openiam.selfservice.activiti.user.menu}")
 	private String userMenu;
-	
+
+
+    @RequestMapping(value="/userOrganizations", method= RequestMethod.GET)
+    public String userOrganizations(final HttpServletRequest request,
+                                    final HttpServletResponse response,
+                                    final @RequestParam(value="id", required=true) String userId) throws IOException {
+
+        final UserSearchBean searchBean = new UserSearchBean();
+        searchBean.setKey(userId);
+        final List<User> userList = userDataWebService.findBeans(searchBean, 0, 1);
+        if(CollectionUtils.isEmpty(userList)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("User with id '%s' does not exist", userId));
+            return null;
+        }
+
+        final User user = userList.get(0);
+
+        request.setAttribute("user", user);
+        setMenuTree(request, getEditMenu());
+
+        final String btnString = getButtonsAsJson(request, "Organizations");
+
+        request.setAttribute("buttonsMenu", btnString);
+        return "user/userOrganizations";
+    }
+
 	@Override
 	protected BasicAjaxResponse user2OrganizationOperation(
 			HttpServletRequest request, String userId, String organizationId,

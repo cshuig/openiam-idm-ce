@@ -31,6 +31,8 @@ public class UserRestController extends AbstractController {
     private static final Integer defaultPageSize = 10;
     private static final Integer defaultPageNumber = 0;
 
+    private static final String SYSTEM_ADMIN_ID = "3000";
+
     @Autowired
     private UserBeanPropertiesParser userSearchParser;
 
@@ -233,15 +235,19 @@ public class UserRestController extends AbstractController {
         final List<UserAttribute> attributes = userServiceClient.getUserAttributesInternationalized(id, getCurrentLanguage());
 
         //IDMAPPS-2375
+        final List<UserAttribute> attributesValidated = new LinkedList<UserAttribute>();
         if (CollectionUtils.isNotEmpty(attributes)) {
             for (final UserAttribute attribute : attributes) {
                 if (StringUtils.equals(attribute.getMetadataName(), "password")) {
                     attribute.setValue("*****");
                     attribute.setValues(null);
                 }
+                if(!attribute.getName().contains("DLG_FLT")) {
+                    attributesValidated.add(attribute);
+                }
             }
         }
-        final List<MetadataAttributeBean> beans = mapper.mapToList(attributes, MetadataAttributeBean.class);
+        final List<MetadataAttributeBean> beans = mapper.mapToList(attributesValidated, MetadataAttributeBean.class);
         return new BeanResponse(beans, beans.size());
     }
 
@@ -252,7 +258,7 @@ public class UserRestController extends AbstractController {
         if (searchModel.isEmpty()) {
             return BeanResponse.EMPTY_RESPONSE;
         }
-        String requestorId = (skipDeletagionFilterForDirectoryLookup && searchModel.getFromDirectoryLookup()) ? null : this.getRequesterId(request);
+        String requestorId = (skipDeletagionFilterForDirectoryLookup && searchModel.getFromDirectoryLookup()) ? SYSTEM_ADMIN_ID : this.getRequesterId(request);
         BeanResponse beanResponse = new BeanResponse();
         UserSearchBean searchBean = searchModel.buildSearchBean(requestorId, UserSearchBean.class);
 

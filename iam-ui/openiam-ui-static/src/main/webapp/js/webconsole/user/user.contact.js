@@ -24,7 +24,7 @@ OPENIAM.UserContacts = {
             var inputelements = [];
             var addBtn = document.createElement("input"); $(addBtn).attr("type", "submit"); $(addBtn).attr("value", args.buttonTitle); addBtn.className = "redBtn"; addBtn.id = "addBtn";
             if (args.buttonTitleLocation != null && args.buttonTitleLocation != "") {
-                var addBtn2 = document.createElement("input"); $(addBtn2).attr("value", args.buttonTitleLocation); $(addBtn).attr("type", "button"); addBtn2.className = "redBtn width_90"; addBtn2.id = "addLocationBtn";
+                var addBtn2 = document.createElement("input"); $(addBtn2).attr("value", args.buttonTitleLocation); $(addBtn2).attr("type", "button"); addBtn2.className = "redBtn width_90"; addBtn2.id = "addLocationBtn";
                 $(addBtn2).click(function() {
                     $("#searchResultsContainer").entitlemetnsTable({
 

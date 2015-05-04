@@ -13,6 +13,7 @@
 	<s:http security="none" pattern="/SAMLMetadata.html"/>
 	<s:http security="none" pattern="/unlockPasswordQuestions.html"/>
 	<s:http security="none" pattern="/unlockUserResetPasswordForm.html"/>
+	<s:http security="none" pattern="/activate.html"/>
 	<s:http security="none" pattern="/selfRegistration.html"/>
 	<s:http security="none" pattern="/getLocationsForOrg.html"/>
 	<s:http security="none" pattern="/clearContext.html"/>

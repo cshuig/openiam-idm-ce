@@ -54,7 +54,14 @@ response.setDateHeader ("Expires", -1);
 					<input type="password" id="newPasswordConfirm" name="newPasswordConfirm" class="passwordField" placeholder="<fmt:message key='openiam.idp.confirm.new.password' />" autocomplete="off" />
 					
 					<div class="lrow">
-						<input id="submit" type="submit" class="redBtn" value="<fmt:message key='openiam.idp.unlock.account' />" />
+						<c:choose>
+							<c:when test="${!empty requestScope.isActivate and requestScope.isActivate==true}">
+								<input id="submit" type="submit" class="redBtn" value="<fmt:message key='openiam.idp.activate.account' />" />
+							</c:when>
+							<c:otherwise>
+								<input id="submit" type="submit" class="redBtn" value="<fmt:message key='openiam.idp.unlock.account' />" />
+							</c:otherwise>
+						</c:choose>
 					</div>
 				</form>
 				

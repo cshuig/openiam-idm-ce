@@ -1,1 +1,1 @@
-output = user.lastName + "," + user.firstName
+output = user.lastName + ", " + user.firstName

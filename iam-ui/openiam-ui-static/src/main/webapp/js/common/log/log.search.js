@@ -47,6 +47,7 @@ console.log = window.console.log || function() {};
 
             modalFields.push({fieldName : "targetId", type : "text", label : localeManager["openiam.ui.audit.log.target.id"], required : false});
 
+            modalFields.push({fieldName : "targetLogin", type : "text", label : localeManager["openiam.ui.audit.log.target.login"], required : false});
             this.modalEdit({
                 fields: modalFields,
                 dialogTitle: $options.dialogTitle,
@@ -73,9 +74,7 @@ console.log = window.console.log || function() {};
 						}
                 	}
 
-                    var dateCtrl = $("input.date");
-
-                    dateCtrl.each(function() {
+                    $("input.date").each(function() {
                         var element = $(this);
                         var icon = element.next();
                         var el_pos = element.position(), el_h = element.outerHeight(false), el_mt = parseInt(element.css('marginTop'), 10) || 0, el_w = element

@@ -156,7 +156,7 @@ OPENIAM.Policy.Form = {
                         var two = parseInt(value2);
                     if ((value1 && isNaN(one)) || (value2 && isNaN(two))) {
                         errorTextValue = localeManager["openiam.ui.password.policy.invalid.not.int"];
-                    } else if (one && two && one != NaN && two != NaN && two <= one) {
+                    } else if (one && two && one != NaN && two != NaN && two < one) {
                         errorTextValue = localeManager["openiam.ui.password.policy.invalid.range.bad"];
                     }
                 }

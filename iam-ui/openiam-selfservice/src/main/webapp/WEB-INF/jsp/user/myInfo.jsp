@@ -49,23 +49,22 @@
         </c:if>
         <p>
             <span>
-            <c:if test="${! empty user.defaultPhone}">
-                <c:if
-                        test="${! empty  user.defaultPhone.typeDescription}">${ user.defaultPhone.typeDescription}</c:if>:&nbsp;
-                <c:if test="${! empty  user.defaultPhone.countryCd}">${ user.defaultPhone.countryCd} </c:if>
-                <c:if test="${! empty  user.defaultPhone.areaCd}">(${ user.defaultPhone.areaCd}) </c:if>
-                ${ user.defaultPhone.phoneNbr},&nbsp;
-            </c:if>
-            <c:if test="${! empty user.defaultAddress}">
-                <c:if test="${! empty user.defaultAddress.typeDescription}">${user.defaultAddress.typeDescription}</c:if>:
-                <c:if test="${! empty user.defaultAddress.postalCd}">${user.defaultAddress.postalCd}</c:if>
-                <c:if test="${! empty user.defaultAddress.country}">${user.defaultAddress.country}</c:if>
-                <c:if test="${! empty user.defaultAddress.state}">${user.defaultAddress.state}</c:if>
-                <c:if test="${! empty user.defaultAddress.city}">${user.defaultAddress.city}</c:if>
-                <c:if test="${! empty user.defaultAddress.address1}">${user.defaultAddress.address1}</c:if>
-                <c:if test="${! empty user.defaultAddress.address2}">${user.defaultAddress.address2}</c:if>
-                <c:if test="${! empty user.defaultAddress.bldgNumber}">${user.defaultAddress.bldgNumber}</c:if>
-            </c:if>
+                <c:if test="${! empty requestScope.defaultPhone}">
+                    <c:if test="${! empty  requestScope.phoneLabel}">${ requestScope.phoneLabel}</c:if>:&nbsp;
+                    <c:if test="${! empty  requestScope.defaultPhone.countryCd}">${ requestScope.defaultPhone.countryCd} </c:if>
+                    <c:if test="${! empty  requestScope.defaultPhone.areaCd}">(${ requestScope.defaultPhone.areaCd}) </c:if>
+                    ${ requestScope.defaultPhone.phoneNbr},&nbsp;
+                </c:if>
+                <c:if test="${! empty requestScope.defaultAddress}">
+                    <c:if test="${! empty requestScope.defaultAddressLabel}">${requestScope.defaultAddressLabel}</c:if>:
+                    <c:if test="${! empty requestScope.defaultAddress.postalCd}">${requestScope.defaultAddress.postalCd}</c:if>
+                    <c:if test="${! empty requestScope.defaultAddress.country}">${requestScope.defaultAddress.country}</c:if>
+                    <c:if test="${! empty requestScope.defaultAddress.state}">${requestScope.defaultAddress.state}</c:if>
+                    <c:if test="${! empty requestScope.defaultAddress.city}">${requestScope.defaultAddress.city}</c:if>
+                    <c:if test="${! empty requestScope.defaultAddress.address1}">${requestScope.defaultAddress.address1}</c:if>
+                    <c:if test="${! empty requestScope.defaultAddress.address2}">${requestScope.defaultAddress.address2}</c:if>
+                    <c:if test="${! empty requestScope.defaultAddress.bldgNumber}">${requestScope.defaultAddress.bldgNumber}</c:if>
+                </c:if>
             </span>
         </p>
         <c:choose>

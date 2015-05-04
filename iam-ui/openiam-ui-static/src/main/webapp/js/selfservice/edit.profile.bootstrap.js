@@ -266,7 +266,7 @@ OPENIAM.EditProfileBootstrap = {
 		                          {fieldName: "address2", type:"text",label:localeManager["openiam.ui.common.address.2"]},
 		                          {fieldName: "city", type:"text",label:localeManager["openiam.ui.common.address.city"]},
 		                          {fieldName: "state", type:"text",label:localeManager["openiam.ui.common.address.state"]},
-		                          {fieldName: "country", type:"text",label:localeManager["openiam.ui.common.address.country"]},
+		                          {fieldName: "country", type:"text",label:localeManager["openiam.ui.common.address.country"], readonly:false, required:true},
 		                          {fieldName: "postalCd", type:"text",label:localeManager["openiam.ui.common.address.postal.code"]},
 		                          {fieldName: "isDefault", type:"checkbox", label:localeManager["openiam.ui.common.is.default"], readonly:false, required:false},
 		                          {fieldName: "isActive", type:"checkbox", label:localeManager["openiam.ui.common.is.active"], readonly:false, required:false}
@@ -396,15 +396,19 @@ OPENIAM.EditProfileBootstrap = {
 				onAdditionalBtnClick : function() {
 					var orgsId = [];
 					var hierarchy = OPENIAM.ENV.OrganizationHierarchy;
+					var currentOrgId = OPENIAM.ENV.CurrentOrgId;
 					if (hierarchy != null && hierarchy != undefined && hierarchy.length > 0 && $("#organizationsTable").length > 0) {
 						orgsId = $("#organizationsTable").organizationHierarchyWrapper("getValues");
 					};
-					if ((orgsId == null) || (orgsId.length == 0)) {
+					if ((orgsId == null) || (orgsId.length == 0) && (currentOrgId == null)) {
 						OPENIAM.Modal.Error(localeManager["openiam.ui.idm.synch.synch_edit.field.organization"]);
 					} else {
 						var $this = this;
 						var obj = {};
 						var orgId = orgsId.pop();
+						if (orgId == null) {
+							orgId = currentOrgId;
+						}
 						$("#searchLocationContainer").entitlemetnsTable({
 							columnHeaders: [
 								localeManager["openiam.ui.common.location.address"],

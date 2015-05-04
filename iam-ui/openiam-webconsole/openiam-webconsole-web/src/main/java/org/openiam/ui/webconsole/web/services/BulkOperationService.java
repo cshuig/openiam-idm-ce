@@ -394,6 +394,7 @@ public class BulkOperationService {
             } else if (BulkOperationEnum.NOTIFY_USER.equals(operationBean.getOperation())) {
                 String subject = (String)attrs.get("subject");
                 String text = (String)attrs.get("text");
+                String format = (String)attrs.get("format");
                 if (StringUtils.isBlank(subject) && StringUtils.isBlank(text)) {
                     messageContext.addMessage(new MessageBuilder().error()
                             .defaultText("Subject or text field should not be empty")
@@ -406,6 +407,7 @@ public class BulkOperationService {
                 if (StringUtils.isNotBlank(text)) {
                     operationBean.getProperties().put("text", text);
                 }
+                operationBean.getProperties().put("format", StringUtils.equalsIgnoreCase("on", format));
             }
 
             bulkOperationBean.getOperations().add(new OperationBean(operationBean));

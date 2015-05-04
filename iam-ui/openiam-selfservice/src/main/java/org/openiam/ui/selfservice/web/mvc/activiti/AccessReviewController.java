@@ -8,7 +8,9 @@ import org.openiam.access.review.model.AccessViewFilterBean;
 import org.openiam.access.review.model.AccessViewResponse;
 import org.openiam.access.review.service.ws.AccessReviewWebService;
 import org.openiam.authmanager.common.SetStringResponse;
+import org.openiam.authmanager.common.model.AuthorizationMenu;
 import org.openiam.authmanager.service.AuthorizationManagerAdminWebService;
+import org.openiam.authmanager.ws.request.MenuRequest;
 import org.openiam.base.ws.Response;
 import org.openiam.bpm.request.ActivitiRequestDecision;
 import org.openiam.bpm.request.GenericWorkflowRequest;
@@ -31,6 +33,7 @@ import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.util.messages.SuccessMessage;
 import org.openiam.ui.util.messages.SuccessToken;
+import org.openiam.ui.web.filter.OpeniamFilter;
 import org.openiam.ui.web.model.BasicAjaxResponse;
 import org.openiam.ui.web.mvc.AbstractActivitiController;
 import org.openiam.ui.web.util.DateFormatStr;
@@ -44,6 +47,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA. User: alexander Date: 11/7/13 Time: 2:12 AM To
@@ -70,6 +75,13 @@ public class AccessReviewController extends AbstractActivitiController {
     @Value("${org.openiam.selfservice.activiti.user.menu}")
     private String userMenu;
 
+
+    @Value("${org.openiam.ui.selfservice.access.review.tab.root}")
+    private String tabMenuName;
+
+    @Value("${org.openiam.ui.selfservice.access.review.button.root}")
+    private String buttonsMenuName;
+
     @Value("${org.openiam.access.view.max.level}")
     private int maxHierarchyLevel;
 
@@ -82,13 +94,25 @@ public class AccessReviewController extends AbstractActivitiController {
                                final @RequestParam(value = "taskId", required = false) String taskId,
                                @RequestParam(value = "type", required = false) String type) throws IOException {
         TaskWrapper task = null;
-        if (StringUtils.isBlank(type)) {
-            type = "resources";
+        String requesterId = getRequesterId(request);
+        AuthorizationMenu tabMenu = null;
+        if (StringUtils.isNotBlank(taskId)){
+            task = activitiService.getTask(taskId);
+            type="resources";
+        }  else if(StringUtils.isBlank(type)) {
+            final MenuRequest menuRequest = new MenuRequest();
+            menuRequest.setMenuName(tabMenuName);
+            menuRequest.setUserId(requesterId);
+            tabMenu = authManagerMenuService.getMenuTreeForUserId(menuRequest, OpeniamFilter.getCurrentLangauge(request));
+            type = (tabMenu != null) ? getActiveType(tabMenu) : null;
+
+            if (StringUtils.isBlank(type)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not authorized to visit this page");
+                return null;
+            }
         }
 
-        if (StringUtils.isNotBlank(taskId)) {
-            task = activitiService.getTask(taskId);
-        }
+
 
 
         final UserSearchBean searchBean = new UserSearchBean();
@@ -107,6 +131,8 @@ public class AccessReviewController extends AbstractActivitiController {
         request.setAttribute("type", type);
         request.setAttribute("taskId", taskId);
         request.setAttribute("riskList", jacksonMapper.writeValueAsString(getResourceRiskAsKeyNameBeans()));
+        request.setAttribute("accessReviewTabs", getInitialMenuAsJson(request, tabMenu));
+        request.setAttribute("accessReviewButtons", getInitialMenuAsJson(request, buttonsMenuName));
         setMenuTree(request, userMenu);
         return "user/entity/accessReview";
     }
@@ -152,7 +178,8 @@ public class AccessReviewController extends AbstractActivitiController {
                                     final @RequestBody AccessViewFilterBean filter) throws IOException {
         return getAccessView(response, filter, "roles");
     }
-    @RequestMapping(value = "/accessReview/getResourceView", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/accessReview/getResourcesView", method = RequestMethod.POST)
     public @ResponseBody AccessViewResponse getResourceView(final HttpServletResponse response,
                                                       final @RequestBody AccessViewFilterBean filter) throws IOException {
         return getAccessView(response, filter, "resources");
@@ -161,6 +188,11 @@ public class AccessReviewController extends AbstractActivitiController {
     public @ResponseBody AccessViewResponse getGroupView(final HttpServletResponse response,
                                                          final @RequestBody AccessViewFilterBean filter) throws IOException {
         return getAccessView(response, filter, "groups");
+    }
+    @RequestMapping(value = "/accessReview/getAttestationView", method = RequestMethod.POST)
+    public @ResponseBody AccessViewResponse getAttestationView(final HttpServletResponse response,
+                                                                final @RequestBody AccessViewFilterBean filter) throws IOException {
+        return getResourceView(response, filter);
     }
     @RequestMapping(value = "/accessReview/certify", method = RequestMethod.POST)
     public @ResponseBody BasicAjaxResponse recertificationDecision(final HttpServletRequest request, final HttpServletResponse response,
@@ -316,5 +348,18 @@ public class AccessReviewController extends AbstractActivitiController {
 
         return sb.toString();
     }
-
+    private String getActiveType(AuthorizationMenu menu) {
+        String activeType = null;
+        AuthorizationMenu menuNode = menu.getFirstChild();
+        while(menuNode != null) {
+            Pattern pattern = Pattern.compile("get(Roles|Resources)View");
+            Matcher matcher = pattern.matcher(menuNode.getUrl());
+            if (matcher.find()) {
+                activeType = matcher.group(1);
+                break;
+            }
+            menuNode = menuNode.getNextSibling();
+        }
+        return activeType.toLowerCase();
+    }
 }

@@ -114,9 +114,6 @@
             <property name="sortDirection">asc</property>
             <property name="dataType">string</property>
             <property name="distinct">true</property>
-            <simple-property-list name="defaultValue">
-                <value type="constant">ADMIN_RESOURCE</value>
-            </simple-property-list>
             <list-property name="selectionList">
                 <structure>
                     <property name="value">ADMIN_RESOURCE</property>
@@ -171,13 +168,30 @@
                 <property name="category">Unformatted</property>
             </structure>
         </scalar-parameter>
+        <scalar-parameter name="RESOURCE_IDS" id="18920">
+            <text-property name="helpText">Please enter the resource ID</text-property>
+            <text-property name="promptText">Resource ID</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">multi-value</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
     </parameters>
     <data-sources>
         <oda-data-source extensionID="org.eclipse.datatools.enablement.oda.ws" name="Data Source" id="7">
             <method name="beforeOpen"><![CDATA[//var myresourcefolder = reportContext.getDesignHandle().getResourceFolder();
 var reportFolderAndReportName = reportContext.getReportRunnable().getReportName();
 var myresourcefolder = reportFolderAndReportName.substr(0,reportFolderAndReportName.lastIndexOf('/')) 
-this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/configuration.cps");]]></method>
+this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/configuration.cps");
+reportContext.getDesignHandle().findDataSource("Data Source").setProperty("connectionTimeOut", "300000");]]></method>
             <property name="wsdlURI">http://localhost:9080/openiam-esb/idmsrvc/ReportWebService?wsdl</property>
             <property name="OdaConnProfileName">Data Source</property>
             <property name="OdaConnProfileStorePath">configuration.cps</property>
@@ -230,6 +244,11 @@ this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/config
                     <text-property name="heading">RES_NAME</text-property>
                 </structure>
                 <structure>
+                    <property name="columnName">RES_DESC</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="heading">RES_DESC</text-property>
+                </structure>
+                <structure>
                     <property name="columnName">RISK</property>
                     <property name="analysis">dimension</property>
                     <text-property name="heading">RISK</text-property>
@@ -248,6 +267,11 @@ this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/config
                     <property name="columnName">CONTAINER_NAME</property>
                     <property name="analysis">dimension</property>
                     <text-property name="heading">CONTAINER_NAME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">WARNING</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="heading">WARNING</text-property>
                 </structure>
             </list-property>
             <list-property name="parameters">
@@ -316,6 +340,16 @@ this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/config
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
                 </structure>
+                <structure>
+                    <property name="name">RESOURCE_IDS_XML</property>
+                    <property name="nativeName">RESOURCE_IDS</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">7</property>
+                    <expression name="defaultValue" type="javascript">multiParameterToXml("RESOURCE_IDS")</expression>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
             </list-property>
             <structure name="cachedMetaData">
                 <list-property name="resultSet">
@@ -379,6 +413,16 @@ this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/config
                         <property name="name">ROLE</property>
                         <property name="dataType">string</property>
                     </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">RES_DESC</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">WARNING</property>
+                        <property name="dataType">string</property>
+                    </structure>
                 </list-property>
             </structure>
             <property name="dataSource">Data Source</property>
@@ -439,6 +483,20 @@ this.setExtensionProperty("OdaConnProfileStorePath", myresourcefolder + "/config
                     <property name="dataType">string</property>
                     <property name="nativeDataType">12</property>
                 </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">RES_DESC</property>
+                    <property name="nativeName">RES_DESC</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">WARNING</property>
+                    <property name="nativeName">WARNING</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
             </list-property>
             <xml-property name="queryText"><![CDATA[<?xml version="1.0"?>
 <SOAP-ENV:Envelope
@@ -469,6 +527,9 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             <entry key="RES_TYPE_IDS">
                &amp;?RES_TYPE_XML?&amp;
             </entry>
+            <entry key="RESOURCE_IDS">
+               &amp;?RESOURCE_IDS_XML?&amp;
+            </entry>
             <entry key="TABLE">
                <value>DETAILS</value>
             </entry>  
@@ -480,7 +541,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             <list-property name="privateDriverProperties">
                 <ex-property>
                     <name>xmlQueryText</name>
-                    <value>table0#-TNAME-#table0#:#[/soap:Envelope/soap:Body/ns2:executeQueryResponse/return/ReportData/ns2:reportTable[@name='details']/row]#:#{FULL_NAME;STRING;/column[@name='FULL_NAME']/value},{EMPLOYEE_ID;STRING;/column[@name='EMPLOYEE_ID']/value},{RES_TYPE;STRING;/column[@name='RES_TYPE']/value},{RES_NAME;STRING;/column[@name='RES_NAME']/value},{RISK;STRING;/column[@name='RISK']/value},{ERROR;STRING;/column[@name='ERROR']/value},{CONTAINER_TYPE;STRING;/column[@name='CONTAINER_TYPE']/value},{CONTAINER_NAME;STRING;/column[@name='CONTAINER_NAME']/value}#:#&lt;"ns2","urn:idm.openiam.org%srvc%report%service";"soap","http:%%schemas.xmlsoap.org%soap%envelope%"></value>
+                    <value>table0#-TNAME-#table0#:#[/soap:Envelope/soap:Body/ns2:executeQueryResponse/return/ReportData/ns2:reportTable[@name='details']/row]#:#{FULL_NAME;STRING;/column[@name='FULL_NAME']/value},{EMPLOYEE_ID;STRING;/column[@name='EMPLOYEE_ID']/value},{RES_TYPE;STRING;/column[@name='RES_TYPE']/value},{RES_NAME;STRING;/column[@name='RES_NAME']/value},{RES_DESC;STRING;/column[@name='RES_DESC']/value},{RISK;STRING;/column[@name='RISK']/value},{ERROR;STRING;/column[@name='ERROR']/value},{CONTAINER_TYPE;STRING;/column[@name='CONTAINER_TYPE']/value},{CONTAINER_NAME;STRING;/column[@name='CONTAINER_NAME']/value},{WARNING;STRING;/column[@name='WARNING']/value}#:#&lt;"ns2","urn:idm.openiam.org%srvc%report%service";"soap","http:%%schemas.xmlsoap.org%soap%envelope%"></value>
                 </ex-property>
                 <ex-property>
                     <name>operationTrace</name>
@@ -597,6 +658,16 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
                 </structure>
+                <structure>
+                    <property name="name">RESOURCE_IDS_XML</property>
+                    <property name="nativeName">RESOURCE_IDS</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">7</property>
+                    <expression name="defaultValue" type="javascript">multiParameterToXml("RESOURCE_IDS")</expression>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
             </list-property>
             <structure name="cachedMetaData">
                 <list-property name="resultSet">
@@ -628,6 +699,11 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <structure>
                         <property name="position">6</property>
                         <property name="name">RES_TYPES</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">RESOURCES</property>
                         <property name="dataType">string</property>
                     </structure>
                 </list-property>
@@ -676,6 +752,13 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="dataType">string</property>
                     <property name="nativeDataType">12</property>
                 </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">RESOURCES</property>
+                    <property name="nativeName">RESOURCES</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
             </list-property>
             <xml-property name="queryText"><![CDATA[<?xml version="1.0"?>
 <SOAP-ENV:Envelope
@@ -705,6 +788,9 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             </entry>
             <entry key="RES_TYPE_IDS">
                &amp;?RES_TYPE_XML?&amp;
+            </entry>
+            <entry key="RESOURCE_IDS">
+               &amp;?RESOURCE_IDS_XML?&amp;
             </entry>
             <entry key="TABLE">
                <value>HEAD</value>
@@ -744,7 +830,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             <list-property name="privateDriverProperties">
                 <ex-property>
                     <name>xmlQueryText</name>
-                    <value>table0#-TNAME-#table0#:#[/soap:Envelope/soap:Body/ns2:executeQueryResponse/return/ReportData/ns2:reportTable[@name='head']/row]#:#{ORGANIZATION;STRING;/column[@name='ORGANIZATION']/value},{ROLE;STRING;/column[@name='ROLE']/value},{RISK;STRING;/column[@name='RISK']/value},{MANAGED_SYSTEM;STRING;/column[@name='MANAGED_SYSTEM']/value},{USER;STRING;/column[@name='USER']/value},{RES_TYPES;STRING;/column[@name='RES_TYPES']/value}#:#&lt;"ns2","urn:idm.openiam.org%srvc%report%service";"soap","http:%%schemas.xmlsoap.org%soap%envelope%"></value>
+                    <value>table0#-TNAME-#table0#:#[/soap:Envelope/soap:Body/ns2:executeQueryResponse/return/ReportData/ns2:reportTable[@name='head']/row]#:#{ORGANIZATION;STRING;/column[@name='ORGANIZATION']/value},{ROLE;STRING;/column[@name='ROLE']/value},{RISK;STRING;/column[@name='RISK']/value},{MANAGED_SYSTEM;STRING;/column[@name='MANAGED_SYSTEM']/value},{USER;STRING;/column[@name='USER']/value},{RES_TYPES;STRING;/column[@name='RES_TYPES']/value},{RESOURCES;STRING;/column[@name='RESOURCES']/value}#:#&lt;"ns2","urn:idm.openiam.org%srvc%report%service";"soap","http:%%schemas.xmlsoap.org%soap%envelope%"></value>
                 </ex-property>
                 <ex-property>
                     <name>operationTrace</name>
@@ -876,6 +962,13 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="dataType">string</property>
                     <property name="allowExport">true</property>
                 </structure>
+                <structure>
+                    <property name="name">RESOURCES</property>
+                    <text-property name="displayName">RESOURCES</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["RESOURCES"]</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
             </list-property>
             <column id="332">
                 <property name="width">35%</property>
@@ -919,7 +1012,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             <property name="width">72%</property>
                         </column>
                         <row id="877">
-                            <property name="height">0.39166666666666666in</property>
                             <cell id="878">
                                 <property name="colSpan">2</property>
                                 <property name="rowSpan">1</property>
@@ -935,7 +1027,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             </cell>
                         </row>
                         <row id="852">
-                            <property name="height">0.23333333333333334in</property>
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
@@ -957,7 +1048,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             </cell>
                         </row>
                         <row id="1956">
-                            <property name="height">0.23333333333333334in</property>
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
@@ -979,7 +1069,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             </cell>
                         </row>
                         <row id="855">
-                            <property name="height">0.23333333333333334in</property>
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
@@ -1001,7 +1090,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             </cell>
                         </row>
                         <row id="8551">
-                            <property name="height">0.23333333333333334in</property>
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
@@ -1023,7 +1111,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             </cell>
                         </row>
                         <row id="8552">
-                            <property name="height">0.23333333333333334in</property>
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
@@ -1045,7 +1132,6 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             </cell>
                         </row>
                         <row id="18947">
-                            <property name="height">0.23333333333333334in</property>
                             <list-property name="visibility">
                                 <structure>
                                     <property name="format">all</property>
@@ -1066,10 +1152,84 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                                 </data>
                             </cell>
                         </row>
+                        <row id="19020">
+                            <list-property name="visibility">
+                                <structure>
+                                    <property name="format">all</property>
+                                    <expression name="valueExpr" type="javascript">!row["RESOURCES"]</expression>
+                                </structure>
+                            </list-property>
+                            <cell id="19021">
+                                <label id="19022">
+                                    <property name="fontWeight">bold</property>
+                                    <property name="textAlign">left</property>
+                                    <text-property name="text">Resources:</text-property>
+                                </label>
+                            </cell>
+                            <cell id="19023">
+                                <data id="19024">
+                                    <property name="textAlign">left</property>
+                                    <property name="resultSetColumn">RESOURCES</property>
+                                </data>
+                            </cell>
+                        </row>
+                        <row id="19025">
+                            <list-property name="visibility">
+                                <structure>
+                                    <property name="format">all</property>
+                                    <expression name="valueExpr" type="javascript">!row["RESOURCES"]</expression>
+                                </structure>
+                            </list-property>
+                            <cell id="19026"/>
+                            <cell id="19027"/>
+                        </row>
                     </grid>
                 </cell>
             </row>
         </grid>
+        <table id="19048">
+            <property name="marginTop">20pt</property>
+            <property name="width">100%</property>
+            <property name="dataSet">Data Set Details</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">WARNING</property>
+                    <text-property name="displayName">WARNING</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["WARNING"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <property name="pageBreakInterval">35</property>
+            <column id="19052">
+                <property name="width">1.40625in</property>
+            </column>
+            <detail>
+                <row id="19049">
+                    <list-property name="visibility">
+                        <structure>
+                            <property name="format">all</property>
+                            <expression name="valueExpr" type="javascript">!row["WARNING"]</expression>
+                        </structure>
+                    </list-property>
+                    <cell id="19050">
+                        <property name="colSpan">1</property>
+                        <property name="rowSpan">1</property>
+                        <property name="paddingTop">8pt</property>
+                        <property name="paddingLeft">8pt</property>
+                        <property name="paddingBottom">8pt</property>
+                        <property name="paddingRight">8pt</property>
+                        <property name="verticalAlign">middle</property>
+                        <property name="width">11in</property>
+                        <data id="19051">
+                            <property name="fontWeight">normal</property>
+                            <property name="marginLeft">0pt</property>
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">WARNING</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+        </table>
         <table id="12">
             <property name="marginBottom">0pt</property>
             <property name="width">100%</property>
@@ -1091,6 +1251,12 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="name">ERROR</property>
                     <text-property name="displayName">ERROR</text-property>
                     <expression name="expression" type="javascript">dataSetRow["ERROR"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">WARNING</property>
+                    <text-property name="displayName">WARNING</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["WARNING"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
@@ -1173,6 +1339,13 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="allowExport">true</property>
                 </structure>
                 <structure>
+                    <property name="name">RES_DESC</property>
+                    <text-property name="displayName">RES_DESC</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["RES_DESC"]</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
                     <property name="name">ROLE</property>
                     <text-property name="displayName">ROLE</text-property>
                     <expression name="expression" type="javascript">dataSetRow["ROLE"]</expression>
@@ -1195,24 +1368,27 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </structure>
             </list-property>
             <column id="67">
-                <property name="width">20%</property>
+                <property name="width">15%</property>
             </column>
             <column id="70">
                 <property name="width">8%</property>
             </column>
             <column id="909">
-                <property name="width">15%</property>
+                <property name="width">13%</property>
             </column>
             <column id="18944">
-                <property name="width">15%</property>
+                <property name="width">13%</property>
             </column>
             <column id="71">
-                <property name="width">15%</property>
+                <property name="width">13%</property>
             </column>
             <column id="18935">
-                <property name="width">22%</property>
+                <property name="width">15%</property>
             </column>
             <column id="18876">
+                <property name="width">17%</property>
+            </column>
+            <column id="19034">
                 <property name="width">4%</property>
             </column>
             <header>
@@ -1264,6 +1440,13 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     </cell>
                     <cell id="18873">
                         <property name="style">header-cell</property>
+                        <label id="19036">
+                            <property name="pushDown">false</property>
+                            <text-property name="text">Resource Description</text-property>
+                        </label>
+                    </cell>
+                    <cell id="19028">
+                        <property name="style">header-cell</property>
                         <label id="18877">
                             <property name="pushDown">false</property>
                             <text-property name="text">Risk</text-property>
@@ -1312,6 +1495,11 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             <property name="borderBottomWidth">1px</property>
                         </cell>
                         <cell id="18891">
+                            <property name="borderBottomColor">#C0C0C0</property>
+                            <property name="borderBottomStyle">dotted</property>
+                            <property name="borderBottomWidth">1px</property>
+                        </cell>
+                        <cell id="19031">
                             <property name="borderBottomColor">#C0C0C0</property>
                             <property name="borderBottomStyle">dotted</property>
                             <property name="borderBottomWidth">1px</property>
@@ -1368,6 +1556,14 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                             <property name="borderLeftStyle">dotted</property>
                             <property name="borderLeftWidth">1px</property>
                         </cell>
+                        <cell id="19030">
+                            <property name="borderBottomColor">#C0C0C0</property>
+                            <property name="borderBottomStyle">dotted</property>
+                            <property name="borderBottomWidth">1px</property>
+                            <property name="borderLeftColor">#C0C0C0</property>
+                            <property name="borderLeftStyle">dotted</property>
+                            <property name="borderLeftWidth">1px</property>
+                        </cell>
                     </row>
                 </footer>
             </group>
@@ -1376,7 +1572,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <list-property name="visibility">
                         <structure>
                             <property name="format">all</property>
-                            <expression name="valueExpr" type="javascript">!!row["ERROR"]</expression>
+                            <expression name="valueExpr" type="javascript">!!row["ERROR"] || !!row["WARNING"]</expression>
                         </structure>
                     </list-property>
                     <cell id="35">
@@ -1500,6 +1696,18 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                         <property name="borderLeftStyle">dotted</property>
                         <property name="borderLeftWidth">1px</property>
                         <property name="verticalAlign">top</property>
+                        <data id="19035">
+                            <property name="marginLeft">2pt</property>
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">RES_DESC</property>
+                        </data>
+                    </cell>
+                    <cell id="19029">
+                        <property name="style">details-cell</property>
+                        <property name="borderLeftColor">#C0C0C0</property>
+                        <property name="borderLeftStyle">dotted</property>
+                        <property name="borderLeftWidth">1px</property>
+                        <property name="verticalAlign">top</property>
                         <data id="18878">
                             <property name="textAlign">center</property>
                             <property name="resultSetColumn">RISK</property>
@@ -1516,7 +1724,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                         </structure>
                     </list-property>
                     <cell id="18900">
-                        <property name="colSpan">7</property>
+                        <property name="colSpan">8</property>
                         <property name="rowSpan">1</property>
                         <property name="paddingTop">8pt</property>
                         <property name="paddingLeft">8pt</property>
@@ -1538,7 +1746,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                         </structure>
                     </list-property>
                     <cell id="57">
-                        <property name="colSpan">7</property>
+                        <property name="colSpan">8</property>
                         <property name="rowSpan">1</property>
                         <property name="paddingTop">8pt</property>
                         <property name="paddingLeft">8pt</property>

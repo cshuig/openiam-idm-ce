@@ -27,6 +27,7 @@ public class LDAPAttributeNamesLookup extends AbstractAttributeNamesLookupScript
                 'objectClass': 'HIDDEN',
                 'title': 'EDITABLE',
                 'givenName': 'EDITABLE',
+                'description': 'EDITABLE',
                 'uniqueMember': 'NON_EDITABLE',
                 'manager': 'NON_EDITABLE',
                 'createTimestamp': 'READ_ONLY',
@@ -47,7 +48,8 @@ public class LDAPAttributeNamesLookup extends AbstractAttributeNamesLookupScript
                 'POST_PROCESS',
                 'GROUP_MEMBERSHIP_ENABLED',
                 'PRINCIPAL_NAME',
-                'LOOKUP_USER_IN_OU'
+                'LOOKUP_USER_IN_OU',
+                'ENABLE_ON_PASSWORD_RESET'
         ] as List
     }
 }

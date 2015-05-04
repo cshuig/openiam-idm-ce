@@ -31,12 +31,12 @@ public class ProvisionServicePreProcessor extends AbstractProvisionPreProcessor<
         RoleDataService roleDataService = (RoleDataService)context.getBean("roleDataService");
         LoginDataService loginService = (LoginDataService)context.getBean("loginManager");
         ResourceDataService resourceDataService = (ResourceDataService)context.getBean("resourceDataService");
-
+        Boolean sendActivationLink = bindingMap.get("sendActivationLink")
 
         println("ProvisionServicePreProcessor: AddUser called.");
         println("ProvisionServicePreProcessor: User=" + user.toString());
  	println("ProvisionServicePreProcessor: User from acriviti creation =" + user.isFromActivitiCreation);
-	user.emailCredentialsToNewUsers = !user.isFromActivitiCreation;
+	user.emailCredentialsToNewUsers = (sendActivationLink!=null && sendActivationLink) ? true: !user.isFromActivitiCreation;
         
 	showBindingMap(bindingMap);
 

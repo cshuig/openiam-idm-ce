@@ -54,7 +54,7 @@ response.setDateHeader ("Expires", -1);
 	<body>
 		<div id="title" class="title">
 			<c:choose>
-				<c:when test="${! empty requestScope.provider}">
+				<c:when test="${! empty requestScope.provider and ! empty requestScope.provider.providerId}">
 					Edit ${requestScope.authProviderType.description}: ${requestScope.provider.name}
 				</c:when>
 				<c:otherwise>

@@ -63,6 +63,7 @@ public class EntitlementsRestController extends AbstractController {
     BeanResponse searchResources(@RequestParam(required = false, value = "name") String name,
     							 final @RequestParam(required = false, value = "resourceTypeId") String resourceTypeId,
 								 final @RequestParam(required = false, value = "userId") String userId,
+								 final @RequestParam(required = false, value = "ownerId") String ownerId,
     							 final @RequestParam(required = false, value = "risk") String risk,
     							 final @RequestParam(required = false, value = "returnRootsOnMenuRequest") String returnRootsOnMenuRequest,
     							 final @RequestParam(required = false, value = "attributeName") String attributeName,
@@ -99,7 +100,11 @@ public class EntitlementsRestController extends AbstractController {
 			searchBean.addUserId(userId);
 		}
 
-    	if (isMenuRootRequest) {
+		if (StringUtils.isNotBlank(ownerId)) {
+			searchBean.setOwnerId(ownerId);
+		}
+
+		if (isMenuRootRequest) {
     		searchBean.setRootsOnly(true);
     	}
 
@@ -230,10 +235,12 @@ public class EntitlementsRestController extends AbstractController {
 
     @RequestMapping(value = "/searchReconciliations", method = RequestMethod.GET)
     public @ResponseBody BeanResponse searchReconciliations(final HttpServletRequest request,
-                                                  @RequestParam(required = false, value = "reconciliationType") String reconciliationType,
+                                                  final @RequestParam(required = false, value = "reconciliationType") String reconciliationType,
                                                   final @RequestParam(required = false, value = "managedSysId") String managedSysId,
                                                   final @RequestParam(required = true, value = "size") Integer size,
-                                                  final @RequestParam(required = true, value = "from") Integer from) {
+                                                  final @RequestParam(required = true, value = "from") Integer from,
+                                                  final @RequestParam(required = false, value = "sortBy") String sortBy,
+                                                  final @RequestParam(required = false, value = "orderBy") String orderBy) {
         if (StringUtils.isEmpty(managedSysId)) {
             BeanResponse response = new BeanResponse(Collections.EMPTY_LIST, 0);
             response.setError("Required property 'managedSysId' can't be empty.");

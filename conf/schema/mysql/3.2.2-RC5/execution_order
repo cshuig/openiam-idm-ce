@@ -1,0 +1,17 @@
+ddl/1.alter_report_parameter.sql
+dml/1.add_resource_cert_report.sql
+ddl/2.password_policy_improvement.sql
+dml/2.refactor_password_policy.sql
+ddl/3.group_identity_fix.sql
+dml/3.remove_mng_sys_rules_menu.sql
+dml/4.IDMAPPS-2183.sql
+dml/5.IDMAPPS-2183.sql
+ddl/4.default_ldap_recon_config.sql
+dml/6.add_term_accounts_report.sql
+dml/7.add_top_active_users_report.sql
+dml/8.notification_password_expiration.sql
+dml/9.add_user_access_report.sql
+dml/10.add_param_audit_report.sql
+dml/11.add_pass_changes_report.sql
+dml/12.add_csv_synch_config.sql
+dml/13.add_ad_powershell_system.sql

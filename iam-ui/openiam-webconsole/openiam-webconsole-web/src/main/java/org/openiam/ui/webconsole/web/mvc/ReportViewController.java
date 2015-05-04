@@ -2,6 +2,7 @@ package org.openiam.ui.webconsole.web.mvc;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openiam.idm.srvc.org.dto.OrganizationType;
 import org.openiam.idm.srvc.report.dto.ReportCriteriaParamDto;
 import org.openiam.idm.srvc.report.dto.ReportInfoDto;
 import org.openiam.idm.srvc.report.dto.ReportQueryDto;
@@ -67,6 +68,8 @@ public class ReportViewController extends AbstractController {
 				request.setAttribute("riskList", getResourceRiskAsKeyNameBeans());
 				request.setAttribute("reportAsJSON", jacksonMapper.writeValueAsString(reportInfo));
                 request.setAttribute("dateFormatDP", DateFormatStr.getDpDate());
+                final List<List<OrganizationType>> orgTypes = getOrgTypeList();
+                request.setAttribute("orgHierarchy", (orgTypes != null) ? jacksonMapper.writeValueAsString(orgTypes) : null);
                 return "jar:report/parameters";
             } else {
                 ReportQueryDto reportQuery = new ReportQueryDto();

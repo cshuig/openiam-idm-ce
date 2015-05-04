@@ -49,7 +49,7 @@ public class UserSupSubController extends AbstractSupervisorController {
                 wsResponse = provisionService.modifyUser(pUser);
             }
         } else {
-            wsResponse = userDataWebService.addSuperior(supervisorId, userId);
+            wsResponse = userDataWebService.addSuperior(supervisorId, userId, requesterId);
         }
 
         return getResponseAfterEntity2EntityAddition(wsResponse, AttributeOperationEnum.DELETE == operation);

@@ -38,6 +38,7 @@ console.log = window.console.log || function() {};
 						],
 				dialogTitle: $options.dialogTitle || localeManager["openiam.ui.shared.resource.search"],
 				saveBtnTxt : $options.saveBtnTxt || localeManager["openiam.ui.common.search"],
+				position : $options.position,
 				onSubmit: function(bean){
 					$this.modalEdit("hide");
 					$($options.searchTargetElmt).entitlemetnsTable({
@@ -86,7 +87,8 @@ console.log = window.console.log || function() {};
 	    		searchTargetElmt : null,
 	    		onSearchResultClick : null,
 	    		managedSysId : null,
-	    		pageSize : 10,
+				position:null,
+				pageSize : 10,
 	    		onAdd : null,
 	    		excludeMenus : false
 	    	}, args);

@@ -1,5 +1,5 @@
 OPENIAM = window.OPENIAM || {};
-OPENIAM.ChangePassword = {
+OPENIAM.ChangePasswordMsys = {
     init: function () {
 
         $("#currentPassword").keyup(function () {
@@ -32,7 +32,7 @@ OPENIAM.ChangePassword = {
     post: function () {
         $.ajax({
             "url": OPENIAM.ENV.ContextPath + "/rest/api/prov/resetPasswordSelfService",
-            "data": JSON.stringify(OPENIAM.ChangePassword.toJson()),
+            "data": JSON.stringify(OPENIAM.ChangePasswordMsys.toJson()),
             contentType: "application/json",
             type: "POST",
             dataType: "json",
@@ -65,6 +65,9 @@ OPENIAM.ChangePassword = {
         obj.currentPassword = $('#currentPassword').val();
         obj.password = $('#newPassword').val();
         obj.confPassword = $('#newPasswordConfirm').val();
+        var managedSystem = [];
+        managedSystem.push($('#managedSystemId').find(":selected").val())
+        obj.managedSystem = managedSystem;
         obj.managedSystemId = $('#managedSystemId').find(":selected").val();
         obj.notifyUserViaEmail = false;
         obj.autoGeneratePassword = false;
@@ -74,9 +77,9 @@ OPENIAM.ChangePassword = {
 
 
 $(document).ready(function () {
-    OPENIAM.ChangePassword.init();
+    OPENIAM.ChangePasswordMsys.init();
     $("#login-form").submit(function () {
-        OPENIAM.ChangePassword.post();
+        OPENIAM.ChangePasswordMsys.post();
         return false;
     });
 });

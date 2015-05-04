@@ -182,7 +182,6 @@ public class PasswordPolicyPageController extends AbstractPolicyController {
 
             if (StringUtils.isNotBlank(policyRequest.getPolicyId())) {
                 policyadd.setPolicyId(policyRequest.getPolicyId());
-
                 wsResponse = policyServiceClient.savePolicy(policyadd);
             } else {
 

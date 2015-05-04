@@ -542,6 +542,13 @@ OPENIAM.User.Form = {
         postWithWarn : function(actionId, message, confirmText) {
             OPENIAM.Modal.Warn({
                 message : message,
+                inputs : [{
+                    required: true,
+                    label : localeManager["openiam.ui.button.warning.dialog.title"],
+                    elmtType: "input",
+                    className: "full rounded",
+                    id: "addInfo"
+                }],
                 buttons : true,
                 OK : {
                     text : confirmText,

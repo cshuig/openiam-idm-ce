@@ -10,11 +10,15 @@ import org.openiam.idm.srvc.auth.service.AuthenticationConstants;
 import org.openiam.idm.srvc.auth.service.AuthenticationService;
 import org.openiam.idm.srvc.auth.ws.AuthenticationResponse;
 import org.openiam.idm.srvc.policy.dto.Policy;
+import org.openiam.ui.exception.HttpErrorCodeException;
 import org.openiam.ui.login.LoginActionToken;
+import org.openiam.ui.rest.api.model.LoginAjaxResponse;
 import org.openiam.ui.security.OpenIAMCookieProvider;
 import org.openiam.ui.util.URIUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
+import org.openiam.ui.web.filter.OpeniamFilter;
+import org.openiam.ui.web.model.AuthTokenInfo;
 import org.openiam.ui.web.model.ChangePasswordToken;
 import org.openiam.ui.web.mvc.AbstractLoginController;
 import org.springframework.aop.framework.ProxyConfig;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +75,7 @@ public class LoginController extends AbstractLoginController {
         response.setHeader("x-openiam-login-uri", request.getRequestURI());
 
         if (loginErrorFromProxy != null && openiamPrincipal != null) {
-            return handlePotentialLoginError(request, response, openiamPrincipal, policy, loginErrorFromProxy.intValue(), postbackURL, null);
+            return handlePotentialLoginError(request, response, openiamPrincipal, policy, loginErrorFromProxy.intValue(), postbackURL, null, null);
         } else {
             setCommonRequestAttributes(request, postbackURL);
         }
@@ -79,57 +84,76 @@ public class LoginController extends AbstractLoginController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String loginPost(@RequestParam(value = "login", required = false) String login,
-                            @RequestParam(value = "password", required = false) String password,
-                            @RequestParam(value = "postbackURL", required = false) String postbackURL,
-                            final HttpServletRequest request,
-                            final HttpServletResponse response) throws Exception {
-    	login = (StringUtils.isNotBlank(login)) ? login : "";
-    	password = (StringUtils.isNotBlank(password)) ? password : "";
+    public @ResponseBody LoginAjaxResponse loginPost(@RequestParam(value = "login", required = false) String login,
+                            						 @RequestParam(value = "password", required = false) String password,
+                            						 @RequestParam(value = "postbackURL", required = false) String postbackURL,
+                            						 final HttpServletRequest request,
+                            						 final HttpServletResponse response) throws Exception {
+    	final LoginAjaxResponse ajaxResponse = new LoginAjaxResponse();
+    	try {
+	    	login = (StringUtils.isNotBlank(login)) ? login : "";
+	    	password = (StringUtils.isNotBlank(password)) ? password : "";
+	        postbackURL = (StringUtils.isNotBlank(postbackURL)) ? postbackURL : "/selfservice";
+	        if (!URIUtils.isValidPostbackURL(postbackURL)) {
+	            log.warn(String.format("Postback URL '%s' not valid - doesn't start with a '/' - XSS detected.  Returning 401", postbackURL));
+	            throw new HttpErrorCodeException(HttpServletResponse.SC_UNAUTHORIZED);
+	        }
+	
+	        final Policy policy = this.getAuthentificationPolicy();
+            //Here should be external login
+            final String extenalLogin = this.buildExternalPassword(policy, login);
+            final LoginActionToken loginActionToken = getLoginActionToken(request, response, extenalLogin, password);
+            if (loginActionToken.isSuccess() || loginActionToken.isSuccessWithWarning()) {
+            	final boolean addCookieToResponse = !OpeniamFilter.isRequestDesignatedForTesting(request);
+                final AuthTokenInfo authTokenInfo = cookieProvider.setAuthInfo(request, response, this.buildLoginAccordingAuthPolicy(policy, login), loginActionToken.getAuthResponse(), addCookieToResponse);
+                ajaxResponse.setTokenInfo(authTokenInfo);
+                ajaxResponse.setUserId(loginActionToken.getUserId());
+            }
+
+            if (loginActionToken.isSuccess()) {
+                ajaxResponse.setRedirectURL(postbackURL);
+            } else { /* failure  or expired password or warning */
+                if (loginActionToken.getHttpErrorCode() != null) {
+                	throw new HttpErrorCodeException(loginActionToken.getHttpErrorCode().intValue());
+                } else {
+                    /* at this point, the login was either valid, or it's time to force/warn of a password change */
+                    handlePotentialLoginError(request, 
+                    						  response, 
+                    						  login, 
+                    						  policy, 
+                    						  loginActionToken.getErrCode(), 
+                    						  postbackURL, 
+                    						  loginActionToken.getNumOfDaysUntilPasswordExpiration(),
+                    						  ajaxResponse);
+                }
+            }
+    	} catch(HttpErrorCodeException e) {
+    		ajaxResponse.setStatus(e.getErrorCode());
+        } catch (Throwable e) {
+            log.error("Login failed", e);
+            request.setAttribute("error", new ErrorToken(Errors.INTERNAL_ERROR));
+            request.setAttribute("login", login);
+        } finally {
+        	if(ajaxResponse.isError()) {
+        		ajaxResponse.setStatus(500);
+        	} else {
+        		ajaxResponse.setStatus(200);
+        	}
+        	ajaxResponse.process(localeResolver, messageSource, request);
+        }
+    	return ajaxResponse;
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(final HttpServletRequest request, final HttpServletResponse response, @RequestParam(value = "postbackURL", required = false) String postbackURL) throws IOException {
         postbackURL = (StringUtils.isNotBlank(postbackURL)) ? postbackURL : "/selfservice";
         if (!URIUtils.isValidPostbackURL(postbackURL)) {
             log.warn(String.format("Postback URL '%s' not valid - doesn't start with a '/' - XSS detected.  Returning 401", postbackURL));
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
         }
-
-        Policy policy = this.getAuthentificationPolicy();
-        try {
-            //Here should be external login
-            String extenalLogin = this.buildExternalPassword(policy, login);
-            final LoginActionToken loginActionToken = getLoginActionToken(request, response, extenalLogin, password);
-            if (loginActionToken.isSuccess() || loginActionToken.isSuccessWithWarning()) {
-                cookieProvider.setAuthInfo(request, response, this.buildLoginAccordingAuthPolicy(policy, login), loginActionToken.getAuthResponse());
-            }
-
-            if (loginActionToken.isSuccess()) {
-                response.sendRedirect(postbackURL);
-                return null;
-            } else { /* failure  or expired password or warning */
-                if (loginActionToken.getHttpErrorCode() != null) {
-                    response.sendError(loginActionToken.getHttpErrorCode().intValue());
-                    return null;
-                } else {
-                    /* at this point, the login was either valid, or it's time to force/warn of a password change */
-                    return handlePotentialLoginError(request, response, login, policy, loginActionToken.getErrCode(), postbackURL, loginActionToken.getNumOfDaysUntilPasswordExpiration());
-                }
-            }
-
-        } catch (Throwable e) {
-            log.error("Login failed", e);
-            request.setAttribute("error", new ErrorToken(Errors.INTERNAL_ERROR));
-            request.setAttribute("login", login);
-            setCommonRequestAttributes(request, postbackURL);
-            return "core/login";
-        }
-    }
-
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logout(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        final String referer = request.getHeader("referer");
-        final String redirectTo = (StringUtils.containsIgnoreCase(referer, "webconsole")) ? "/webconsole" : "/selfservice";
         doLogout(request, response, true);
-        request.setAttribute("loginTo", redirectTo);
+        request.setAttribute("loginTo", postbackURL);
         return "core/logout";
     }
 
@@ -146,7 +170,8 @@ public class LoginController extends AbstractLoginController {
                                              final Policy policy,
                                              final int errCode,
                                              final String postbackURL,
-                                             final Integer numOfDaysUntilPasswordExpiration) throws IOException, URISyntaxException {
+                                             final Integer numOfDaysUntilPasswordExpiration,
+                                             final LoginAjaxResponse ajaxResponse) throws IOException, URISyntaxException {
 
         String internalLogin = this.buildLoginAccordingAuthPolicy(policy, login);
         String managedSysId = this.getAuthentificationManagedSystem(policy);
@@ -155,6 +180,7 @@ public class LoginController extends AbstractLoginController {
         final Errors error = getErrorFromCode(errCode);
         switch (error) {
             case PASSWORD_EXPIRED:
+            	ajaxResponse.setPasswordExpired(true);
                 changePasswordToken = new ChangePasswordToken(postbackURL, AuthenticationConstants.RESULT_PASSWORD_EXPIRED, managedSysId);
                 setTemporaryLoginCookie(request, response, internalLogin);
                 break;
@@ -173,18 +199,33 @@ public class LoginController extends AbstractLoginController {
                 setTemporaryLoginCookie(request, response, internalLogin);
                 break;
             case ACCOUNT_LOCKED:
-                request.setAttribute("unlockURL", new StringBuilder(URIUtils.getBaseURI(request)).append(unlockUserURL).toString());
+            	final String unlockURL = new StringBuilder(URIUtils.getBaseURI(request)).append(unlockUserURL).toString();
+            	if(ajaxResponse != null) {
+            		ajaxResponse.setUnlockURL(unlockURL);
+            	} else {
+            		request.setAttribute("unlockURL", unlockURL);
+            	}
                 break;
             default:
                 break;
         }
         if (changePasswordToken != null) {
-            response.sendRedirect(getChangePasswordURL(changePasswordToken));
+        	final String redirectURL = getChangePasswordURL(changePasswordToken);
+        	if(ajaxResponse != null) {
+        		ajaxResponse.setRedirectURL(redirectURL);
+        	} else {
+        		response.sendRedirect(redirectURL);
+        	}
             view = null;
         } else {
-            request.setAttribute("error", new ErrorToken(error));
-            request.setAttribute("login", login);
-            setCommonRequestAttributes(request, postbackURL);
+        	final ErrorToken errorToken = new ErrorToken(error);
+        	if(ajaxResponse != null) {
+        		ajaxResponse.addError(errorToken);
+        	} else {
+        		request.setAttribute("error", errorToken);
+        		request.setAttribute("login", login);
+        		setCommonRequestAttributes(request, postbackURL);
+        	}
             view = "core/login";
         }
         return view;

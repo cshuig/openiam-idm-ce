@@ -42,14 +42,15 @@ public class LocationBean extends AbstractBean {
         this.organizationId=location.getOrganizationId();
         this.isActive=location.getIsActive();
 
-        this.displayDescription = new StringBuilder().append(this.bldgNum!=null?this.bldgNum:"").append(",")
-                .append(this.country!=null?this.country:"").append(",")
-                .append(this.state!=null?this.state:"").append(",")
-                .append(this.city!=null?this.city:"").append(",")
-                .append(this.address1!=null?this.address1:"").append(",")
-                .append(this.address2!=null?this.address2:"").append(",")
-                .append(this.address3!= null ? this.address3 : "").append(",")
-                .append(this.postalCd!=null?this.postalCd:"").toString();
+        this.displayDescription = new StringBuilder().append(this.bldgNum != null ? this.bldgNum + " " : "")
+                .append(this.address1 != null ? this.address1 + " ": "")
+                .append(this.address2!=null ? this.address2 + " ":"")
+                .append(this.address3 != null ? this.address3 + " ": "")
+                .append(this.city != null ? this.city + " ": "")
+                .append(this.state != null ? this.state + " ": "")
+                .append(this.country!=null ? this.country + " ":"")
+                .append(this.postalCd != null ? this.postalCd : "").toString();
+        displayDescription = displayDescription.trim().replace(" ", ",");
     }
 
     public AttributeOperationEnum getOperation() {

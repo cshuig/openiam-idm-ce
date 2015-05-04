@@ -3,13 +3,13 @@
     <parent>
         <groupId>org.openiam</groupId>
         <artifactId>openiam-webconsole</artifactId>
-        <version>3.3.RELEASE</version>
+        <version>3.3.1.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.openiam</groupId>
     <artifactId>openiam-webconsole-intf</artifactId>
     <name>openiam-webconsole-intf</name>
-    <version>3.3.RELEASE</version>
+    <version>3.3.1.RELEASE</version>
     <description>OpenIAM Webconsole Interfaces and DTOs</description>
 
     <build>

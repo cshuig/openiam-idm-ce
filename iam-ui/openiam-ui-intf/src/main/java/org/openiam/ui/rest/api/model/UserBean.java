@@ -155,12 +155,28 @@ public class UserBean extends AbstractBean {
                 if(sb.length()>0)
                     sb.append(" ");
 
-                if("firstName".equals(field)){
-                    sb.append( (StringUtils.isNotBlank(user.getFirstName()))? user.getFirstName():"");
-                } else if("lastName".equals(field)){
-                    sb.append( (StringUtils.isNotBlank(user.getLastName()))?user.getLastName():"");
-                } else if("maidenName".equals(field)){
-                    sb.append( (StringUtils.isNotBlank(user.getMaidenName()))?user.getMaidenName():"");
+                switch (field) {
+                    case "firstName":
+                        sb.append( (StringUtils.isNotBlank(user.getFirstName()))? user.getFirstName():"");
+                        break;
+                    case "lastName":
+                        sb.append( (StringUtils.isNotBlank(user.getLastName()))?user.getLastName():"");
+                        break;
+                    case "maidenName":
+                        sb.append( (StringUtils.isNotBlank(user.getMaidenName()))?user.getMaidenName():"");
+                        break;
+                    case "nickname":
+                        sb.append( (StringUtils.isNotBlank(user.getNickname()))? user.getNickname():"");
+                        break;
+                    case "middleInit":
+                        sb.append( (StringUtils.isNotBlank(user.getMiddleInit()))? user.getMiddleInit():"");
+                        break;
+                    case "prefix":
+                        sb.append( (StringUtils.isNotBlank(user.getPrefix()))? user.getPrefix():"");
+                        break;
+                    case "suffix":
+                        sb.append( (StringUtils.isNotBlank(user.getSuffix()))? user.getSuffix():"");
+                        break;
                 }
             }
         } else{

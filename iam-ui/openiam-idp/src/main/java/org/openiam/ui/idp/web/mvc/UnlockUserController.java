@@ -53,7 +53,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 @Controller
-public class UnlockUserController extends AbstractPasswordController {
+public class UnlockUserController extends AbstractUserStatusController {
 
     private static final String REQUEST_PASSWORD_RESET_NOTIFICATION = "REQUEST_PASSWORD_RESET";
     private static final String REQUEST_LOGIN_REMINDER_NOTIFICATION = "REQUEST_LOGIN_REMINDER";
@@ -97,7 +97,7 @@ public class UnlockUserController extends AbstractPasswordController {
                                      final HttpServletResponse response,
                                      final @RequestParam(required = true, value = "token") String token) {
         request.setAttribute("token", token);
-        return "core/user/unlockUserResetPasswordForm";
+        return passwordResetFormView;
     }
 
     @RequestMapping(value = "/unlockUserResetPasswordForm", method = RequestMethod.POST)
@@ -112,31 +112,7 @@ public class UnlockUserController extends AbstractPasswordController {
         SetPasswordToken token = null;
         try {
             Policy policy = this.getAuthentificationPolicy();
-            final ValidatePasswordResetTokenResponse validateResponse = passwordService.validatePasswordResetToken(formRequest.getToken());
-            if (validateResponse == null || validateResponse.getStatus() != ResponseStatus.SUCCESS || validateResponse.getPrincipal() == null) {
-                throw new ErrorMessageException(Errors.UNAUTHORIZED);
-            }
-
-            final Login login = validateResponse.getPrincipal();
-
-            if (formRequest.hasEmptyField()) {
-                throw new ErrorMessageException(Errors.CHANGE_PASSWORD_FAILED);
-            }
-
-            if (!StringUtils.equals(formRequest.getNewPassword(), formRequest.getNewPasswordConfirm())) {
-                throw new ErrorMessageException(Errors.PASSWORDS_NOT_EQUAL);
-            }
-
-            token = validatePassword(login.getLogin(), this.getAuthentificationManagedSystem(policy), formRequest.getNewPassword(),
-                    true);
-            if (token.hasErrors()) {
-                throw new ErrorTokenException(token.getErrorList());
-            }
-
-            token = attemptResetPassword(request, formRequest.getNewPassword(), login.getUserId(), false, true);
-            if (token.hasErrors()) {
-                throw new ErrorTokenException(token.getErrorList());
-            }
+            final Login login =attemptToResetPassword(request, formRequest,policy);
 
             final Response unlockResponse = loginServiceClient.unLockLogin(login.getLogin(), this.getAuthentificationManagedSystem(policy));
             if (unlockResponse == null || unlockResponse.getStatus() != ResponseStatus.SUCCESS) {

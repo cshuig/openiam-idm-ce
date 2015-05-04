@@ -57,6 +57,7 @@ public class LDAPGroupPopulationScript extends org.openiam.idm.srvc.recon.servic
 
         //set status to active: IMPORTANT!!!!
         pGroup.setStatus(UserStatusEnum.ACTIVE.value);
+        pGroup.setMdTypeId('GENERAL_GROUP');
         return retval;
     }
 

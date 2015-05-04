@@ -1,40 +1,48 @@
 import org.openiam.base.AttributeOperationEnum
-import org.openiam.idm.srvc.audit.service.AuditLogService
-import org.openiam.idm.srvc.mngsys.dto.ManagedSysDto
-import org.openiam.idm.srvc.mngsys.service.ManagedSystemServiceImpl
-import org.openiam.idm.srvc.mngsys.ws.ManagedSystemWebService
-import org.openiam.idm.srvc.res.dto.Resource
-import org.openiam.idm.srvc.res.service.ResourceDataService
-import org.openiam.idm.srvc.role.service.RoleDataService
-import org.openiam.idm.srvc.role.ws.RoleDataWebService
+import org.openiam.idm.srvc.continfo.dto.Address
+import org.openiam.idm.srvc.continfo.dto.EmailAddress
+import org.openiam.idm.srvc.user.ws.UserDataWebService
 import org.openiam.provision.dto.ProvisionUser
-import org.openiam.idm.srvc.role.dto.Role;
-import org.openiam.idm.srvc.user.dto.UserStatusEnum;
+import org.openiam.idm.srvc.user.dto.UserStatusEnum
 
 public class LDAPPopulationScript extends org.openiam.idm.srvc.recon.service.AbstractPopulationScript<ProvisionUser> {
     public int execute(Map<String, String> line, ProvisionUser pUser){
-        int retval = 1;
+
+        int retval = 1
+
+        def email = null
+        def address = null
+        if (pUser.id) {
+            email = pUser.emailAddresses?.find{a-> a.metadataTypeId = 'PRIMARY_EMAIL' }
+            address = pUser.addresses?.find{a-> a.metadataTypeId = 'PRIMARY_LOCATION' }
+            if (!email || !address) {
+                UserDataWebService userWS = context.getBean("userWS")
+                if (!email) {
+                    email = userWS.getEmailAddressList(pUser.id)?.find{a-> a.metadataTypeId = 'PRIMARY_EMAIL' }
+                }
+                if (!address) {
+                    address = userWS.getAddressList(pUser.id)?.find{a-> a.metadataTypeId = 'PRIMARY_LOCATION' }
+                }
+            }
+        }
+        if (!email) {
+            email = new EmailAddress(metadataTypeId: 'PRIMARY_EMAIL')
+        }
+        if (!address) {
+            address = new Address(metadataTypeId: 'PRIMARY_LOCATION')
+        }
+
         for(String key: line.keySet()) {
             switch(key) {
                 case "uid":
                     //ignore for now - if this is changed no match can be established
                     break
                 case "cn":
-                    String[] parts = line.get("cn").split(" ")
-                    if(parts.length == 2){
-                        if(pUser.firstName != parts[0]){
-                            pUser.firstName = parts[0]
-                            retval = 0
-                        }
-                        if(pUser.lastName != parts[1]){
-                            pUser.lastName = parts[1]
-                            retval = 0
-                        }
-                    }
+                    //
                     break
                 case "mail":
-                    if(pUser.email != line.get("mail")){
-                        pUser.setEmail(line.get("mail"))
+                    if(email.emailAddress != line.get("mail")){
+                        email.emailAddress = line.get("mail")
                         retval = 0
                     }
                     break
@@ -45,111 +53,92 @@ public class LDAPPopulationScript extends org.openiam.idm.srvc.recon.service.Abs
                     // fixed value for this LDAP managed sys
                     break
                 case "postalCode":
-                    if(pUser.postalCd != line.get("postalCode")){
-                        pUser.postalCd = line.get("postalCode")
+                    if(address.postalCd != line.get("postalCode")){
+                        address.postalCd = line.get("postalCode")
                         retval = 0
                     }
                     break
                 case "sn":
                     if(pUser.lastName != line.get("sn")){
-                        pUser.setLastName(line.get("sn"))
+                        pUser.lastName = line.get("sn")
                         retval = 0
                     }
                     break
                 case "st":
-                    if(pUser.state != line.get("st")){
-                        pUser.state = line.get("st")
+                    if(address.state != line.get("st")){
+                        address.state = line.get("st")
+                        retval = 0
+                    }
+                    break
+                case "l":
+                    if(address.city != line.get("l")){
+                        address.city = line.get("l")
                         retval = 0
                     }
                     break
                 case "street":
-                    String[] parts = line.get("street").split(" ")
-                    if(parts.length == 3){
-                        if(pUser.bldgNum != parts[0]){
-                            pUser.bldgNum = parts[0]
-                            retval = 0
-                        }
-                        if(pUser.streetDirection != parts[1]){
-                            pUser.streetDirection = parts[1]
-                            retval = 0
-                        }
-                        if(pUser.address1 != parts[1]){
-                            pUser.address1 = parts[1]
-                            retval = 0
-                        }
-                    }
+                    //
                     break
                 case "userPassword":
                     // not supported yet
                     break
                 case "postalAddress":
-                    String[] parts = line.get("postalAddress").split(" ")
-                    if(parts.length == 3){
-                        if(pUser.bldgNum != parts[0]){
-                            pUser.bldgNum = parts[0]
-                            retval = 0
-                        }
-                        if(pUser.streetDirection != parts[1]){
-                            pUser.streetDirection = parts[1]
-                            retval = 0
-                        }
-                        if(pUser.address1 != parts[1]){
-                            pUser.address1 = parts[1]
-                            retval = 0
-                        }
+                    if(address.address1 != line.get("postalAddress")){
+                        address.address1 = line.get("postalAddress")
+                        retval = 0
                     }
                     break
                 case "displayName":
-                    String[] parts = line.get("displayName").split(",")
+                    def parts = line.get("displayName").replaceAll(/\s+/,'').split(",")
                     if(parts.length == 2){
-                        if(pUser.firstName != parts[1]){
-                            pUser.setFirstName(parts[1])
+                        if(pUser.lastName != parts[0]){
+                            pUser.lastName = parts[0]
                             retval = 0
                         }
-                        if(pUser.lastName != parts[0]){
-                            pUser.setLastName(parts[0])
+                        if(pUser.firstName != parts[1]){
+                            pUser.firstName = parts[1]
                             retval = 0
                         }
                     }
                     break
                 case "employeeType":
-                    if(pUser.employeeType != line.get("employeeType")){
-                        pUser.setEmployeeType("employeeType")
+                    if(pUser.employeeTypeId != line.get("employeeType")){
+                        pUser.employeeTypeId = line.get("employeeType")
                         retval = 0
                     }
                     break
-                case "objectclass":
+                case "objectClass":
                     // fixed in this ldap managed sys
                     break
                 case "title":
                     if(pUser.title != line.get("title")){
-                        pUser.setTitle(line.get("title"))
+                        pUser.title = line.get("title")
                         retval = 0
                     }
                     break
                 case "givenName":
                     if(pUser.firstName != line.get("givenName")){
-                        pUser.setFirstName(line.get("givenName"))
+                        pUser.firstName = line.get("givenName")
                         retval = 0
                     }
                     break
             }
         }
-       /* Set<Role> roleList = pUser.getRoles();
-        RoleDataWebService dataService = context.getBean("roleWS");
-        Role endUserRole = dataService.getRole("1","3000");
-        if (!roleList.contains(endUserRole)) {
-            endUserRole.setOperation(AttributeOperationEnum.ADD);
-            pUser.getRoles().add(endUserRole);
-        }*/
-        ManagedSystemWebService systemWebService = context.getBean("managedSysService");
-        ResourceDataService  resourceDataService = context.getBean("resourceDataService");
-        ManagedSysDto currentManagedSys = systemWebService.getManagedSys(pUser.getSrcSystemId());
-        Resource currentResource = resourceDataService.getResource(currentManagedSys.getResourceId(), null);
-        currentResource.setOperation(AttributeOperationEnum.ADD);
-        pUser.getResources().add(currentResource);
-        //set status to active: IMPORTANT!!!!
-        pUser.setStatus(UserStatusEnum.PENDING_INITIAL_LOGIN);
-        return retval;
+
+        if (!pUser.id) {
+            pUser.status = UserStatusEnum.PENDING_INITIAL_LOGIN
+        }
+        if (email.emailAddress) {
+            email.operation = email.emailId? AttributeOperationEnum.REPLACE: AttributeOperationEnum.ADD
+            pUser.emailAddresses.clear()
+            pUser.emailAddresses.add(email)
+        }
+        if (address.address1 || address.postalCd || address.state || address.city) {
+            address.operation = address.addressId? AttributeOperationEnum.REPLACE: AttributeOperationEnum.ADD
+            pUser.addresses.clear()
+            pUser.addresses.add(address)
+        }
+
+        return retval
     }
 }

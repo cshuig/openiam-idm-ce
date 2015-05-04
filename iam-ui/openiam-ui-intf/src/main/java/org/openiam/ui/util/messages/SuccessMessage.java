@@ -111,6 +111,9 @@ public enum SuccessMessage {
     ORGANIZATION_TYPE_SAVED("openiam.ui.webconsole.organization.type.save.success"),
     ORGANIZATION_TYPE_DELETED("openiam.ui.webconsole.organization.type.delete.success"),
 
+    LOCATION_SAVED("openiam.ui.webconsole.location.save.success"),
+    LOCATION_DELETED("openiam.ui.webconsole.location.delete.success"),
+
     IT_POLICY_RESET("openiam.ui.webconsole.it.policy.reset.success"),
     IT_POLICY_SAVED("openiam.ui.webconsole.it.policy.save.success"),
 

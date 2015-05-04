@@ -395,22 +395,19 @@ OPENIAM.CustomField = {
         obj.isEditable=$("#isEditableOn").is(":checked");
         obj.typeId = $("#typeId").val();
         // fill display names in different locales
-        obj.displayNameLanguageMap = null;
+        obj.displayNameLanguageMap = {};
 
         $("input[id$=_displayName]").each(function(){
 
-           var lm = {};
-               lm.value=$(this).val();
-           if(lm.value!=null && lm.value!=undefined && lm.value!=''){
-               if(obj.displayNameLanguageMap==null)
-                   obj.displayNameLanguageMap={};
-
-                lm.referenceId=OPENIAM.ENV.FieldId;
-                lm.languageId=$(this).attr("languageId");
-                obj.displayNameLanguageMap[lm.languageId] = lm;
-           }
+            var lm = {};
+            lm.value=$(this).val();
+            if(lm.value==null || lm.value==undefined) {
+                lm.value = '';
+            }
+            lm.referenceId=OPENIAM.ENV.FieldId;
+            lm.languageId=$(this).attr("languageId");
+            obj.displayNameLanguageMap[lm.languageId] = lm;
         });
-
 
         if(obj.typeId=='TEXT'){
             // fill default values language map
@@ -421,11 +418,12 @@ OPENIAM.CustomField = {
             $("input[id$=_defaultValue]").each(function(){
                 var lm = {};
                 lm.value=$(this).val();
-                if(lm.value!=null && lm.value!=undefined && lm.value!=''){
-                    lm.referenceId=OPENIAM.ENV.FieldId;
-                    lm.languageId=$(this).attr("languageId");
-                    obj.defaultValueLanguageMap[lm.languageId] = lm;
+                if(lm.value==null || lm.value==undefined) {
+                    lm.value = '';
                 }
+                lm.referenceId=OPENIAM.ENV.FieldId;
+                lm.languageId=$(this).attr("languageId");
+                obj.defaultValueLanguageMap[lm.languageId] = lm;
             });
         } else if(obj.typeId=='TEXTAREA'){
             obj.defaultValueLanguageMap = {};
@@ -434,11 +432,12 @@ OPENIAM.CustomField = {
             $("textarea[id$=_defaultValue]").each(function(){
                 var lm = {};
                 lm.value=$(this).val();
-                if(lm.value!=null && lm.value!=undefined && lm.value!=''){
-                    lm.referenceId=OPENIAM.ENV.FieldId;
-                    lm.languageId=$(this).attr("languageId");
-                    obj.defaultValueLanguageMap[lm.languageId] = lm;
+                if(lm.value==null || lm.value==undefined) {
+                    lm.value = '';
                 }
+                lm.referenceId=OPENIAM.ENV.FieldId;
+                lm.languageId=$(this).attr("languageId");
+                obj.defaultValueLanguageMap[lm.languageId] = lm;
             });
         } else  if(obj.typeId=='SELECT'
                     || obj.typeId=='MULTI_SELECT'
@@ -472,12 +471,12 @@ OPENIAM.CustomField = {
                             var lm ={};
                             var langId = $(this).attr("languageId");
                             lm.value=$(this).find("span.languageValue").text();
-
-                            if(lm.value!=null && lm.value!=undefined && lm.value!=''){
-                                lm.languageId=langId;
-                                lm.referenceId=id;
-                                languageMap[langId] = lm;
+                            if(lm.value==null || lm.value==undefined) {
+                                lm.value = '';
                             }
+                            lm.languageId=langId;
+                            lm.referenceId=id;
+                            languageMap[langId] = lm;
                         });
                     }
                     valueObj.id=id;

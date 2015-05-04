@@ -1,5 +1,3 @@
-output = null
+import org.openiam.base.BaseConstants
 
-if (user.employeeId) {
-    output = user.employeeId
-}
+output = (user.employeeId&&(user.employeeId!=BaseConstants.NULL_STRING))? user.employeeId: null

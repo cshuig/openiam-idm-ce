@@ -349,7 +349,7 @@ public abstract class AbstractUserEntitlementsController extends AbstractEntitle
         return activeType;
     }
 
-    private String getButtonsAsJson(HttpServletRequest request, String type) {
+    protected String getButtonsAsJson(HttpServletRequest request, String type) {
         String result = null;
         switch (type){
             case "Groups":

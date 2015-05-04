@@ -80,6 +80,10 @@ public class AuthenticatedUserProfileController extends AbstractProfileControlle
     @Value("${org.openiam.ui.user.profile.picture.maxSize}")
     private long maxSize;
 
+    @Value("${org.openiam.ui.selfservice.edit.user.save.btn}")
+    private String saveButtonName;
+
+
     @PostConstruct
     public void init() {
         if (contactInfoPreProcessorScript != null) {
@@ -113,6 +117,8 @@ public class AuthenticatedUserProfileController extends AbstractProfileControlle
         request.setAttribute("theUser", user);
         request.setAttribute("pageType", ProfieEditMode.EDIT_USER);
         setMenuTree(request, userMenu);
+        boolean hasPermissionToSave = authorizationManager.isUserEntitledToResource(requestorId, saveButtonName);
+        request.setAttribute("hasPermissionToSave", hasPermissionToSave);
         return processGET(request, response, user, contactInfoPreProcessorScript);
     }
 
@@ -143,7 +149,7 @@ public class AuthenticatedUserProfileController extends AbstractProfileControlle
     public String editProfilePic(final HttpServletRequest request,
                                  final HttpServletResponse response) throws Exception {
         String requesterId = getRequesterId(request);
-        final User user = userDataWebService.getUserWithDependent(requesterId, null, true);
+        final User user = userDataWebService.getUserWithDependent(requesterId, null, false);
         if (user == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -165,7 +171,7 @@ public class AuthenticatedUserProfileController extends AbstractProfileControlle
     public String saveProfilePic(final MultipartHttpServletRequest request,
                                  final HttpServletResponse response) throws IOException {
         String requesterId = getRequesterId(request);
-        final User user = userDataWebService.getUserWithDependent(requesterId, requesterId, true);
+        final User user = userDataWebService.getUserWithDependent(requesterId, requesterId, false);
         if (user != null) {
             try {
                 MultipartFile pic = request.getFileNames().hasNext() ? request.getFile(request.getFileNames().next()) : null;

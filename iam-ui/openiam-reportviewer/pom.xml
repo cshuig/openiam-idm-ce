@@ -3,14 +3,14 @@
 	<parent>
     	<artifactId>openiam-ui</artifactId>
     	<groupId>org.openiam</groupId>
-    	<version>3.3.RELEASE</version>
+    	<version>3.3.1.RELEASE</version>
   	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openiam</groupId>
 	<artifactId>openiam-reportviewer</artifactId>
 	<packaging>war</packaging>
 	<name>reportviewer</name>
-	<version>3.3.RELEASE</version>
+	<version>3.3.1.RELEASE</version>
 	<description>OpenIAM ReportViewer application.</description>
 
 	<properties>

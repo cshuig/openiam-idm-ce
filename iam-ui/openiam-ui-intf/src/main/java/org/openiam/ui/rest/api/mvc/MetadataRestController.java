@@ -126,6 +126,14 @@ public class MetadataRestController extends AbstractController {
         if(StringUtils.isNotBlank(auditLogSearchForm.getTargetType())) {
             searchBean.setTargetType(auditLogSearchForm.getTargetType());
         }
+        if(StringUtils.isNotBlank(auditLogSearchForm.getTargetLogin())) {
+            String targetLogin = StringUtils.trimToNull(auditLogSearchForm.getTargetLogin());
+            LoginResponse res = loginServiceClient.getLoginByManagedSys(targetLogin, defaultManagedSysId);
+            if (res.isSuccess()) {
+                String targetId = res.getPrincipal().getUserId();
+                searchBean.setTargetId(targetId);
+            }
+        }
         if(StringUtils.isNotBlank(auditLogSearchForm.getTargetId())) {
             searchBean.setTargetId(auditLogSearchForm.getTargetId());
         }

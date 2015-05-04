@@ -10,6 +10,12 @@ public class SAMLServiceProvider extends SAMLAuthenticationProvider {
 	private String logoutURL;
 	private String issuer;
 	private String justInTimeSAMLAuthenticatorScript;
+	private String spNameQualifier;
+	private String authnContextClassRef;
+	private String samlIssuerFormat;
+	private String nameIdFormatInSAMLRequest;
+	private boolean includeDestinationInAuthnRequest;
+	private boolean allowCreateOnNameIdPolicy;
 	
 	public String getLoginURL() {
 		return loginURL;
@@ -44,5 +50,55 @@ public class SAMLServiceProvider extends SAMLAuthenticationProvider {
 		this.justInTimeSAMLAuthenticatorScript = justInTimeSAMLAuthenticatorScript;
 	}
 
+	public String getSpNameQualifier() {
+		return spNameQualifier;
+	}
+
+	public void setSpNameQualifier(String spNameQualifier) {
+		this.spNameQualifier = spNameQualifier;
+	}
+
+	public boolean isIncludeDestinationInAuthnRequest() {
+		return includeDestinationInAuthnRequest;
+	}
+
+	public void setIncludeDestinationInAuthnRequest(
+			boolean includeDestinationInAuthnRequest) {
+		this.includeDestinationInAuthnRequest = includeDestinationInAuthnRequest;
+	}
+
+	public boolean isAllowCreateOnNameIdPolicy() {
+		return allowCreateOnNameIdPolicy;
+	}
+
+	public void setAllowCreateOnNameIdPolicy(boolean allowCreateOnNameIdPolicy) {
+		this.allowCreateOnNameIdPolicy = allowCreateOnNameIdPolicy;
+	}
+
+	public String getAuthnContextClassRef() {
+		return authnContextClassRef;
+	}
+
+	public void setAuthnContextClassRef(String authnContextClassRef) {
+		this.authnContextClassRef = authnContextClassRef;
+	}
+
+	public String getSamlIssuerFormat() {
+		return samlIssuerFormat;
+	}
+
+	public void setSamlIssuerFormat(String samlIssuerFormat) {
+		this.samlIssuerFormat = samlIssuerFormat;
+	}
+
+	public String getNameIdFormatInSAMLRequest() {
+		return nameIdFormatInSAMLRequest;
+	}
+
+	public void setNameIdFormatInSAMLRequest(String nameIdFormatInSAMLRequest) {
+		this.nameIdFormatInSAMLRequest = nameIdFormatInSAMLRequest;
+	}
+
+	
 	
 }

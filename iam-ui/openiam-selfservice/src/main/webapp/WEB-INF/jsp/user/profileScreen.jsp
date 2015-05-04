@@ -108,7 +108,7 @@ response.setDateHeader ("Expires", -1);
 			OPENIAM.ENV.PhoneRequired = <c:choose><c:when test="${! empty requestScope.pageTemplate.uiFields['USER_PHONES_CREATABLE']}">${requestScope.pageTemplate.uiFields['USER_PHONES_CREATABLE'].required}</c:when><c:otherwise>false</c:otherwise></c:choose>;
 			OPENIAM.ENV.AddressRequired = <c:choose><c:when test="${! empty requestScope.pageTemplate.uiFields['USER_ADDRESSES_CREATABLE']}">${requestScope.pageTemplate.uiFields['USER_ADDRESSES_CREATABLE'].required}</c:when><c:otherwise>false</c:otherwise></c:choose>;
             OPENIAM.ENV.DateFormatDP = "${requestScope.dateFormatDP}";
-            OPENIAM.ENV.DateFormatDP = "${requestScope.dateFormatDP}";
+			OPENIAM.ENV.CurrentOrgId=<c:choose><c:when test="${! empty requestScope.currentOrgId}">"${requestScope.currentOrgId}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 		</script>
 	</head>
 	<body>

@@ -16,6 +16,7 @@ import org.openiam.idm.srvc.pswd.ws.PasswordWebService;
 import org.openiam.provision.dto.PasswordSync;
 import org.openiam.provision.resp.PasswordResponse;
 import org.openiam.provision.service.ProvisionService;
+import org.openiam.ui.util.WSUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.web.model.SetPasswordToken;
@@ -102,6 +103,7 @@ public abstract class AbstractPasswordController extends AbstractLoginController
 
     protected SetPasswordToken attemptResetPassword(final PasswordSync passwordSync) {
         final SetPasswordToken token = new SetPasswordToken();
+        WSUtils.setWSClientTimeout(provisionService, 360000L);
         final PasswordValidationResponse response = provisionService.setPassword(passwordSync);
         if (response.isFailure()) {
             if (CollectionUtils.isNotEmpty(response.getViolations())) {
@@ -133,6 +135,7 @@ public abstract class AbstractPasswordController extends AbstractLoginController
         if (passwordSync.getRequestorId() == null) {
             passwordSync.setRequestorId("3000");
         }
+        WSUtils.setWSClientTimeout(provisionService, 360000L);
         final PasswordResponse setPasswordResponse = provisionService.resetPassword(passwordSync);
         if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
             token.addError(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));

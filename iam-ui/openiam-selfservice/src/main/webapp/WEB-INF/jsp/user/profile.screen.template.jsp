@@ -462,14 +462,16 @@ response.setDateHeader ("Expires", -1);
 				</c:if>
 			</c:if>
 			<div>
-                   <ul class="formControls">
-                       <li>
-                           <a href="javascript:void(0)">
-                               <input id="submitForm" type="submit" class="redBtn" value="<fmt:message key='openiam.ui.button.save'/>" />
-                           </a>
-                       </li>
-                   </ul>
-               </div>
+				<ul class="formControls">
+				<c:if test="${(requestScope.pageType ne 'EDIT_USER') or (requestScope.pageType eq 'EDIT_USER' and ! empty requestScope.hasPermissionToSave and requestScope.hasPermissionToSave eq true)}">
+					<li>
+						<a href="javascript:void(0)">
+							<input id="submitForm" type="submit" class="redBtn" value="<fmt:message key='openiam.ui.button.save'/>" />
+						</a>
+					</li>
+				</c:if>
+				</ul>
+            </div>
 		</div>
 	</form>
 </div>

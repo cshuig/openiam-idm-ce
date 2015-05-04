@@ -1,5 +1,6 @@
 package org.openiam.ui.rest.api.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.idm.srvc.continfo.dto.Address;
 import org.openiam.ui.web.model.AbstractBean;
@@ -22,32 +23,26 @@ public class AddressBean extends AbstractBean {
 
     private String description;
 
-    public AddressBean(){}
+    public AddressBean() {
+    }
 
-    public AddressBean(Address address){
+    public AddressBean(Address address) {
         setId(address.getAddressId());
 
-        this.isActive=address.getIsActive();
-        this.isDefault=address.getIsDefault();
+        this.isActive = address.getIsActive();
+        this.isDefault = address.getIsDefault();
 
-        this.bldgNumber=address.getBldgNumber();
-        this.address1=address.getAddress1();
-        this.address2=address.getAddress2();
-        this.city=address.getCity();
-        this.postalCd=address.getPostalCd();
-        this.state=address.getState();
-        this.type=address.getTypeDescription();
+        this.bldgNumber = address.getBldgNumber();
+        this.address1 = address.getAddress1();
+        this.address2 = address.getAddress2();
+        this.city = address.getCity();
+        this.postalCd = address.getPostalCd();
+        this.state = address.getState();
+        this.type = address.getTypeDescription();
         this.typeId = address.getMetadataTypeId();
-        this.userId=address.getParentId();
+        this.userId = address.getParentId();
         this.country = address.getCountry();
-
-        this.description = new StringBuilder().append(this.bldgNumber!=null?this.bldgNumber:"").append(",")
-                                              .append(this.address1!=null?this.address1:"").append(",")
-                                              .append(this.address2!=null?this.address2:"").append(",")
-                                              .append(this.city!=null?this.city:"").append(",")
-                                              .append(this.state!=null?this.state:"").append(",")
-                                              .append(this.country!=null?this.country:"").append(",")
-                                              .append(this.postalCd!=null?this.postalCd:"").toString();
+        this.description = address.getDescription();
     }
 
     public AttributeOperationEnum getOperation() {
@@ -139,6 +134,15 @@ public class AddressBean extends AbstractBean {
     }
 
     public String getDescription() {
+        StringBuilder builder = new StringBuilder();
+        appendAddressLine(builder, bldgNumber);
+        appendAddressLine(builder, address1);
+        appendAddressLine(builder, address2);
+        appendAddressLine(builder, city);
+        appendAddressLine(builder, state);
+        appendAddressLine(builder, country);
+        appendAddressLine(builder, postalCd);
+        description = builder.toString();
         return description;
     }
 
@@ -154,13 +158,20 @@ public class AddressBean extends AbstractBean {
         this.typeId = typeId;
     }
 
-	public String getCountry() {
-		return country;
-	}
+    public String getCountry() {
+        return country;
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
-    
-    
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    private void appendAddressLine(StringBuilder builder, final String line) {
+        if (StringUtils.isNotBlank(line)) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append(line.trim());
+        }
+    }
 }

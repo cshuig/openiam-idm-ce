@@ -1,6 +1,12 @@
 OPENIAM = window.OPENIAM || {};
 OPENIAM.ENV = window.OPENIAM.ENV || {};
 OPENIAM.NewAccessReview = {
+    hasAddResourceBtn:false,
+    hasAddRoleBtn:false,
+    hasAddGroupBtn:false,
+    hasDeleteResourceBtn:false,
+    hasDeleteRoleBtn:false,
+    hasDeleteGroupBtn:false,
     init : function() {
         $("#identityInformation .identityInfoTitle .openiam-close-icon").click(function(){
             $("#identityInformation").hide();
@@ -9,6 +15,8 @@ OPENIAM.NewAccessReview = {
         if(OPENIAM.ENV.RECERTIFICATION_TASK_ID){
             OPENIAM.NewAccessReview.Recetrification.init();
         } else {
+            OPENIAM.NewAccessReview.Tab.draw();
+            OPENIAM.NewAccessReview.Buttons.init();
             switch(OPENIAM.ENV.EntitlementType) {
                 case "groups":
                     OPENIAM.NewAccessReview.Group.init();
@@ -21,6 +29,94 @@ OPENIAM.NewAccessReview = {
                     break;
                 default:
                     break;
+            }
+        }
+    },
+    Tab: {
+        draw : function() {
+            if (OPENIAM.ENV.AccessReviewTabs != null && OPENIAM.ENV.AccessReviewTabs != 'undefined') {
+                OPENIAM.NewAccessReview.Tab = Object.create(OPENIAM.MenuTree);
+                OPENIAM.NewAccessReview.Tab.initialize({
+                    tree : OPENIAM.ENV.AccessReviewTabs,
+                    toHTML : function() {
+                        var ul = document.createElement("ul");
+                        if(this.getRoot() != null) {
+                            var node = this.getRoot().getChild();
+                            while(node != null) {
+                                var html = node.toHTML();
+                                if(html) {
+                                    ul.appendChild(html);
+                                }
+                                node = node.getNext();
+                            }
+                        }
+                        return ul;
+                    },
+                    onNodeClick : function() {
+                    },
+                    toNodeHtml : function() {
+                        var url = this.getURL();
+
+                        var isActive =  (url.toLowerCase().indexOf(OPENIAM.ENV.EntitlementType) >= 0);
+                        var curType ='resources';
+                        if(url.toLowerCase().indexOf('roles') >= 0){
+                            curType ='roles';
+                        }
+                        //if (url != null) {
+                        //    if (OPENIAM.ENV.MenuTreeAppendURL != null) {
+                        //        url = url + ((url.indexOf("?") == -1) ? "?" : "&") + OPENIAM.ENV.MenuTreeAppendURL;
+                        //    }
+                        //} else {
+                            url = "accessReview.html?id="+OPENIAM.ENV.UserId+"&type="+curType;
+                        //}
+                        var li = document.createElement("li");
+                        var a = document.createElement("a"); a.href = url;
+                        $(a).append(this.getText()); if (isActive) { $(a).addClass("active"); }
+                        $(li).append(a);
+                        return li;
+                    }
+                });
+                $('#usermenu').append(OPENIAM.NewAccessReview.Tab.toHTML());
+            }
+        }
+    },
+    Buttons: {
+        init: function(){
+            if (OPENIAM.ENV.AccessReviewButtons != null && OPENIAM.ENV.AccessReviewButtons != 'undefined') {
+                OPENIAM.NewAccessReview.Buttons = Object.create(OPENIAM.MenuTree);
+                OPENIAM.NewAccessReview.Buttons.initialize({
+                    tree : OPENIAM.ENV.AccessReviewButtons,
+                    toHTML : function() {
+                        if(this.getRoot() != null) {
+                            var node = this.getRoot().getChild();
+                            while(node != null) {
+                                node.toHTML();
+                                node = node.getNext();
+                            }
+                        }
+                        return "";
+                    },
+                    onNodeClick : function() {
+                    },
+                    toNodeHtml : function() {
+                        var btnId = this.getId();
+                        if(("AR_ADD_RES_BTN")==btnId){
+                            OPENIAM.NewAccessReview.hasAddResourceBtn=true;
+                        } else if(("AR_ADD_ROLE_BTN")==btnId){
+                            OPENIAM.NewAccessReview.hasAddRoleBtn=true;
+                        } else if(("AR_ADD_GRP_BTN")==btnId){
+                            OPENIAM.NewAccessReview.hasAddGroupBtn=true;
+                        } else if(("AR_RES_DEL_BTN")==btnId){
+                            OPENIAM.NewAccessReview.hasDeleteResourceBtn=true;
+                        }else if(("AR_ROLE_DEL_BTN")==btnId){
+                            OPENIAM.NewAccessReview.hasDeleteRoleBtn=true;
+                        }else if(("AR_GRP_DEL_BTN")==btnId){
+                            OPENIAM.NewAccessReview.hasDeleteGroupBtn=true;
+                        }
+                        return "";
+                    }
+                });
+                OPENIAM.NewAccessReview.Buttons.toHTML();
             }
         }
     },
@@ -85,7 +181,7 @@ OPENIAM.NewAccessReview = {
         },
         _drawTree : function(args){
             var treeArgs = {elementSelector: "#entitlementsContainer",
-                            createEnabled : true,
+                            createEnabled : OPENIAM.NewAccessReview.hasAddResourceBtn || OPENIAM.NewAccessReview.hasAddRoleBtn || OPENIAM.NewAccessReview.hasAddGroupBtn,
                             createBtnId : "addObjectBtn",
                             createText : localeManager["openiam.ui.common.add"],
                             filterEnabled: true,
@@ -194,7 +290,7 @@ OPENIAM.NewAccessReview = {
             OPENIAM.Modal.Warn({
                 title : localeManager["openiam.ui.selfservice.user.access.review.select.object.type.to.add"],
                 buttons : true,
-                OK : {
+                OK : OPENIAM.NewAccessReview.hasAddRoleBtn  ? {
                     text : localeManager["openiam.ui.common.role"],
                     onClick : function() {
                         OPENIAM.Modal.Close();
@@ -209,8 +305,8 @@ OPENIAM.NewAccessReview = {
                             }
                         });
                     }
-                },
-                No : {
+                }:null,
+                No : OPENIAM.NewAccessReview.hasAddResourceBtn  ? {
                     text : localeManager["openiam.ui.selfservice.user.access.review.resource"],
                     className:"redBtn",
                     onClick : function() {
@@ -223,8 +319,8 @@ OPENIAM.NewAccessReview = {
                             }
                         });
                     }
-                },
-                Cancel : {
+                }:null,
+                Cancel : OPENIAM.NewAccessReview.hasAddGroupBtn  ? {
                     text : localeManager["openiam.ui.common.group"],
                     className:"redBtn",
                     onClick : function() {
@@ -237,7 +333,7 @@ OPENIAM.NewAccessReview = {
                             }
                         });
                     }
-                }
+                } : null
             });
         },
         addOrRemove : function(args){
@@ -275,10 +371,10 @@ OPENIAM.NewAccessReview = {
                                                                     tableTitle: "Roles View",
                                                                     emptyMessage:localeManager["openiam.ui.selfservice.user.access.review.norole"],
                                                                     actionsColumnName :localeManager["openiam.ui.selfservice.user.access.review.action"],
-                                                                    deleteEnabledField:true,
+                                                                    deleteEnabledField: OPENIAM.NewAccessReview.hasDeleteResourceBtn || OPENIAM.NewAccessReview.hasDeleteRoleBtn || OPENIAM.NewAccessReview.hasDeleteGroupBtn,
                                                                     beans: data
                                                                 }
-                                                         }
+                                                        }
             });
         },
         add : function(id){
@@ -309,7 +405,7 @@ OPENIAM.NewAccessReview = {
                                                                     tableTitle: localeManager["openiam.ui.selfservice.user.access.review.group.view"],
                                                                     emptyMessage:localeManager["openiam.ui.selfservice.user.access.review.nogroup"],
                                                                     actionsColumnName :localeManager["openiam.ui.selfservice.user.access.review.action"],
-                                                                    deleteEnabledField:true,
+                                                                    deleteEnabledField:OPENIAM.NewAccessReview.hasDeleteResourceBtn || OPENIAM.NewAccessReview.hasDeleteRoleBtn || OPENIAM.NewAccessReview.hasDeleteGroupBtn,
                                                                     beans: data,
                                                                     searchFilter: searchBean
                                                                 }
@@ -337,14 +433,14 @@ OPENIAM.NewAccessReview = {
         init: function(searchBean){
             var $this = this;
             OPENIAM.NewAccessReview.Common.requestData({target: $this,
-                                                        url : "accessReview/getResourceView.html",
+                                                        url : "accessReview/getResourcesView.html",
                                                         searchFilter: searchBean,
                                                         getSettings: function(data){
                                                             return {target: $this,
                                                                 tableTitle: localeManager["openiam.ui.selfservice.user.access.review.resource.view"],
                                                                 emptyMessage:localeManager["openiam.ui.selfservice.user.access.review.noresource"],
                                                                 actionsColumnName :localeManager["openiam.ui.selfservice.user.access.review.action"],
-                                                                deleteEnabledField:true,
+                                                                deleteEnabledField:OPENIAM.NewAccessReview.hasDeleteResourceBtn || OPENIAM.NewAccessReview.hasDeleteRoleBtn || OPENIAM.NewAccessReview.hasDeleteGroupBtn,
                                                                 beans: data,
                                                                 searchFilter: searchBean
                                                             }
@@ -382,7 +478,7 @@ OPENIAM.NewAccessReview = {
             });
 
             OPENIAM.NewAccessReview.Common.requestData({target: $this,
-                                                        url : "accessReview/getResourceView.html",
+                                                        url : "accessReview/getAttestationView.html",
                                                         searchFilter: searchBean,
                                                         getSettings: function(data){
                                                             return {target: $this,

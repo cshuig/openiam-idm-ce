@@ -66,7 +66,7 @@
                 case "datetimepicker":
                 case "text":
                     ctrl = document.createElement("input");
-                    ctrl.type = field.type;
+                    ctrl.type = "text";
                     ctrl.id = field.fieldName;
                     ctrl.name = field.fieldName;
                     ctrl.value = "";
@@ -211,6 +211,13 @@
 
                 $(tr).append(tdLabel, tdControl);
 
+                // Late initialization
+                if (field.type == "datetimepicker") {
+                    var dateParameters = (typeof (field.dateParameters) === "object")
+                        ? field.dateParameters
+                        : {dateFormat: OPENIAM.ENV.DateFormatDP, showOn: "button", changeMonth: true, changeYear: true};
+                    $(ctrl).addClass("date").datepicker(dateParameters).attr('readonly', 'readonly');
+                }
                 privateMethods.bindElement.call($this, ctrl, field);
             }
             // create buttons

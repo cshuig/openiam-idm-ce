@@ -207,6 +207,16 @@ public class AuditLogController extends AbstractWebconsoleController {
             }
 
         }
+        if(StringUtils.isNotBlank(StringUtils.trimToNull(auditLogSearchForm.getTargetLogin()))) {
+            LoginResponse res = loginServiceClient.getLoginByManagedSys(
+                    auditLogSearchForm.getTargetLogin(), defaultManagedSysId);
+            if (res.isSuccess()) {
+                String targetId = res.getPrincipal().getUserId();
+                searchBean.setTargetId(targetId);
+            }
+
+        }
+
         request.setAttribute("requestorLogin", auditLogSearchForm.getRequestorLogin());
 
         if(StringUtils.isNotBlank(auditLogSearchForm.getManagedSystem())) {

@@ -153,3 +153,8 @@ body {
 .placeholderOn {
 	color: grey;
 }
+
+#lang-header {
+	margin-right: 28px;
+    padding-top: 20px;
+}

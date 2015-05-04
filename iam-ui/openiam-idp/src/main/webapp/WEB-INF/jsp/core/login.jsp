@@ -21,13 +21,18 @@
     </style>
     <link href="/openiam-ui-static/css/common/style.css" rel="stylesheet" type="text/css" media="screen"/>
     <link href="/openiam-ui-static/css/webconsole/login.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="/openiam-ui-static/js/common/jquery/css/smoothness/jquery-ui-1.9.1.custom.css" rel="stylesheet" type="text/css" />
     <openiam:overrideCSS/>
+    
     <script type="text/javascript" src="/openiam-ui-static/_dynamic/openiamResourceBundle.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/common/jquery/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="/openiam-ui-static/js/common/jquery/jquery-ui-1.9.1.custom.min.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/common/jquery.corner.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/common/jquery.boxshadow.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/common/openiam.common.js"></script>
+    
     <script type="text/javascript" src="/openiam-ui-static/js/common/login.js"></script>
+    <script type="text/javascript" src="/openiam-ui-static/js/idp/login.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/plugins/placeholder/jquery.placeholder.js"></script>
     <script type="text/javascript">
         OPENIAM = window.OPENIAM || {};
@@ -42,24 +47,19 @@
         <div id="llogo">
             <a href="javascript:void(0);" class="logo llogo">Openiam</a>
         </div>
+        
+        <c:import url="/WEB-INF/jsp/core/supportedLanguages.jsp" />
 
         <div id="credentials">
             <fmt:message key="openiam.idp.enter.user.credentials"/>
         </div>
 
         <form id="login-form" action="login.html" method="post">
-            <c:if test="${! empty requestScope.error}">
-                <p class="error">
-                    <spring:message code="${requestScope.error.error.messageName}"
-                                    arguments="${requestScope.error.params}"/>
-                </p>
-                <c:if test="${requestScope.error.error eq 'ACCOUNT_LOCKED'}">
-                    <div class="infoLink">
-                        <fmt:message key="openiam.ui.common.click"/> <a href="${requestScope.unlockURL}"><fmt:message
-                            key="openiam.ui.common.here"/></a> <fmt:message key="openiam.idp.to.unlock.account"/>
-                    </div>
-                </c:if>
-            </c:if>
+                <div id="error" style="display:none"></div>
+                <div class="infoLink" id="unlockURL" style="display:none">
+                    <fmt:message key="openiam.ui.common.click"/> <a href="#"> <fmt:message key="openiam.ui.common.here"/></a> 
+                    <fmt:message key="openiam.idp.to.unlock.account"/>
+                </div>
             <input type="text" autocomplete="off" name="login" id="principal" class="loginField"
                    placeholder="${requestScope.loginPlaceholder}" initialized="${! empty requestScope.login}"
                    <c:if test="${! empty requestScope.login}">value="${requestScope.login}"</c:if> />

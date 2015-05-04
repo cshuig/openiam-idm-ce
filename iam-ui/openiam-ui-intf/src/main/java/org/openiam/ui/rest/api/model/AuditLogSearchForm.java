@@ -6,6 +6,7 @@ public class AuditLogSearchForm {
     private String requestorId;
     private String requestorLogin;
     private String targetId;
+    private String targetLogin;
     private Long fromDate;
     private Long toDate;
     private int from;
@@ -175,5 +176,13 @@ public class AuditLogSearchForm {
 
     public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getTargetLogin() {
+        return targetLogin;
+    }
+
+    public void setTargetLogin(String targetLogin) {
+        this.targetLogin = targetLogin;
     }
 }

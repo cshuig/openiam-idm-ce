@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.searchbeans.AuthStateSearchBean;
 import org.openiam.idm.srvc.auth.domain.AuthStateEntity;
@@ -66,6 +67,7 @@ public class LoginProvider {
 			Integer numOfDaysUntilPasswordExpiration = null;
 			boolean isSuccessfulLogin = (isPasswordExpirationWarning)|| (ResponseStatus.SUCCESS == authenticationResponse.getStatus());
 			if (isSuccessfulLogin) {
+				token.setUserId(subject.getUserId());
 				
 				/* redirect to change password screen in case it's time to reset password, but the login is still valid */
 				numOfDaysUntilPasswordExpiration = authenticationResponse.getSubject().getDaysToPwdExp();
@@ -95,35 +97,38 @@ public class LoginProvider {
 		}
 		return token;
 	}
-	
-	public void doLogout(final HttpServletRequest request, final HttpServletResponse response, final boolean doSAMLLogout) throws IOException {
-		final String userId = cookieProvider.getUserIdFromCookie(request);
-		
-		final AuthStateSearchBean searchBean = new AuthStateSearchBean();
-		final AuthStateId id = new AuthStateId();
-		id.setUserId(userId);
-		id.setTokenType("SAML_SP");
-		searchBean.setKey(id);
-		searchBean.setOnlyActive(true);
-		final List<AuthStateEntity> authStateList = authServiceClient.findBeans(searchBean, 0, Integer.MAX_VALUE);
-		if(doSAMLLogout && authStateList != null && CollectionUtils.size(authStateList) == 1) {
-			final AuthStateEntity serviceProviderState = authStateList.get(0);
-			response.sendRedirect(new StringBuilder("/idp/sp/logout/").append(serviceProviderState.getToken()).toString());
-		} else {
-			try {
-				authServiceClient.globalLogout(userId);
-			} catch(Throwable e) {
-				//ignore for now
-			}
-			if(unsetCookieOnLogout) {
-				cookieProvider.invalidate(request, response);
-			}
-			
-			final HttpSession session = request.getSession(false);
-			if(session != null) {
-				session.invalidate();
-			}
-			SecurityContextHolder.clearContext();
-		}
-	}
+
+    public void doLogout(final HttpServletRequest request, final HttpServletResponse response, final boolean doSAMLLogout) throws IOException {
+        final String userId = cookieProvider.getUserIdFromCookie(request);
+        if (StringUtils.isNotEmpty(userId)) {
+            final AuthStateSearchBean searchBean = new AuthStateSearchBean();
+            final AuthStateId id = new AuthStateId();
+            id.setUserId(userId);
+            id.setTokenType("SAML_SP");
+            searchBean.setKey(id);
+            searchBean.setOnlyActive(true);
+            final List<AuthStateEntity> authStateList = authServiceClient.findBeans(searchBean, 0, Integer.MAX_VALUE);
+            if (doSAMLLogout && authStateList != null && CollectionUtils.size(authStateList) == 1) {
+                final AuthStateEntity serviceProviderState = authStateList.get(0);
+                response.sendRedirect(new StringBuilder("/idp/sp/logout/").append(serviceProviderState.getToken()).toString());
+                return;
+            } else {
+                try {
+                    authServiceClient.globalLogout(userId);
+                } catch (Throwable e) {
+                    //ignore for now
+                }
+
+            }
+        }
+        if (unsetCookieOnLogout) {
+            cookieProvider.invalidate(request, response);
+        }
+
+        final HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
+    }
 }

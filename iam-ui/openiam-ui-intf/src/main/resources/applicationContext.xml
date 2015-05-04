@@ -49,6 +49,12 @@
 			</list> 
 		</property> 
 	</bean>
+
+    <bean id="messageSource"
+          class="org.openiam.ui.util.ExtendedResourceBundleMessageSource">
+        <property name="basenames" value="file:${confpath}/conf/messages,classpath:messages" />
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
 	
 	<bean id="jacksonMapper" class="org.openiam.ui.util.CustomJacksonMapper" />
 

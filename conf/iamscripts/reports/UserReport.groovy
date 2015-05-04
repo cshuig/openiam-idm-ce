@@ -235,7 +235,16 @@ public class UserReport implements ReportDataSetBuilder {
 
     private String getDefaultPhone(String userId) {
         def phones = userDataService.getPhoneList(new PhoneSearchBean(parentId: userId), 100, 0) as List<PhoneEntity>
-        return phones ? phones.sort(true, { a,b -> a.isDefault <=> b.isDefault }).get(0).phoneNbr : ''
+        def phone = phones ? phones.sort(true, { a,b -> a.isDefault <=> b.isDefault }).get(0) : null
+        if (phone) {
+            def country = phone.countryCd?.trim() ?: ''
+            if (country && !country.startsWith('+')) {
+                country = '+' + country
+            }
+            def area = phone.areaCd ? ('(' + phone.areaCd + ')') : (country ? '-' : '')
+            return country + area + (phone.phoneNbr ?: '') + (phone.phoneExt ? ' +' + phone.phoneExt : '')
+        }
+        return ''
     }
 
     private String getDefaultEmail(String userId) {

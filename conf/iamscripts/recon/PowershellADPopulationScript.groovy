@@ -1,18 +1,11 @@
 import org.openiam.base.AttributeOperationEnum
-import org.openiam.dozer.converter.LoginDozerConverter
-import org.openiam.dozer.converter.UserDozerConverter
-import org.openiam.idm.searchbeans.LoginSearchBean
-import org.openiam.idm.searchbeans.UserSearchBean
 import org.openiam.idm.srvc.auth.dto.Login
 import org.openiam.idm.srvc.auth.login.LoginDataService
 import org.openiam.idm.srvc.continfo.dto.Address
 import org.openiam.idm.srvc.mngsys.domain.ManagedSysEntity
 import org.openiam.idm.srvc.mngsys.service.ManagedSystemService
 import org.openiam.idm.srvc.res.service.ResourceService
-import org.openiam.idm.srvc.user.domain.UserEntity
-import org.openiam.idm.srvc.user.dto.User
 import org.openiam.idm.srvc.user.service.UserDataService
-import org.openiam.idm.srvc.user.ws.UserDataWebService
 import org.openiam.provision.dto.ProvisionUser
 import org.openiam.idm.srvc.user.dto.UserStatusEnum
 import org.openiam.idm.srvc.user.dto.UserAttribute
@@ -37,12 +30,12 @@ public class PowershellADPopulationScript extends org.openiam.idm.srvc.recon.ser
                     }
                     addAttribute(pUser, "employeeID", line.get("EmployeeID"))
                     break
-                case "employeeType":
-                    if(pUser.employeeType != line.get("employeeType")){
-                        pUser.employeeType = line.get("employeeType")
+                case "Title":
+                    if(pUser.title != line.get("Title")){
+                        pUser.title = line.get("Title")
                         retval = 0
                     }
-                    addAttribute(pUser, "employeeType", line.get("employeeType"))
+                    addAttribute(pUser, "title", line.get("Title"))
                     break
                 case "GivenName":
                     if(pUser.firstName != line.get("GivenName")){
@@ -102,8 +95,8 @@ public class PowershellADPopulationScript extends org.openiam.idm.srvc.recon.ser
                 case "HomeDirectory":
                     addAttribute(pUser, "homeDirectory", line.get("HomeDirectory"))
                     break
-                case "homeDrive":
-                    addAttribute(pUser, "homeDrive", line.get("homeDrive"))
+                case "HomeDrive":
+                    addAttribute(pUser, "homeDrive", line.get("HomeDrive"))
                     break
                 case "UserPrincipalName":
                     addAttribute(pUser, "userPrincipalName", line.get("UserPrincipalName"))
@@ -128,7 +121,7 @@ public class PowershellADPopulationScript extends org.openiam.idm.srvc.recon.ser
                             def principals = loginManager.getLoginDetailsByManagedSys(principalName, managedSysId)
                             if (principals) {
                                 def login = principals.get(0)
-                                if (!pUser.superiors?.find {it.userId == login.userId}) {
+                                if (!pUser.superiors?.find {it.id == login.userId}) {
                                     pUser.superiors?.each { // remove previous managers if any
                                         it.operation = AttributeOperationEnum.DELETE
                                     }
@@ -151,12 +144,12 @@ public class PowershellADPopulationScript extends org.openiam.idm.srvc.recon.ser
         def resourceService = context.getBean(ResourceService.class)
         def currentManagedSys = managedSystemService.getManagedSysById(managedSysId)
         def currentResource = resourceService.getResourceDTO(currentManagedSys.resourceId)
-        if (!pUser?.resources?.find { it.resourceId == currentResource.resourceId }) {
+        if (!pUser?.resources?.find {it-> it.id == currentResource.id }) {
             currentResource.operation = AttributeOperationEnum.ADD
             pUser.resources.add(currentResource)
         }
         //set status to active: IMPORTANT!!!!
-        if (!pUser.status) {
+        if (!pUser.id) {
             pUser.status = UserStatusEnum.PENDING_INITIAL_LOGIN
         }
         if (!pUser.mdTypeId) {

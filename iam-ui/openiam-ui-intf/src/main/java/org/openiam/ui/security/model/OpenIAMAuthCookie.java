@@ -3,6 +3,7 @@ package org.openiam.ui.security.model;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.openiam.ui.web.model.AuthTokenInfo;
 
 public class OpenIAMAuthCookie {
 

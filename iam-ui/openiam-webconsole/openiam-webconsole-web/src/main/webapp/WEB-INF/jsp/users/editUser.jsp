@@ -57,6 +57,7 @@ response.setDateHeader ("Expires", -1);
 			OPENIAM.ENV.OrganizationHierarchy = ${requestScope.orgHierarchy};
             OPENIAM.ENV.ProfilePicSrc = <c:choose><c:when test="${not empty profilePicSrc}">"${profilePicSrc}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 			OPENIAM.ENV.DateFormatDP = "${requestScope.dateFormatDP}";
+            OPENIAM.ENV.CurrentOrgId=<c:choose><c:when test="${! empty requestScope.currentOrgId}">"${requestScope.currentOrgId}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 
 		</script>
 	</head>

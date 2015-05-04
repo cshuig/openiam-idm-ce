@@ -103,6 +103,14 @@ public class ServiceProviderController {
 		return "SAMLPostbackURL" + spName;
 	}
 	
+	@RequestMapping(value={"/login"}, method=RequestMethod.GET)
+	public void loginWithSpInURLParam(final HttpServletRequest request, 
+									  final HttpServletResponse response,
+									  final @RequestParam(required=true, value="issuer") String issuer,
+									  final @RequestParam(value = "postbackURL", required = false) String postbackURL) throws MessageEncodingException, IOException {
+		login(request, response, issuer, postbackURL);
+	}
+	
 	@RequestMapping(value={"/login/{spName}"}, method=RequestMethod.GET)
 	public void login(final HttpServletRequest request,
 					  final HttpServletResponse response,
@@ -127,7 +135,6 @@ public class ServiceProviderController {
 			//	response.sendRedirect("/selfservice");
 			//} else {
 				final AuthnRequest authnRequest = token.getAuthnRequest();
-				final SAMLServiceProvider serviceProvider = token.getServiceProvider();
 				final Endpoint endpoint = token.getEndpoint();
 				final BasicSAMLMessageContext<SAMLObject, AuthnRequest, SAMLObject> messageContext = new BasicSAMLMessageContext<SAMLObject, AuthnRequest, SAMLObject>();
 				final HTTPOutTransport outTransport = new HttpServletResponseAdapter(response, URIUtils.isSecure(request));
@@ -142,11 +149,17 @@ public class ServiceProviderController {
 		}
 	}
 	
+	@Deprecated
 	@RequestMapping(value={"/login/{spName}"}, method=RequestMethod.POST)
+	public String doPostDeprecatd(final HttpServletRequest request,
+			   final HttpServletResponse response) throws IOException {
+		return doPost(request, response);
+	}
+	
+	@RequestMapping(value={"/login"}, method=RequestMethod.POST)
 	public String doPost(final HttpServletRequest request,
-					   final HttpServletResponse response,
-					   final @PathVariable(value="spName") String spName) throws IOException {
-		final SAMLResponseToken token = samlService.processSAMLResponse(request, response);
+					   final HttpServletResponse response) throws IOException {
+		final SAMLResponseToken token = samlService.processSAMLResponse(request, response, false);
 		if(token.isError()) {
 			request.setAttribute("error", new ErrorToken(token.getError()));
 			return "auth/authError";

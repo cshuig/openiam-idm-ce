@@ -31,12 +31,14 @@ OPENIAM.Reconciliation = {
         var inputelements = [];
         inputelements.push(selectInput);
         inputelements.push("&nbsp;");
+        inputelements.push("&nbsp;");
         inputelements.push(mySearch);
         inputelements.push(addNew);
 
         $("#entitlementsContainer").entitlemetnsTable({
             columnHeaders : [
                 localeManager["openiam.ui.common.reconciliation.type"],
+                localeManager["openiam.ui.common.reconciliation.status"],
                 localeManager["openiam.ui.common.reconciliation.customscript"],
                 localeManager["openiam.ui.common.reconciliation.targetSystemSearchFilter"],
                 localeManager["openiam.ui.common.actions"]
@@ -45,7 +47,7 @@ OPENIAM.Reconciliation = {
             onEdit : function(bean) {
                 window.location.href = "reconciliationEdit.html?id=" + bean.id+"&managedSysId="+OPENIAM.ENV.ManagedSysId;
             },
-            columnsMap : ["reconType", "customProcessorScript","targetSystemSearchFilter"],
+            columnsMap : ["reconType", "execStatusValue", "customProcessorScript","targetSystemSearchFilter"],
             theadInputElements : inputelements,
             ajaxURL : "rest/api/entitlements/searchReconciliations",
             entityUrl : "reconciliationEdit.html",

@@ -3,6 +3,12 @@
 		"/selfservice/language/languageSupport.html" : {
 			"ignoreXSS" : "true"
 		},
+		"/idp/debugSAMLResponse.html" : {
+			"ignoreXSS" : "true"
+		},
+		"/idp/debugSAMLRequest.html" : {
+			"ignoreXSS" : "true"
+		},
 		"/idp/sp/*" : {
 			"ignoreXSS" : "true"
 		},
@@ -45,6 +51,16 @@
 					"ignoreXSS" : "true"
 				}
 			}
-		}
+		},
+        "/webconsole/bulkOperations.html" : {
+            "rules" : {
+                "subject" : {
+                    "ignoreXSS" : "true"
+                },
+                "text" : {
+                    "ignoreXSS" : "true"
+                }
+            }
+        }
 	}
 }

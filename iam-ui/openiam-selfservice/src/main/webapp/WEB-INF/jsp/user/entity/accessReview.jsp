@@ -48,6 +48,7 @@
     <script type="text/javascript" src="/openiam-ui-static/plugins/tablesorter/js/jquery.tablesorter.filer.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/plugins/tablesorter/js/jquery.tablesorter.pager.js"></script>
 
+    <script type="text/javascript" src="/openiam-ui-static/js/common/menutree.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/common/openiam.common.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/plugins/tiptip/jquery.tipTip.js"></script>
     <script type="text/javascript" src="/openiam-ui-static/js/common/search/resource.search.js"></script>
@@ -71,6 +72,9 @@
         OPENIAM.ENV.MenuTreeAppendURL = "id=${requestScope.user.id}";
         OPENIAM.ENV.EntitlementType = "${requestScope.type}";
         OPENIAM.ENV.RECERTIFICATION_TASK_ID=<c:choose><c:when test="${! empty requestScope.taskId}">${requestScope.taskId}</c:when><c:otherwise>null</c:otherwise></c:choose>;
+
+        OPENIAM.ENV.AccessReviewTabs=<c:choose><c:when test="${! empty requestScope.accessReviewTabs}">${requestScope.accessReviewTabs}</c:when><c:otherwise>null</c:otherwise></c:choose>;
+        OPENIAM.ENV.AccessReviewButtons=<c:choose><c:when test="${! empty requestScope.accessReviewButtons}">${requestScope.accessReviewButtons}</c:when><c:otherwise>null</c:otherwise></c:choose>;
     </script>
 </head>
 <body>
@@ -105,15 +109,15 @@
 
 <c:if test="${ empty requestScope.taskId}">
     <div id="usermenu">
-        <li>
-            <a <c:if test="${requestScope.type eq 'resources'}">class="active"</c:if> href="accessReview.html?id=${requestScope.user.id}&type=resources"><fmt:message key="openiam.ui.selfservice.user.access.review.resources" /></a>
-        </li>
+        <%--<li>--%>
+            <%--<a <c:if test="${requestScope.type eq 'resources'}">class="active"</c:if> href="accessReview.html?id=${requestScope.user.id}&type=resources"><fmt:message key="openiam.ui.selfservice.user.access.review.resources" /></a>--%>
+        <%--</li>--%>
             <%--<li>--%>
             <%--<a <c:if test="${requestScope.type eq 'groups'}">class="active"</c:if> href="accessReview.html?id=${requestScope.user.id}&type=groups">Groups</a>--%>
             <%--</li>--%>
-        <li>
-            <a <c:if test="${requestScope.type eq 'roles'}">class="active"</c:if> href="accessReview.html?id=${requestScope.user.id}&type=roles"><fmt:message key="openiam.ui.selfservice.user.access.review.roles" /></a>
-        </li>
+        <%--<li>--%>
+            <%--<a <c:if test="${requestScope.type eq 'roles'}">class="active"</c:if> href="accessReview.html?id=${requestScope.user.id}&type=roles"><fmt:message key="openiam.ui.selfservice.user.access.review.roles" /></a>--%>
+        <%--</li>--%>
     </div>
 </c:if>
 

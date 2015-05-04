@@ -1,7 +1,9 @@
+import org.apache.commons.collections.CollectionUtils
 import org.openiam.base.OrderConstants
 import org.openiam.base.ws.SortParam
 import org.openiam.idm.searchbeans.AuditLogSearchBean
 import org.openiam.idm.searchbeans.ResourceSearchBean
+import org.openiam.idm.searchbeans.ResourceTypeSearchBean
 import org.openiam.idm.srvc.audit.dto.IdmAuditLog
 import org.openiam.idm.srvc.audit.service.AuditLogService
 import org.openiam.idm.srvc.grp.service.GroupDataService
@@ -14,6 +16,7 @@ import org.openiam.idm.srvc.report.dto.ReportRow.ReportColumn
 import org.openiam.idm.srvc.report.dto.ReportTable
 import org.openiam.idm.srvc.report.service.ReportDataSetBuilder
 import org.openiam.idm.srvc.res.dto.Resource
+import org.openiam.idm.srvc.res.dto.ResourceType
 import org.openiam.idm.srvc.res.service.ResourceDataService
 import org.openiam.idm.srvc.role.service.RoleDataService
 import org.openiam.idm.srvc.user.dto.User
@@ -54,7 +57,8 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         organizationService = context.getBean(OrganizationDataService.class)
 
         def String ownerId = query.getParameterValue("OWNER_ID")
-        def String adminResId = query.getParameterValue("RES_ID")
+        def String resTypeId = query.getParameterValue("RES_TYPE_ID")
+        def List<String> resIds = query.getParameterValues("RES_IDS")
         def String periodStartString = query.getParameterValue("PERIOD_START")
         def String periodEndString = query.getParameterValue("PERIOD_END")
         def Date periodStart = dateFromString(periodStartString)
@@ -71,9 +75,20 @@ public class ResourceCertReport implements ReportDataSetBuilder {
             if (ownerId) {
                 row.column.add(new ReportColumn('OWNER', getUserFullName(ownerId)))
             }
-            if (adminResId) {
-                def targetName = findAdminResourceTarget(adminResId)?.name ?: NOT_FOUND
-                row.column.add(new ReportColumn('RESOURCE', targetName))
+            if (!EmptyMultiValue(resIds)) {
+
+                def targetName = ""
+                resIds.each { resId ->
+                    def resName = findResource(resId)?.name
+                    if (resName) {
+                        targetName += (targetName ? ", " : "") + resName
+                    }
+                }
+                row.column.add(new ReportColumn('RESOURCE', targetName ?: NOT_FOUND))
+            }
+            if (resTypeId) {
+                def resType = findResourceType(resTypeId)
+                row.column.add(new ReportColumn('RES_TYPE', resType?.name ?: NOT_FOUND))
             }
             if (periodStart) {
                 def period = "from " + dateToString(periodStart)
@@ -89,7 +104,7 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         } else {
 
             reportTable.name = "details"
-            def messages = validateParameters(ownerId, adminResId, periodStart, periodEnd) as String[]
+            def messages = validateParameters(ownerId, resTypeId, resIds, periodStart, periodEnd) as String[]
             if (messages) {
                 for(def msg : messages) {
                     def ReportRow row = new ReportRow()
@@ -98,7 +113,7 @@ public class ResourceCertReport implements ReportDataSetBuilder {
                 }
             } else {
 
-                def assocBean = adminResId ? findAdminResourceTarget(adminResId) : null
+                //def assocBean = resId ? findResource(resId) : null
 
                 def AuditLogSearchBean logSearchBean = new AuditLogSearchBean()
                 logSearchBean.action = "COMPLETE_WORKFLOW"
@@ -110,13 +125,25 @@ public class ResourceCertReport implements ReportDataSetBuilder {
                     logSearchBean.userId = ownerId
                 logSearchBean.sortBy = [new SortParam(OrderConstants.DESC, "timestamp")] as List
                 def auditLogs = auditLogService.findBeans(logSearchBean, 0, 10000)
+                def isResFilter = !EmptyMultiValue(resIds)
                 for(IdmAuditLog l : auditLogs) {
                     def log = auditLogService.findById(l.id)
                     def parent = log.parentLogs.find({ it.action == "resourceCertification" })
                     if (parent) {
                         parent = auditLogService.findById(parent.id)
-                        if (!adminResId || (parent.customRecords.find({it.key == "AssociationId" && it.value == assocBean?.id}))) {
-                            addMainTableRow(parent, log, assocBean, reportTable)
+                        def isConfirmFilter = !isResFilter && !resTypeId
+                        if (!isConfirmFilter) {
+                            if (isResFilter) {
+                                isConfirmFilter = parent.customRecords.find {
+                                    it.key == "AssociationId" && resIds.contains(it.value)
+                                }
+                            } else if (resTypeId) {
+                                def assoccRecs = parent.customRecords.findAll { it.key == "AssociationId" }
+                                isConfirmFilter = assoccRecs && findResource(assoccRecs.value, resTypeId)
+                            }
+                        }
+                        if (isConfirmFilter) {
+                            addMainTableRow(parent, log, reportTable)
                         }
                     }
                 }
@@ -128,7 +155,7 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         return new ReportDataDto( tables : [ reportTable ] as List<ReportTable> )
     }
 
-    private void addMainTableRow(IdmAuditLog parent, IdmAuditLog log, KeyNameBean assocBean, ReportTable reportTable) {
+    private void addMainTableRow(IdmAuditLog parent, IdmAuditLog log, ReportTable reportTable) {
 
         final String ownerId = log.userId
         final String employeeId = parent.customRecords.find({it.key == "MemberAssociationId"})?.value
@@ -142,7 +169,7 @@ public class ResourceCertReport implements ReportDataSetBuilder {
 
                 def employeeName = getUserFullName(employeeId)
                 def ownerName = getUserFullName(ownerId)
-                def assocName = assocBean ? assocBean.name : getAssociationName(assocId, assocType)
+                def assocName = getAssociationName(assocId, assocType)
                 def date = dateToString(log.timestamp)
                 def isTaskApproved = log.customRecords.find({it.key == "IsTaskApproved"})?.value
 
@@ -157,10 +184,10 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         }
     }
 
-    static def validateParameters(String ownerId, String resId, Date periodStart, Date periodEnd) {
+    static def validateParameters(String ownerId, String resTypeId, List<String> resIds, Date periodStart, Date periodEnd) {
         def violations = [] as List
-        if (!resId && !ownerId)
-            violations.add "Parameter 'Resource' or 'Resource owner' is required"
+        if (!resTypeId && !ownerId && EmptyMultiValue(resIds))
+            violations.add "Parameter 'Resource type' or 'Resource' or 'Resource owner' is required"
         if (!periodStart)
             violations.add "Parameter 'Period start' is required"
         if (periodStart && periodEnd && periodEnd < periodStart)
@@ -191,9 +218,9 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         return NOT_FOUND
     }
 
-    def KeyNameBean findAdminResourceTarget(String adminResId) {
+    def KeyNameBean findResource(String resId) {
         // search resource
-        def resourceSearchBean = new ResourceSearchBean( adminResourceId: adminResId )
+        def resourceSearchBean = new ResourceSearchBean( key: resId )
         def resources = resourceService.findBeans(resourceSearchBean, 0, 1, DEFAULT_LANGUAGE) as List<Resource>
         if (resources) {
             def res = resources.get(0)
@@ -205,7 +232,33 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         return null
     }
 
+    def KeyNameBean findResource(Collection<String> resIds, String resTypeId) {
+        for(String resId : resIds) {
+            def resourceSearchBean = new ResourceSearchBean(key: resId, resourceTypeId: resTypeId)
+            def resources = resourceService.findBeans(resourceSearchBean, 0, 1, DEFAULT_LANGUAGE) as List<Resource>
+            if (resources) {
+                def res = resources.get(0)
+                return new KeyNameBean(id: res.id, name: res.displayName)
+            }
+        }
+        return null
+    }
+
+    def KeyNameBean findResourceType(String resTypeId) {
+        def searchBean = new ResourceTypeSearchBean( key: resTypeId )
+        def types = resourceService.findResourceTypes(searchBean, 0, 1, DEFAULT_LANGUAGE) as List<ResourceType>
+        if (types) {
+            def type = types.get(0)
+            return new KeyNameBean(id: type.id, name: type.displayName ?: type.id)
+        }
+        return null
+    }
+
     private class KeyNameBean { def String id; def String name; }
+
+    private static boolean EmptyMultiValue(List<String> values) {
+        return !values || (values.size() == 1 && !values[0])
+    }
 
     Date dateFromString(String periodStartString) {
         try {
@@ -219,5 +272,3 @@ public class ResourceCertReport implements ReportDataSetBuilder {
         return (date && dateFormat) ? dateFormat.format(date) : ""
     }
 }
-
-

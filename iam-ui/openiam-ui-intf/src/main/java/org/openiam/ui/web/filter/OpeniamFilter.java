@@ -1,5 +1,6 @@
 package org.openiam.ui.web.filter;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.protocol.UriPatternMatcher;
 import org.apache.log4j.Logger;
 import org.openiam.am.srvc.ws.URIFederationWebService;
@@ -10,11 +11,13 @@ import org.openiam.ui.security.http.OpeniamHttpServletRequest;
 import org.openiam.ui.security.model.XSSPatternRule;
 import org.openiam.ui.security.model.XSSPatternWrapper;
 import org.openiam.ui.util.CustomJacksonMapper;
+import org.openiam.ui.util.HeaderUtils;
 import org.openiam.ui.util.SpringContextProvider;
 import org.openiam.ui.web.util.LanguageProvider;
 import org.openiam.ui.web.util.OpeniamCookieLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 
 import javax.servlet.*;
@@ -25,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class OpeniamFilter implements Filter {
 
@@ -75,6 +77,9 @@ public class OpeniamFilter implements Filter {
     @Autowired
 //    @Qualifier("localeResolver")
     private OpeniamCookieLocaleResolver localeResolver;
+
+    @Autowired
+    protected MessageSource messageSource;
 
     @Autowired
     protected LanguageWebService languageWebService;
@@ -199,10 +204,7 @@ public class OpeniamFilter implements Filter {
 
     private String getMessage(String key, Locale locale) throws IOException {
         if (org.springframework.util.StringUtils.hasText(key)) {
-            ResourceBundle rb = ResourceBundle.getBundle("messages", locale);
-            if (rb != null) {
-                return new String(rb.getString(key).getBytes("ISO-8859-1"), "UTF-8");
-            }
+            return messageSource.getMessage(key, null, locale);
         }
         return "";
     }
@@ -212,6 +214,10 @@ public class OpeniamFilter implements Filter {
     public void destroy() {
         // TODO Auto-generated method stub
 
+    }
+    
+    public static boolean isRequestDesignatedForTesting(final HttpServletRequest request) {
+    	return StringUtils.equalsIgnoreCase("true", HeaderUtils.getCaseInsensitiveHeader(request, "x-openiam-test-request"));
     }
 
     public static Language getCurrentLangauge(final HttpServletRequest request) {

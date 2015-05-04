@@ -40,6 +40,7 @@ response.setDateHeader ("Expires", -1);
 					<div><fmt:message key="openiam.idp.successfully.logged.out" /></div>
 					<a id="loginAgain" href="${requestScope.loginTo}"><fmt:message key="openiam.ui.user.login.again" /></a>
 				</div>
+				
 			</div>
 			<iframe style="display:none" src="/webconsole/clearContext.html"></iframe>
 			<iframe style="display:none" src="/webconsole-am/clearContext.html"></iframe>

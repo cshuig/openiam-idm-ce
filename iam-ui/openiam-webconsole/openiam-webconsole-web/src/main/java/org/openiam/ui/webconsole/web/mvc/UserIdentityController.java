@@ -271,7 +271,6 @@ public class UserIdentityController extends BaseUserController {
         login.setLogin(loginBean.getLogin());
         login.setManagedSysId(loginBean.getManagedSysId());
         login.setStatus(loginBean.getStatus());
-        login.setProvStatus(loginBean.getProvStatus());
         login.setIsLocked((loginBean.isLocked()) ? 1 : 0);
         login.setGracePeriod(loginBean.getGracePeriod());
         login.setPwdExp(loginBean.getPwdExp());

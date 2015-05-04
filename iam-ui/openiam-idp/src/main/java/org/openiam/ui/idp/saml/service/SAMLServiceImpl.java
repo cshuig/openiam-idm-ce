@@ -59,6 +59,7 @@ import org.openiam.ui.idp.saml.util.SAMLEncoder;
 import org.openiam.ui.idp.saml.util.SAMLUtils;
 import org.openiam.ui.login.LoginActionToken;
 import org.openiam.ui.security.OpenIAMCookieProvider;
+import org.openiam.ui.util.OpenIAMConstants;
 import org.openiam.ui.util.URIUtils;
 import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
@@ -66,6 +67,7 @@ import org.openiam.ui.web.util.LoginProvider;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObjectBuilder;
 import org.opensaml.common.SignableSAMLObject;
+import org.opensaml.common.impl.SecureRandomIdentifierGenerator;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.core.impl.*;
@@ -126,6 +128,7 @@ import org.w3c.dom.Element;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 
 import java.io.ByteArrayInputStream;
@@ -134,6 +137,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -338,7 +342,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		}
 	}
 	
-	private SAMLServiceProvider getSAMLServiceProviderByName(final String issuer) {
+	private SAMLServiceProvider getSAMLServiceProviderByIssuer(final String issuer) {
 		try {
 			if(!cacheInitialized) { /* in case the ESB was down at startup, retry */
 				sweep();
@@ -398,12 +402,14 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			
 			final XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
 			final EntityDescriptor entityDescriptor = ((EntityDescriptorBuilder)builderFactory.getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
-			entityDescriptor.setID(RandomStringUtils.randomAlphanumeric(10));
+			entityDescriptor.setID(generateId());
 			entityDescriptor.setCacheDuration(providerSweepTime);
 			entityDescriptor.setEntityID(provider.getIssuer());
 			
 			final SPSSODescriptor descriptor = ((SPSSODescriptorBuilder)builderFactory.getBuilder(SPSSODescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
 			descriptor.setAuthnRequestsSigned(false);
+			descriptor.setWantAssertionsSigned(false); /* we only expect the Response to be signed */
+			descriptor.addSupportedProtocol("urn:oasis:names:tc:SAML:2.0:protocol"); /* looks like Foregrock reads the metadata as invalid w/o this */
 			
 			final KeyDescriptor keyDescriptor = ((KeyDescriptorBuilder)builderFactory.getBuilder(KeyDescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
 			if(provider.isSign()) {
@@ -426,7 +432,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			}
 			
 			final String baseURI = URIUtils.getBaseURI(request);
-			final String entryPointURL = new StringBuilder(baseURI).append("/idp/sp/login/").append(serviceProviderId).toString();
+			final String entryPointURL = new StringBuilder(baseURI).append("/idp/sp/login").toString();
 			final String applicationLoginURL = provider.getLoginURL();
 			final String applicationLogoutURL = provider.getLogoutURL();
 			
@@ -437,7 +443,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				final AssertionConsumerService ssoService = ((AssertionConsumerServiceBuilder)builderFactory.getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME)).buildObject();
 				ssoService.setBinding(binding);
 				ssoService.setLocation(entryPointURL);
-				ssoService.setResponseLocation(applicationLoginURL);
+				//ssoService.setResponseLocation(applicationLoginURL);
 				ssoService.setIndex(0);
 				ssoService.setIsDefault(true);
 				descriptor.getAssertionConsumerServices().add(ssoService);
@@ -486,7 +492,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			entityDescriptor.setEntityID(provider.getRequestIssuer());
 			entityDescriptor.setCacheDuration(providerSweepTime);
 			//entityDescriptor.setValidUntil(new DateTime().plus(providerSweepTime));
-			entityDescriptor.setID(RandomStringUtils.randomAlphanumeric(10));
+			entityDescriptor.setID(generateId());
 
 			final IDPSSODescriptor idpSSODescriptor = ((IDPSSODescriptorBuilder)builderFactory.getBuilder(IDPSSODescriptor.DEFAULT_ELEMENT_NAME)).buildObject();
 			idpSSODescriptor.setWantAuthnRequestsSigned(false);
@@ -640,7 +646,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			response.setDestination(acs);
 			response.setIssueInstant(now);
 			response.setInResponseTo(authnRequest.getID());
-			response.setID(RandomStringUtils.randomAlphabetic(20));
+			response.setID(generateId());
 			
 			
 			/* set issuer on response */
@@ -655,7 +661,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			 
 			/* create assertion on response */
 			final Assertion assertion = ((AssertionBuilder) builderFactory.getBuilder(Assertion.DEFAULT_ELEMENT_NAME)).buildObject();
-			assertion.setID(RandomStringUtils.randomAlphabetic(10));
+			assertion.setID(generateId());
 			assertion.setIssueInstant(now);
 			assertion.setIssuer(getIssuer(httpRequest, builderFactory, provider));
 			response.getAssertions().add(assertion);
@@ -794,6 +800,15 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		return signature;
 	}
 	
+	private String generateId() {
+		try {
+			return new SecureRandomIdentifierGenerator().generateIdentifier();
+		} catch(Throwable e) {
+			log.error("Can't generate ID", e);
+			return RandomStringUtils.randomAlphanumeric(16);
+		}
+	}
+	
 	private String getNameQualifier(final SAMLIdentityProvider provider) {
 		return StringUtils.trimToNull(provider.getNameQualifier());
 	}
@@ -913,7 +928,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		
 		try {
 			final MarshallerFactory marshallerFactory = Configuration.getMarshallerFactory();
-			final SAMLServiceProvider serviceProvider = getSAMLServiceProviderByName(issuerName);
+			final SAMLServiceProvider serviceProvider = getSAMLServiceProviderByIssuer(issuerName);
 			if(serviceProvider == null) {
 				throw new AuthenticationException(String.format("SAMLServiceProvider with Name '%s' not configured or doesn't exist", issuerName), Errors.SAML_SERVICE_PROVIDER_NOT_FOUND);
 			}
@@ -921,13 +936,18 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			final XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
 			final AuthnRequest authnRequest = ((AuthnRequestBuilder)builderFactory.getBuilder(AuthnRequest.DEFAULT_ELEMENT_NAME)).buildObject();
 			authnRequest.setAssertionConsumerServiceURL(URIUtils.getRequestURL(request));
-			authnRequest.setID(RandomStringUtils.randomAlphanumeric(20));
+			authnRequest.setID(generateId());
 			authnRequest.setIssueInstant(now);
 			authnRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 			authnRequest.setProviderName(serviceProvider.getName());
+			/* IDMAPPS-2807 */
+			if(serviceProvider.isIncludeDestinationInAuthnRequest()) {
+				authnRequest.setDestination(serviceProvider.getLoginURL());
+			}
 			
 			final Issuer issuer = ((IssuerBuilder)builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME)).buildObject();
 			issuer.setValue(serviceProvider.getIssuer());
+			issuer.setFormat(serviceProvider.getSamlIssuerFormat());
 			authnRequest.setIssuer(issuer);
 			
 			serviceProvider.setLoginURL(serviceProvider.getLoginURL());
@@ -938,6 +958,23 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			endpoint.setLocation(serviceProvider.getLoginURL());
 			token.setEndpoint(endpoint);
 
+			/* IDMAPPS-2807 */
+			if(StringUtils.isNotBlank(serviceProvider.getNameIdFormatInSAMLRequest())) {
+				final NameIDPolicy nameIdPolicy = ((NameIDPolicyBuilder)builderFactory.getBuilder(NameIDPolicy.DEFAULT_ELEMENT_NAME)).buildObject();
+				nameIdPolicy.setAllowCreate(serviceProvider.isAllowCreateOnNameIdPolicy());
+				nameIdPolicy.setSPNameQualifier(serviceProvider.getSpNameQualifier());
+				nameIdPolicy.setFormat(serviceProvider.getNameIdFormatInSAMLRequest());
+				authnRequest.setNameIDPolicy(nameIdPolicy);
+			}
+			
+			if(StringUtils.isNotBlank(serviceProvider.getAuthnContextClassRef())) {
+				final RequestedAuthnContext context = ((RequestedAuthnContextBuilder)builderFactory.getBuilder(RequestedAuthnContext.DEFAULT_ELEMENT_NAME)).buildObject();
+				context.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
+				final AuthnContextClassRef classRef = ((AuthnContextClassRefBuilder)builderFactory.getBuilder(AuthnContextClassRef.DEFAULT_ELEMENT_NAME)).buildObject();
+				classRef.setAuthnContextClassRef(serviceProvider.getAuthnContextClassRef());
+				context.getAuthnContextClassRefs().add(classRef);
+				authnRequest.setRequestedAuthnContext(context);
+			}
 			
 			Element authnRequestElmt = null;
 			if(serviceProvider.isSign()) {
@@ -992,7 +1029,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 	}
 
 	@Override
-	public SAMLResponseToken processSAMLResponse(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) {
+	public SAMLResponseToken processSAMLResponse(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse, final boolean isDebugRequest) {
 		final SAMLResponseToken token = new SAMLResponseToken();
 		final String relayState = httpRequest.getParameter("RelayState");
 		final DateTime now = new DateTime(DateTimeZone.UTC);
@@ -1004,6 +1041,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		final IdmAuditLog auditLog = new IdmAuditLog();
 		auditLog.setAction(AuditAction.SAML_SP_RESPONSE_PROCESS.value());
 		auditLog.addAttribute(AuditAttributeName.RELAY_STATE, relayState);
+		auditLog.addAttribute(AuditAttributeName.DEBUG_REQUEST, Boolean.valueOf(isDebugRequest).toString());
 		try {
 			final MarshallerFactory marshallerFactory = Configuration.getMarshallerFactory();
 			final Response response = SAMLDigestUtils.getSAMLResponse(httpRequest, skipURICheck);
@@ -1015,26 +1053,22 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			
 			
 			//TODO:  check ID
-			if(response.getIssueInstant() != null) {
-				final DateTime issueInstant = response.getIssueInstant().toDateTime(DateTimeZone.UTC);
-				if(issueInstant.isAfter(now.plusMillis((int)samlIssueThresholdInMillis))) {
-					throw new AuthenticationException(String.format("response.issueInstant.isAfter threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
+			if(!isDebugRequest) {
+				if(response.getIssueInstant() != null) {
+					final DateTime issueInstant = response.getIssueInstant().toDateTime(DateTimeZone.UTC);
+					if(issueInstant.isAfter(now.plusMillis((int)samlIssueThresholdInMillis))) {
+						throw new AuthenticationException(String.format("response.issueInstant.isAfter threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
+					}
+					if(issueInstant.isBefore(now.minusMillis((int)samlIssueThresholdInMillis))) {
+						throw new AuthenticationException(String.format("response.issueInstant.isBefore threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
+					}
+				} else {
+					throw new AuthenticationException(String.format("response.issueInstant is null"), Errors.SAML_SP_EXCEPTION);
 				}
-				if(issueInstant.isBefore(now.minusMillis((int)samlIssueThresholdInMillis))) {
-					throw new AuthenticationException(String.format("response.issueInstant.isBefore threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
-				}
-			} else {
-				throw new AuthenticationException(String.format("response.issueInstant is null"), Errors.SAML_SP_EXCEPTION);
 			}
 			
 			if(response.getIssuer() == null) {
 				throw new AuthenticationException(String.format("response.issuer is null"), Errors.SAML_SP_EXCEPTION);
-			}
-			
-			final String spIssuerName = response.getIssuer().getValue();
-			final SAMLServiceProvider serviceProvider = getSAMLServiceProviderByName(spIssuerName);
-			if(serviceProvider == null) {
-				throw new AuthenticationException(String.format("SAMLServiceProvider with Name '%s' not configured or doesn't exist", spIssuerName), Errors.SAML_SERVICE_PROVIDER_NOT_FOUND);
 			}
 			
 			if(CollectionUtils.isEmpty(response.getAssertions())) {
@@ -1048,6 +1082,33 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				throw new AuthenticationException(String.format("response.assertion.conditions is null"), Errors.SAML_SP_EXCEPTION);
 			}
 			
+			final String serviceProviderIssuer = response.getIssuer().getValue();
+			SAMLServiceProvider serviceProvider = getSAMLServiceProviderByIssuer(serviceProviderIssuer);
+			if(serviceProvider == null) {
+				if(CollectionUtils.isNotEmpty(conditions.getAudienceRestrictions())) {
+					for(final AudienceRestriction restriction : conditions.getAudienceRestrictions()) {
+						if(CollectionUtils.isNotEmpty(restriction.getAudiences())) {
+							for(final Audience audience : restriction.getAudiences()) {
+								if(StringUtils.isNotBlank(audience.getAudienceURI())) {
+									serviceProvider = getSAMLServiceProviderByIssuer(audience.getAudienceURI());
+								}
+								if(serviceProvider != null) {
+									log.info(String.format("Found Service Provider from Audience '%s'", audience.getAudienceURI()));
+									break;
+								}
+							}
+						}
+						if(serviceProvider != null) {
+							break;
+						}
+					}
+				}
+			}
+			
+			if(serviceProvider == null) {
+				throw new AuthenticationException(String.format("SAMLServiceProvider with Issuer '%s' not configured or doesn't exist", serviceProviderIssuer), Errors.SAML_SERVICE_PROVIDER_NOT_FOUND);
+			}
+			
 			if(conditions.getNotOnOrAfter() == null) {
 				throw new AuthenticationException(String.format("response.assertion.conditions.notOnOrAfter is null"), Errors.SAML_SP_EXCEPTION);
 			}
@@ -1056,15 +1117,15 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				throw new AuthenticationException(String.format("response.assertion.conditions.notBefore is null"), Errors.SAML_SP_EXCEPTION);
 			}
 			
-			if(now.isAfter(conditions.getNotOnOrAfter().toDateTime(DateTimeZone.UTC).getMillis())) {
-				throw new AuthenticationException(String.format("response.assertion.conditions.notOnOrAfter threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
-			}
+			if(!isDebugRequest) {
+				if(now.isAfter(conditions.getNotOnOrAfter().toDateTime(DateTimeZone.UTC).getMillis())) {
+					throw new AuthenticationException(String.format("response.assertion.conditions.notOnOrAfter threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
+				}
 			
-			if(now.isBefore(conditions.getNotBefore().toDateTime(DateTimeZone.UTC))) {
-				throw new AuthenticationException(String.format("response.assertion.conditions.notBefore threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
+				if(now.isBefore(conditions.getNotBefore().toDateTime(DateTimeZone.UTC))) {
+					throw new AuthenticationException(String.format("response.assertion.conditions.notBefore threshhold %s", samlIssueThresholdInMillis), Errors.SAML_SP_EXCEPTION);
+				}
 			}
-			
-			//don't check audiences - they are pointless
 			
 			final Subject subject = assertion.getSubject();
 			if(subject == null) {
@@ -1080,9 +1141,11 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				throw new AuthenticationException(String.format("response.assertions.subject.nameId.format is null"), Errors.SAML_SP_EXCEPTION);
 			}
 			
-			if(serviceProvider.isSign()) {
-				if(!response.isSigned()) {
-					throw new SecurityException("Expecting Signed Response");
+			if(serviceProvider.isSign() && !isDebugRequest) {
+				Signature signature = response.getSignature();
+				if(signature == null) {
+					log.warn("SAML Response isn't signed - looking at assertion");
+					signature = assertion.getSignature();
 				}
 				final BasicX509Credential credential = new BasicX509Credential();
 
@@ -1090,12 +1153,11 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 
 			    final InputStream inStream = new ByteArrayInputStream(serviceProvider.getPublicKey());
 			    final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			    final X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
+			    final X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);   
 			    inStream.close();
 			    credential.setEntityCertificate(cert);
 			    credential.setPublicKey(cert.getPublicKey());
 				
-				final Signature signature = response.getSignature();
 				final SignatureValidator validator = new SignatureValidator(credential);
 				validator.validate(signature);
 			}
@@ -1112,7 +1174,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 					final EmailSearchBean searchBean = new EmailSearchBean();
 					searchBean.setDeepCopy(false);
 					searchBean.setEmailMatchToken(new SearchParam(nameIdValue, MatchType.EXACT));
-					final List<EmailAddress> emailAddresses = userDataWebService.findEmailBeans(searchBean, 0, 10);
+					final List<EmailAddress> emailAddresses = userDataWebService.findEmailBeans(searchBean, 10, 0);
 					
 					/* if just-in-time auth is not enabled, and there is no match, throw an exception */
 					if(!justInTimeAuthEnabled && CollectionUtils.isEmpty(emailAddresses)) {
@@ -1220,22 +1282,24 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 			
 			final String password = (String)passwordResponse.getResponseValue();
 			
-			loginProvider.doLogout(httpRequest, httpResponse, false);
-			final LoginActionToken loginActionToken = loginProvider.getLoginActionToken(httpRequest, httpResponse, login.getLogin(), password);
-			if(loginActionToken.isSuccess()) {
-				cookieProvider.setAuthInfo(httpRequest, httpResponse, login.getLogin(), loginActionToken.getAuthResponse());
-				final AuthStateEntity authState = new AuthStateEntity();
-				authState.setToken(serviceProvider.getId());
-				final AuthStateId authStateId = new AuthStateId();
-				authStateId.setUserId(login.getUserId());
-				authStateId.setTokenType("SAML_SP");
-				authState.setId(authStateId);
-				final org.openiam.base.ws.Response authStateResponse = authServiceClient.save(authState);
-				if(authStateResponse.isFailure()) {
-					throw new Exception(String.format("Could not save Auth State: %s", authState));
+			if(!isDebugRequest) {
+				loginProvider.doLogout(httpRequest, httpResponse, false);
+				final LoginActionToken loginActionToken = loginProvider.getLoginActionToken(httpRequest, httpResponse, login.getLogin(), password);
+				if(loginActionToken.isSuccess()) {
+					cookieProvider.setAuthInfo(httpRequest, httpResponse, login.getLogin(), loginActionToken.getAuthResponse());
+					final AuthStateEntity authState = new AuthStateEntity();
+					authState.setToken(serviceProvider.getId());
+					final AuthStateId authStateId = new AuthStateId();
+					authStateId.setUserId(login.getUserId());
+					authStateId.setTokenType("SAML_SP");
+					authState.setId(authStateId);
+					final org.openiam.base.ws.Response authStateResponse = authServiceClient.save(authState);
+					if(authStateResponse.isFailure()) {
+						throw new Exception(String.format("Could not save Auth State: %s", authState));
+					}
+				} else {
+					throw new SecurityException(String.format("Exception From Login token: %s", loginActionToken.getErrCode()));
 				}
-			} else {
-				throw new SecurityException(String.format("Exception From Login token: %s", loginActionToken.getErrCode()));
 			}
 			
 			auditLog.succeed();

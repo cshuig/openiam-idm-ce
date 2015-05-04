@@ -188,6 +188,13 @@ OPENIAM.BulkChooseOperations = {
                 bulkOpTextRowC1.colSpan = 2;
                 bulkOpTextRowC1.innerHTML = '<textarea placeholder="' + localeManager["openiam.ui.user.notification.text.placeholder"] + '" style="width: 400px; height: 200px;" class="full rounded _input_tiptip" name="text" id="text" />';
 
+                //format
+                var bulkOpFormatRow = document.createElement("tr");
+                var bulkOpFormatRowC1 = bulkOpFormatRow.insertCell(0);
+                bulkOpFormatRowC1.colSpan = 2;
+                bulkOpFormatRowC1.innerHTML = '<input type="checkbox" name="format" id="format" value="on" /> <label for="format">'+localeManager["openiam.ui.user.notification.format"]+'</label>';
+
+                $(bulkOpFormatRow).insertAfter(baseRow);
                 $(bulkOpTextRow).insertAfter(baseRow);
                 $(bulkOpSubjectRow).insertAfter(baseRow);
 

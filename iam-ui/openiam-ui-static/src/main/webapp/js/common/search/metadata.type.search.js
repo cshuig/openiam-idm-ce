@@ -44,6 +44,7 @@ console.log = window.console.log || function() {};
 						],
 				dialogTitle: $options.dialogTitle || localeManager["metadata.type.search.title"],
 				saveBtnTxt : $options.saveBtnTxt || localeManager["openiam.ui.common.search"],
+				position : $options.position,
 				onSubmit: function(bean){
 					$this.modalEdit("hide");
 					$($options.searchTargetElmt).entitlemetnsTable({
@@ -88,7 +89,8 @@ console.log = window.console.log || function() {};
 	    	var options = $.extend({
 	    		restfulURLPrefix : "",
 	    		searchTargetElmt : null,
-	    		onAdd : null,
+				position:null,
+				onAdd : null,
 	    		pageSize : 10,
                 showResultsInDialog : false,
 				initialGrouping: null,

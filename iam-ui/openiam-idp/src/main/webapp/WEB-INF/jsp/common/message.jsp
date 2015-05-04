@@ -33,7 +33,17 @@ response.setDateHeader ("Expires", -1);
 				<div id="credentials">
 					<spring:message code="${requestScope.message}" /> <br/>
                     <c:if test="${! empty requestScope.loginTo}">
-                        <a id="loginAgain" href="${requestScope.loginTo}"><fmt:message key="openiam.ui.user.login.again" /></a>
+                        <a id="loginAgain" href="${requestScope.loginTo}">
+							<c:choose>
+								<c:when test="${!empty requestScope.isActivate and requestScope.isActivate==true}">
+									<fmt:message key="openiam.ui.user.login" />
+								</c:when>
+								<c:otherwise>
+									<fmt:message key="openiam.ui.user.login.again" />
+								</c:otherwise>
+							</c:choose>
+
+						</a>
                     </c:if>
 				</div>
 			</div>

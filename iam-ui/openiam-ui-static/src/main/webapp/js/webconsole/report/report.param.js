@@ -141,6 +141,7 @@ OPENIAM.ReportParameters = {
                 columnsMap : ["caption", "valueText"],
                 entityType : "REPORT_PARAMETER",
                 deleteOptions : {
+                    preventWarning: true,
                 	onDelete : function(bean) {
 	                    that.remove(bean);
 	                }
@@ -307,19 +308,46 @@ OPENIAM.ReportParameters = {
 
     Organizations : {
         load : function() {
-            OPENIAM.ReportParameters.Common.load({
-                modalAjaxURL : "rest/api/entitlements/searchOrganizations",
-                columns : [
-                    localeManager["openiam.ui.report.parameters.organization.name"],
-                    localeManager["openiam.ui.report.parameters.classification"],
-                    localeManager["openiam.ui.common.actions"]
-                ],
-                columnsMap:["name", "type"],
-                target : this,
-                buttonSelector : ".searchOrgBtn",
-                dialogTitle : localeManager["openiam.ui.shared.organization.search"],
-                emptyResultsText : localeManager["openiam.ui.shared.organization.search.empty"]
-            });
+            var hierarchy = OPENIAM.ENV.OrganizationHierarchy;
+            if (hierarchy != null && hierarchy != undefined && hierarchy.length > 0) {
+                $(".organizationsTable").organizationHierarchyWrapper({
+                    hierarchy : OPENIAM.ENV.OrganizationHierarchy,
+                    draw : function(select, labelText) {
+                        if(this.idx == undefined) {
+                            this.idx = 0;
+                        }
+                        this.tr = document.createElement("tr");
+                        $(this).append(this.tr);
+                        var label = document.createElement("label");
+                        $(label).text(labelText).css({"float":"left", "padding":"2px 6px"});
+                        var td = document.createElement("td");
+                        $(td).append(label);
+                        $(select).css({"float": "right", "width" : "150px", "word-wrap" : "break-word"});
+                        $(td).append(select);
+                        $(this.tr).append(td);
+                        this.idx++;
+                    },
+                    hide : function(select) {
+                        select.closest("tr").hide();
+                    },
+                    show : function(select) {
+                        select.closest("tr").show();
+                    }
+                });
+                $(".searchOrgBtn").click(function() {
+                    var paramId = $(this).attr("id");
+                    var organizationIds = $("#input"+paramId).organizationHierarchyWrapper("getValues");
+                    if (organizationIds && organizationIds.length > 0) {
+                        var orgId = organizationIds[organizationIds.length-1];
+                        var orgName = $("#input"+paramId).find("li.choice span").last().text();
+                        var bean = {
+                            id: orgId,
+                            name: orgName
+                        };
+                        OPENIAM.ReportParameters.ParametersContainer.add(paramId, bean);
+                    }
+                });
+            }
         }
     },
 
@@ -417,13 +445,32 @@ OPENIAM.ReportParameters = {
                         OPENIAM.ReportParameters.ParametersContainer.add(paramId, bean);
                     }
                 })
-            })
+            });
+            $(".addOnChange").each(function() {
+                var element = $(this);
+                element.change(function() {
+                    var addBtn = element.closest("tr").find(".addBtn");
+                    addBtn.click();
+                });
+            });
         }
     },
 
     DatePicker : {
         load : function() {
-            $("input.date").datepicker({dateFormat: OPENIAM.ENV.DateFormatDP,showOn: "button",changeMonth:true, changeYear:true}).attr('readonly','readonly')
+            $("input.date").each(function() {
+                var element = $(this);
+                element.datepicker({
+                    dateFormat: OPENIAM.ENV.DateFormatDP,
+                    showOn: "button",
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        var addBtn = element.closest("tr").find(".addBtn");
+                        addBtn.click();
+                    }
+                }).attr('readonly', 'readonly');
+            });
             this.fix();
         },
 

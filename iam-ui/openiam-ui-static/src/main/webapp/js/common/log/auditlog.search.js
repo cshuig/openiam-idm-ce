@@ -63,6 +63,10 @@ OPENIAM.AuditLog.Form = {
         if($(targetId).val() != '') {
             obj.targetId = $(targetId).val();
         }
+        var targetLogin = $('#targetLogin');
+        if($(targetLogin).val() != '') {
+            obj.targetLogin = $(targetLogin).val();
+        }
         var secondaryTargetType = $('#secondaryTargetType').find(":selected");
         if($(secondaryTargetType).val() != '') {
             obj.secondaryTargetType = $(secondaryTargetType).text();

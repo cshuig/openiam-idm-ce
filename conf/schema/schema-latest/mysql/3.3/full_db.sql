@@ -3669,7 +3669,8 @@ ALTER TABLE RES DROP FOREIGN KEY FK_RESOURCE_RESOURCE_TYPE;
 
 ALTER TABLE RES MODIFY COLUMN RESOURCE_TYPE_ID VARCHAR(20) NOT NULL;
 
-ALTER TABLE RES ADD CONSTRAINT FK_RESOURCE_RESOURCE_TYPE FOREIGN KEY (RESOURCE_TYPE_ID)  REFERENCES RESOURCE_TYPE(RESOURCE_TYPE_ID)
+ALTER TABLE RES ADD CONSTRAINT FK_RESOURCE_RESOURCE_TYPE FOREIGN KEY (RESOURCE_TYPE_ID)  REFERENCES RESOURCE_TYPE(RESOURCE_TYPE_ID);
+
 commit;
 use openiam;
 
@@ -14444,7 +14445,7 @@ insert into PROVISION_CONNECTOR(CONNECTOR_ID,NAME,METADATA_TYPE_ID,STD_COMPLIANC
 values('powershell_ad_rem_connector_id','AD Win02 Remote','RemoteConnector',null,'CLEAR','win02.openiamdemo.com/PowershellConnectorAD/PowershellConnector.svc','urn:idm.openiam.org/spml2/service','443',null,null,null,null,'REMOTE');
 
 insert into MANAGED_SYS(MANAGED_SYS_ID,NAME,DESCRIPTION,STATUS,CONNECTOR_ID,HOST_URL,APPL_URL,PORT,COMM_PROTOCOL,USER_ID, PSWD,START_DATE,END_DATE, RESOURCE_ID,PRIMARY_REPOSITORY,SECONDARY_REPOSITORY_ID,ALWAYS_UPDATE_SECONDARY,RES_DEPENDENCY, ADD_HNDLR, MODIFY_HNDLR, DELETE_HNDLR, SETPASS_HNDLR, SUSPEND_HNDLR,SEARCH_HNDLR,LOOKUP_HNDLR,TEST_CONNECTION_HNDLR,RECONCILE_RESOURCE_HNDLR,HNDLR_5,DRIVER_URL,CONNECTION_STRING,SEARCH_SCOPE)
-values('active_dir_win02_managed_sys_id','AD Win02 [Remote Connector]','','ACTIVE','powershell_ad_rem_connector_id', 'LDAP://win02.ad.openiamdemo.info', NULL, '', '', 'AD\Administrator', '=tdWk2eqV8P',NULL, NULL, '8a70a63f3f079e58013f0e9e8a160053', NULL, '', NULL, NULL, 'ADPowershell.ps1', 'ADPowershell.ps1','ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', '', '', '','2');
+values('active_dir_win02_managed_sys_id','AD Win02 [Remote Connector]','','ACTIVE','powershell_ad_rem_connector_id', 'LDAP://win02.ad.openiamdemo.info', NULL, NULL, '', 'AD\\Administrator', NULL, NULL, NULL, 'active_dir_win02_mng_sys_res_id', NULL, '', NULL, NULL, 'ADPowershell.ps1', 'ADPowershell.ps1','ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', 'ADPowershell.ps1', '', '', '','2');
 
 insert into MANAGED_SYS_RULE(MANAGED_SYS_RULE_ID,MANAGED_SYS_ID,MANAGED_SYS_RULE_NAME,MANAGED_SYS_RULE_VALUE)
 values('ad_win02_managed_sys_rule_id', 'active_dir_win02_managed_sys_id', 'SamAccountName', 'provision/ad/sAMAccount.groovy');

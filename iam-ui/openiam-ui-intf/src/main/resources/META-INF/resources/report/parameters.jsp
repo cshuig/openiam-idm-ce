@@ -63,7 +63,10 @@
         <script type="text/javascript" src="/openiam-ui-static/js/common/search/resource.search.js"></script>
         <script type="text/javascript" src="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.form.js"></script>
         <script type="text/javascript" src="/openiam-ui-static/js/webconsole/plugins/usersearch/user.search.results.js"></script>
+        <script type="text/javascript" src="/openiam-ui-static/js/common/search/search.result.js"></script>
+        <script type="text/javascript" src="/openiam-ui-static/js/common/search/organization.search.js"></script>
         <script type="text/javascript" src="/openiam-ui-static/js/webconsole/report/report.param.js"></script>
+        <script type="text/javascript" src="/openiam-ui-static/js/common/plugins/orghierarchy/organization.hierarchy.js"></script>
 
 		<script type="text/javascript">
             OPENIAM = window.OPENIAM || {};
@@ -73,6 +76,7 @@
             OPENIAM.ENV.ReportName = "${requestScope.reportInfo.reportName}";
             OPENIAM.ENV.ReportBean = ${requestScope.reportAsJSON};
             OPENIAM.ENV.DateFormatDP = "${requestScope.dateFormatDP}";
+            OPENIAM.ENV.OrganizationHierarchy = <c:choose><c:when test="${! empty requestScope.orgHierarchy}">${requestScope.orgHierarchy}</c:when><c:otherwise>null</c:otherwise></c:choose>;
         </script>
 	</head>
 	<body>
@@ -128,7 +132,7 @@
                                     </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'RESOURCE_TYPE'}">
                                         <td>
-                                            <select id="input${parameter.id}" class="rounded">
+                                            <select id="input${parameter.id}" class="rounded addOnChange">
                                                 <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
                                                 <c:forEach var="bean" items="${requestScope.resourceTypes}">
                                                     <option value="${bean.id}">${bean.name}</option>
@@ -140,15 +144,14 @@
                                         </td>
                                     </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'ORGANIZATION'}">
+                                        <td><div id="input${parameter.id}" class="organizationsTable"></div></td>
                                         <td>
-                                            <input type="text" id="input${parameter.id}" class="full rounded" placeholder="<fmt:message key='openiam.ui.shared.organization.type.name'/>" autocomplete="off" />
-                                        </td><td>
-                                            <input type="submit" id="${parameter.id}" value="<fmt:message key='openiam.ui.shared.organization.search'/>" class="redBtn searchOrgBtn" />
+                                            <input type="submit" id="${parameter.id}" value="<fmt:message key='openiam.ui.report.add.parameter'/>" class="redBtn searchOrgBtn" />
                                         </td>
                                     </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'MANAGED_SYSTEM'}">
                                         <td>
-                                            <select id="input${parameter.id}" class="rounded">
+                                            <select id="input${parameter.id}" class="rounded addOnChange">
                                                 <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
                                                 <c:forEach var="bean" items="${requestScope.managedSystems}">
                                                     <option value="${bean.id}">${bean.name}</option>
@@ -169,7 +172,7 @@
                                     </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'RISK'}">
                                         <td>
-                                            <select id="input${parameter.id}" class="rounded">
+                                            <select id="input${parameter.id}" class="rounded addOnChange">
                                                 <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
                                                 <c:forEach var="bean" items="${requestScope.riskList}">
                                                     <option value="${bean.id}">${bean.name}</option>
@@ -182,7 +185,7 @@
                                     </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'USER_STATUS'}">
                                         <td>
-                                            <select id="input${parameter.id}" class="rounded">
+                                            <select id="input${parameter.id}" class="rounded addOnChange">
                                                 <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
                                                 <c:forEach var="bean" items="${requestScope.userStatuses}">
                                                     <option value="${bean.id}">${bean.name}</option>
@@ -195,7 +198,7 @@
                                     </c:when>
                                     <c:when test="${parameter.metaTypeId eq 'USER_SEC_STATUS'}">
                                         <td>
-                                            <select id="input${parameter.id}" class="rounded">
+                                            <select id="input${parameter.id}" class="rounded addOnChange">
                                                 <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
                                                 <c:forEach var="bean" items="${requestScope.secondaryStatuses}">
                                                     <option value="${bean.id}">${bean.name}</option>
@@ -231,5 +234,7 @@
             <div id="searchResultsContainer" style="display:none"></div>
         </div>
         <div id="dialog"></div>
+        <div id="editDialog"></div>
+        <div id="orgSearchForm"></div>
 	</body>
 </html>

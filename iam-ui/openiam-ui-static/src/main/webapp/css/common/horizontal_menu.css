@@ -1,0 +1,25 @@
+#submenu {
+    left: 0;
+    top: -51px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+#submenu ul li {
+    border-right: 2px solid black;
+    float: left;
+    min-width: 180px;
+}
+
+#content {
+    margin: -40px 0;
+}
+
+#leftshadow {
+    top: -15px;
+}
+
+#rightshadow {
+    top: -15px;
+}

@@ -1,5 +1,3 @@
-/*
-group - New group object that has been submitted to the provisioning service
-*/
-
-output=group.name
+println("================ cn.groovy starting..");
+output=identity?.identity
+println("================ cn.groovy output="+output);

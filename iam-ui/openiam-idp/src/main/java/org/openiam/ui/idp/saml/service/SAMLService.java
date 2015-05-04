@@ -29,7 +29,7 @@ public interface SAMLService {
 	
 	public SAMLRequestToken getSAMLRequestForSP(final HttpServletRequest request, final String spName);
 	
-	public SAMLResponseToken processSAMLResponse(final HttpServletRequest request, final HttpServletResponse httpResponse);
+	public SAMLResponseToken processSAMLResponse(final HttpServletRequest request, final HttpServletResponse httpResponse, final boolean isDebugRequest);
 	
 	public SAMLServiceProvider getSAMLServiceProvierById(final String id);
 }

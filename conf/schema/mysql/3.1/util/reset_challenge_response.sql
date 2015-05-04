@@ -1,0 +1,3 @@
+use openiam;
+
+update USER_IDENTITY_ANS set QUESTION_ANSWER='1', IS_ENCRYPTED='N';

@@ -7,6 +7,7 @@ public class ADAttributeNamesLookup extends AbstractAttributeNamesLookupScript {
 
         def output = [
                 sAMAccountName: 'NON_EDITABLE',
+                cn: 'NON_EDITABLE',
                 ou: 'EDITABLE',
                 sn: 'EDITABLE',
                 l: 'EDITABLE',
@@ -30,7 +31,10 @@ public class ADAttributeNamesLookup extends AbstractAttributeNamesLookupScript {
                 postalCode: 'EDITABLE',
                 photo: 'EDITABLE',
                 thumbnailPhoto: 'EDITABLE',
+                description: 'EDITABLE',
+                name: 'EDITABLE',
                 memberOf: 'NON_EDITABLE',
+                member: 'NON_EDITABLE',
                 manager: 'NON_EDITABLE',
                 createTimeStamp: 'READ_ONLY',
                 modifyTimeStamp: 'READ_ONLY',
@@ -47,7 +51,8 @@ public class ADAttributeNamesLookup extends AbstractAttributeNamesLookupScript {
                 'GROUP_MEMBERSHIP_ENABLED',
                 'ON_DELETE',
                 'INCLUDE_IN_PASSWORD_SYNC',
-                'LOOKUP_USER_IN_OU'
+                'LOOKUP_USER_IN_OU',
+                'ENABLE_ON_PASSWORD_RESET'
         ] as List
 
         return output

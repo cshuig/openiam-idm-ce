@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openiam.base.AttributeOperationEnum;
 import org.openiam.base.ws.*;
 
+import org.openiam.base.ws.ResponseStatus;
 import org.openiam.idm.srvc.loc.dto.Location;
 import org.openiam.idm.srvc.org.dto.Organization;
 
@@ -37,52 +38,52 @@ public class OrganizationController extends AbstractOrganizationController {
     @Autowired
     private LocationValidator locationValidator;
 
-	@Value("${org.openiam.ui.organization.root.menu.id}")
-	private String organizationRootMenuName;
-	
-	@Value("${org.openiam.ui.organization.edit.menu.id}")
-	private String organizationEditMenuName;
+    @Value("${org.openiam.ui.organization.root.menu.id}")
+    private String organizationRootMenuName;
 
-	@Override
-	protected String getRootMenu() {
-		return organizationRootMenuName;
-	}
+    @Value("${org.openiam.ui.organization.edit.menu.id}")
+    private String organizationEditMenuName;
 
-	@Override
-	protected String getEditMenu() {
-		return organizationEditMenuName;
-	}
+    @Override
+    protected String getRootMenu() {
+        return organizationRootMenuName;
+    }
 
-	@RequestMapping(value="/organizationMembership", method=RequestMethod.GET)
-	public String editOrganization(final HttpServletRequest request,
-						   		   final HttpServletResponse response,
-						   		   final @RequestParam(required=true,value="id") String organizationId,
-						   		   @RequestParam(required=false,value="type") String type) throws IOException {
-			
-		final Organization organization = organizationDataService.getOrganizationLocalized(organizationId, this.getRequesterId(request), getCurrentLanguage());
-		if(organization == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("Organization with ID: '%s' not found", organizationId));
-			return null;
-		}
-		
-		if(type == null) {
-			type = "childorganizations";
-		}
-		
-		request.setAttribute("type", type);
-		request.setAttribute("organization", organization);
-		setMenuTree(request, organizationEditMenuName);
-		return "organization/organizationMembership";
-	}
+    @Override
+    protected String getEditMenu() {
+        return organizationEditMenuName;
+    }
 
-    @RequestMapping(value="/organizationLocation", method=RequestMethod.GET)
-    public String editOrganizationLocation(final HttpServletRequest request,
+    @RequestMapping(value = "/organizationMembership", method = RequestMethod.GET)
+    public String editOrganization(final HttpServletRequest request,
                                    final HttpServletResponse response,
-                                   final @RequestParam(required=true,value="id") String organizationId,
-                                   @RequestParam(required=false,value="type") String type) throws IOException {
+                                   final @RequestParam(required = true, value = "id") String organizationId,
+                                   @RequestParam(required = false, value = "type") String type) throws IOException {
 
         final Organization organization = organizationDataService.getOrganizationLocalized(organizationId, this.getRequesterId(request), getCurrentLanguage());
-        if(organization == null) {
+        if (organization == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("Organization with ID: '%s' not found", organizationId));
+            return null;
+        }
+
+        if (type == null) {
+            type = "childorganizations";
+        }
+
+        request.setAttribute("type", type);
+        request.setAttribute("organization", organization);
+        setMenuTree(request, organizationEditMenuName);
+        return "organization/organizationMembership";
+    }
+
+    @RequestMapping(value = "/organizationLocation", method = RequestMethod.GET)
+    public String editOrganizationLocation(final HttpServletRequest request,
+                                           final HttpServletResponse response,
+                                           final @RequestParam(required = true, value = "id") String organizationId,
+                                           @RequestParam(required = false, value = "type") String type) throws IOException {
+
+        final Organization organization = organizationDataService.getOrganizationLocalized(organizationId, this.getRequesterId(request), getCurrentLanguage());
+        if (organization == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("Organization with ID: '%s' not found", organizationId));
             return null;
         }
@@ -93,13 +94,94 @@ public class OrganizationController extends AbstractOrganizationController {
         return "organization/organizationLocation";
     }
 
+    @RequestMapping(value = "/locationNew", method = RequestMethod.GET)
+    public String newLocation(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final @RequestParam(required = true, value = "id") String orgId,
+                               @RequestParam(required = false, value = "type") String type) throws IOException {
+
+        final Location location = new Location();
+        location.setOrganizationId(orgId);
+
+        LocationBean locationBean = new LocationBean(location);
+        request.setAttribute("location", locationBean);
+        request.setAttribute("locationAsJSON", jacksonMapper.writeValueAsString(locationBean));
+        setMenuTree(request, organizationEditMenuName);
+        return "organization/location";
+    }
+
+
+    @RequestMapping(value = "/locationEdit", method = RequestMethod.GET)
+    public String editLocation(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final @RequestParam(required = true, value = "id") String locationId,
+                               @RequestParam(required = false, value = "type") String type) throws IOException {
+
+        final Location location = organizationDataService.getLocationById(locationId);
+        if (location == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("Location with ID: '%s' not found", locationId));
+            return null;
+        }
+
+        LocationBean locationBean = new LocationBean(location);
+        request.setAttribute("location", locationBean);
+        request.setAttribute("locationAsJSON", jacksonMapper.writeValueAsString(locationBean));
+        setMenuTree(request, organizationEditMenuName);
+        return "organization/location";
+    }
+
+    @RequestMapping(value = "/locationEdit", method = RequestMethod.POST)
+    public String saveLocation(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               @RequestBody LocationBean locationBean) {
+        locationBean.setOperation(AttributeOperationEnum.REPLACE);
+        return this.saveOrRemoveOrganizationLocation(request, locationBean);
+    }
+
+
+    @RequestMapping(value = "/locationDelete", method = RequestMethod.POST)
+    public String deleteLocation(final HttpServletRequest request,
+                                 final HttpServletResponse response,
+                                 final @RequestParam(required = true, value = "id") String locationId) {
+        final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
+        ErrorToken errorToken = null;
+        SuccessToken successToken = null;
+
+        try {
+            SuccessMessage successMessage = SuccessMessage.ORGANIZATION_LOCATION_SAVED;
+            Response wsResponse = organizationDataService.removeLocation(locationId);
+
+            if (wsResponse.getStatus() == org.openiam.base.ws.ResponseStatus.SUCCESS) {
+                successToken = new SuccessToken(successMessage);
+
+            } else {
+                errorToken = new ErrorToken(Errors.CANNOT_SAVE_LOCATION);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            errorToken = new ErrorToken(Errors.INTERNAL_ERROR);
+
+        } finally {
+            if (errorToken != null) {
+                ajaxResponse.setStatus(500);
+                ajaxResponse.addError(errorToken);
+            } else {
+                ajaxResponse.setSuccessToken(successToken);
+                ajaxResponse.setStatus(200);
+            }
+        }
+        request.setAttribute("response", ajaxResponse);
+        return "common/basic.ajax.response";
+    }
+
     @RequestMapping(value = "/getLocationForOrganization", method = RequestMethod.GET)
-    public @ResponseBody
+    public
+    @ResponseBody
     BeanResponse getLocationForOrganization(final @RequestParam(required = true, value = "id") String organizationId,
-                                     final @RequestParam(required = true, value = "size") Integer size,
-                                     final @RequestParam(required = true, value = "from") Integer from,
-                                     final @RequestParam(required = false, value = "sortBy") String sortBy,
-                                     final @RequestParam(required = false, value = "orderBy") String orderBy) {
+                                            final @RequestParam(required = true, value = "size") Integer size,
+                                            final @RequestParam(required = true, value = "from") Integer from,
+                                            final @RequestParam(required = false, value = "sortBy") String sortBy,
+                                            final @RequestParam(required = false, value = "orderBy") String orderBy) {
 
         List<Location> locations = organizationDataService.getLocationListByPage(organizationId, from, size);
         int cnt = organizationDataService.getNumOfLocationsForOrganization(organizationId);
@@ -108,13 +190,12 @@ public class OrganizationController extends AbstractOrganizationController {
 
         if (locations != null && locations.size() > 0) {
             for (final Location locationEl : locations) {
-                 beanList.add(new LocationBean(locationEl));
+                beanList.add(new LocationBean(locationEl));
             }
         }
 
         return new BeanResponse(beanList, cnt);
     }
-
 
 
     @RequestMapping(value = "/saveOrRemoveOrganizationLocation", method = RequestMethod.POST)
@@ -186,41 +267,41 @@ public class OrganizationController extends AbstractOrganizationController {
     }
 
 
-	@Override
-	protected BasicAjaxResponse doEdit(HttpServletRequest request,
-			HttpServletResponse response, Organization organization) throws Exception {
-		final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
+    @Override
+    protected BasicAjaxResponse doEdit(HttpServletRequest request,
+                                       HttpServletResponse response, Organization organization) throws Exception {
+        final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
 
-		final Response wsResponse = organizationDataService.saveOrganization(organization, getRequesterId(request));
-		if(wsResponse.isSuccess()) {
+        final Response wsResponse = organizationDataService.saveOrganization(organization, getRequesterId(request));
+        if (wsResponse.isSuccess()) {
             String orgId = (String) wsResponse.getResponseValue();
 
-			ajaxResponse.setStatus(200);
-			ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.ORGANIZTION_SAVED));
-			if(StringUtils.isBlank(organization.getId())) {
-				ajaxResponse.setRedirectURL(new StringBuilder("editOrganization.html?id=").append(wsResponse.getResponseValue()).toString());
-			}
-		} else {
-			ajaxResponse.setErrorList(getEditErrors(wsResponse, request, organization));
-			ajaxResponse.setStatus(500);
-		}
-		return ajaxResponse;
-	}
+            ajaxResponse.setStatus(200);
+            ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.ORGANIZTION_SAVED));
+            if (StringUtils.isBlank(organization.getId())) {
+                ajaxResponse.setRedirectURL(new StringBuilder("editOrganization.html?id=").append(wsResponse.getResponseValue()).toString());
+            }
+        } else {
+            ajaxResponse.setErrorList(getEditErrors(wsResponse, request, organization));
+            ajaxResponse.setStatus(500);
+        }
+        return ajaxResponse;
+    }
 
-	@Override
-	protected BasicAjaxResponse doDelete(HttpServletRequest request,
-			HttpServletResponse response, Organization entity) throws Exception {
-		final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
+    @Override
+    protected BasicAjaxResponse doDelete(HttpServletRequest request,
+                                         HttpServletResponse response, Organization entity) throws Exception {
+        final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
         final String callerId = getRequesterId(request);
 
-		final Response wsResponse = organizationDataService.deleteOrganization(entity.getId());
-		if(wsResponse.isSuccess()) {
-			ajaxResponse.setStatus(200);
-			ajaxResponse.setRedirectURL("organizations.html");
-			ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.ORGANIZTION_DELETED));
-		} else {
-			ajaxResponse.setErrorList(getDeleteErrors(wsResponse, request, entity));
-		}
-		return ajaxResponse;
-	}
+        final Response wsResponse = organizationDataService.deleteOrganization(entity.getId());
+        if (wsResponse.isSuccess()) {
+            ajaxResponse.setStatus(200);
+            ajaxResponse.setRedirectURL("organizations.html");
+            ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.ORGANIZTION_DELETED));
+        } else {
+            ajaxResponse.setErrorList(getDeleteErrors(wsResponse, request, entity));
+        }
+        return ajaxResponse;
+    }
 }

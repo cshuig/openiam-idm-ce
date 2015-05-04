@@ -1,0 +1,4 @@
+use openiam;
+
+INSERT INTO AUTH_ATTRIBUTE (AUTH_ATTRIBUTE_ID, ATTRIBUTE_NAME, PROVIDER_TYPE, DESCRIPTION, REQUIRED, DATA_TYPE)
+	VALUES('SendNameIdInSAMLRequest', 'Send NameID in SAMLRequest', 'SAML_SP_PROVIDER', 'Sends the NameID in SAML Request', 'N', 'booleanValue');

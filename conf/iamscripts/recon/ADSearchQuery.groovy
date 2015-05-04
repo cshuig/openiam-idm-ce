@@ -1,4 +1,2 @@
-def sf = binding.hasVariable("searchFilter")? searchFilter : "*"
-def us = binding.hasVariable("updatedSince")? updatedSince : ""
-
-output = "(&(objectClass=user)(sAMAccountName=${sf}))" as String
+def sf = (binding.hasVariable("searchFilter")? searchFilter : null)?: "(&(objectclass=person)(sAMAccountName=*))"
+output= sf as String

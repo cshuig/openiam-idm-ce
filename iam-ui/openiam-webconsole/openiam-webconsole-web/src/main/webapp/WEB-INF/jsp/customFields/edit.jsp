@@ -225,6 +225,7 @@
                                                                 value="${requestScope.field.defaultValueLanguageMap[lang.id].value}"
                                                             </c:if> />
                                                 </span>
+                                    <div style="clear:both;"/>
                                 </div>
                             </c:forEach>
                         </td>
@@ -261,6 +262,7 @@
 													</c:if>
                                                     <textarea id="${lang.languageCode}_defaultValue" name="${lang.languageCode}_defaultValue" languageCode="${lang.languageCode}" languageId="${lang.id}">${textareaValue}</textarea>
                                                 </span>
+                                    <div style="clear:both;"/>
                                 </div>
                             </c:forEach>
                         </td>

@@ -9,11 +9,13 @@ import org.openiam.idm.srvc.auth.dto.Subject;
 import org.openiam.idm.srvc.auth.service.AuthenticationService;
 import org.openiam.idm.srvc.auth.ws.AuthenticationResponse;
 import org.openiam.idm.srvc.policy.dto.Policy;
+import org.openiam.ui.rest.api.model.LoginAjaxResponse;
 import org.openiam.ui.security.cryptor.CookieCryptor;
 import org.openiam.ui.security.model.OpenIAMAuthCookie;
 import org.openiam.ui.util.CookieUtils;
 import org.openiam.ui.util.URIUtils;
 import org.openiam.ui.web.filter.ProxyFilter;
+import org.openiam.ui.web.model.AuthTokenInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,6 +26,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.net.URL;
 import java.util.Date;
 import java.util.Locale;
@@ -39,6 +42,7 @@ public class OpenIAMCookieProvider {
     @Autowired
     private CookieCryptor cookieCryptor;
 
+    public static final String AUTH_COOKIE_INFO = "AUTH_COOKIE_INFO";
     private static final String COOKIE_NAME = "OPENIAM_AUTH_TOKEN";
     private static final String COOKIE_RENEWED_ATTR = "AUTH_COOKIE_RENEWED";
     private static final String COOKIE_RENEW_FAILED = "AUTH_COOKIE_RENEW_FAILED";
@@ -52,6 +56,39 @@ public class OpenIAMCookieProvider {
 
     //@Value("${org.openiam.ui.auth.cookie.include.timestamp}")
     //private boolean includeTimestamp;
+    
+    public AuthTokenInfo generateNewToken(final String oldToken) {
+    	AuthTokenInfo retVal = null;
+        final OpenIAMAuthCookie oldCookie = decrypt(oldToken);
+        if (oldCookie != null) {
+            final String oldTokenType = oldCookie.getTokenType();
+            final Response authResponse = authServiceClient.renewToken(oldCookie.getPrincipal(), oldCookie.getToken(), oldTokenType);
+            //if(includeTimestamp) {
+            if (oldCookie.isExpired()) {
+                authResponse.fail();
+            }
+            //}
+            if (authResponse != null && authResponse.isSuccess()) {
+                if (authResponse.getResponseValue() instanceof SSOToken) {
+                    final SSOToken ssoToken = (SSOToken) authResponse.getResponseValue();
+                    if (ssoToken != null) {
+                        final String token = ssoToken.getToken();
+                        final String tokenType = ssoToken.getTokenType();
+                        final String userId = ssoToken.getUserId();
+                        final String principal = ssoToken.getPrincipal();
+                        try {
+                            //retVal = new OpenIAMAuthCookie(userId, principal, token, tokenType, (includeTimestamp) ? ssoToken.getExpirationTime() : null);
+                            final OpenIAMAuthCookie newCookie = new OpenIAMAuthCookie(userId, principal, token, tokenType, ssoToken.getExpirationTime());
+                            retVal = getAuthToken(newCookie, ssoToken);
+                        } catch (Throwable e) {
+                            LOG.warn(String.format("Can't encrypt cookie", ssoToken), e);
+                        }
+                    }
+                }
+            }
+        }
+        return retVal;
+    }
 
     /**
      * Called to renew the current Authentication Token
@@ -84,8 +121,9 @@ public class OpenIAMCookieProvider {
                             try {
                                 //retVal = new OpenIAMAuthCookie(userId, principal, token, tokenType, (includeTimestamp) ? ssoToken.getExpirationTime() : null);
                                 retVal = new OpenIAMAuthCookie(userId, principal, token, tokenType, ssoToken.getExpirationTime());
-                                encryptAndAdd(request, response, retVal, ssoToken);
+                                final AuthTokenInfo authTokenInfo = encryptAndAdd(request, response, retVal, ssoToken);
                                 request.setAttribute(COOKIE_RENEWED_ATTR, retVal);
+                                request.setAttribute(AUTH_COOKIE_INFO, authTokenInfo);
                             } catch (Throwable e) {
                                 LOG.warn(String.format("Can't encrypt cookie", ssoToken), e);
                             }
@@ -216,46 +254,91 @@ public class OpenIAMCookieProvider {
         final Cookie cookie = CookieUtils.getCookie(request, COOKIE_NAME);
 
         if (cookie != null && cookie.getMaxAge() != 0) {
-            try {
-                final String cookieValue = (cookieEncryptionEnabled) ? cookieCryptor.decode(cookie.getValue()) : cookie.getValue();
-                retVal = OpenIAMAuthCookie.getToken(cookieValue);
-            } catch (Throwable e) {
-                LOG.warn(String.format("Can't decrypt cookie", cookie.getValue()), e);
-            }
+            retVal = decrypt(cookie.getValue());
         }
 
         return retVal;
     }
-
-    public void setAuthInfo(final HttpServletRequest request, final HttpServletResponse response, final String principal,
-                            final AuthenticationResponse authResponse) throws Exception {
-
-        final Subject subject = authResponse.getSubject();
+    
+    private OpenIAMAuthCookie decrypt(final String value) {
+    	 try {
+    		 final String cookieValue = (cookieEncryptionEnabled) ? cookieCryptor.decode(value) : value;
+    		 return OpenIAMAuthCookie.getToken(cookieValue);
+    	 } catch (Throwable e) {
+             LOG.warn(String.format("Can't decrypt cookie", value), e);
+             return null;
+         }
+    }
+    
+    public AuthTokenInfo setAuthInfo(final HttpServletRequest request, 
+									 final HttpServletResponse response, 
+									 final String principal,
+									 final AuthenticationResponse authResponse,
+									 final boolean addCookieToResponse) throws Exception {
+    	final Subject subject = authResponse.getSubject();
         final String userId = subject.getUserId();
 
         final SSOToken ssoToken = authResponse.getSubject().getSsoToken();
         final String tokenType = ssoToken.getTokenType();
         //final OpenIAMAuthCookie token = new OpenIAMAuthCookie(userId, principal, ssoToken.getToken(), tokenType, (includeTimestamp) ? ssoToken.getExpirationTime() : null);
         final OpenIAMAuthCookie token = new OpenIAMAuthCookie(userId, principal, ssoToken.getToken(), tokenType, ssoToken.getExpirationTime());
-        encryptAndAdd(request, response, token, ssoToken);
+        if(addCookieToResponse) {
+        	return encryptAndAdd(request, response, token, ssoToken);
+        } else {
+        	return getAuthToken(token, ssoToken);
+        }
     }
 
-    private void encryptAndAdd(final HttpServletRequest request, final HttpServletResponse response, final OpenIAMAuthCookie token,
-                               final SSOToken ssoToken) throws Exception {
-        final int seconds = Long.valueOf((ssoToken.getExpirationTime().getTime() - new Date().getTime()) / 1000).intValue();
+    public AuthTokenInfo setAuthInfo(final HttpServletRequest request, 
+    						final HttpServletResponse response, 
+    						final String principal,
+                            final AuthenticationResponse authResponse) throws Exception {
 
-        final String cookieValue = (cookieEncryptionEnabled) ? cookieCryptor.encode(token.tokenizeValue()) : token.tokenizeValue();
+        return setAuthInfo(request, response, principal, authResponse, true);
+    }
+    
+    private String encrypt(final OpenIAMAuthCookie token) throws Exception {
+    	final String cookieValue = (cookieEncryptionEnabled) ? cookieCryptor.encode(token.tokenizeValue()) : token.tokenizeValue();
+    	return cookieValue;
+    }
+    
+    private int getExpirationTimeInSeconds(final SSOToken ssoToken) {
+    	final int seconds = Long.valueOf((ssoToken.getExpirationTime().getTime() - new Date().getTime()) / 1000).intValue();
+    	return seconds;
+    }
+    
+    private AuthTokenInfo getAuthToken(final OpenIAMAuthCookie token,
+            						   final SSOToken ssoToken) throws Exception {
+        final int seconds = getExpirationTimeInSeconds(ssoToken);
+        final String encryptedString = encrypt(token);
+        final AuthTokenInfo authTokenInfo = new AuthTokenInfo();
+        authTokenInfo.setAuthToken(encryptedString);
+        authTokenInfo.setTimeToLiveSeconds(seconds);
+        return authTokenInfo;
+    }
+
+    private AuthTokenInfo encryptAndAdd(final HttpServletRequest request, 
+    						   final HttpServletResponse response, 
+    						   final OpenIAMAuthCookie token,
+                               final SSOToken ssoToken) throws Exception {
+        final int seconds = getExpirationTimeInSeconds(ssoToken);
+
+        final String cookieValue = encrypt(token);
         final Cookie cookie = new Cookie(COOKIE_NAME, cookieValue);
-        if (ssoToken.isExpireOnBrowserClose()) {
-            cookie.setMaxAge(-1);
-        } else {
-            cookie.setMaxAge(seconds);
+        int cookieMaxAge = -1;
+        if (!ssoToken.isExpireOnBrowserClose()) {
+            cookieMaxAge = seconds;
         }
+        cookie.setMaxAge(cookieMaxAge);
         cookie.setPath("/");
         cookie.setSecure(StringUtils.equalsIgnoreCase("https", request.getScheme()));
         cookie.setDomain(getCookieDomain(request));
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+        final AuthTokenInfo authTokenInfo = new AuthTokenInfo();
+        authTokenInfo.setAuthToken(cookieValue);
+        authTokenInfo.setTimeToLiveSeconds(cookieMaxAge);
+        return authTokenInfo;
     }
 
     private String getCookieDomain(final HttpServletRequest request) {

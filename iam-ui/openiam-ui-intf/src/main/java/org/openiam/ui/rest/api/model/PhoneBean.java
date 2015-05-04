@@ -33,7 +33,14 @@ public class PhoneBean extends AbstractBean {
         this.phoneNbr = phone.getPhoneNbr();
         this.countryCd = phone.getCountryCd();
 
-        StringBuilder  str= new StringBuilder().append("(").append(this.areaCd).append(") ")
+        StringBuilder  str= new StringBuilder();
+
+        if(this.countryCd!=null && !this.countryCd.trim().isEmpty()){
+            str.append(this.countryCd);
+        }
+
+
+        str.append("(").append(this.areaCd).append(") ")
                                               .append(this.phoneNbr);
         if(this.phoneExt!=null && !this.phoneExt.trim().isEmpty()){
          str.append(" EXT: ")

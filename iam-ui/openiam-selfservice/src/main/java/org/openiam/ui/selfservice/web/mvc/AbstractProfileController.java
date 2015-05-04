@@ -42,6 +42,7 @@ import org.openiam.idm.srvc.meta.dto.TemplateRequest;
 import org.openiam.idm.srvc.meta.ws.MetadataElementTemplateWebService;
 import org.openiam.idm.srvc.meta.ws.MetadataWebService;
 import org.openiam.idm.srvc.mngsys.ws.ManagedSystemWebService;
+import org.openiam.idm.srvc.org.dto.Organization;
 import org.openiam.idm.srvc.org.dto.OrganizationType;
 import org.openiam.idm.srvc.org.service.OrganizationTypeDataService;
 import org.openiam.idm.srvc.role.dto.Role;
@@ -130,6 +131,27 @@ public abstract class AbstractProfileController extends AbstractSelfServiceContr
 		request.setAttribute("employeeTypeList", getUserTypeList());
 		request.setAttribute("jobList", getJobCodeList());
 		request.setAttribute("newUser", newUser);
+
+		if(CollectionUtils.isNotEmpty(user.getAffiliations())) {
+			List<Organization> userOrgs = new ArrayList<Organization>(user.getAffiliations());
+
+			Collections.sort(userOrgs, new Comparator<Organization>() {
+				@Override
+				public int compare(Organization o1, Organization o2) {
+					int result = o1.getOrganizationTypeId().compareTo(o2.getOrganizationTypeId());
+					if (result != 0) {
+						return result;
+					}
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+			if((userOrgs != null) && (userOrgs.size() > 0)) {
+				request.setAttribute("currentOrgId",userOrgs.get(0).getId());
+			} else {
+				request.setAttribute("currentOrgId", null);
+			}
+
+		}
 		
 		final List<KeyNameBean> emailTypes = getEmailTypes();
 		final List<KeyNameBean> phoneTypes = getPhoneTypes();

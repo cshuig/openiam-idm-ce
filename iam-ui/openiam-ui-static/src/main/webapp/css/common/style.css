@@ -238,6 +238,7 @@ h4 {
     float: left;
     width: 550px;
     text-align: right;
+    margin-top: -6px;
 }
 
 #notification .row {
@@ -250,6 +251,7 @@ h4 {
     float: left;
     width: 101px;
     padding-top: 5px;
+    margin-top: -8px;
 }
 
 #logout a {
@@ -1206,7 +1208,7 @@ select.grant {
 }
 
 .multi-choices {
-    background-color: #FFFFFF;
+    background-color: #FFFFFF;goo
     background-image: -moz-linear-gradient(center bottom, #FFFFFF 85%, #EEEEEE 99%);
     border: 1px solid #AAAAAA;
     cursor: text;
@@ -1342,4 +1344,8 @@ div.policyContent ul li ul li {
 }
 .checkCell{
     width: 24px;
+}
+
+.ui-datepicker {
+ width: 21em !important;
 }

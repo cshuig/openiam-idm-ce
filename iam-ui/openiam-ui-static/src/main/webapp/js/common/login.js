@@ -10,12 +10,6 @@ OPENIAM.Login = {
 			
 		});
 		
-		//IE
-		$("#login-form input").keyup(function(e) {
-			if(e.which == 13) {
-				$("#login-form").submit();	
-			}
-		});
 		OPENIAM.FrameBust();
 	}
 };

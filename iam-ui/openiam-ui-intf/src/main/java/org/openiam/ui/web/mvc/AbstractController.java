@@ -369,18 +369,20 @@ public abstract class AbstractController {
     }
 
     protected String getInitialMenuAsJson(final HttpServletRequest request, final String menuName) {
-        final String queryString = StringUtils.trimToNull(request.getQueryString());
-
         final String userId = cookieProvider.getUserId(request);
         final MenuRequest menuRequest = new MenuRequest();
         menuRequest.setMenuName(menuName);
         menuRequest.setUserId(userId);
         final AuthorizationMenu menu = authManagerMenuService.getMenuTreeForUserId(menuRequest,
                 OpeniamFilter.getCurrentLangauge(request));
+
+        return getInitialMenuAsJson(request, menu);
+    }
+    protected String getInitialMenuAsJson(final HttpServletRequest request, AuthorizationMenu menu) {
+        final String queryString = StringUtils.trimToNull(request.getQueryString());
         if(menu != null) {
             menu.setUrlParams(queryString);
         }
-
         String menuTreeString = null;
         try {
             menuTreeString = (menu != null) ? jacksonMapper.writeValueAsString(menu) : null;

@@ -57,6 +57,7 @@
                     <option value="managedSystemField"><fmt:message key="openiam.ui.idm.prov.mngsys.header" /></option>
                     <option value="targetTypeField"><fmt:message key="openiam.ui.audit.log.target.type" /></option>
                     <option value="targetIdField"><fmt:message key="openiam.ui.audit.log.target.id" /></option>
+                    <option value="targetLoginField"><fmt:message key="openiam.ui.audit.log.target.login" /></option>
                     <option value="secondaryTargetTypeField"><fmt:message key="openiam.ui.audit.log.secondary.target.type" /></option>
                     <option value="secondaryTargetIdField"><fmt:message key="openiam.ui.audit.log.secondary.target.id" /></option>
                 </select>
@@ -125,6 +126,10 @@
                                 <div id="targetIdField" class="userSearchCell" style="display: none">
                                     <label for="targetId"><fmt:message key="openiam.ui.audit.log.target.id" /></label>
                                     <input type="text" autocomplete="off" maxlength="32" size="23" value="" name="targetId" id="targetId">
+                                </div>
+                                <div id="targetLoginField" class="userSearchCell" style="display: none">
+                                    <label for="targetLogin"><fmt:message key="openiam.ui.audit.log.target.login" /></label>
+                                    <input type="text" autocomplete="off" maxlength="32" size="23" value="" name="targetLogin" id="targetLogin">
                                 </div>
                                 <div id="secondaryTargetTypeField" class="userSearchCell" style="display: none">
                                     <label for="secondaryTargetType"><fmt:message key="openiam.ui.audit.log.secondary.target.type" /></label>

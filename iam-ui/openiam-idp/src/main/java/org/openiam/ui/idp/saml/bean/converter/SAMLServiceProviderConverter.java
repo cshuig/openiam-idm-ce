@@ -52,9 +52,26 @@ public class SAMLServiceProviderConverter extends AbstractSAMLConverter<SAMLServ
 	@Value("${org.openiam.saml.sp.attribute.issuer.justintime.groovy.script.id}")
 	private String justInTimeGroovyScriptAttributeId;
 	
+	@Value("${org.openiam.saml.sp.name.qualifier}")
+	private String spNameQualifierAttributeId;
 
 	@Value("${org.openiam.idp.provider.saml.sp.id}")
 	private String samlSPProviderId;
+	
+	@Value("${org.openiam.saml.sp.authn.request.destination.attribute.id}")
+	private String authnRequestDesinationId;
+	
+	@Value("${org.openiam.saml.sp.nameid.allow.create}")
+	private String spAllowCreateOnNameIdPolicyId;
+	
+	@Value("${org.openiam.saml.sp.context.class.ref}")
+	private String spContextClassRefId;
+	
+	@Value("${org.openiam.saml.sp.issuer.format}")
+	private String samlIssuerFormatId;
+	
+	@Value("${org.openiam.saml.sp.saml.request.name.id.format}")
+	private String nameIdFomatInSAMLRequest;
 
 	@Override
 	public AuthProvider convert(final SAMLUploadToken token) throws Exception {
@@ -146,6 +163,18 @@ public class SAMLServiceProviderConverter extends AbstractSAMLConverter<SAMLServ
 							provider.setIssuer(value.get(0));
 						} else if(StringUtils.equals(justInTimeGroovyScriptAttributeId, attribute.getAttributeId())) {
 							provider.setJustInTimeSAMLAuthenticatorScript(value.get(0));
+						} else if(StringUtils.equals(spNameQualifierAttributeId, attribute.getAttributeId())) {
+							provider.setSpNameQualifier(value.get(0));
+						} else if(StringUtils.equals(authnRequestDesinationId, attribute.getAttributeId())) {
+							provider.setIncludeDestinationInAuthnRequest(StringUtils.equalsIgnoreCase(value.get(0), Boolean.TRUE.toString()));
+						} else if(StringUtils.equals(spAllowCreateOnNameIdPolicyId, attribute.getAttributeId())) {
+							provider.setAllowCreateOnNameIdPolicy(StringUtils.equalsIgnoreCase(value.get(0), Boolean.TRUE.toString()));
+						} else if(StringUtils.equals(spContextClassRefId, attribute.getAttributeId())) {
+							provider.setAuthnContextClassRef(value.get(0));
+						} else if(StringUtils.equals(samlIssuerFormatId, attribute.getAttributeId())) {
+							provider.setSamlIssuerFormat(value.get(0));
+						} else if(StringUtils.equals(nameIdFomatInSAMLRequest, attribute.getAttributeId())) {
+							provider.setNameIdFormatInSAMLRequest(value.get(0));
 						}
 					}
 				}

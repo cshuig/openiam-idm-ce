@@ -36,6 +36,7 @@ console.warn = window.console.warn || function() {};
                 ],
                 dialogTitle: $options.dialogTitle || localeManager["openiam.ui.shared.role.search"],
 				saveBtnTxt : $options.saveBtnTxt || localeManager["openiam.ui.common.search"],
+                position : $options.position,
                 onSubmit: function(bean){
                     $this.modalEdit("hide");
                     $($options.searchTargetElmt).entitlemetnsTable({
@@ -85,6 +86,7 @@ console.warn = window.console.warn || function() {};
                 searchTargetElmt : null,
                 emptyResultsText : null,
                 managedSysId : null,
+                position:null,
                 onAdd : null,
                 pageSize : 10,
                 showResultsInDialog : false,

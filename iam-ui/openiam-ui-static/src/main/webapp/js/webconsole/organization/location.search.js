@@ -14,11 +14,20 @@ OPENIAM.Location = {
         var mySearch = document.createElement("input");
         $(mySearch).attr("type", "button");
         $(mySearch).attr("value", localeManager["openiam.ui.common.search"]);
-        mySearch.className = "redBtn"; mySearch.id = "search";
+        mySearch.className = "redBtn";
+        mySearch.id = "search";
+
+        var addNew = document.createElement("input");
+        $(addNew).attr("type", "button");
+        $(addNew).attr("value", localeManager["openiam.ui.common.add"]);
+        addNew.className = "redBtn";
+        addNew.id = "add";
 
         var inputelements = [];
+        inputelements.push("");
         inputelements.push(myInput);
         inputelements.push(mySearch);
+        inputelements.push(addNew);
 
         $("#entitlementsContainer").entitlemetnsTable({
             columnHeaders : [
@@ -29,7 +38,7 @@ OPENIAM.Location = {
             ],
             hasEditButton : true,
             onEdit : function(bean) {
-                window.location.href = "organizationLocation.html?id=" + bean.id;
+                window.location.href = "locationEdit.html?id=" + bean.id;
             },
             columnsMap : ["name","displayDescription","active"],
             theadInputElements : inputelements,
@@ -42,6 +51,9 @@ OPENIAM.Location = {
             onAppendDone : function() {
                 this.find("#search").click(function() {
                     OPENIAM.Location.init();
+                });
+                this.find("#add").click(function() {
+                    window.location.href = "locationNew.html?id="+OPENIAM.ENV.OrganizationId;
                 });
             },
             validate : function(vdata) {

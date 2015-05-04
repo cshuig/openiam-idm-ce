@@ -66,6 +66,7 @@ response.setDateHeader ("Expires", -1);
             OPENIAM.ENV.GroupId = <c:choose><c:when test="${! empty requestScope.group.id}">"${requestScope.group.id}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 			OPENIAM.ENV.Group = ${requestScope.groupAsJSON};
 			OPENIAM.ENV.OrganizationHierarchy = ${requestScope.orgHierarchy};
+			OPENIAM.ENV.CurrentOrgId=<c:choose><c:when test="${! empty requestScope.currentOrgId}">"${requestScope.currentOrgId}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 			OPENIAM.ENV.MenuTreeAppendURL = <c:choose><c:when test="${! empty requestScope.group.id}">"id=${requestScope.group.id}"</c:when><c:otherwise>null</c:otherwise></c:choose>;
 		</script>
 	</head>
