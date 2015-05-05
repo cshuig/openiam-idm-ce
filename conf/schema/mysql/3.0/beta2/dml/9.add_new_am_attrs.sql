@@ -1,3 +1,0 @@
-use openiam;
-
-INSERT INTO AUTH_RESOURCE_AM_ATTRIBUTE (AM_ATTRIBUTE_ID, ATTRIBUTE_NAME) VALUES('Login.password', 'Password');

@@ -1,6 +1,0 @@
-dml/1.fix_language_mapping.sql
-dml/2.initial_cp_setup.sql
-dml/3.self_report_menu_add.sql
-ddl/1.modify_report_info.sql
-dml/4.add_res_report.sql
-dml/5.hide_subscribe_menu.sql

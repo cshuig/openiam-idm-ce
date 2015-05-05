@@ -1,4 +1,0 @@
-ddl/1.sync_config_updates.sql
-dml/14.appTabe_policy_map.sql
-ddl/2.synch_config_org_updates.sql
-dml/4.batch_config_add_reports.sql

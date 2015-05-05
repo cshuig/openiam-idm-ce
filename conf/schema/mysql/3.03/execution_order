@@ -1,4 +1,0 @@
-ddl/1.reconciliation_config_updates.sql
-ddl/2.reconciliation_config_updates.sql
-ddl/3.mng_system_updates.sql
-dml/1.email_ui_fields.sql

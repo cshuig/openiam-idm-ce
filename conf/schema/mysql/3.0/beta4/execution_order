@@ -1,8 +1,0 @@
-dml/1.selfservice_supervisor_menus.sql
-dml/2.change_mngsys_attribures_menu.sql
-ddl/1.synch_config_system_path.sql
-dml/3.login_menus.sql
-ddl/2.add_default_language.sql
-ddl/3.fix_am_attributes.sql
-dml/4.fix_policy_def_param.sql
-ddl/4.remove_org_type_column.sql
