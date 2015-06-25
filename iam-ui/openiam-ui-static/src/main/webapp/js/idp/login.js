@@ -8,16 +8,13 @@ OPENIAM.Login.Addon = {
 			//console.log("Submitted");
 			return false;
 		});
-		
-		/* causes form to be submitted twice */
-		/*
-		$("#login-form input").keyup(function(e) {
-			if(e.which == 13) {
+
+		$("#login-form input").keypress(function(e) {
+			if(e.keyCode == 13) {
 				OPENIAM.Login.Addon.request();
 				return false;
 			}
 		});
-		*/
 	},
 	request : function() {
 		$("#unlockURL").hide();

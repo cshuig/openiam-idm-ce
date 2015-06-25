@@ -44,16 +44,17 @@ public abstract class AbstractChallengeResponseController extends AbstractContro
     @RequestMapping(value="/challengeResponse",method= RequestMethod.GET)
     public String challengeResponse(final HttpServletRequest request,
                                     final HttpServletResponse response,
-                                    @RequestParam(value = "postbackUrl", required = false) String postbackUrl) throws Exception {
+                                    @RequestParam(value = "postbackUrl", required = false) String postbackUrl,
+                                    @RequestParam(value = "auth", required = false) boolean auth) throws Exception {
 
         if (StringUtils.isNotBlank(postbackUrl)) {
             request.setAttribute("postbackUrl", postbackUrl);
         }
         request.setAttribute("readOnly", false);
-        return challengeResponse(request, cookieProvider.getUserId(request));
+        return challengeResponse(request, cookieProvider.getUserId(request), auth);
     }
 
-    protected String challengeResponse(final HttpServletRequest request, String userId) throws Exception {
+    protected String challengeResponse(final HttpServletRequest request, final String userId, final boolean auth) throws Exception {
 
 		final IdentityQuestionSearchBean questionSearchBean = new IdentityQuestionSearchBean();
 		questionSearchBean.setDeepCopy(false);
@@ -105,6 +106,7 @@ public abstract class AbstractChallengeResponseController extends AbstractContro
 		request.setAttribute("modelList", modelList);
         request.setAttribute("secureAnswers", secureAnswers);
         request.setAttribute("unchangedValue", PasswordGenerator.generatePassword(16));
+        request.setAttribute("auth", auth);
 		//request.getRequestDispatcher("users/challengeResponse.jsp").forward(request, response);
 		return "jar:users/challengeResponse";
 	}

@@ -12,7 +12,7 @@ def groupIdentity = group.name
 def origGroupIdentity = groupIdentity
 
 //check on uniqueness
-def exists = identityManager.findByExample(new IdentitySearchBean(managedSysId: managedSysId, name: groupIdentity), '3000', 0, 1)
+def exists = identityManager.findByExample(new IdentitySearchBean(managedSysId: managedSysId, identity: groupIdentity), '3000', 0, 1)
 if (!exists) {
     def resp = groupProvisionService.getTargetSystemObject(groupIdentity, managedSysId, [new ExtensibleAttribute('sAMAccountName','')])
     exists = resp.success

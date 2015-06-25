@@ -225,7 +225,7 @@ public class PasswordController extends AbstractPasswordController {
             }
 
 
-            token = attemptResetPassword(request, formRequest.getNewPassword(), formRequest.getUserId(), true, false);
+            token = attemptResetPassword(request, formRequest.getNewPassword(), formRequest.getUserId(),null, true, false);
             if (token.hasErrors()) {
                 throw new ErrorTokenException(token.getErrorList());
             }

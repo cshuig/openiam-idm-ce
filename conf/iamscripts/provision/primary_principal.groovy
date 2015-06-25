@@ -1,4 +1,5 @@
 import org.openiam.idm.srvc.auth.login.LoginDataService
+import org.openiam.idm.util.Transliterator
 
 /*
 Objects that are passed to the script:
@@ -18,7 +19,7 @@ def loginID
 if (user.userAttributes.get("userid")?.value) {
 	loginID = user.userAttributes.get("userid").value
 } else {
-	loginID = user.firstName + "." + user.lastName
+	loginID = Transliterator.transliterate(user.firstName + "." + user.lastName, true)
 }
 
 ctr = 1

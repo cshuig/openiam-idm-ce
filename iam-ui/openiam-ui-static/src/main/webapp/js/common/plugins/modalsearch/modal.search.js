@@ -3,7 +3,7 @@
 	var privateMethods = {
 		createHtml : function(data, page) {
 			var $this = this;
-			var $options = $this.data("options");
+			var $options = $this.data("modalSearchOptions");
 			var found = $this.data("found");
 			var size = $options.pageSize;
 			var from = (page - 1) * size;
@@ -70,9 +70,9 @@
 			return html;
 		},
 		
-		request : function(page) {
-			var $this = $(this);
-			var $options = $this.data("options");
+		request : function(page, $options) {
+			var $this = this;
+			var $options = $this.data("modalSearchOptions");
 			var from = (page - 1) * $options.pageSize;
 			var name = $this.val();
 			var $found = $this.data("found");
@@ -154,7 +154,7 @@
     			$.error("No emptyResultsText provided");
     		}
     		
-    		this.data("options", options);
+    		this.data("modalSearchOptions", options);
     	},
     	show : function( ) { /* will reset to page 1 */
 			privateMethods.request.call(this, 1);

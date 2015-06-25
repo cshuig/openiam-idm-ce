@@ -8,5 +8,8 @@ def title = (user.title && (user.title != BaseConstants.NULL_STRING))? user.titl
 if (StringUtils.isNotBlank(title)) {
     output = title
 } else {
-    output = new ExtensibleAttribute(name: attributeMap.attributeName, operation: AttributeOperationEnum.DELETE.value, value: 'none')
+    def currTitle = (binding.hasVariable("targetSystemAttributes")) ? targetSystemAttributes.get(attributeMap.attributeName)?.value : null
+    if (currTitle) {
+        output = new ExtensibleAttribute(name: attributeMap.attributeName, operation: AttributeOperationEnum.DELETE.value, value: currTitle, dataType: 'string')
+    }
 }

@@ -488,7 +488,7 @@ response.setDateHeader ("Expires", -1);
                             <td  align="left">
                                 <label for="altName"><fmt:message key="openiam.ui.user.alternate.contact"/>:</label><br/>
                                 <input id="altName" type="text"  class="full rounded" value="${user.alternateContactName}" readonly="readonly">
-                                <input id="alternateContactId" type="hidden" value="" name="alternateContactId">
+                                <input id="alternateContactId" type="hidden" value="${user.alternateContactId}" name="alternateContactId">
                             </td>
                             <td align="left">
                                 <a id="selectalternateContact" href="javascript:void(0);"><fmt:message key="openiam.ui.user.alternate.contact.select"/></a>

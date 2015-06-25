@@ -23,7 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.openiam.idm.srvc.grp.dto.GroupAttribute
 
 public class CreateIdmGroupCommand  extends BaseReconciliationGroupCommand {
-    static final  Log log = LogFactory.getLog(CreateIdmGroupCustomCommand.class);
+    static final  Log log = LogFactory.getLog(CreateIdmGroupCommand.class);
 
     protected ApplicationContext context;
 

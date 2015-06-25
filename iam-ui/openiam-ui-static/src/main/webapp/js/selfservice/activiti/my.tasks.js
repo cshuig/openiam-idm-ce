@@ -16,14 +16,16 @@ OPENIAM.MyTasks = {
 			ajaxURL : "rest/api/activiti/tasks/assigned",
 			entityUrl : "task.html",
 			entityURLIdentifierParamName : "id",
-            deleteOptions : {
-            	isDeletable : function(bean) {
-            		return (bean.deletable);
-            	},
-            	onDelete : function(bean) {
-					$this.deleteTask(bean.id);
-				}
-            },
+            // http://54.227.54.255:8080/browse/IDMAPPS-3073
+            //,
+            //
+            //deleteOptions : {
+            //	isDeletable : function(bean) {
+            //		return (bean.deletable);
+            //	},
+            //	onDelete : function(bean) {
+            //	$this.deleteTask(bean.id);
+            //}
 			emptyResultsText : localeManager["openiam.ui.selfservice.my.tasks.have.tasks.assigned"]
 		});
 		

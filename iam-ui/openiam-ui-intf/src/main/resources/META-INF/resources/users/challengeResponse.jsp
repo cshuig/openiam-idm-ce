@@ -117,7 +117,8 @@ response.setDateHeader ("Expires", -1);
 	                        <ul class="formControls">
                                 <c:if test="${not requestScope.readOnly}">
                                     <li class="leftBtn">
-                                        <a href="myInfo.html" class="whiteBtn"><spring:message code="openiam.ui.common.cancel" /></a>
+                                        <c:set var="cancelUrl" value="${requestScope.auth? '/idp/logout.html': '/selfservice/myInfo.html'}" />
+                                        <a href="${cancelUrl}" class="whiteBtn"><spring:message code="openiam.ui.common.cancel" /></a>
                                     </li>
                                     <li class="rightBtn">
                                         <a href="javascript:void(0)">

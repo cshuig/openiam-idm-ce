@@ -42,6 +42,9 @@ class AuditReport implements ReportDataSetBuilder {
     final static Language DEFAULT_LANGUAGE = new Language(id: 1)
     final static int USERS_LIMIT = 10000
 
+    private Long startTime = 0
+    private int PROCESSING_TIMEOUT = 290
+
     private OrganizationDataService organizationService
     private UserDataService userDataService
     private ManagedSystemService managedSystemService
@@ -51,6 +54,7 @@ class AuditReport implements ReportDataSetBuilder {
     private AuditLogService auditLogService
 
     DateFormat dateFormat
+    DateFormat dateTimeFormat
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -59,6 +63,8 @@ class AuditReport implements ReportDataSetBuilder {
 
     @Override
     ReportDataDto getReportData(ReportQueryDto query) {
+
+        startTime = new Date().time
 
         def listParameter = query.getParameterValue("GET_VALUES")
         if (listParameter) {
@@ -113,19 +119,11 @@ class AuditReport implements ReportDataSetBuilder {
             def Date sDate = startDate ? dateFormat.parse(startDate) : null
             def Date eDate = endDate ? dateFormat.parse(endDate) : null
 
-	        if (startDate) {
-                logSearchBean.from = sDate
-            }
-	        if (endDate) {
-                logSearchBean.to = eDate
-            }
-	        if (action) {
-                logSearchBean.action = action
-            }
-	        if (userId) {
-                logSearchBean.userId = userId
-            }
-            logSearchBean.sortBy = [new SortParam(OrderConstants.ASC, "timestamp")] as List
+            logSearchBean.from = sDate
+            logSearchBean.to = eDate
+            logSearchBean.action = action ?: null
+            logSearchBean.userId = userId ?: null
+            logSearchBean.sortBy = [new SortParam(OrderConstants.DESC, "timestamp")] as List
             auditLogs = auditLogService.findBeans(logSearchBean, 0, 1000)
         }
 
@@ -140,12 +138,32 @@ class AuditReport implements ReportDataSetBuilder {
                     searchBean.addOrganizationId(orgId)
                     userIds = userDataService.findBeans(searchBean, 0, USERS_LIMIT)?.id
                 }
+                def counter = 0
+                def total = auditLogs.size()
                 for(IdmAuditLog a : auditLogs) {
+                    ++counter
                     if (!orgId || (a.userId in userIds)) {
+                        if (counter % 100 == 0) {
+                            def duration = ((new Date().time - startTime) / 1000) as int
+                            println ">>> Audit report: $counter records processed. Duration: $duration sec"
+                            if (PROCESSING_TIMEOUT <= duration) {
+                                println ">>> Audit report: Processing timeout reached: $PROCESSING_TIMEOUT sec. $counter of $total records processed."
+                                break
+                            }
+                        }
                         addMainTableRow(a, reportTable, "")
                     }
                 }
-                break;
+                if (counter < total) {
+                    // add warning
+                    def row = new ReportRow()
+                    def msg = "Processing timeout reached. " +
+                            "Log records processed: $counter of $total. " +
+                            "Define stricter parameters to get complete report" as String
+                    row.column.add(new ReportColumn('WARNING', msg))
+                    reportTable.row.add(row)
+                }
+                break
             case "DETAILS":
                 reportTable.name = "AuditReportDetails"
                 for(IdmAuditLog a : auditLogs) {
@@ -171,29 +189,20 @@ class AuditReport implements ReportDataSetBuilder {
         return packReportTable(reportTable)
     }
 
-    private void addMainTableRow(IdmAuditLog a, ReportTable reportTable, String parentActionId) {
+    private void addMainTableRow(IdmAuditLog log, ReportTable reportTable, String parentActionId) {
+        IdmAuditLog a = auditLogService.findById(log.id)
         ReportRow row = new ReportRow()
         row.column.add(new ReportColumn('LOG_ID', a.id))
-        row.column.add(new ReportColumn('ACTION_ID', a.action))
+        row.column.add(new ReportColumn('ACTION', a.action))
         row.column.add(new ReportColumn('PARENT_ACTION_ID', parentActionId))
         row.column.add(new ReportColumn('ACTION_STATUS', a.result))
-        row.column.add(new ReportColumn('ACTION_DATETIME', a.timestamp.toString()))
+        row.column.add(new ReportColumn('ACTION_DATETIME', a.timestamp ? dateTimeFormat.format(a.timestamp) : null))
         row.column.add(new ReportColumn('LOGIN_ID', a.principal))
-        row.column.add(new ReportColumn('HOST', a.nodeIP))
-        row.column.add(new ReportColumn('CLIENT_ID', a.clientIP))
         row.column.add(new ReportColumn('TARGET_SYSTEM_ID', a.managedSysId))
         row.column.add(new ReportColumn('TARGET_SYSTEM_NAME', getManagedSys(a.managedSysId)?.name))
-        row.column.add(new ReportColumn('SESSION_ID', a.sessionID))
 
-        row.column.add(new ReportColumn('REQ_USER_ID', a.userId))
-		row.column.add(new ReportColumn('REQ_FULLNAME', getUserFullName(getUser(a.userId))))
-
-        def String targetUserId = getTargetUser(a.targets)
-        row.column.add(new ReportColumn('TARGET_USER_ID', targetUserId))
-        row.column.add(new ReportColumn('TARGET_FULLNAME', getUserFullName(getUser(targetUserId))))
-
-        row.column.add(new ReportColumn('DEPT_ID', ""))
-        row.column.add(new ReportColumn('DEPT_NAME', ""))
+        def String target = getTargets(a.targets)
+        row.column.add(new ReportColumn('TARGET', target))
         reportTable.row.add(row)
     }
 
@@ -261,14 +270,39 @@ class AuditReport implements ReportDataSetBuilder {
         }
     }
 
-    private static String getTargetUser(Set<AuditLogTarget> targets) {
-        for(AuditLogTarget target in targets) {
-            if ("USER" == target.targetType) {
-                return target.targetId
-            }
+    private String getTargets(Set<AuditLogTarget> targets) {
+        def results = []
+        targets.sort({a,b -> compare(a, b)}).each { t ->
+            String name = getTargetName(t) ?: t.objectPrincipal
+            results += "[${t.targetType}]$name"
         }
-        return null;
+        return results.join(", ")
     }
+
+    private static int compare(AuditLogTarget t1, AuditLogTarget t2) {
+        return t1.targetType == "USER" ? -1 : t2.targetType == "USER" ? 1 : t1.targetType <=> t2.targetType
+    }
+
+    private String getTargetName(AuditLogTarget target) {
+        switch (target.targetType) {
+            case "USER":
+                def user = userDataService.getUser(target.targetId)
+                return user ? getUserFullName(user) : null
+            case "RESOURCE":
+                ResourceEntity resource = resourceService.findResourceById(target.targetId)
+                return resource?.name
+            case "ROLE":
+                RoleEntity role = roleDataService.getRole(target.targetId)
+                return role?.name
+            case "GROUP":
+                GroupEntity group = groupDataService.getGroup(target.targetId)
+                return group?.name
+            case "MANAGED_SYS":
+                return target.objectPrincipal
+        }
+        return null
+    }
+
 
     private Map<String, UserEntity> userCache = new HashMap<String, UserEntity>()
     private Map<String, ManagedSysEntity> manSysCache = new HashMap<String, ManagedSysEntity>()

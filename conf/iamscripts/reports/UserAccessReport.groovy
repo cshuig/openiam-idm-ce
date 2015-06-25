@@ -6,6 +6,7 @@ import org.openiam.authmanager.service.AuthorizationManagerAdminService
 import org.openiam.idm.searchbeans.ResourceSearchBean
 import org.openiam.idm.searchbeans.UserSearchBean
 import org.openiam.idm.srvc.audit.service.AuditLogService
+import org.openiam.idm.srvc.grp.dto.Group
 import org.openiam.idm.srvc.grp.service.GroupDataService
 import org.openiam.idm.srvc.lang.domain.LanguageEntity
 import org.openiam.idm.srvc.lang.dto.Language
@@ -84,6 +85,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
 
         def String orgId = query.getParameterValue("ORG_ID")
         def String roleId = query.getParameterValue("ROLE_ID")
+        def String groupId = query.getParameterValue("GROUP_ID")
         def String userId = query.getParameterValue("USER_ID")
         def String risk = query.getParameterValue("RISK")?.toUpperCase()
         def String manSysId = query.getParameterValue("MANAGED_SYS_ID")
@@ -105,6 +107,10 @@ public class UserAccessReport implements ReportDataSetBuilder {
             if (roleId) {
                 def Role bean = roleService.getRoleDTO(roleId)
                 row.column.add(new ReportColumn('ROLE', bean?.name ?: NOT_FOUND))
+            }
+            if (groupId) {
+                def Group bean = groupService.getGroupDTO(groupId)
+                row.column.add(new ReportColumn('GROUP', bean?.name ?: NOT_FOUND))
             }
             if (userId) {
                 def searchBean = new UserSearchBean(deepCopy: false, key: userId)
@@ -147,7 +153,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
 
             reportTable.setName("details")
 
-            def messages = validateParameters(orgId, roleId, userId, risk, manSysId, resTypeIds, resIds) as String[]
+            def messages = validateParameters(orgId, roleId, groupId, userId, risk, manSysId, resTypeIds, resIds) as String[]
             if (messages) {
                 for(def msg : messages) {
                     def ReportRow row = new ReportRow()
@@ -205,7 +211,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
                     })?.id
                 }
 
-                boolean isUserFilterDefined = userId || roleId || orgId
+                boolean isUserFilterDefined = userId || roleId || groupId || orgId
 
                 def searchBean = new UserSearchBean(deepCopy: false)
                 def users = [] as List<UserEntity>
@@ -218,6 +224,7 @@ public class UserAccessReport implements ReportDataSetBuilder {
                     } else {
                         if (orgId) searchBean.organizationIdSet = [orgId] as Set
                         if (roleId) searchBean.roleIdSet = [roleId] as Set
+                        if (groupId) searchBean.groupIdSet = [groupId] as Set
                     }
                     users = userDataService.findBeans(searchBean, 0, USERS_LIMIT)
                 }
@@ -299,11 +306,11 @@ public class UserAccessReport implements ReportDataSetBuilder {
         }
     }
 
-    def validateParameters(String orgId, String roleId, String userId, String risk, String manSysId,
+    def validateParameters(String orgId, String roleId, String groupId, String userId, String risk, String manSysId,
                                   String[] resTypeIds, String[] resIds) {
         def violations = [] as List
-        if (userId && (orgId || roleId))
-            violations.add "Parameters 'Organization' and 'Role' are ignored when 'User' is specified"
+        if (userId && (orgId || roleId || groupId))
+            violations.add "Parameters 'Organization', 'Group' and 'Role' are ignored when 'User' is specified"
         if (!EmptyMultiValue(resIds) && manSysId) {
             violations.add "Parameter 'Managed system' is ignored when 'Resource' is specified"
         }

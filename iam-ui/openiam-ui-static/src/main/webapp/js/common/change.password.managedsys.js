@@ -31,7 +31,7 @@ OPENIAM.ChangePasswordMsys = {
     },
     post: function () {
         $.ajax({
-            "url": OPENIAM.ENV.ContextPath + "/rest/api/prov/resetPasswordSelfService",
+            "url": OPENIAM.ENV.ContextPath + "/rest/api/prov/changePasswordForManagedSystem",
             "data": JSON.stringify(OPENIAM.ChangePasswordMsys.toJson()),
             contentType: "application/json",
             type: "POST",

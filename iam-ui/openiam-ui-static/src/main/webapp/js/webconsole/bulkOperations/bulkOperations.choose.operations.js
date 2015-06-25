@@ -91,14 +91,24 @@ OPENIAM.BulkChooseOperations = {
                 operationSelect.className = "ctrlElement";
                 var option = document.createElement("option");
                 option.value = '';
-                option.text = localeManager["openiam.ui.common.please.select"];
+                //option.text = localeManager["openiam.ui.common.please.select"];
+                if (typeof(option.innerText) != 'undefined'){
+                        option.innerText = localeManager["openiam.ui.common.please.select"];
+                    } else {
+                        option.text = localeManager["openiam.ui.common.please.select"];
+                    }
                 operationSelect.appendChild(option);
 
                 var operations = operationBeans[objType];
                 $.each(operations, function(k, v) {
                     var option = document.createElement("option");
                     option.value = k;
-                    option.text = v;
+                    //option.text = v;
+                    if (typeof(option.innerText) != 'undefined') {
+                        option.innerText = v;
+                    } else {
+                        option.text = v;
+                    }
                     operationSelect.appendChild(option);
                 });
 

@@ -57,12 +57,22 @@ OPENIAM.BulkOperationsSearchGroup = {
             mngSysSelect.className = "ctrlElement";
             var option = document.createElement("option");
             option.value = '';
-            option.text = localeManager["openiam.ui.common.please.select"];
+            //option.text = localeManager["openiam.ui.common.please.select"];
+            if (typeof(option.innerText) != 'undefined'){
+                option.innerText = localeManager["openiam.ui.common.please.select"];
+            } else {
+                option.text = localeManager["openiam.ui.common.please.select"];
+            }
             mngSysSelect.appendChild(option);
             $(metaDataBeans).each(function(i, e) {
                 var option = document.createElement("option");
                 option.value = e.id;
-                option.text = e.name;
+                //option.text = e.name;
+                if (typeof(option.innerText) != 'undefined') {
+                    option.innerText = e.name;
+                } else {
+                    option.text = e.name;
+                }
                 mngSysSelect.appendChild(option);
             });
             r2c2.appendChild(mngSysSelect);

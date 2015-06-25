@@ -1,11 +1,12 @@
 import org.openiam.idm.srvc.auth.login.LoginDataService
+import org.openiam.idm.util.Transliterator
 
 if (user.email) {
 	output = user.email
 } else {
 
 	def loginManager = context.getBean("loginManager") as LoginDataService
-    def loginID = user.firstName + "." + user.lastName
+    def loginID = Transliterator.transliterate(user.firstName + "." + user.lastName, true)
 
 	ctr = 1;
 	def origLoginID = loginID

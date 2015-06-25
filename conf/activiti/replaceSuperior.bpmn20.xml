@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="ReplaceSuperior" id="definitions">
+  <process id="replaceSuperior" isExecutable="true">
+    <startEvent id="startProcess" name="Start process"></startEvent>
+    <serviceTask id="notifyOldManager" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.ReplaceSuperiorNotifierDelegate" name="Notify old manager">
+      <extensionElements>
+        <activiti:field name="notifySuperior" stringValue="current" />
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="startProcessFlow" sourceRef="startProcess" targetRef="notifyOldManager"></sequenceFlow>
+    <userTask id="decideOldManager" name="Decide old manager">
+    	<extensionElements>
+			<activiti:taskListener event="create" class="org.openiam.bpm.activiti.tasklistener.AddEditUserCandidateTaskListener" />
+		</extensionElements>
+    </userTask>
+    <sequenceFlow id="notifyOldManagerFlow" sourceRef="notifyOldManager" targetRef="decideOldManager"></sequenceFlow>
+    <sequenceFlow id="decideOldManagerFlow" sourceRef="decideOldManager" targetRef="oldManagerDecideGateway"></sequenceFlow>
+     
+    <exclusiveGateway id="oldManagerDecideGateway" name="Old manager decide gateway"></exclusiveGateway>
+    <serviceTask id="acceptOldManager" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.AcceptEntitlementsNotifierDelegate" name="Accept old manager"></serviceTask>
+    <sequenceFlow id="oldManagerDecideGatewayAccept" sourceRef="oldManagerDecideGateway" targetRef="acceptOldManager">
+    	<conditionExpression xsi:type="tFormalExpression">
+			${IsTaskApproved}
+		</conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="rejectOldManager" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.RejectEntitlementsNotifierDelegate" name="Reject old manager"></serviceTask>
+    <sequenceFlow id="oldManagerDecideGatewayReject" sourceRef="oldManagerDecideGateway" targetRef="rejectOldManager">
+    <conditionExpression xsi:type="tFormalExpression">
+			${!IsTaskApproved}
+		</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="rejectOldManagerEnd" sourceRef="rejectOldManager" targetRef="endProcess"></sequenceFlow>
+    <serviceTask id="notifyNewManager" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.ReplaceSuperiorNotifierDelegate" name="Notify new manager">
+      <extensionElements>
+        <activiti:field name="notifySuperior" stringValue="new" />
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="acceptOldManagerFlow" sourceRef="acceptOldManager" targetRef="notifyNewManager"></sequenceFlow>        
+    <sequenceFlow id="notifyNewManagerFlow" sourceRef="notifyNewManager" targetRef="decideNewManager"></sequenceFlow>
+    <userTask id="decideNewManager" name="Decide new manager">
+    	<extensionElements>
+			<activiti:taskListener event="create" class="org.openiam.bpm.activiti.tasklistener.AddEditUserCandidateTaskListener" />
+		</extensionElements>
+    </userTask>
+    <exclusiveGateway id="newManagerDecideGateway" name="New manager decide gateway"></exclusiveGateway>
+    <sequenceFlow id="decideNewManagerFlow" sourceRef="decideNewManager" targetRef="newManagerDecideGateway"></sequenceFlow>
+    <serviceTask id="acceptNewManager" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.ReplaceSuperior" name="Replace manager action">
+    </serviceTask>
+    <sequenceFlow id="newManagerDecideGatewayAcceptFlow" sourceRef="newManagerDecideGateway" targetRef="acceptNewManager">
+    <conditionExpression xsi:type="tFormalExpression">
+			${IsTaskApproved}
+		</conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="rejectNewManager" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.RejectEntitlementsNotifierDelegate" name="Reject new manager notify">
+    </serviceTask>
+    <sequenceFlow id="newManagerDecideGatewayRejectFlow" sourceRef="newManagerDecideGateway" targetRef="rejectNewManager">
+    <conditionExpression xsi:type="tFormalExpression">
+			${!IsTaskApproved}
+		</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="rejectNewManagerFlow" sourceRef="rejectNewManager" targetRef="endProcess"></sequenceFlow>
+    <serviceTask id="replaceManagerNotify" activiti:class="org.openiam.bpm.activiti.delegate.entitlements.AcceptEntitlementsNotifierDelegate" name="Accept new manager notify"></serviceTask>
+    <sequenceFlow id="acceptNewManagerFlow" sourceRef="acceptNewManager" targetRef="replaceManagerNotify"></sequenceFlow>
+    <sequenceFlow id="replaceManagerNotifyFlow" sourceRef="replaceManagerNotify" targetRef="endProcess"></sequenceFlow>    
+    
+    <endEvent id="endProcess" name="End process"></endEvent>
+  </process>
+</definitions>

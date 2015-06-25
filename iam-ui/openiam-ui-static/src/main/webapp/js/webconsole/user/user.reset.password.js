@@ -4,15 +4,18 @@ OPENIAM.activateFlag = false;
 OPENIAM.User.ResetPassword = {
     init: function () {
 
-        $("#autoGeneratePassword").change(function () {
+        var $autoGenHidden = $("input:hidden.autoGeneratePassword");
+        var $autoGenChbx = $("input:checkbox.autoGeneratePassword");
+        if ($autoGenHidden.length > 0 && $autoGenHidden[0].value ||
+            $autoGenChbx.length > 0 && $autoGenChbx[0].checked) {
+            $(".passwordField").hide();
+        }
+
+        $autoGenChbx.change(function () {
             if (this.checked) {
-                $("#passwordLabel, #confirmPasswordLabel").hide();
-                $("#password, #confirmPassword").val("").hide();
-                $("#passwordRules").val("").hide();
+                $(".passwordField").hide();
             } else {
-                $("#passwordLabel, #confirmPasswordLabel").show();
-                $("#password, #confirmPassword").val("").show();
-                $("#passwordRules").val("").show();
+                $(".passwordField").show();
             }
         });
 
@@ -113,8 +116,8 @@ OPENIAM.User.ResetPassword = {
         obj.password = $("#password").val();
         obj.confPassword = $("#confirmPassword").val();
         obj.managedSystem = selectedManagedSystems;
-        obj.notifyUserViaEmail = $("#notifyUserViaEmail").is(':checked');
-        obj.autoGeneratePassword = $("#autoGeneratePassword").is(':checked');
+        obj.notifyUserViaEmail = $("input:checkbox.notifyUserViaEmail").is(':checked') || $("input:hidden.notifyUserViaEmail").val();
+        obj.autoGeneratePassword = $("input:checkbox.autoGeneratePassword").is(':checked') || $("input:hidden.autoGeneratePassword").val();
         obj.userActivateFlag = OPENIAM.activateFlag;
 
         return obj;
@@ -130,7 +133,7 @@ OPENIAM.User.ResetPassword = {
             success: function (data, textStatus, jqXHR) {
                 if (data.status == 200) {
                     OPENIAM.Modal.Success({
-                        message: data.successMessage, showInterval: 2000, onIntervalClose: function () {
+                        message: data.successMessage, showInterval: 2000, afterClose: function () {
                             if (callback)
                                 callback.call(data);
                             else if (data.redirectURL) {
@@ -152,7 +155,6 @@ OPENIAM.User.ResetPassword = {
         });
     },
 
-
     initManagedSystems: function () {
         var $managedSystem = $("#managedSystem");
         $managedSystem.find('option').remove().end();
@@ -161,7 +163,15 @@ OPENIAM.User.ResetPassword = {
             option.val(key).text(bean.name);
             $managedSystem.append(option);
         });
-        $managedSystem.multiselect({height: 100}).multiselect("checkAll");
+        if (OPENIAM.ENV.ResetPasswordManagedSystems && OPENIAM.ENV.ResetPasswordManagedSystems.length > 0) {
+            $.each(OPENIAM.ENV.ResetPasswordManagedSystems, function (i, item) {
+                $managedSystem.multiselect({height: 100}).multiselect("widget").find(":checkbox[value='" + item + "']").each(function(){
+                    this.click();
+                });
+            });
+        } else {
+            $managedSystem.multiselect({height: 100}).multiselect("checkAll");
+        }
     }
 
 };
@@ -169,12 +179,16 @@ OPENIAM.User.ResetPassword = {
 $(document).ready(function () {
     OPENIAM.User.ResetPassword.init();
 
+    $('.hideShowPassword-field').hidePassword(true);
+
     $("#resyncPasswordBtn").on('click', function (event) {
         OPENIAM.User.ResetPassword.resyncPassword();
+        $(".passwordBlock").hide();
         return false;
     });
 
     $("#resetPasswordForm").submit(function (event) {
+        $(".passwordBlock").hide();
         if (OPENIAM.ENV.UserSecondaryStatus &&
             (OPENIAM.ENV.UserSecondaryStatus == "DISABLED" ||
             OPENIAM.ENV.UserSecondaryStatus == "INACTIVE" ||

@@ -142,9 +142,10 @@ OPENIAM.AjaxLoader.getURLOnAuthRedirect = function() {
 		currentURL += loc.search;
 	}
 	return currentURL;
-}
+};
 
 OPENIAM.NotificationPanel = {
+	/*
 	setTimeouts : function() {
 		setTimeout(function() {
 			OPENIAM.NotificationPanel.updateActivitiStatus();
@@ -177,6 +178,7 @@ OPENIAM.NotificationPanel = {
 			}
 		});
 	}
+	*/
 };
 
 $(document).ready(function() {
@@ -192,10 +194,12 @@ $(document).ready(function() {
 	});	
 	OPENIAM.Frame.initialize();
 	
+	/*
 	if(OPENIAM.ENV.CheckActivitiTasks === true) {
 		OPENIAM.NotificationPanel.updateActivitiStatus();
 		OPENIAM.NotificationPanel.setTimeouts();
 	}
+	*/
 });
 
 $(window).load(function() {

@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class Functions {
     public static String getFlagStyle(String input) {
-        String result = "background: url('%s') no-repeat scroll 0 0 rgba(0, 0, 0, 0)";
+        String result = "background: url('%s') no-repeat scroll 0 0";
         if (StringUtils.isEmpty(input))
             return String.format(result, "");
         else if (input.length() == 2) {

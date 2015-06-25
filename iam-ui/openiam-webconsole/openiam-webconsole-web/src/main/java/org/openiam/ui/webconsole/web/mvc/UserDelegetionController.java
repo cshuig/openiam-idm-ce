@@ -29,10 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class UserDelegetionController extends BaseUserController {
@@ -159,8 +156,8 @@ public class UserDelegetionController extends BaseUserController {
             // e.g. sysadmin must have the roles,groups that he wants to add for himself in delegation filter
             if (user != null) {
                 ProvisionUser pUser = new ProvisionUser(user);
-                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_GRP, DelegationFilterHelper.getValueFromList(filter.getGroupKeys())));
-                addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_ROLE,  DelegationFilterHelper.getValueFromList(filter.getRoleKeys())));
+                addAttribute(pUser, buildAttribute(DelegationFilterHelper.DLG_FLT_GRP, DelegationFilterHelper.getValueFromList(filter.getGroupKeys())));
+                addAttribute(pUser, buildAttribute(DelegationFilterHelper.DLG_FLT_ROLE,  DelegationFilterHelper.getValueFromList(filter.getRoleKeys())));
                 addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_ORG, DelegationFilterHelper.getValueFromList(filter.getOrgFilterKeys())));
                 addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_DIV, DelegationFilterHelper.getValueFromList(filter.getDivFilterKeys())));
                 addAttribute(pUser, new UserAttribute(DelegationFilterHelper.DLG_FLT_DEPT, DelegationFilterHelper.getValueFromList(filter.getDeptFilterKeys())));
@@ -183,6 +180,32 @@ public class UserDelegetionController extends BaseUserController {
         }
         request.setAttribute("response", ajaxResponse);
         return "common/basic.ajax.response";
+    }
+
+    private UserAttribute buildAttribute(String name, String value) {
+        UserAttribute attribute = new UserAttribute(name, null);
+        if (value == null || value.length() <= 4000) {
+            attribute.setValue(value);
+        } else {
+            // split value to chunks
+            List<String> values = new ArrayList<>();
+            int pos = 0;
+            while (true) {
+                int newPos = (pos + 255 < value.length()) ? (value.lastIndexOf(',', pos + 255) + 1) : 0;
+                if (newPos == 0) {
+                    newPos = value.length() + 1;
+                }
+                if (newPos == pos) {
+                    break;
+                }
+                values.add(value.substring(pos, newPos - 1) + ',');
+                pos = newPos;
+            }
+
+            attribute.setIsMultivalued(true);
+            attribute.setValues(values);
+        }
+        return attribute;
     }
 
     private void addAttribute(ProvisionUser pUser, UserAttribute userAttr) {

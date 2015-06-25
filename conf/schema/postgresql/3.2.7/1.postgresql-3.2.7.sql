@@ -1,4 +1,3 @@
-﻿
 CREATE TABLE ADDRESS (
   ADDRESS_ID varchar(32) NOT NULL,
   NAME varchar(100) DEFAULT NULL,

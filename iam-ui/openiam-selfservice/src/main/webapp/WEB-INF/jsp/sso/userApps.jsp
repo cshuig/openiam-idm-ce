@@ -39,14 +39,14 @@
             <c:choose>
                   <c:when test="${! empty requestScope.applications and fn:length(applications) > 0}">
                         <div>
-                              <fmt:message key="selfservice.sso.empty" />
-                              :
+                              <fmt:message key="selfservice.sso.empty" /> :
                         </div>
+                        <div class="app-list">
                         <ul>
                               <c:forEach var="application" items="${requestScope.applications}">
-                                    <li><c:choose>
+                                    <li id="app-${application.id}"><c:choose>
                                                 <c:when test="${! empty application.url}">
-                                                      <a href="${application.url}" target="_blank">${application.name}</a>
+                                                      <a href="${application.url}" target="_blank" class="app-link"><span>${application.name}</span></a>
                                                 </c:when>
                                                 <c:otherwise>
                                                       <span>${application.name}</span>

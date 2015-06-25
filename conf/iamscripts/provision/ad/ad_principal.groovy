@@ -1,4 +1,5 @@
 import org.openiam.idm.srvc.auth.login.LoginDataService
+import org.openiam.idm.util.Transliterator
 import org.openiam.provision.resp.LookupUserResponse
 import org.openiam.provision.service.ProvisionService
 import org.openiam.provision.type.ExtensibleAttribute
@@ -8,7 +9,7 @@ output = null
 
 if (managedSysId) {
 
-    loginId = user.firstName + "." + user.lastName
+    loginId = Transliterator.transliterate(user.firstName + "." + user.lastName, true)
 
     //check on length
     if (loginId.length() > 17) {

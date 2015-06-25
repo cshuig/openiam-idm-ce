@@ -71,7 +71,7 @@ public class OpenIAMPostAuthFilter extends GenericFilterBean {
                     final boolean isSecurityQuestionsAnswered = details.isIdentityQuestionsAnswered();
                     log.debug(String.format("Details: %s, questions answered: %s", details, isSecurityQuestionsAnswered));
                     if(!isSecurityQuestionsAnswered) {
-                        redirectURL = challengeResponseURL + (challengeResponseURL.contains("?")? challengeResponseURL+"&": "?") + "postbackUrl=" + requestURI;
+                        redirectURL = challengeResponseURL + (challengeResponseURL.contains("?")? challengeResponseURL+"&": "?") + "postbackUrl=" + requestURI + "&auth=true";
                         log.debug(String.format("Security questions for user '%s:%s' not answered - redirecting to questions page: %s", userId, principal, redirectURL));
                     }
                 } else {

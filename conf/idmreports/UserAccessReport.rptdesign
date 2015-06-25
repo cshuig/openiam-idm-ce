@@ -44,6 +44,23 @@
                 <property name="category">Unformatted</property>
             </structure>
         </scalar-parameter>
+        <scalar-parameter name="GROUP_ID" id="1972">
+            <text-property name="helpText">Enter group ID, please</text-property>
+            <text-property name="promptText">Group ID</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
         <scalar-parameter name="RISK" id="1964">
             <text-property name="helpText">Select risk level, please</text-property>
             <text-property name="promptText">Risk</text-property>
@@ -298,12 +315,23 @@ reportContext.getDesignHandle().findDataSource("Data Source").setProperty("conne
                     <property name="isOutput">false</property>
                 </structure>
                 <structure>
+                    <property name="name">GROUP_ID</property>
+                    <property name="paramName">GROUP_ID</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">3</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
                     <property name="name">RISK</property>
                     <property name="paramName">RISK</property>
                     <property name="nativeName"></property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -314,7 +342,7 @@ reportContext.getDesignHandle().findDataSource("Data Source").setProperty("conne
                     <property name="nativeName"></property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -325,7 +353,7 @@ reportContext.getDesignHandle().findDataSource("Data Source").setProperty("conne
                     <property name="nativeName"></property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -335,7 +363,7 @@ reportContext.getDesignHandle().findDataSource("Data Source").setProperty("conne
                     <property name="nativeName">RES_TYPE_IDS</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                     <expression name="defaultValue" type="javascript">multiParameterToXml("RES_TYPE_IDS")</expression>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -345,7 +373,7 @@ reportContext.getDesignHandle().findDataSource("Data Source").setProperty("conne
                     <property name="nativeName">RESOURCE_IDS</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                     <expression name="defaultValue" type="javascript">multiParameterToXml("RESOURCE_IDS")</expression>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -515,6 +543,9 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
 			<entry key="ROLE_ID">
                <value>&amp;?ROLE_ID?&amp;</value>
             </entry>
+			<entry key="GROUP_ID">
+               <value>&amp;?GROUP_ID?&amp;</value>
+            </entry>
 			<entry key="RISK">
                <value>&amp;?RISK?&amp;</value>
             </entry>
@@ -577,6 +608,11 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <text-property name="heading">ROLE</text-property>
                 </structure>
                 <structure>
+                    <property name="columnName">GROUP</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="heading">GROUP</text-property>
+                </structure>
+                <structure>
                     <property name="columnName">RISK</property>
                     <property name="analysis">dimension</property>
                     <text-property name="heading">RISK</text-property>
@@ -616,12 +652,23 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="isOutput">false</property>
                 </structure>
                 <structure>
+                    <property name="name">GROUP_ID</property>
+                    <property name="paramName">GROUP_ID</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">3</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
                     <property name="name">RISK</property>
                     <property name="paramName">RISK</property>
                     <property name="nativeName"></property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -632,7 +679,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="nativeName"></property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -643,7 +690,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="nativeName"></property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                     <property name="isOptional">false</property>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -653,7 +700,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="nativeName">RES_TYPE_IDS</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                     <expression name="defaultValue" type="javascript">multiParameterToXml("RES_TYPE_IDS")</expression>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -663,7 +710,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="nativeName">RESOURCE_IDS</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">1</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                     <expression name="defaultValue" type="javascript">multiParameterToXml("RESOURCE_IDS")</expression>
                     <property name="isInput">true</property>
                     <property name="isOutput">false</property>
@@ -683,26 +730,31 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     </structure>
                     <structure>
                         <property name="position">3</property>
-                        <property name="name">RISK</property>
+                        <property name="name">GROUP</property>
                         <property name="dataType">string</property>
                     </structure>
                     <structure>
                         <property name="position">4</property>
-                        <property name="name">MANAGED_SYSTEM</property>
+                        <property name="name">RISK</property>
                         <property name="dataType">string</property>
                     </structure>
                     <structure>
                         <property name="position">5</property>
-                        <property name="name">USER</property>
+                        <property name="name">MANAGED_SYSTEM</property>
                         <property name="dataType">string</property>
                     </structure>
                     <structure>
                         <property name="position">6</property>
-                        <property name="name">RES_TYPES</property>
+                        <property name="name">USER</property>
                         <property name="dataType">string</property>
                     </structure>
                     <structure>
                         <property name="position">7</property>
+                        <property name="name">RES_TYPES</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
                         <property name="name">RESOURCES</property>
                         <property name="dataType">string</property>
                     </structure>
@@ -726,34 +778,41 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                 </structure>
                 <structure>
                     <property name="position">3</property>
+                    <property name="name">GROUP</property>
+                    <property name="nativeName">GROUP</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
                     <property name="name">RISK</property>
                     <property name="nativeName">RISK</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">12</property>
                 </structure>
                 <structure>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                     <property name="name">MANAGED_SYSTEM</property>
                     <property name="nativeName">MANAGED_SYSTEM</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">12</property>
                 </structure>
                 <structure>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                     <property name="name">USER</property>
                     <property name="nativeName">USER</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">12</property>
                 </structure>
                 <structure>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                     <property name="name">RES_TYPES</property>
                     <property name="nativeName">RES_TYPES</property>
                     <property name="dataType">string</property>
                     <property name="nativeDataType">12</property>
                 </structure>
                 <structure>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                     <property name="name">RESOURCES</property>
                     <property name="nativeName">RESOURCES</property>
                     <property name="dataType">string</property>
@@ -776,6 +835,9 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             </entry>
 			<entry key="ROLE_ID">
                <value>&amp;?ROLE_ID?&amp;</value>
+            </entry>
+			<entry key="GROUP_ID">
+               <value>&amp;?GROUP_ID?&amp;</value>
             </entry>
 			<entry key="RISK">
                <value>&amp;?RISK?&amp;</value>
@@ -830,7 +892,7 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             <list-property name="privateDriverProperties">
                 <ex-property>
                     <name>xmlQueryText</name>
-                    <value>table0#-TNAME-#table0#:#[/soap:Envelope/soap:Body/ns2:executeQueryResponse/return/ReportData/ns2:reportTable[@name='head']/row]#:#{ORGANIZATION;STRING;/column[@name='ORGANIZATION']/value},{ROLE;STRING;/column[@name='ROLE']/value},{RISK;STRING;/column[@name='RISK']/value},{MANAGED_SYSTEM;STRING;/column[@name='MANAGED_SYSTEM']/value},{USER;STRING;/column[@name='USER']/value},{RES_TYPES;STRING;/column[@name='RES_TYPES']/value},{RESOURCES;STRING;/column[@name='RESOURCES']/value}#:#&lt;"ns2","urn:idm.openiam.org%srvc%report%service";"soap","http:%%schemas.xmlsoap.org%soap%envelope%"></value>
+                    <value>table0#-TNAME-#table0#:#[/soap:Envelope/soap:Body/ns2:executeQueryResponse/return/ReportData/ns2:reportTable[@name='head']/row]#:#{ORGANIZATION;STRING;/column[@name='ORGANIZATION']/value},{ROLE;STRING;/column[@name='ROLE']/value},{GROUP;STRING;/column[@name='GROUP']/value},{RISK;STRING;/column[@name='RISK']/value},{MANAGED_SYSTEM;STRING;/column[@name='MANAGED_SYSTEM']/value},{USER;STRING;/column[@name='USER']/value},{RES_TYPES;STRING;/column[@name='RES_TYPES']/value},{RESOURCES;STRING;/column[@name='RESOURCES']/value}#:#&lt;"ns2","urn:idm.openiam.org%srvc%report%service";"soap","http:%%schemas.xmlsoap.org%soap%envelope%"></value>
                 </ex-property>
                 <ex-property>
                     <name>operationTrace</name>
@@ -935,6 +997,12 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                     <property name="name">ROLE</property>
                     <text-property name="displayName">ROLE</text-property>
                     <expression name="expression" type="javascript">dataSetRow["ROLE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">GROUP</property>
+                    <text-property name="displayName">GROUP</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["GROUP"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
@@ -1065,6 +1133,27 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
                                 <data id="1960">
                                     <property name="textAlign">left</property>
                                     <property name="resultSetColumn">ROLE</property>
+                                </data>
+                            </cell>
+                        </row>
+                        <row id="19053">
+                            <list-property name="visibility">
+                                <structure>
+                                    <property name="format">all</property>
+                                    <expression name="valueExpr" type="javascript">!params["GROUP_ID"].value</expression>
+                                </structure>
+                            </list-property>
+                            <cell id="19054">
+                                <label id="19056">
+                                    <property name="fontWeight">bold</property>
+                                    <property name="textAlign">left</property>
+                                    <text-property name="text">Group:</text-property>
+                                </label>
+                            </cell>
+                            <cell id="19055">
+                                <data id="19057">
+                                    <property name="textAlign">left</property>
+                                    <property name="resultSetColumn">GROUP</property>
                                 </data>
                             </cell>
                         </row>

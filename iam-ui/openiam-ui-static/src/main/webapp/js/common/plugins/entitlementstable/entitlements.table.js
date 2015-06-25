@@ -632,19 +632,44 @@
                     pagesizeCtrl.className = "pagesize";
                     var opt1 = document.createElement("option");
                     opt1.value = "20";
-                    opt1.text = "20";
+                    //opt1.text = "20";
+                    if (typeof(opt1.innerText) != 'undefined'){
+                        opt1.innerText = "20";
+                    } else {
+                        opt1.text = "20";
+                    }
                     var opt2 = document.createElement("option");
                     opt2.value = "50";
-                    opt2.text = "50";
+                    //opt2.text = "50";
+                    if (typeof(opt2.innerText) != 'undefined'){
+                        opt2.innerText = "50";
+                    } else {
+                        opt2.text = "50";
+                    }
                     var opt3 = document.createElement("option");
                     opt3.value = "100";
-                    opt3.text = "100";
+                    //opt3.text = "100";
+                    if (typeof(opt3.innerText) != 'undefined'){
+                        opt3.innerText = "100";
+                    } else {
+                        opt3.text = "100";
+                    }
                     var opt4 = document.createElement("option");
                     opt4.value = "200";
-                    opt4.text = "200";
+                    //opt4.text = "200";
+                    if (typeof(opt4.innerText) != 'undefined'){
+                        opt4.innerText = "200";
+                    } else {
+                        opt4.text = "200";
+                    }
                     var opt5 = document.createElement("option");
                     opt5.value = "500";
-                    opt5.text = "500";
+                    //opt5.text = "500";
+                    if (typeof(opt5.innerText) != 'undefined'){
+                        opt5.innerText = "500";
+                    } else {
+                        opt5.text = "500";
+                    }
 
                     $(pagesizeCtrl).append(opt1, opt2, opt3, opt4, opt5).val(pageSize).change(function () {
                         $options.pageSize = $(this).val();

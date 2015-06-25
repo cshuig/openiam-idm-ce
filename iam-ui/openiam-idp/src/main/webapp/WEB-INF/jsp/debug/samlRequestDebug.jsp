@@ -25,7 +25,7 @@
 		<script type="text/javascript" src="/openiam-ui-static/js/common/json/json.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/js/common/openiam.common.js"></script>
 		<script type="text/javascript" src="/openiam-ui-static/plugins/placeholder/jquery.placeholder.js"></script>
-		<script type="text/javascript" src="/openiam-ui-static/idp/debug/saml.debug.js"></script>
+		<script type="text/javascript" src="/openiam-ui-static/js/idp/debug/saml.debug.js"></script>
 	
 		<script type="text/javascript">
 	    	OPENIAM = window.OPENIAM || {};
@@ -37,7 +37,38 @@
             <fmt:message key="openiam.ui.saml.request.debug.tool" />
       	</div>
       	<div class="frameContentDivider">
-            
+            <table cellpadding="8px" align="center" class="fieldset">
+				<tbody>
+					<tr>
+						<td>
+							<label>
+								<fmt:message key="openiam.ui.saml.request" />
+							</label>
+						</td>
+						<td>
+							<textarea id="samlRequest" rows="40" cols="100"></textarea>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<ul class="formControls">
+								<li class="leftBtn">
+									<a href="javascript:void(0)"> 
+										<input type="button" id="submit" class="redBtn" value="<fmt:message key='openiam.ui.common.submit' />" />
+									</a>
+								</li>
+							</ul>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<textarea id="jsonResponse" rows="40" cols="100"></textarea>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
       	</div>
 	</body>
 </html>

@@ -30,7 +30,7 @@ public class ChallengeResponseController extends AbstractChallengeResponseContro
         request.setAttribute("userId", userId);
         setMenuTree(request, userEditRootMenuId);
         request.setAttribute("readOnly", true);
-        return challengeResponse(request, userId);
+        return challengeResponse(request, userId, false);
     }
 
 }

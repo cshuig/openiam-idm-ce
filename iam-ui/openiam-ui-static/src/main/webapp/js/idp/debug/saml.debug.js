@@ -11,7 +11,18 @@ OPENIAM.SAML = {
 		});
 	},
 	debugSAMLRequest : function() {
-	
+		$.ajax({
+            url : "debugSAMLRequest.html",
+            data : {"SAMLRequest" : $("#samlRequest").val()},
+            type : "POST",
+            dataType : "text",
+            success : function(data, textStatus, jqXHR) {
+                $("#jsonResponse").val(JSON.stringify(data, null, 2));
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                OPENIAM.Modal.Error(localeManager["openiam.ui.internal.error"]);
+            }
+        });
 	},
 	debugSAMLResponse : function(value) {
 		$.ajax({

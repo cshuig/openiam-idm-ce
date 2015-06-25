@@ -59,12 +59,22 @@ OPENIAM.BulkOperationsSearchResource = {
             resourceTypeSelect.className = "ctrlElement";
             var option = document.createElement("option");
             option.value = '';
-            option.text = localeManager["openiam.ui.common.please.select"];
+            //option.text = localeManager["openiam.ui.common.please.select"];
+            if (typeof(option.innerText) != 'undefined') {
+                option.innerText = localeManager["openiam.ui.common.please.select"];
+            } else {
+                option.text = localeManager["openiam.ui.common.please.select"];
+            }
             resourceTypeSelect.appendChild(option);
             $(metaDataBeans).each(function(i, e) {
                 var option = document.createElement("option");
                 option.value = e.id;
-                option.text = e.name;
+                //option.text = e.name;
+                if (typeof(option.innerText) != 'undefined') {
+                    option.innerText = e.name;
+                } else {
+                    option.text = e.name;
+                }
                 resourceTypeSelect.appendChild(option);
             });
             r2c2.appendChild(resourceTypeSelect);
@@ -88,12 +98,22 @@ OPENIAM.BulkOperationsSearchResource = {
             resourceRiskSelect.className = "ctrlElement";
             var option = document.createElement("option");
             option.value = '';
-            option.text = localeManager["openiam.ui.common.please.select"];
+            //option.text = localeManager["openiam.ui.common.please.select"];
+            if (typeof(option.innerText) != 'undefined') {
+                option.innerText = localeManager["openiam.ui.common.please.select"];
+            } else {
+                option.text = localeManager["openiam.ui.common.please.select"];
+            }
             resourceRiskSelect.appendChild(option);
             $(metaDataBeans2).each(function(i, e) {
                 var option = document.createElement("option");
                 option.value = e.id;
-                option.text = e.name;
+                //option.text = e.name;
+                if (typeof(option.innerText) != 'undefined') {
+                    option.innerText = e.name;
+                } else {
+                    option.text = e.name;
+                }
                 resourceRiskSelect.appendChild(option);
             });
             r3c2.appendChild(resourceRiskSelect);

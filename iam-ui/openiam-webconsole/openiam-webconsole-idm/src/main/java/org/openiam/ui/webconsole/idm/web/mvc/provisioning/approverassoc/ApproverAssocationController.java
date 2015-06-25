@@ -8,8 +8,12 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.dozer.DozerBeanMapper;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.idm.srvc.audit.constant.AuditAction;
+import org.openiam.idm.srvc.audit.dto.IdmAuditLog;
+import org.openiam.idm.srvc.auth.dto.IdentityDto;
 import org.openiam.idm.srvc.grp.dto.Group;
 import org.openiam.idm.srvc.grp.ws.GroupDataWebService;
+import org.openiam.idm.srvc.lang.dto.Language;
 import org.openiam.idm.srvc.mngsys.domain.AssociationType;
 import org.openiam.idm.srvc.mngsys.dto.ApproverAssocationSearchBean;
 import org.openiam.idm.srvc.mngsys.dto.ApproverAssociation;
@@ -110,20 +114,75 @@ public class ApproverAssocationController extends AbstractController {
 	
 	@RequestMapping(value="/provisioning/saveApproverAssociations", method=RequestMethod.POST)
 	public String saveApproverAssociation(final HttpServletRequest request, @RequestBody ApproverAssociationResponseBean bean) throws JsonParseException, JsonMappingException, IOException {
+
+        final ApproverAssocationSearchBean searchBean = new ApproverAssocationSearchBean();
+        searchBean.setAssociationEntityId(bean.getEntityId());
+        searchBean.setAssociationType(bean.getType());
+        final List<ApproverAssociation> currApproverAssociations = managedSysServiceClient.getApproverAssociations(searchBean, 0, Integer.MAX_VALUE);
+
 		final List<ApproverAssociation> approverAssociationList = new LinkedList<ApproverAssociation>();
 		if(bean != null && CollectionUtils.isNotEmpty(bean.getBeans())) {
 			for(final ApproverAssociationModel model : bean.getBeans()) {
 				approverAssociationList.add(model);
 			}
 		}
-		
+
+        String requesterId = getRequesterId(request);
+        String requestorPrincipal = getRequesterPrincipal(request);
+        Language curLang = getCurrentLanguage();
+
+        IdmAuditLog idmAuditLog = new IdmAuditLog();
+        idmAuditLog.setRequestorUserId(requesterId);
+        idmAuditLog.setRequestorPrincipal(requestorPrincipal);
+        idmAuditLog.setAction(AuditAction.EDIT_APPROVER_ASSOCIATIONS.value());
+        setTargetForApproverAuditLog(idmAuditLog, bean.getType(), bean.getEntityId(), requesterId, curLang);
+
+        if (CollectionUtils.isNotEmpty(currApproverAssociations)) {
+            List<ApproverAssociation> permApproverAssociationList = new LinkedList<ApproverAssociation>();
+            for (ApproverAssociation as : approverAssociationList) {
+                boolean exists = false;
+                for (ApproverAssociation cas : currApproverAssociations) {
+                    if (StringUtils.equals(cas.getApproverEntityId(), as.getApproverEntityId()) &&
+                            cas.getApproverEntityType() == as.getApproverEntityType() &&
+                            StringUtils.equals(cas.getAssociationEntityId(), as.getAssociationEntityId()) &&
+                            cas.getAssociationType() == as.getAssociationType() &&
+                            StringUtils.equals(cas.getOnApproveEntityId(),as.getOnApproveEntityId()) &&
+                            cas.getOnApproveEntityType() == as.getOnApproveEntityType() &&
+                            StringUtils.equals(cas.getOnRejectEntityId(),as.getOnRejectEntityId()) &&
+                            cas.getOnRejectEntityType() == as.getOnRejectEntityType()) {
+                        permApproverAssociationList.add(cas);
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    IdmAuditLog childAuditLog = buildAuditLogForApprover(as, requesterId, requestorPrincipal, curLang, false);
+                    idmAuditLog.addChild(childAuditLog);
+                }
+            }
+            currApproverAssociations.removeAll(permApproverAssociationList);
+            for (ApproverAssociation das : currApproverAssociations) {
+                IdmAuditLog childAuditLog = buildAuditLogForApprover(das, requesterId, requestorPrincipal, curLang, true);
+                idmAuditLog.addChild(childAuditLog);
+            }
+        } else if (CollectionUtils.isNotEmpty(approverAssociationList)) {
+            for (ApproverAssociation as : approverAssociationList) {
+                IdmAuditLog childAuditLog = buildAuditLogForApprover(as, requesterId, requestorPrincipal, curLang, false);
+                idmAuditLog.addChild(childAuditLog);
+            }
+        }
+
 		final BasicAjaxResponse ajaxResponse = new BasicAjaxResponse();
 		final Response wsResponse = managedSysServiceClient.saveApproverAssociations(approverAssociationList, bean.getType(), bean.getEntityId());
 		Errors error = null;
 		try {
 			if(wsResponse == null) {
 				error = Errors.APPROVER_ASSOC_SAVE_ERR;
+                idmAuditLog.succeed();
+
 			} else if(wsResponse.getStatus() == ResponseStatus.FAILURE) {
+                idmAuditLog.fail();
+                idmAuditLog.setFailureReason(wsResponse.getErrorCode());
 				error = Errors.APPROVER_ASSOC_SAVE_ERR;
 				if(wsResponse.getErrorCode() != null) {
 					switch(wsResponse.getErrorCode()) {
@@ -135,6 +194,9 @@ public class ApproverAssocationController extends AbstractController {
 					}
 				}
 			}
+
+            auditLogService.addLog(idmAuditLog);
+
 		} finally {
 			if(error != null) {
 				ajaxResponse.addError(new ErrorToken(error));
@@ -147,6 +209,79 @@ public class ApproverAssocationController extends AbstractController {
 		request.setAttribute("response", ajaxResponse);
 		return "common/basic.ajax.response";
 	}
+
+    private IdmAuditLog buildAuditLogForApprover(ApproverAssociation association, String requesterId,
+                                                 String requestorPrincipal, Language curLang, boolean delete) {
+        String approverEntityId = association.getApproverEntityId();
+        String associationEntityId = association.getAssociationEntityId();
+        IdmAuditLog idmAuditLog = new IdmAuditLog();
+        idmAuditLog.setRequestorUserId(requesterId);
+        idmAuditLog.setRequestorPrincipal(requestorPrincipal);
+
+        switch (association.getAssociationType()) {
+            case GROUP:
+                idmAuditLog.setAction(delete? AuditAction.DELETE_APPROVER_FROM_GROUP.value(): AuditAction.ADD_APPROVER_TO_GROUP.value());
+                break;
+            case ORGANIZATION:
+                idmAuditLog.setAction(delete? AuditAction.DELETE_APPROVER_FROM_ORGANIZATION.value(): AuditAction.ADD_APPROVER_TO_ORGANIZATION.value());
+                break;
+            case RESOURCE:
+                idmAuditLog.setAction(delete? AuditAction.DELETE_APPROVER_FROM_RESOURCE.value(): AuditAction.ADD_APPROVER_TO_RESOURCE.value());
+                break;
+            case ROLE:
+                idmAuditLog.setAction(delete? AuditAction.DELETE_APPROVER_FROM_ROLE.value(): AuditAction.ADD_APPROVER_TO_ROLE.value());
+                break;
+            case TARGET_USER:
+                idmAuditLog.setAction(delete? AuditAction.DELETE_APPROVER_FROM_TARGET_USER.value(): AuditAction.ADD_APPROVER_TO_TARGET_USER.value());
+                break;
+            case USER:
+                idmAuditLog.setAction(delete? AuditAction.DELETE_APPROVER_FROM_USER.value(): AuditAction.ADD_APPROVER_TO_USER.value());
+                break;
+            default:
+                break;
+        }
+        setTargetForApproverAuditLog(idmAuditLog, association.getAssociationType(), associationEntityId, requesterId, curLang);
+        setTargetForApproverAuditLog(idmAuditLog, association.getApproverEntityType(), approverEntityId, requesterId, curLang);
+
+        return idmAuditLog;
+    }
+
+    private void setTargetForApproverAuditLog(IdmAuditLog idmAuditLog, AssociationType type, String entityId,
+                                              String requesterId, Language curLang) {
+        if (StringUtils.isNotBlank(entityId) && type != null) {
+            switch (type) {
+                case GROUP:
+                    final Group group = groupServiceClient.getGroup(entityId, requesterId);
+                    idmAuditLog.setTargetGroup(group.getId(), group.getName());
+                    break;
+                case ORGANIZATION:
+                    final Organization org = organizationDataService.getOrganizationLocalized(entityId, requesterId, curLang);
+                    idmAuditLog.setTargetOrg(org.getId(), org.getName());
+                    break;
+                case RESOURCE:
+                    final org.openiam.idm.srvc.res.dto.Resource res = resourceDataService.getResource(entityId, curLang);
+                    idmAuditLog.setTargetResource(res.getId(), res.getName());
+                    break;
+                case ROLE:
+                    final Role role = roleServiceClient.getRole(entityId, requesterId);
+                    idmAuditLog.setTargetRole(role.getId(), role.getName());
+                    break;
+                //case SUPERVISOR:
+                case TARGET_USER:
+                case USER:
+                    final User user = userDataWebService.getUserWithDependent(entityId, requesterId, false);
+                    String principal = user.getDisplayName();
+                    IdentityDto identity = identityWebService.getIdentityByManagedSys(entityId, defaultManagedSysId);
+                    if (identity != null) {
+                        principal = identity.getIdentity();
+                    }
+                    idmAuditLog.setTargetUser(user.getId(), principal);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 	
 	private List<ApproverAssociationModel> getApproverAssociationModal(final HttpServletRequest request, 
 																	   final AssociationType type, 

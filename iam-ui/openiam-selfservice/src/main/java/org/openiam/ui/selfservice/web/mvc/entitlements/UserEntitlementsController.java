@@ -85,7 +85,7 @@ public class UserEntitlementsController extends AbstractUserEntitlementsControll
 			final User member = getEntity(userId, request);
 			final Group entity = groupServiceClient.getGroup(groupId, getRequesterId(request));
 
-			return makeMembershipRequest(request, entity, member, isAddition);
+			return makeMembershipRequest(request, entity, member, groupOwnerIds, isAddition);
 		}
 	}
 

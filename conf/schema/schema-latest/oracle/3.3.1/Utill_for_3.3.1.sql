@@ -1,20 +1,5 @@
-/***************************************RELEASE.3.3.1***************************************/
-/***************************************dml/1.add_report_param.sql***************************************/
+/***************************************RELEASE.3.3.1 - FIX data ***************************************/
 
-DECLARE
- tCount NUMBER := 0;
-BEGIN
-  SELECT count(*) INTO tCount FROM RES WHERE RESOURCE_ID = 'USER_ACCESS_REPORT_109';
-  IF (tCount > 0) THEN
-    SELECT count(*) INTO tCount FROM REPORT_CRITERIA_PARAMETER WHERE RCP_ID = '1097';
-    IF (tCount = 0) THEN
-      INSERT INTO REPORT_CRITERIA_PARAMETER (RCP_ID, REPORT_INFO_ID, PARAM_NAME, PARAM_VALUE, RCPT_ID, PARAM_META_TYPE_ID, IS_MULTIPLE, IS_REQUIRED, CAPTION, DISPLAY_ORDER, REQUEST_PARAMS) VALUES ('1097', '109', 'RESOURCE_IDS', NULL, '1', 'RESOURCE', 'Y', 'N', 'Resource', 7, NULL);
-    END IF;
-  END IF;
-END;
-/
-
-/***************************************dml/2.fix_data.sql***************************************/
 DELETE FROM RESOURCE_PROP WHERE RESOURCE_PROP_ID = '223' AND RESOURCE_ID = '101' AND NAME = 'PRE_PROCESS'  AND ATTR_VALUE is null;
 DELETE FROM RESOURCE_PROP WHERE RESOURCE_PROP_ID = '224' AND RESOURCE_ID = '101' AND NAME = 'POST_PROCESS' AND ATTR_VALUE is null;
 

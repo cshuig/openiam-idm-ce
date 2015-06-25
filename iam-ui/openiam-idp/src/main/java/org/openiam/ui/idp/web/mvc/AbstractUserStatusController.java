@@ -42,7 +42,7 @@ public abstract  class AbstractUserStatusController extends AbstractPasswordCont
             throw new ErrorTokenException(token.getErrorList());
         }
 
-        token = attemptResetPassword(request, formRequest.getNewPassword(), login.getUserId(), false, true);
+        token = attemptResetPassword(request, formRequest.getNewPassword(), login.getUserId(), null, false, false);
         if (token.hasErrors()) {
             throw new ErrorTokenException(token.getErrorList());
         }

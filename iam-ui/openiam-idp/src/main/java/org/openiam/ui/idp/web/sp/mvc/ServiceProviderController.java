@@ -48,6 +48,7 @@ import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.util.XMLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,6 +70,9 @@ public class ServiceProviderController {
 	
 	@Autowired
 	private LoginProvider loginProvider;
+	
+	@Value("${org.openiam.sp.login.redirect.success.url}")
+	private String spSuccessURL;
 	
 	@RequestMapping(value={"/metadata/{serviceProviderId}"}, method=RequestMethod.GET, produces="text/xml")
 	public @ResponseBody String spMetadata(final HttpServletRequest request,
@@ -164,9 +168,8 @@ public class ServiceProviderController {
 			request.setAttribute("error", new ErrorToken(token.getError()));
 			return "auth/authError";
 		} else {
-			String redirectURL = "/selfservice";
 			final String relayState = request.getParameter("RelayState");
-			redirectURL = (StringUtils.isNotEmpty(relayState)) ? relayState : redirectURL;
+			final String redirectURL = (StringUtils.isNotEmpty(relayState)) ? relayState : spSuccessURL;
 			response.sendRedirect(redirectURL);
 			return null;
 		}

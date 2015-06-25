@@ -62,8 +62,9 @@ console.warn = window.console.warn || function() {};
 					        draggable : false,
 					        resizable : false,
 					        title : localeManager["openiam.ui.shared.role.search"],
-					        width : "auto",
-					        maxWidth : 600
+					        //width : "auto",
+					        maxWidth : 600,
+                            position: "center"
 					    });
 					}
                 }
