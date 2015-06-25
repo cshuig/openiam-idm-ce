@@ -250,7 +250,7 @@ OPENIAM.ReportParameters = {
                         searchTargetElmt : "#searchResultsContainer",
                         onSearchResultClick : function(bean) {
                             OPENIAM.ReportParameters.ParametersContainer.add(paramId, bean);
-                            return false;
+                            $("#searchResultsContainer").empty();
                         }
                     });
                 },

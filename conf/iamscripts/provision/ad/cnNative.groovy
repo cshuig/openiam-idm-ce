@@ -1,8 +1,9 @@
+import org.openiam.idm.util.Transliterator
 import org.springframework.context.support.ClassPathXmlApplicationContext
 
 def loginManager = context.getBean("loginManager")
 
-loginId=user.firstName + "." + user.lastName
+loginId=Transliterator.transliterate(user.firstName + "." + user.lastName, true)
 
 def orgLoginId = loginId
 //check on length

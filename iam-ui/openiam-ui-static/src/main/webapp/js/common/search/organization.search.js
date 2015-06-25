@@ -80,9 +80,10 @@ console.log = window.console.log || function() {};
 					        draggable : false,
 					        resizable : false,
 					        title : localeManager["openiam.ui.shared.organization.search"],
-					        width : $options.resultsDialogWidth,
+					        //width : $options.resultsDialogWidth,
 					        maxWidth : 600,
-							position: $options.position
+							//position: $options.position,
+							position: "center"
 						});
 					}
 				}

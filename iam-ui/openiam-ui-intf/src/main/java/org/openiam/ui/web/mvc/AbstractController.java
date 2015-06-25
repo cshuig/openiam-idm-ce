@@ -12,6 +12,7 @@ import org.openiam.authmanager.ws.request.MenuRequest;
 import org.openiam.base.ws.Response;
 import org.openiam.base.ws.ResponseCode;
 import org.openiam.base.ws.ResponseStatus;
+import org.openiam.bpm.util.ActivitiRequestType;
 import org.openiam.connector.type.constant.StatusCodeType;
 import org.openiam.idm.searchbeans.*;
 import org.openiam.idm.srvc.audit.constant.AuditAction;
@@ -567,6 +568,9 @@ public abstract class AbstractController {
             actionsKeyNames = new LinkedList<>();
             for(AuditAction auditAction : AuditAction.values()) {
                 actionsKeyNames.add(new KeyNameBean(auditAction.name(), auditAction.value()));
+            }
+            for(ActivitiRequestType auditAction : ActivitiRequestType.values()) {
+                actionsKeyNames.add(new KeyNameBean(auditAction.getKey(), auditAction.getKey()));
             }
         }
         Collections.sort(actionsKeyNames);

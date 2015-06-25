@@ -1,3 +1,4 @@
+import org.openiam.idm.util.Transliterator
 
 println("mail.groovy called.");
 
@@ -12,5 +13,5 @@ if (user.email != null && user.email.length() > 0) {
 	output=user.email
 } else {
 
-	output=user.firstName + "." + user.lastName + "@openiam.org"
+	output=Transliterator.transliterate(user.firstName + "." + user.lastName, true) + "@openiam.org"
 }

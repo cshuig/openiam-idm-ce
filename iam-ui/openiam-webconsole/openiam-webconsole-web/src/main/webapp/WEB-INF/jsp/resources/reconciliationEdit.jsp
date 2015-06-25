@@ -94,7 +94,7 @@
                               <table cellpadding="8px" align="center" class="fieldset">
                                     <tbody>
                                         <tr>
-                                            <td>Type</td>
+                                            <td><label><spring:message code="openiam.ui.common.type"/></label></td>
                                             <td><select id="reconConfig.reconType" name="reconConfig.reconType"
                                                     <c:if test="${requestScope.reconCommand.reconConfig.reconConfigId != null}"> readonly='true' </c:if>
                                                         class="short select rounded">

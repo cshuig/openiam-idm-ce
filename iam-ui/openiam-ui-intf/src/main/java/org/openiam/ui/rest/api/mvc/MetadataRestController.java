@@ -2,6 +2,7 @@ package org.openiam.ui.rest.api.mvc;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openiam.bpm.util.ActivitiRequestType;
 import org.openiam.idm.searchbeans.AuditLogSearchBean;
 import org.openiam.idm.searchbeans.MetadataElementSearchBean;
 import org.openiam.idm.searchbeans.MetadataTypeSearchBean;
@@ -228,11 +229,19 @@ public class MetadataRestController extends AbstractController {
                                final @RequestParam(required = true, value = "from") Integer from) {
 
         final AuditAction[] actions = AuditAction.values();
+        ActivitiRequestType[] workflowActions = ActivitiRequestType.values();
+
         List<KeyNameBean> keyNameBeanList = new ArrayList<>();
         for( AuditAction action : actions ) {
             final String actionName = action.value();
             if (name == null || actionName.contains(name.toUpperCase())) {
                 keyNameBeanList.add(new KeyNameBean(action.value(), action.value()));
+            }
+        }
+        for( ActivitiRequestType action : workflowActions ) {
+            final String actionName = action.name();
+            if (name == null || actionName.toLowerCase().contains(name.toLowerCase())) {
+                keyNameBeanList.add(new KeyNameBean(action.getKey(), action.getKey()));
             }
         }
         final int count = keyNameBeanList.size();

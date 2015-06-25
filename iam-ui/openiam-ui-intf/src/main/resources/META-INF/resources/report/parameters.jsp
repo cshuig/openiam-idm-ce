@@ -218,6 +218,18 @@
                                     <input type="submit" id="${parameter.id}" value="<fmt:message key='openiam.ui.report.add.parameter'/>" class="redBtn addBtn" />
                                 </td>
                             </c:when>
+                            <c:when test="${parameter.typeName eq 'BOOLEAN'}">
+                                <td>
+                                    <select id="input${parameter.id}" class="rounded addOnChange">
+                                        <option value=""><fmt:message key='openiam.ui.common.please.select'/></option>
+                                        <option value="Y"><fmt:message key='openiam.ui.common.yes'/></option>
+                                        <option value="N"><fmt:message key='openiam.ui.common.no'/></option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="submit" id="${parameter.id}" value="<fmt:message key='openiam.ui.report.add.parameter'/>" class="redBtn addBtn" />
+                                </td>
+                            </c:when>
                             <c:otherwise>
                                 <td>
                                     <input type="text" id="input${parameter.id}" class="full rounded" />

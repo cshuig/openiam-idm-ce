@@ -153,7 +153,7 @@ public class PowershellADPopulationScript extends org.openiam.idm.srvc.recon.ser
             pUser.status = UserStatusEnum.PENDING_INITIAL_LOGIN
         }
         if (!pUser.mdTypeId) {
-            pUser.mdTypeId = "Contractor"
+            pUser.mdTypeId = "DEFAULT_USER"
         }
         //addExchangePrincipal(pUser, currentManagedSys, managedSystemService)
         return retval

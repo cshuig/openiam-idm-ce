@@ -64,7 +64,12 @@ OPENIAM.BulkOperationsSearchOrganization = {
             $(metaDataBeans).each(function(i, e) {
                 var option = document.createElement("option");
                 option.value = e.id;
-                option.text = e.name;
+                //option.text = e.name;
+                if (typeof(option.innerText) != 'undefined') {
+                    option.innerText = e.name;
+                } else {
+                    option.text = e.name;
+                }
                 organizationTypeSelect.appendChild(option);
             });
             r2c2.appendChild(organizationTypeSelect);

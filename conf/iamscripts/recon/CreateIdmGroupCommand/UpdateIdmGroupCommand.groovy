@@ -43,8 +43,12 @@ public class UpdateIdmGroupCommand extends BaseReconciliationGroupCommand {
 
     @Override
     public boolean execute(ReconciliationSituation config, String principal, String mSysID, Group group, List<ExtensibleAttribute> attributes) {
+        println("================== UpdateIdmGroupCommand================ starting...");
         if (groupDataWebService == null) {
             groupDataWebService = context.getBean(GroupDataWebService.class);
+        }
+        if (resourceDataService == null) {
+            resourceDataService = context.getBean(ResourceDataService.class);
         }
         if (provisionService == null) {
             provisionService = context.getBean("groupProvision");
@@ -63,23 +67,36 @@ public class UpdateIdmGroupCommand extends BaseReconciliationGroupCommand {
         try {
             ProvisionGroup pGroup = new ProvisionGroup(group);
             pGroup.setSrcSystemId(mSysID);
-            executeScript(config.getScript(), attributes, pGroup);
+            println("================== UpdateIdmGroupCommand================ script:" + config.getScript());
+            int retval = executeScript(config.getScript(), attributes, pGroup);
+            if (retval == 0) {
+                println("================== UpdateIdmGroupCommand ================ Group = " + pGroup);
+                println("================== UpdateIdmGroupCommand ================ Group Name = " + pGroup.name);
+                println("================== UpdateIdmGroupCommand ================ Group Principal = " + principal);
 
-            Set<Resource> resources = pGroup.getResources();
-            Response grpResp = groupDataWebService.saveGroup(pGroup, DEFAULT_REQUESTER_ID);
-            String groupId = (String) grpResp.getResponseValue();
-            for (Resource res : resources) {
-                if (res.getOperation() == AttributeOperationEnum.ADD) {
-                    resourceDataService.addGroupToResource(res.getId(), groupId, DEFAULT_REQUESTER_ID);
-                } else if (res.getOperation() == AttributeOperationEnum.DELETE) {
-                    resourceDataService.removeGroupToResource(res.getId(), groupId, DEFAULT_REQUESTER_ID);
+                Set<Resource> resources = pGroup.getResources();
+                Response grpResp = groupDataWebService.saveGroup(pGroup, DEFAULT_REQUESTER_ID);
+                String groupId = (String) grpResp.getResponseValue();
+                for (Resource res : resources) {
+                    if (res.getOperation() == AttributeOperationEnum.ADD) {
+                        resourceDataService.addGroupToResource(res.getId(), groupId, DEFAULT_REQUESTER_ID);
+                    } else if (res.getOperation() == AttributeOperationEnum.DELETE) {
+                        resourceDataService.removeGroupToResource(res.getId(), groupId, DEFAULT_REQUESTER_ID);
+                    }
                 }
+                Response response = provisionService.modify(pGroup);
+                println("================== UpdateIdmGroupCommand================ finished...");
+                return response.isSuccess();
+            } else {
+                println("================== UpdateIdmGroupCommand ================ finished with errors ...");
+                log.debug("================== UpdateIdmGroupCommand === Couldn't populate ProvisionGroup. Group not added");
+                return false;
             }
-            Response response = provisionService.modify(pGroup);
-            return response.isSuccess();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+        println("================== UpdateIdmGroupCommand================ finished...");
         return false;
     }
 }

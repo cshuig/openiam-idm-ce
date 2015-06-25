@@ -1,14 +1,12 @@
 package org.openiam.ui.idp.saml.service;
 
 import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.mule.api.endpoint.EndpointBuilder;
 import org.openiam.am.srvc.dto.AuthResourceAttributeMap;
 import org.openiam.am.srvc.dto.SSOAttribute;
 import org.openiam.am.srvc.ws.AuthResourceAttributeWebService;
@@ -44,8 +42,6 @@ import org.openiam.ui.idp.common.service.AuthenticationSweeper;
 import org.openiam.ui.idp.saml.exception.AuthenticationException;
 import org.openiam.ui.idp.saml.groovy.AbstractJustInTimeSAMLAuthenticator;
 import org.openiam.ui.idp.saml.model.SAMLIDPMetadataResponse;
-import org.openiam.ui.idp.saml.model.SAMLLogoutRequestToken;
-import org.openiam.ui.idp.saml.model.SAMLLogoutResponseToken;
 import org.openiam.ui.idp.saml.model.SAMLRequestToken;
 import org.openiam.ui.idp.saml.model.SAMLResponseToken;
 import org.openiam.ui.idp.saml.model.SAMLSPMetadataResponse;
@@ -56,17 +52,13 @@ import org.openiam.ui.idp.saml.provider.SAMLServiceProvider;
 import org.openiam.ui.idp.saml.util.SAMLAttributeBuilder;
 import org.openiam.ui.idp.saml.util.SAMLDigestUtils;
 import org.openiam.ui.idp.saml.util.SAMLEncoder;
-import org.openiam.ui.idp.saml.util.SAMLUtils;
 import org.openiam.ui.login.LoginActionToken;
 import org.openiam.ui.security.OpenIAMCookieProvider;
-import org.openiam.ui.util.OpenIAMConstants;
 import org.openiam.ui.util.URIUtils;
-import org.openiam.ui.util.messages.ErrorToken;
 import org.openiam.ui.util.messages.Errors;
 import org.openiam.ui.web.util.LoginProvider;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObjectBuilder;
-import org.opensaml.common.SignableSAMLObject;
 import org.opensaml.common.impl.SecureRandomIdentifierGenerator;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.*;
@@ -90,10 +82,7 @@ import org.opensaml.saml2.metadata.impl.SingleLogoutServiceBuilder;
 import org.opensaml.saml2.metadata.impl.SingleSignOnServiceBuilder;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.XMLObjectBuilderFactory;
-import org.opensaml.xml.io.Marshaller;
 import org.opensaml.xml.io.MarshallerFactory;
-import org.opensaml.xml.io.MarshallingException;
-import org.opensaml.xml.schema.XSString;
 import org.opensaml.xml.security.SecurityConfiguration;
 import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.security.credential.Credential;
@@ -107,7 +96,6 @@ import org.opensaml.xml.security.x509.X509KeyInfoGeneratorFactory;
 import org.opensaml.xml.signature.KeyInfo;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.signature.SignatureConstants;
-import org.opensaml.xml.signature.SignatureException;
 import org.opensaml.xml.signature.SignatureValidator;
 import org.opensaml.xml.signature.Signer;
 import org.opensaml.xml.signature.X509Data;
@@ -128,16 +116,9 @@ import org.w3c.dom.Element;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.namespace.QName;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -147,11 +128,9 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Component("samlService")
 @ManagedResource(objectName="org.openiam.authorization.manager:name=SAMLService")
@@ -458,6 +437,9 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		} catch(SecurityException e) {
 			token.setError(Errors.SAML_SECURITY_EXCEPTION, e);
 			log.warn(String.format("Authencation Exception: %s", e.getMessage()));
+		} catch(InvalidKeySpecException e) {
+			token.setError(Errors.AUTH_PROVIDER_SECURITY_KEYS_INVALID, e);
+			log.warn(String.format("Invalid Key Exception: %s", e.getMessage()), e);
 		} catch(AuthenticationException e) {
 			token.setError(e.getError(), e);
 			log.warn(String.format("Authencation Exception: %s", e.getMessage()));
@@ -554,6 +536,9 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 		} catch(SecurityException e) {
 			token.setError(Errors.SAML_SECURITY_EXCEPTION, e);
 			log.warn(String.format("Authencation Exception: %s", e.getMessage()));
+		} catch(InvalidKeySpecException e) {
+			token.setError(Errors.AUTH_PROVIDER_SECURITY_KEYS_INVALID, e);
+			log.warn(String.format("Invalid Key Exception: %s", e.getMessage()), e);
 		} catch(AuthenticationException e) {
 			token.setError(e.getError(), e);
 			log.warn(String.format("Authencation Exception: %s", e.getMessage()));
@@ -727,6 +712,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				}
 			}
 			
+			/*
 			if(authnRequest.isSigned()) {
 				final BasicX509Credential credential = new BasicX509Credential();
 
@@ -743,6 +729,7 @@ public class SAMLServiceImpl implements SAMLService, InitializingBean {
 				final SignatureValidator validator = new SignatureValidator(credential);
 				validator.validate(signature);
 			}
+			*/
 			
 			/* sign the response.  this MUST BE THE LAST BLOCK, otheriwse you'll get no signature!!!!! */
 			Element responseElmt = null;

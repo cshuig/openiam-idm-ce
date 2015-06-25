@@ -62,8 +62,10 @@ console.log = window.console.log || function() {};
 					        draggable : false,
 					        resizable : false,
 					        title : localeManager["openiam.ui.shared.group.search"],
-					        width : "auto",
-					        maxWidth : 600
+					        //width : "auto",
+					        maxWidth : 600,
+							position: "center"
+
 					    });
 					}
 				}

@@ -24,12 +24,7 @@ public class ProvisionServiceGroupPreProcessor extends AbstractProvisionPreProce
 
         showBindingMap(bindingMap);
 
-        if(getGroupAttributeValueByName(group, "OPENIAM_CREATED")) {
-            println("ProvisionServiceGroupPreProcessor: Group=" + group.toString() + "[OPENIAM_CREATED] ProvisioningConstants.SUCCESS");
-            return ProvisioningConstants.SUCCESS;
-        }
-        println("ProvisionServiceGroupPreProcessor: Group=" + group.toString() + " ProvisioningConstants.FAIL");
-        return ProvisioningConstants.FAIL;
+        return ProvisioningConstants.SUCCESS;
     }
 
     public int modify(ProvisionGroup group, Map<String, Object> bindingMap){
@@ -40,12 +35,8 @@ public class ProvisionServiceGroupPreProcessor extends AbstractProvisionPreProce
 
         showBindingMap(bindingMap);
 
-        if(getGroupAttributeValueByName(group, "OPENIAM_CREATED")) {
-            println("ProvisionServiceGroupPreProcessor: Group=" + group.toString() + "[OPENIAM_CREATED] ProvisioningConstants.SUCCESS");
-            return ProvisioningConstants.SUCCESS;
-        }
-        println("ProvisionServiceGroupPreProcessor: Group=" + group.toString() + " ProvisioningConstants.FAIL");
-        return ProvisioningConstants.FAIL;
+
+        return ProvisioningConstants.SUCCESS;
 
     }
 
@@ -60,17 +51,21 @@ public class ProvisionServiceGroupPreProcessor extends AbstractProvisionPreProce
 
         showBindingMap(bindingMap);
 
-        return ProvisioningConstants.FAIL;
+
+
+        return ProvisioningConstants.SUCCESS;
     }
 
     public int setPassword( PasswordSync passwordSync, Map<String, Object> bindingMap){
+
+
 
         println("ProvisionServiceGroupPreProcessor: SetPassword called.");
 
         showBindingMap(bindingMap);
 
 
-        return ProvisioningConstants.FAIL;
+        return ProvisioningConstants.SUCCESS;
 
     }
 

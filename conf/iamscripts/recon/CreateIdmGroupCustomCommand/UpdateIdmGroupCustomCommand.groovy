@@ -21,8 +21,8 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 import java.util.Set;
 
-public class UpdateIdmGroupCommand extends BaseReconciliationGroupCommand {
-    private static final Log log = LogFactory.getLog(UpdateIdmGroupCommand.class);
+public class UpdateIdmGroupCustomCommand extends BaseReconciliationGroupCommand {
+    private static final Log log = LogFactory.getLog(UpdateIdmGroupCustomCommand.class);
 
     protected ApplicationContext context;
 

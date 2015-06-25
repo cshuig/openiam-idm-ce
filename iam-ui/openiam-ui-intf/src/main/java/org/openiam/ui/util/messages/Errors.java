@@ -539,7 +539,8 @@ public enum Errors {
 
 
 
-    USERS_NOT_SELECTED(678,"openiam.ui.bulk.op.user.not.selected");
+    USERS_NOT_SELECTED(678,"openiam.ui.bulk.op.user.not.selected"),
+    RESYNC_PASSWORD_FAILED(679, "openiam.ui.webconsole.user.password.sync.fail");
 
     private int code;
     private String messageName;

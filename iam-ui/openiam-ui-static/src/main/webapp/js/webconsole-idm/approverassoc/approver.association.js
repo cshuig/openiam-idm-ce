@@ -84,7 +84,7 @@ OPENIAM.ApproverAssociation = {
                 title : localeManager["openiam.ui.common.search"] + " : " + searchType});
     		$("#dialog").find("a").click(function() {
     			var input = $("#dialog").find("input[type='text']"); 
-    			input.modalSearch({
+    			$("#dialog").modalSearch({
  					onElementClick : function(bean) {
  						$("#dialog").dialog("close");
  						$this.find(entityIdSelector).val(bean.id);
@@ -95,7 +95,7 @@ OPENIAM.ApproverAssociation = {
 					dialogTitle : dialogTitle,
 					emptyResultsText : emptyText
 				});
-				input.modalSearch("show");
+				$("#dialog").modalSearch("show");
     		});
     	} else if(searchType == "USER") {
     		$("#dialog").userSearchForm({

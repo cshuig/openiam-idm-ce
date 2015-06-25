@@ -42,6 +42,7 @@ import org.openiam.provision.resp.ProvisionUserResponse;
 import org.openiam.provision.service.ActionEventBuilder;
 import org.openiam.provision.service.ProvisionServiceEventProcessor;
 import org.openiam.ui.exception.ErrorMessageException;
+import org.openiam.ui.exception.ErrorTokenException;
 import org.openiam.ui.rest.api.model.EditUserModel;
 import org.openiam.ui.rest.api.model.ResetPasswordBean;
 import org.openiam.ui.util.WSUtils;
@@ -104,7 +105,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
     @Resource(name = "policyServiceClient")
     protected PolicyDataService policyServiceClient;
 
-    @Resource(name="authorizationManagerMenuServiceClient")
+    @Resource(name = "authorizationManagerMenuServiceClient")
     private AuthorizationManagerMenuWebService authorizationManagerMenuServiceClient;
 
     private static final String extendController = "/webconsole/EditUserController.groovy";
@@ -441,11 +442,12 @@ public class ProvisioningRestController extends AbstractPasswordController {
                         pswdSync.setRequestClientIP(request.getRemoteHost());
                         pswdSync.setRequestorLogin(cookieProvider.getPrincipal(request));
                         pswdSync.setRequestorId(getRequesterId(request));
+                        pswdSync.setResyncMode(true);
                         pswdSync.setSendPasswordToUser(passwordBean.getNotifyUserViaEmail());
                         WSUtils.setWSClientTimeout(provisionService, 360000L);
-                        final Response setPasswordResponse = provisionService.resetPassword(pswdSync);
+                        final Response setPasswordResponse = provisionService.setPassword(pswdSync);
                         if (ResponseStatus.SUCCESS != setPasswordResponse.getStatus()) {
-                            errorTokenList.add(new ErrorToken(Errors.CHANGE_PASSWORD_FAILED));
+                            errorTokenList.add(new ErrorToken(Errors.RESET_PASSWORD_PASSWORD_NOT_SET));
                         }
                     }
                 }
@@ -463,7 +465,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
                 ajaxResponse.setStatus(200);
                 final boolean isAuthenticated = authorizationManagerMenuServiceClient.isUserAuthenticatedToMenuWithURL(
                         getRequesterId(request), "/webconsole/editUser.html", null, true);
-                if(isAuthenticated) {
+                if (isAuthenticated) {
                     ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
                 }
             }
@@ -472,7 +474,7 @@ public class ProvisioningRestController extends AbstractPasswordController {
         return ajaxResponse;
     }
 
-    @RequestMapping(value = "/prov/resetPasswordSelfService", method = RequestMethod.POST)
+    @RequestMapping(value = "/prov/changePasswordForManagedSystem", method = RequestMethod.POST)
     public
     @ResponseBody
     BasicAjaxResponse resetPasswordSelfservice(final HttpServletRequest request, @RequestBody @Valid ResetPasswordBean passwordBean) throws Exception {
@@ -485,8 +487,15 @@ public class ProvisioningRestController extends AbstractPasswordController {
         }
         Response response = loginDataWebService.isPasswordEq(passwordBean.getPrincipal(), passwordBean.getManagedSystemId(), passwordBean.getCurrentPassword());
         if (ResponseStatus.SUCCESS.equals(response.getStatus())) {
-            ajaxResponse = resetPassword(request, passwordBean);
-            ajaxResponse.setRedirectURL("/selfservice/myInfo.html");
+            SetPasswordToken token = attemptResetPassword(request, passwordBean.getPassword(), passwordBean.getUserId(), passwordBean.getManagedSystemId(), true, false);
+            if (token != null && token.hasErrors()) {
+                ajaxResponse.setStatus(500);
+                ajaxResponse.setPossibleErrors(token.getRules());
+            } else {
+                ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.PASSWORD_CHANGED));
+                ajaxResponse.setStatus(200);
+                ajaxResponse.setRedirectURL("/selfservice/myInfo.html");
+            }
         }
         ajaxResponse.process(localeResolver, messageSource, request);
         return ajaxResponse;
@@ -564,7 +573,6 @@ public class ProvisioningRestController extends AbstractPasswordController {
 
                 String managedSysLogin = loginByManagedSysId.get(targetSystemId);
 
-
                 if (passwordBean.getAutoGeneratePassword()) {
                     Policy pp = passwordService.getPasswordPolicy(managedSysLogin, targetSystemId);
                     passwordBean.setPassword(PasswordGenerator.generatePassword(pp));
@@ -640,13 +648,21 @@ public class ProvisioningRestController extends AbstractPasswordController {
                     ajaxResponse.setPossibleErrors(token.getRules());
                 }
             } else {
-                provisionService.addEvent(actionEvent, ProvisionActionTypeEnum.PRE);
+                provisionService.addEvent(actionEvent, ProvisionActionTypeEnum.POST);
                 ajaxResponse.setSuccessToken(new SuccessToken(SuccessMessage.PASSWORD_RESETED));
                 ajaxResponse.setStatus(200);
-                final boolean isAuthenticated = authorizationManagerMenuServiceClient.isUserAuthenticatedToMenuWithURL(
-                        getRequesterId(request), "/webconsole/editUser.html", null, true);
-                if(isAuthenticated) {
-                    ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
+                if (displayPasswordAfterReset && CollectionUtils.isNotEmpty(passwordBean.getManagedSystem())) {
+                    String url = String.format("/webconsole/resetPassword.html?id=%s", passwordBean.getUserId());
+                    for (String id : passwordBean.getManagedSystem()) {
+                        url += String.format("&ms=%s", id);
+                    }
+                    ajaxResponse.setRedirectURL(url);
+                } else {
+                    final boolean isAuthenticated = authorizationManagerMenuServiceClient.isUserAuthenticatedToMenuWithURL(
+                            getRequesterId(request), "/webconsole/editUser.html", null, true);
+                    if (isAuthenticated) {
+                        ajaxResponse.setRedirectURL(String.format("editUser.html?id=%s", passwordBean.getUserId()));
+                    }
                 }
             }
             ajaxResponse.process(localeResolver, messageSource, request);
